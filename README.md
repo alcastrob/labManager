@@ -1,6 +1,7 @@
-# orma
+# labManager
 
-> An electron-vue project
+A small management software for managing a prosthetic laboratory.
+
 
 #### Build Setup
 

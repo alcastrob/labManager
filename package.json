@@ -1,5 +1,5 @@
 {
-  "name": "orma",
+  "name": "labManager",
   "version": "0.0.1",
   "author": "Angel Castro <al.castro@gmail.com>",
   "description": "An electron-vue project",
@@ -22,8 +22,8 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "orma",
-    "appId": "com.alcastro.orma",
+    "productName": "labManager",
+    "appId": "com.alcastro.labManager",
     "directories": {
       "output": "build"
     },
@@ -49,7 +49,7 @@
       "icon": "build/icons/icon.icns"
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "build/icons/tooth.ico"
     },
     "linux": {
       "icon": "build/icons"
@@ -58,6 +58,8 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.1.3",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.6",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.0.1",
