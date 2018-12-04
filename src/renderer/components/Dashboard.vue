@@ -1,40 +1,21 @@
 <template>
   <div id="page-top">
     <top-bar />
-
     <div id="wrapper">
-
-      <!-- Sidebar -->
-      <lateralBar/>
-
       <div id="content-wrapper">
-
         <div class="container-fluid">
-
-          <!-- Breadcrumbs-->
           <breadcrumb/>
-
-          <!-- Icon Cards-->
           <div class="row">
             <iconCard/>
             <iconCard/>
             <iconCard/>
             <iconCard/>
           </div>
-
-          <!-- Area Chart Example-->
           <areaChart/>
-
-          <!-- DataTables Example -->
           <dataTable/>
-
         </div>
-        <!-- /.container-fluid -->
       </div>
-      <!-- /.content-wrapper -->
-
     </div>
-    <!-- /#wrapper -->
   </div>
 </template>
 

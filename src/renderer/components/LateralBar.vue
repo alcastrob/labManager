@@ -8,13 +8,13 @@
     </li>
     <li class="nav-item dropdown">
         <a class="nav-link" href="#" >
-        <i class="fas fa-fw fa-folder"></i>
+        <i class="fas fa-fw fa-teeth"></i>
         <span>Trabajos</span>
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="#">
-        <i class="fas fa-fw fa-chart-area"></i>
+        <i class="fas fa-fw fa-id-badge"></i>
         <span>Dentistas</span></a>
     </li>
 </ul>
