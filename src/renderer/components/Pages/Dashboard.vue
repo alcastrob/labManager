@@ -1,0 +1,71 @@
+<template>
+  <div id="page-top">
+    <top-bar />
+    <div id="wrapper">
+      <div id="content-wrapper">
+        <div class="container-fluid">
+          <breadcrumb/>
+          <div class="row">
+            <iconCard/>
+            <iconCard/>
+            <iconCard/>
+            <iconCard/>
+          </div>
+          <areaChart/>
+          <dataTable/>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import topBar from '../PageElements/TopBar'
+import lateralBar from '../PageElements/LateralBar'
+import breadcrumb from '../PageElements/Breadcrumb'
+import iconCard from '../PageElements/IconCard'
+import areaChart from '../PageElements/AreaChart'
+import dataTable from '../PageElements/DataTable'
+
+export default {
+  name: 'dashboard',
+  components: { topBar, lateralBar, breadcrumb, iconCard, areaChart, dataTable },
+  data () {
+    return {}
+  },
+  methods () {}
+}
+</script>
+
+<style>
+#wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+#wrapper #content-wrapper {
+  overflow-x: hidden;
+  width: 100%;
+  padding-top: 1rem;
+  padding-bottom: 80px;
+}
+
+body.fixed-nav #content-wrapper {
+  margin-top: 56px;
+  padding-left: 90px;
+}
+
+body.fixed-nav.sidebar-toggled #content-wrapper {
+  padding-left: 0;
+}
+
+@media (min-width: 768px) {
+  body.fixed-nav #content-wrapper {
+    padding-left: 225px;
+  }
+  body.fixed-nav.sidebar-toggled #content-wrapper {
+    padding-left: 90px;
+  }
+}
+</style>

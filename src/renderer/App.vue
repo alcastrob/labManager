@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import dashboard from './components/Dashboard.vue'
+  import dashboard from './components/pages/Dashboard.vue'
   export default {
     name: 'labManager',
     components: {

@@ -3,12 +3,12 @@
     <div class="card text-white bg-primary o-hidden h-100">
     <div class="card-body">
         <div class="card-body-icon">
-        <i class="fas fa-fw fa-comments"></i>
+        <i class="fas fa-fw fa-list"></i>
         </div>
-        <div class="mr-5">26 New Messages!</div>
+        <div class="mr-5">26 Mensajes nuevos</div>
     </div>
     <a class="card-footer text-white clearfix small z-1" href="#">
-        <span class="float-left">View Details</span>
+        <span class="float-left">Ver detalles</span>
         <span class="float-right">
         <i class="fas fa-angle-right"></i>
         </span>
@@ -76,4 +76,35 @@ export default {
 </script>
 
 <style>
+.card-body-icon {
+  position: absolute;
+  z-index: 0;
+  top: -1.25rem;
+  right: -1rem;
+  opacity: 0.4;
+  font-size: 5rem;
+  -webkit-transform: rotate(15deg);
+  transform: rotate(15deg);
+}
+
+@media (min-width: 576px) {
+  .card-columns {
+    -webkit-column-count: 1;
+    column-count: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-columns {
+    -webkit-column-count: 2;
+    column-count: 2;
+  }
+}
+
+@media (min-width: 1200px) {
+  .card-columns {
+    -webkit-column-count: 2;
+    column-count: 2;
+  }
+}
 </style>
