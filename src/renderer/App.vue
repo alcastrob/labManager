@@ -1,16 +1,15 @@
 <template>
   <div id="app">
-    <!-- <router-view></router-view> -->
-    <dashboard></dashboard>
+    <mainPage></mainPage>
   </div>
 </template>
 
 <script>
-  import dashboard from './components/pages/Dashboard.vue'
+  import mainPage from './components/pages/mainPage.vue'
   export default {
     name: 'labManager',
     components: {
-      dashboard
+      mainPage
     }
   }
 </script>

@@ -1,21 +1,14 @@
 <template>
-  <div id="page-top">
-    <top-bar />
-    <div id="wrapper">
-      <div id="content-wrapper">
-        <div class="container-fluid">
-          <breadcrumb/>
-          <div class="row">
-            <iconCard/>
-            <iconCard/>
-            <iconCard/>
-            <iconCard/>
-          </div>
-          <areaChart/>
-          <dataTable/>
-        </div>
-      </div>
+  <div>
+    <breadcrumb/>
+    <div class="row">
+      <iconCard/>
+      <iconCard/>
+      <iconCard/>
+      <iconCard/>
     </div>
+    <areaChart/>
+    <dataTable/>
   </div>
 </template>
 

@@ -153,6 +153,8 @@ const menuTemplate = [{
     {
       label: 'Acerca de',
       click () {
+        console.log('Pasa por Ayuda send')
+        mainWindow.webContents.send('menu:about', 'Hello')
       }
     }
   ]

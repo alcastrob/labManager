@@ -12,7 +12,7 @@ export default new Router({
     // },
     {
       path: '/',
-      name: 'dashboard'
+      name: 'mainPage'
     },
     {
       path: '*',
