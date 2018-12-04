@@ -33,9 +33,17 @@ export default {
   },
   methods: { },
   mounted () {
-    ipcRenderer.on('menu:about', (event) => {
-      console.log('Message received')
+    ipcRenderer.on('navigation:about', () => {
       this.currentPage = 'about'
+    })
+    ipcRenderer.on('navigation:dashboard', () => {
+      this.currentPage = 'dashboard'
+    })
+    ipcRenderer.on('navigation:works', () => {
+      this.currentPage = 'works'
+    })
+    ipcRenderer.on('navigation:dentists', () => {
+      this.currentPage = 'dentists'
     })
   }
 }

@@ -130,19 +130,19 @@ const menuTemplate = [{
     {
       label: 'Indicadores',
       click () {
-        // mainWindow.webContents.send('todo:clear')
+        mainWindow.webContents.send('navigation:dashboard')
       }
     },
     {
       label: 'Trabajos',
       click () {
-        // mainWindow.webContents.send('todo:clear')
+        mainWindow.webContents.send('navigation:works')
       }
     },
     {
       label: 'Dentistas',
       click () {
-        // mainWindow.webContents.send('todo:clear')
+        mainWindow.webContents.send('navigation:dentists')
       }
     }
   ]
@@ -153,8 +153,7 @@ const menuTemplate = [{
     {
       label: 'Acerca de',
       click () {
-        console.log('Pasa por Ayuda send')
-        mainWindow.webContents.send('menu:about', 'Hello')
+        mainWindow.webContents.send('navigation:about')
       }
     }
   ]
