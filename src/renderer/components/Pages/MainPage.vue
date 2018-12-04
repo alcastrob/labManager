@@ -4,8 +4,8 @@
     <div id="wrapper">
       <div id="content-wrapper">
         <div class="container-fluid">
-          <dashboard/>
-
+          <dashboard v-if="currentPage === 'dashboard'" />
+          <about v-if="currentPage === 'about'"/>
         </div>
       </div>
     </div>
@@ -14,6 +14,7 @@
 
 <script>
 import dashboard from './dashboard'
+import about from './About'
 import topbar from '../PageElements/TopBar'
 
 var {ipcRenderer} = require('electron')
@@ -22,15 +23,19 @@ export default {
   name: 'mainPage',
   components: {
     dashboard,
+    about,
     topbar
   },
   data () {
-    return {}
+    return {
+      currentPage: 'dashboard'
+    }
   },
   methods: { },
   mounted () {
     ipcRenderer.on('menu:about', (event) => {
       console.log('Message received')
+      this.currentPage = 'about'
     })
   }
 }
