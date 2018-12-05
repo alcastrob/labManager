@@ -24,7 +24,11 @@ namespace dataMigration
             List<PruebaDetalle> listPruebas = transformer.TransformPruebas(pruebasBruto);
             List<Dentista> listDentistas = transformer.TransformDentista(dentistasBruto);
             transformer.AddMissingDentistas(listFichasTemp, listDentistas);
+            List<TipoTrabajo> listaTiposTrabajo = transformer.GetTipoTrabajoDataObject();
+            listFichasTemp = transformer.AdaptTipoTrabajoInFichaTrabajoTemp(listFichasTemp);
+
             List<FichaTrabajo> listaFichas = transformer.TransformFichas2(listFichasTemp);
+
 
             var result = from c in listFichasTemp
                          where c.TipoTrabajo != "5" &&

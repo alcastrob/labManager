@@ -15,7 +15,7 @@ namespace dataMigration
 
         #region "FichasTrabajo"
         public Tuple<List<Detalle>, List<FichaTrabajoTemp>> TransformFichas(List<FichaTrabajoAccess> fichas)
-        {            
+        {
             List<Detalle> detallesFichas = new List<Detalle>();
             List<FichaTrabajoTemp> fichasTrabajo = new List<FichaTrabajoTemp>();
 
@@ -128,7 +128,7 @@ namespace dataMigration
         public List<FichaTrabajo> TransformFichas2(List<FichaTrabajoTemp> fichas)
         {
             List<FichaTrabajo> returnedValue = new List<FichaTrabajo>();
-            foreach(FichaTrabajoTemp ficha in fichas)
+            foreach (FichaTrabajoTemp ficha in fichas)
             {
                 returnedValue.Add(MapFichaTrabajo(ficha));
             }
@@ -155,7 +155,7 @@ namespace dataMigration
             };
             return returnedValue;
         }
-    
+
         #endregion
 
         #region "Pruebas"
@@ -191,7 +191,7 @@ namespace dataMigration
         {
             List<Dentista> returnedValue = new List<Dentista>();
 
-            foreach(DentistaAccess dentista in dentistas)
+            foreach (DentistaAccess dentista in dentistas)
             {
                 returnedValue.Add(MapDentistasAccess(dentista));
             }
@@ -201,7 +201,7 @@ namespace dataMigration
 
         public List<Dentista> AddMissingDentistas(List<FichaTrabajoTemp> fichasTrabajo, List<Dentista> dentistas)
         {
-            foreach(FichaTrabajoTemp ficha in fichasTrabajo)
+            foreach (FichaTrabajoTemp ficha in fichasTrabajo)
             {
                 var query = dentistas.Where(dentista => ficha.Dr == dentista.NombreDentista);
                 if (query.Count() >= 1)
@@ -240,7 +240,77 @@ namespace dataMigration
                 OtroTlf = dentista.OtroTlf
             };
             return returnedValue;
-    }
+        }
         #endregion
+
+        #region "Tipo Trabajo"
+        public List<TipoTrabajo> GetTipoTrabajoDataObject()
+        {
+            List<TipoTrabajo> returnedValue = new List<TipoTrabajo>();
+            returnedValue.Add(new TipoTrabajo
+            {
+                idTipoTrabajo = 1,
+                Descripcion = "Fija"
+            });
+            returnedValue.Add(new TipoTrabajo
+            {
+                idTipoTrabajo = 2,
+                Descripcion = "Resina"
+            });
+            returnedValue.Add(new TipoTrabajo
+            {
+                idTipoTrabajo = 3,
+                Descripcion = "Ortodoncia"
+            });
+            returnedValue.Add(new TipoTrabajo
+            {
+                idTipoTrabajo = 4,
+                Descripcion = "Esquelético"
+            });
+            returnedValue.Add(new TipoTrabajo
+            {
+                idTipoTrabajo = 5,
+                Descripcion = "Zirconio"
+            });
+            returnedValue.Add(new TipoTrabajo
+            {
+                idTipoTrabajo = 6,
+                Descripcion = "Compostura"
+            });
+            returnedValue.Add(new TipoTrabajo
+            {
+                idTipoTrabajo = 7,
+                Descripcion = "Implante"
+            });
+            return returnedValue;
+        }
+
+        public List<FichaTrabajoTemp> AdaptTipoTrabajoInFichaTrabajoTemp(List<FichaTrabajoTemp> fichas)
+        {
+            foreach(FichaTrabajoTemp ficha in fichas)
+            {
+                switch(ficha.TipoTrabajo)
+                {
+                    case "1": ficha.IdTipoTrabajo = 1;
+                        break;
+                    case "2": ficha.IdTipoTrabajo = 2;
+                        break;
+                    case "3": ficha.IdTipoTrabajo = 3;
+                        break;
+                    case "4": ficha.IdTipoTrabajo = 4;
+                        break;
+                    case "5": ficha.IdTipoTrabajo = 5;
+                        break;
+                    case "1049987891": ficha.IdTipoTrabajo = 6;
+                        break;
+                    case "1763265016": ficha.IdTipoTrabajo = 7;
+                        break;
+                    default: throw new ArgumentException("Unknown value: " + ficha.TipoTrabajo);
+                }
+            }
+            return fichas;
+        }
+        #endregion
+
     }
 }

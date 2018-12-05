@@ -53,6 +53,7 @@
     <Compile Include="DTO\FichaTrabajoAccess.cs" />
     <Compile Include="DTO\PruebaDetalle.cs" />
     <Compile Include="DTO\PruebaAccess.cs" />
+    <Compile Include="DTO\TipoTrabajo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
