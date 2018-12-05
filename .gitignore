@@ -9,3 +9,7 @@ npm-debug.log
 npm-debug.log.*
 thumbs.db
 !.gitkeep
+dotnet/dataMigration/.vs/dataMigration/v15/.suo
+dotnet/dataMigration/.vs/dataMigration/v15/
+dotnet/dataMigration/dataMigration/bin/
+dotnet/dataMigration/dataMigration/obj/
