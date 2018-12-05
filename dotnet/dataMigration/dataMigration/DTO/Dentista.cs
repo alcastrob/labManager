@@ -18,7 +18,7 @@ namespace dataMigration.DTO
         public string CorreoElectronico { get; set; }
         public string CP { get; set; }
         public string Poblacion { get; set; }
-        public string Tlf { get; set; }
-        public string OtroTlf { get; set; }
+        public string Telefono { get; set; }
+        public string Telefono2 { get; set; }
     }
 }

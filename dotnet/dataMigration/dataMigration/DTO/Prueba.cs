@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace dataMigration.DTO
 {
-    class PruebaDetalle
+    class Prueba
     {
         public int IdPrueba { get; set; }
-        public int IdFicha { get; set; }
-        public string Prueba { get; set; }
+        public int IdTrabajo { get; set; }
+        public string Descripcion { get; set; }
         public DateTime? FechaSalida { get; set; }
         public DateTime? FechaEntrada { get; set; }
         public string Comentario { get; set; }

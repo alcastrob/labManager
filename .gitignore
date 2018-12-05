@@ -13,3 +13,5 @@ dotnet/dataMigration/.vs/dataMigration/v15/.suo
 dotnet/dataMigration/.vs/dataMigration/v15/
 dotnet/dataMigration/dataMigration/bin/
 dotnet/dataMigration/dataMigration/obj/
+dotnet/dataMigration/packages/EntityFramework.6.2.0/.signature.p7s
+dotnet/dataMigration/packages/

@@ -13,11 +13,11 @@ namespace dataMigration
         private int counterPruebas = 1;
         private int counterDentistas = 1;
 
-        #region "FichasTrabajo"
-        public Tuple<List<Detalle>, List<FichaTrabajoTemp>> TransformFichas(List<FichaTrabajoAccess> fichas)
+        #region "Trabajos"
+        public Tuple<List<Detalle>, List<TrabajoTemp>> TransformFichas(List<FichaTrabajoAccess> fichas)
         {
             List<Detalle> detallesFichas = new List<Detalle>();
-            List<FichaTrabajoTemp> fichasTrabajo = new List<FichaTrabajoTemp>();
+            List<TrabajoTemp> fichasTrabajo = new List<TrabajoTemp>();
 
             foreach (FichaTrabajoAccess ficha in fichas)
             {
@@ -25,21 +25,20 @@ namespace dataMigration
                 ProcessIndicaciones(detallesFichas, ficha);
                 fichasTrabajo.Add(MapFichaTrabajoAccess(ficha));
             }
-            return new Tuple<List<Detalle>, List<FichaTrabajoTemp>>(detallesFichas, fichasTrabajo);
+            return new Tuple<List<Detalle>, List<TrabajoTemp>>(detallesFichas, fichasTrabajo);
         }
 
-        private FichaTrabajoTemp MapFichaTrabajoAccess(FichaTrabajoAccess ficha)
+        private TrabajoTemp MapFichaTrabajoAccess(FichaTrabajoAccess ficha)
         {
             // Probably using automapper would be a better idea. But this
             // implementation is good enough for this tiny case.
-            FichaTrabajoTemp returnedValue = new FichaTrabajoTemp
+            TrabajoTemp returnedValue = new TrabajoTemp
             {
                 IdFicha = ficha.Id,
                 Dr = ficha.Dr,
                 Paciente = ficha.Paciente,
                 Color = ficha.Color,
                 FechaTerminacion = ficha.FechaTerminacion,
-                PrecioFinal = ficha.PrecioFinal,
                 FechaEntrada = ficha.FechaEntrada,
                 FechaPrevista = ficha.FechaPrevista,
                 Nombre = ficha.Nombre,
@@ -48,6 +47,23 @@ namespace dataMigration
                 PrecioFija = ficha.PrecioFija,
                 TipoTrabajo = ficha.TipoTrabajo
             };
+            if (ficha.PrecioFinal == null)
+            {
+                returnedValue.PrecioFinal = null;
+            }
+            else
+            {
+                decimal temp;
+                if (decimal.TryParse(ficha.PrecioFinal, out temp))
+                {
+                    returnedValue.PrecioFinal = temp;
+                }
+                else
+                {
+                    throw new ApplicationException();
+                }
+            }
+
             return returnedValue;
         }
 
@@ -125,21 +141,21 @@ namespace dataMigration
             }
         }
 
-        public List<FichaTrabajo> TransformFichas2(List<FichaTrabajoTemp> fichas)
+        public List<Trabajo> TransformFichas2(List<TrabajoTemp> fichas)
         {
-            List<FichaTrabajo> returnedValue = new List<FichaTrabajo>();
-            foreach (FichaTrabajoTemp ficha in fichas)
+            List<Trabajo> returnedValue = new List<Trabajo>();
+            foreach (TrabajoTemp ficha in fichas)
             {
                 returnedValue.Add(MapFichaTrabajo(ficha));
             }
             return returnedValue;
         }
 
-        private FichaTrabajo MapFichaTrabajo(FichaTrabajoTemp ficha)
+        private Trabajo MapFichaTrabajo(TrabajoTemp ficha)
         {
-            FichaTrabajo returnedValue = new FichaTrabajo
+            Trabajo returnedValue = new Trabajo
             {
-                IdFicha = ficha.IdFicha,
+                IdTrabajo = ficha.IdFicha,
                 IdDentista = ficha.IdDentista,
                 Paciente = ficha.Paciente,
                 Color = ficha.Color,
@@ -159,9 +175,9 @@ namespace dataMigration
         #endregion
 
         #region "Pruebas"
-        public List<PruebaDetalle> TransformPruebas(List<PruebaAccess> pruebas)
+        public List<Prueba> TransformPruebas(List<PruebaAccess> pruebas)
         {
-            List<PruebaDetalle> returnedValue = new List<PruebaDetalle>();
+            List<Prueba> returnedValue = new List<Prueba>();
 
             foreach (PruebaAccess prueba in pruebas)
             {
@@ -171,13 +187,13 @@ namespace dataMigration
             return returnedValue;
         }
 
-        private PruebaDetalle MapPruebaAccess(PruebaAccess prueba)
+        private Prueba MapPruebaAccess(PruebaAccess prueba)
         {
-            PruebaDetalle returnedValue = new PruebaDetalle
+            Prueba returnedValue = new Prueba
             {
                 IdPrueba = counterPruebas++,
-                IdFicha = prueba.Id,
-                Prueba = prueba.Prueba,
+                IdTrabajo = prueba.Id,
+                Descripcion = prueba.Prueba,
                 FechaSalida = prueba.FechaSalida,
                 FechaEntrada = prueba.FechaEntrada,
                 Comentario = prueba.Comentario
@@ -199,9 +215,9 @@ namespace dataMigration
             return returnedValue;
         }
 
-        public List<Dentista> AddMissingDentistas(List<FichaTrabajoTemp> fichasTrabajo, List<Dentista> dentistas)
+        public List<Dentista> AddMissingDentistas(List<TrabajoTemp> fichasTrabajo, List<Dentista> dentistas)
         {
-            foreach (FichaTrabajoTemp ficha in fichasTrabajo)
+            foreach (TrabajoTemp ficha in fichasTrabajo)
             {
                 var query = dentistas.Where(dentista => ficha.Dr == dentista.NombreDentista);
                 if (query.Count() >= 1)
@@ -236,8 +252,8 @@ namespace dataMigration
                 CorreoElectronico = dentista.CorreoElectronico,
                 CP = dentista.CP,
                 Poblacion = dentista.Poblacion,
-                Tlf = dentista.Tlf,
-                OtroTlf = dentista.OtroTlf
+                Telefono = dentista.Tlf,
+                Telefono2 = dentista.OtroTlf
             };
             return returnedValue;
         }
@@ -285,25 +301,32 @@ namespace dataMigration
             return returnedValue;
         }
 
-        public List<FichaTrabajoTemp> AdaptTipoTrabajoInFichaTrabajoTemp(List<FichaTrabajoTemp> fichas)
+        public List<TrabajoTemp> AdaptTipoTrabajoInFichaTrabajoTemp(List<TrabajoTemp> fichas)
         {
-            foreach(FichaTrabajoTemp ficha in fichas)
+            foreach (TrabajoTemp ficha in fichas)
             {
-                switch(ficha.TipoTrabajo)
+                switch (ficha.TipoTrabajo)
                 {
-                    case "1": ficha.IdTipoTrabajo = 1;
+                    case "1":
+                        ficha.IdTipoTrabajo = 1;
                         break;
-                    case "2": ficha.IdTipoTrabajo = 2;
+                    case "2":
+                        ficha.IdTipoTrabajo = 2;
                         break;
-                    case "3": ficha.IdTipoTrabajo = 3;
+                    case "3":
+                        ficha.IdTipoTrabajo = 3;
                         break;
-                    case "4": ficha.IdTipoTrabajo = 4;
+                    case "4":
+                        ficha.IdTipoTrabajo = 4;
                         break;
-                    case "5": ficha.IdTipoTrabajo = 5;
+                    case "5":
+                        ficha.IdTipoTrabajo = 5;
                         break;
-                    case "1049987891": ficha.IdTipoTrabajo = 6;
+                    case "1049987891":
+                        ficha.IdTipoTrabajo = 6;
                         break;
-                    case "1763265016": ficha.IdTipoTrabajo = 7;
+                    case "1763265016":
+                        ficha.IdTipoTrabajo = 7;
                         break;
                     default: throw new ArgumentException("Unknown value: " + ficha.TipoTrabajo);
                 }
