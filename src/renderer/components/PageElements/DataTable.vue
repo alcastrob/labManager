@@ -51,12 +51,18 @@
 </template>
 
 <script>
+import getWorks from '../../../main/dal.js'
+
 export default {
   name: 'dataTable',
   data () {
     return {}
   },
-  methods: {}
+  methods: {
+    fillTable: function () {
+      getWorks()
+    }
+  }
 }
 </script>
 
