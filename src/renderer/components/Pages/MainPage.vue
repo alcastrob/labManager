@@ -5,8 +5,9 @@
       <div id="content-wrapper">
         <div class="container-fluid">
           <dashboard v-if="currentPage === 'dashboard'" />
-          <about v-if="currentPage === 'about'"/>
           <workDetail v-if="currentPage === 'workDetail'" />
+          <dentistDetail v-if="currentPage === 'dentistDetail'" />
+          <about v-if="currentPage === 'about'"/>
         </div>
       </div>
     </div>
@@ -18,6 +19,7 @@ import dashboard from './dashboard'
 import about from './About'
 import topbar from '../PageElements/TopBar'
 import workDetail from './WorkDetail'
+import dentistDetail from './DentistDetail'
 
 var {ipcRenderer} = require('electron')
 
@@ -27,7 +29,8 @@ export default {
     dashboard,
     about,
     topbar,
-    workDetail
+    workDetail,
+    dentistDetail
   },
   data () {
     return {
@@ -36,7 +39,6 @@ export default {
   },
   methods: {
     navigateTo: function (pageName) {
-      console.log('the other side: ' + pageName)
       this.currentPage = pageName
     }
   },
@@ -51,11 +53,9 @@ export default {
     ipcRenderer.on('navigation:works', () => {
       this.navigateTo('workDetail')
     })
-    ipcRenderer.on('navigation:dentists', () => {
-      this.navigateTo('dentists')
-    })
-    ipcRenderer.on('navigation:workDetail', () => {
-      this.navigateTo('workDetail')
+    ipcRenderer.on('navigation:dentistDetail', () => {
+      console.log('aaaa')
+      this.navigateTo('dentistDetail')
     })
   },
   created () {

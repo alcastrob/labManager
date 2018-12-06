@@ -1,16 +1,10 @@
 <template>
     <div>
-        <h1>Trabajo</h1>
+        <h1>Trabajo nº 3689  {{id}}</h1>
         <div class="container">
             <div class="row">
-                <!-- Aqui hago mis cosas -->
                 <div class="d-flex justify-content-between row-hl">
-                    <div class="p-4 item-hl" style="width: 800px">
-                        <label for="nTrabajo">
-                        Nº trabajo
-                        </label>
-                        <input type="text" class="form-control" id="name" placeholder="Nº trabajo">
-                        <br>
+                    <div class="p-4 item-hl" style="width: 800px">          
                         <label for="fEntrada">
                         Fecha entrada
                         </label>

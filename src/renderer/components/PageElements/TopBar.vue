@@ -16,7 +16,7 @@
         </a>
       </li>
       <li class="nav-item dropdown no-arrow">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" v-on:click="navigateTo('dentists')">
+        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" v-on:click="navigateTo('dentistDetail')">
           <i class="fas fa-fw fa-id-badge"></i>
           Dentistas
         </a>
