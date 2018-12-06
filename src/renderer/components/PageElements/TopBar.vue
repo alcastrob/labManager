@@ -10,13 +10,13 @@
         </a>
       </li>
       <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" v-on:click="navigateTo('works')">
-          <i class="fas fa-fw fa-teeth"></i>
+        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" v-on:click="navigateTo('workDetail')">
+          <i class="fas fa-fw fa-teeth-open"></i>
           Trabajos
         </a>
       </li>
       <li class="nav-item dropdown no-arrow">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" v-on:click="navigateTo('about')">
+        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" v-on:click="navigateTo('dentists')">
           <i class="fas fa-fw fa-id-badge"></i>
           Dentistas
         </a>
@@ -46,9 +46,7 @@ export default {
   },
   methods: {
     navigateTo (pageName) {
-      console.log('navigation:' + pageName)
-      // ipcRenderer.send('navigation:' + pageName, 'Hello')
-      this.$root.$emit('navigation:about', 'bye')
+      this.$parent.navigateTo(pageName)
     }
   }
 }

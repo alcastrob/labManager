@@ -3,26 +3,36 @@
         <h1>Trabajo</h1>
         <div class="container">
             <div class="row">
-                <div class="col-sm-8">
-                Nº trabajo
+                <!-- Aqui hago mis cosas -->
+                <div class="d-flex justify-content-between row-hl">
+                    <div class="p-4 item-hl" style="width: 800px">
+                        <label for="nTrabajo">
+                        Nº trabajo
+                        </label>
+                        <input type="text" class="form-control" id="name" placeholder="Nº trabajo">
+                        <br>
+                        <label for="fEntrada">
+                        Fecha entrada
+                        </label>
+                        <input type="text" class="form-control" id="fEntrada" placeholder="06/12/2018">
+                        <br>
+                        <label for="fSalida">
+                        Fecha salida
+                        </label>
+                        <input type="text" class="form-control" id="fSalida" placeholder="08/12/2018">
+                    </div>
+                    <div class="p-4 item-hl">
+                        <i class="fas fa-tags fa-2x" aria-hidden="true"></i>
+                        <h4>Etiquetas</h4>
+                        <button class="btn btn-info btn-sm mt-1">Cerámica</button>
+                        <button class="btn btn-info btn-sm mt-1">Compostura</button>
+                        <button class="btn btn-info btn-sm mt-1">Esqueléticos</button>
+                        <button class="btn btn-info btn-sm mt-1">Ortodóncia</button>
+                        <button class="btn btn-info btn-sm mt-1">Resina</button>
+                        <button class="btn btn-info btn-sm mt-1">Garantía</button>
+                    </div>
                 </div>
-                <div class="col-sm-4">
-                    <i class="fas fa-tags fa-2x" aria-hidden="true"></i>
-                    <h4>Etiquetas</h4>
-                    <button class="btn btn-info btn-sm mt-1">Cerámica</button>
-                    <button class="btn btn-info btn-sm mt-1">Compostura</button>
-                    <button class="btn btn-info btn-sm mt-1">Esqueléticos</button>
-                    <button class="btn btn-info btn-sm mt-1">Ortodóncia</button>
-                    <button class="btn btn-info btn-sm mt-1">Resina</button>
-                    <button class="btn btn-info btn-sm mt-1">Garantía</button>
-                </div>
-            </div>
-            <div class="row">
-                Fecha entrada
-            </div>
-            <div class="row">
-                Fecha terminación
-            </div>
+            </div>            
             <div class="row">
                 <h4>Clínica o Dr/a.</h4>
             </div>

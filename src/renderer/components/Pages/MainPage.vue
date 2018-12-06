@@ -34,23 +34,37 @@ export default {
       currentPage: 'dashboard'
     }
   },
-  methods: { },
+  methods: {
+    navigateTo: function (pageName) {
+      console.log('the other side: ' + pageName)
+      this.currentPage = pageName
+    }
+  },
   mounted () {
     ipcRenderer.on('navigation:about', () => {
-      this.currentPage = 'about'
+      this.navigateTo('about')
     })
     ipcRenderer.on('navigation:dashboard', () => {
-      this.currentPage = 'dashboard'
+      debugger
+      this.navigateTo('dashboard')
     })
     ipcRenderer.on('navigation:works', () => {
-      this.currentPage = 'works'
+      this.navigateTo('workDetail')
     })
     ipcRenderer.on('navigation:dentists', () => {
-      this.currentPage = 'dentists'
+      this.navigateTo('dentists')
     })
     ipcRenderer.on('navigation:workDetail', () => {
+      this.navigateTo('workDetail')
+    })
+  },
+  created () {
+    this.$on('send', (text) => {
+      console.log('bbb')
+    })
+    ipcRenderer.on('navigation:dashboard', () => {
       console.log('aaa')
-      this.currentPage = 'workDetail'
+      this.currentPage = 'dashboard'
     })
   }
 }
