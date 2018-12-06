@@ -3,7 +3,19 @@
         <h1>Trabajo</h1>
         <div class="container">
             <div class="row">
+                <div class="col-sm-8">
                 Nº trabajo
+                </div>
+                <div class="col-sm-4">
+                    <i class="fas fa-tags fa-2x" aria-hidden="true"></i>
+                    <h4>Etiquetas</h4>
+                    <button class="btn btn-info btn-sm mt-1">Cerámica</button>
+                    <button class="btn btn-info btn-sm mt-1">Compostura</button>
+                    <button class="btn btn-info btn-sm mt-1">Esqueléticos</button>
+                    <button class="btn btn-info btn-sm mt-1">Ortodóncia</button>
+                    <button class="btn btn-info btn-sm mt-1">Resina</button>
+                    <button class="btn btn-info btn-sm mt-1">Garantía</button>
+                </div>
             </div>
             <div class="row">
                 Fecha entrada
