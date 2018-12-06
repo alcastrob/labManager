@@ -1,15 +1,17 @@
-var sqlite3 = require('sqlite3').verbose()
+// var sqlite3 = require('sqlite3').verbose()
 
 export function getWorks () {
-  var db = new sqlite3.Database(':memory:')
+  console.log('here')
+  // var db = new sqlite3.Database(':memory:')
+  // app.getPath()
 
-  db.serialize(function () {
-    db.run('CREATE TABLE lorem (info TEXT)')
-    var stmt = db.prepare('INSERT INTO lorem VALUES (?)')
-    for (var i = 0; i < 10; i++) {
-      stmt.run('Ipsum ' + i)
-    }
-    stmt.finalize()  
-  })
-  db.close()
+  // db.serialize(function () {
+  //   db.run('CREATE TABLE lorem (info TEXT)')
+  //   var stmt = db.prepare('INSERT INTO lorem VALUES (?)')
+  //   for (var i = 0; i < 10; i++) {
+  //     stmt.run('Ipsum ' + i)
+  //   }
+  //   stmt.finalize()
+  // })
+  // db.close()
 }
