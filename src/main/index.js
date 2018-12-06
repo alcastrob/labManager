@@ -144,6 +144,12 @@ const menuTemplate = [{
       click () {
         mainWindow.webContents.send('navigation:dentists')
       }
+    },
+    {
+      label: 'Ficha Trabajo',
+      click () {
+        mainWindow.webContents.send('navigation:workDetail')
+      }
     }
   ]
 },
