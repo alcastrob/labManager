@@ -52,7 +52,9 @@
 </template>
 
 <script>
-import { getWorks } from '../../../main/dal.js'
+import { createNewDatabase } from '../../../main/dal.js'
+
+// var dal = require('../../../main/dal.js')
 
 export default {
   name: 'dataTable',
@@ -61,7 +63,9 @@ export default {
   },
   methods: {
     fillTable: function () {
-      getWorks()
+    //   console.log(dal)
+    //   dal.search()
+      createNewDatabase('./kk.sqlite')
     }
   }
 }

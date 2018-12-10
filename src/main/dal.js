@@ -1,17 +1,30 @@
 var sqlite3 = require('sqlite3').verbose()
+var db
+// module.exports = {
+//   search: function () {
+//     console.log('ppp')
+//   }
+// }
 
-export function getWorks () {
-  console.log('here')
-  var db = new sqlite3.Database('./kk.sqlite')
-  // app.getPath()
+function createTable () {
+  db.run('CREATE TABLE TipoTrabajos (' +
+  '    IdTipoTrabajo INTEGER PRIMARY KEY AUTOINCREMENT,' +
+  '    Descripcion   TEXTO   NOT NULL);', insertValueObjects)
+}
 
-  db.serialize(function () {
-    db.run('CREATE TABLE lorem (info TEXT)')
-    var stmt = db.prepare('INSERT INTO lorem VALUES (?)')
-    for (var i = 0; i < 10; i++) {
-      stmt.run('Ipsum ' + i)
-    }
-    stmt.finalize()
-  })
+function insertValueObjects () {
+  var batch = db.prepare('INSERT INTO TipoTrabajos (IdTipoTrabajo, Descripcion) VALUES (?, ?)')
+  batch.run(1, 'Fija')
+  batch.run(2, 'Resina')
+  batch.run(3, 'Ortodoncia')
+  batch.run(4, 'Esquelético')
+  batch.run(5, 'Zirconio')
+  batch.run(6, 'Compostura')
+  batch.run(7, 'Implante')
+  batch.finalize()
   db.close()
+}
+
+export function createNewDatabase (fileName) {
+  db = new sqlite3.Database(fileName, createTable)
 }
