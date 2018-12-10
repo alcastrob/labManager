@@ -1,10 +1,5 @@
 var sqlite3 = require('sqlite3').verbose()
 var db
-// module.exports = {
-//   search: function () {
-//     console.log('ppp')
-//   }
-// }
 
 function createTable () {
   db.run('CREATE TABLE TipoTrabajos (' +
@@ -28,3 +23,56 @@ function insertValueObjects () {
 export function createNewDatabase (fileName) {
   db = new sqlite3.Database(fileName, createTable)
 }
+
+// export function getWorkDetails (workId, fileName) {
+//   db = new sqlite3.Database(fileName)
+//   var returnedValue = ''
+//   var query = 'SELECT IdTrabajo, IdDentista, IdTipoTrabajo, Paciente, ' +
+//   'Color, FechaTerminacion, FechaEntrada, FechaPrevista, PrecioFinal, ' +
+//   'PrecioMetal, PrecioTotal, PrecioFija, Nombre FROM Trabajos WHERE IdTrabajo = ?'
+//   // debugger
+//   db.get(query, [ workId ], (err, row) => {
+//     if (err) {
+//       throw err
+//     }
+//     returnedValue = Object.assign({}, row)
+//   })
+//   db.close()
+//   return returnedValue
+// }
+
+export function getWorkDetails (workId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdTrabajo, IdDentista, IdTipoTrabajo, Paciente, ' +
+  'Color, FechaTerminacion, FechaEntrada, FechaPrevista, PrecioFinal, ' +
+  'PrecioMetal, PrecioTotal, PrecioFija, Nombre FROM Trabajos WHERE IdTrabajo = ?'
+  getAsync(db, query, [workId]).then((row) => {
+    db.close()
+    // console.log(row)
+    return row
+  })
+  return {idTrabajo: workId}
+}
+
+export function getDentistDetails (dentistId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
+  'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
+  'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE IdDentista = ?'
+  getAsync(db, query, [dentistId]).then((row) => {
+    db.close()
+    return row
+  })
+}
+
+function getAsync (db, sql, params) {
+  return new Promise(function (resolve, reject) {
+    db.get(sql, params, function (err, row) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(row)
+      }
+    })
+  })
+};

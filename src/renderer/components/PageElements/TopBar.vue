@@ -11,7 +11,7 @@
       </li>
       <li class="nav-item dropdown no-arrow mx-1">
         <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" v-on:click="navigateTo('workDetail')">
-          <i class="fas fa-fw fa-teeth-open"></i>
+          <i class="fas fa-fw fa-teeth"></i>
           Trabajos
         </a>
       </li>

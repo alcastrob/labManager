@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Trabajo nº 3689 {{id}}</h1>
+    <h1>Trabajo nº {{userData.IdTrabajo}}</h1>
     <div class="container">
       <div class="row">
         <div class="d-flex justify-content-between row-hl">
@@ -13,13 +13,8 @@
           </div>
           <div class="p-4 item-hl">
             <i class="fas fa-tags fa-2x" aria-hidden="true"></i>
-            <h4>Etiquetas</h4>
-            <button class="btn btn-info btn-sm mt-1">Cerámica</button>
-            <button class="btn btn-info btn-sm mt-1">Compostura</button>
-            <button class="btn btn-info btn-sm mt-1">Esqueléticos</button>
-            <button class="btn btn-info btn-sm mt-1">Ortodóncia</button>
-            <button class="btn btn-info btn-sm mt-1">Resina</button>
-            <button class="btn btn-info btn-sm mt-1">Garantía</button>
+            <h4>Tipo trabajo</h4>
+            <button class="btn btn-info btn-sm mt-1"><i class="fas fa-tags"Cerámica</button>
           </div>
         </div>
       </div>
@@ -53,6 +48,7 @@
 <script>
 import workDetailTable from '../PageElements/WorkDetailTable'
 import testTable from '../PageElements/TestTable'
+import { getWorkDetails } from '../../../main/dal.js'
 
 export default {
   name: 'workDetail',
@@ -61,9 +57,20 @@ export default {
     testTable
   },
   data () {
-    return {}
+    return {
+      userData: ''
+    }
   },
-  methods: {}
+  methods: {
+    init: function () {
+      this.userData = getWorkDetails(1, 'labManager.sqlite')
+      // console.log(this.userData)
+    }
+  },
+  mounted () {
+    this.userData = getWorkDetails(1, 'labManager.sqlite')
+    console.log(this.userData.idTrabajo)
+  }
 }
 </script>
 
