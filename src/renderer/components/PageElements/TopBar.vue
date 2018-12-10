@@ -38,7 +38,6 @@
 </template>
 
 <script>
-// import { ipcRenderer } from 'electron'
 export default {
   name: 'topBar',
   data () {

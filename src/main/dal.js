@@ -65,6 +65,24 @@ export function getDentistDetails (dentistId, fileName) {
   })
 }
 
+export function searchDentistsByName (dentistName, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = ''
+  getAsync(db, query, [dentistName]).then((row) => {
+    db.close()
+    return row
+  })
+}
+
+export function getWorkIndications (workId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = ''
+  getAsync(db, query, [workId]).then((row) => {
+    db.close()
+    return row
+  })
+}
+
 function getAsync (db, sql, params) {
   return new Promise(function (resolve, reject) {
     db.get(sql, params, function (err, row) {
