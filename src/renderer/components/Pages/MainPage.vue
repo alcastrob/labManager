@@ -1,13 +1,15 @@
 <template>
 <div id="page-top">
     <topbar />
-    <div id="wrapper">
-      <div id="content-wrapper">
-        <div class="container-fluid">
-          <dashboard v-if="currentPage === 'dashboard'" />
-          <workDetail v-if="currentPage === 'workDetail'" />
-          <dentistDetail v-if="currentPage === 'dentistDetail'" />
-          <about v-if="currentPage === 'about'"/>
+    <div class="mt-5">
+      <div id="wrapper">
+        <div id="content-wrapper">
+          <div class="container-fluid">
+            <dashboard v-if="currentPage === 'dashboard'" />
+            <workDetail v-if="currentPage === 'workDetail'" />
+            <dentistDetail v-if="currentPage === 'dentistDetail'" />
+            <about v-if="currentPage === 'about'"/>
+          </div>
         </div>
       </div>
     </div>

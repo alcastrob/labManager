@@ -1,3 +1,5 @@
+'use strict'
+
 var sqlite3 = require('sqlite3').verbose()
 var db
 
@@ -24,34 +26,15 @@ export function createNewDatabase (fileName) {
   db = new sqlite3.Database(fileName, createTable)
 }
 
-// export function getWorkDetails (workId, fileName) {
-//   db = new sqlite3.Database(fileName)
-//   var returnedValue = ''
-//   var query = 'SELECT IdTrabajo, IdDentista, IdTipoTrabajo, Paciente, ' +
-//   'Color, FechaTerminacion, FechaEntrada, FechaPrevista, PrecioFinal, ' +
-//   'PrecioMetal, PrecioTotal, PrecioFija, Nombre FROM Trabajos WHERE IdTrabajo = ?'
-//   // debugger
-//   db.get(query, [ workId ], (err, row) => {
-//     if (err) {
-//       throw err
-//     }
-//     returnedValue = Object.assign({}, row)
-//   })
-//   db.close()
-//   return returnedValue
-// }
-
 export function getWorkDetails (workId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdTrabajo, IdDentista, IdTipoTrabajo, Paciente, ' +
   'Color, FechaTerminacion, FechaEntrada, FechaPrevista, PrecioFinal, ' +
   'PrecioMetal, PrecioTotal, PrecioFija, Nombre FROM Trabajos WHERE IdTrabajo = ?'
-  getAsync(db, query, [workId]).then((row) => {
-    db.close()
-    // console.log(row)
+  return getAsync(db, query, [workId]).then((row) => {
+    // db.close()
     return row
   })
-  return {idTrabajo: workId}
 }
 
 export function getDentistDetails (dentistId, fileName) {
@@ -59,7 +42,7 @@ export function getDentistDetails (dentistId, fileName) {
   var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
   'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
   'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE IdDentista = ?'
-  getAsync(db, query, [dentistId]).then((row) => {
+  return getAsync(db, query, [dentistId]).then((row) => {
     db.close()
     return row
   })
@@ -68,7 +51,7 @@ export function getDentistDetails (dentistId, fileName) {
 export function searchDentistsByName (dentistName, fileName) {
   db = new sqlite3.Database(fileName)
   var query = ''
-  getAsync(db, query, [dentistName]).then((row) => {
+  return getAsync(db, query, [dentistName]).then((row) => {
     db.close()
     return row
   })
@@ -77,8 +60,19 @@ export function searchDentistsByName (dentistName, fileName) {
 export function getWorkIndications (workId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = ''
-  getAsync(db, query, [workId]).then((row) => {
+  return getAsync(db, query, [workId]).then((row) => {
     db.close()
+    return row
+  })
+}
+
+export function getWorkTypes (fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
+
+  return allAsync(db, query, []).then((row) => {
+    // db.close()
+    console.log(row)
     return row
   })
 }
@@ -93,4 +87,16 @@ function getAsync (db, sql, params) {
       }
     })
   })
-};
+}
+
+function allAsync (db, sql, params) {
+  return new Promise(function (resolve, reject) {
+    db.all(sql, params, function (err, row) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(row)
+      }
+    })
+  })
+}

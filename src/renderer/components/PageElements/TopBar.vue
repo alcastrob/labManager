@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+  <nav class="navbar navbar-expand navbar-dark bg-dark static-top fixed-top">
     <div class="navbar navbar-brand mr-1">labManager</div>
     <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
