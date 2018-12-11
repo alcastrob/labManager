@@ -6,7 +6,7 @@
         <div id="content-wrapper">
           <div class="container-fluid">
             <dashboard v-if="currentPage === 'dashboard'" />
-            <workDetail v-if="currentPage === 'workDetail'" />
+            <workDetail v-if="currentPage === 'workDetail'" :workId="currentId" />
             <dentistDetail v-if="currentPage === 'dentistDetail'" />
             <about v-if="currentPage === 'about'"/>
           </div>
@@ -36,12 +36,14 @@ export default {
   },
   data () {
     return {
-      currentPage: 'dashboard'
+      currentPage: 'dashboard',
+      currentId: null
     }
   },
   methods: {
-    navigateTo: function (pageName) {
+    navigateTo: function (pageName, id) {
       this.currentPage = pageName
+      this.currentId = id
     }
   },
   mounted () {
@@ -61,15 +63,7 @@ export default {
       this.navigateTo('dentistDetail')
     })
   },
-  created () {
-    this.$on('send', (text) => {
-      console.log('bbb')
-    })
-    ipcRenderer.on('navigation:dashboard', () => {
-      console.log('aaa')
-      this.currentPage = 'dashboard'
-    })
-  }
+  created () { }
 }
 </script>
 

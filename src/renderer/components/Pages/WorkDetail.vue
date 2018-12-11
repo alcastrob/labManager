@@ -94,6 +94,9 @@ import { getWorkDetails, getWorkTypes } from '../../../main/dal.js'
 
 export default {
   name: 'workDetail',
+  props: {
+    workId: Number
+  },
   components: {
     workDetailTable,
     testTable
@@ -101,17 +104,16 @@ export default {
   data () {
     return {
       workData: '',
-      workTypes: ''
+      workTypes: '',
+      id: this.workId
     }
   },
-  methods: {
-    init: function () { }
-  },
+  methods: { },
   mounted () {
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types
     })
-    getWorkDetails(1, 'labManager.sqlite').then((work) => {
+    getWorkDetails(this.id, 'labManager.sqlite').then((work) => {
       this.workData = work
     })
   }

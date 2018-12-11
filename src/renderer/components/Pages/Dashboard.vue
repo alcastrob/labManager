@@ -7,7 +7,7 @@
       <iconCard/>
     </div>
     <areaChart/>
-    <dataTable/>
+    <workList/>
   </div>
 </template>
 
@@ -16,11 +16,11 @@ import topBar from '../PageElements/TopBar'
 import lateralBar from '../PageElements/LateralBar'
 import iconCard from '../PageElements/IconCard'
 import areaChart from '../PageElements/AreaChart'
-import dataTable from '../PageElements/DataTable'
+import workList from '../PageElements/workList'
 
 export default {
   name: 'dashboard',
-  components: { topBar, lateralBar, iconCard, areaChart, dataTable },
+  components: { topBar, lateralBar, iconCard, areaChart, workList },
   data () {
     return {}
   },

@@ -48,6 +48,20 @@ export function getDentistDetails (dentistId, fileName) {
   })
 }
 
+export function getWorksList (fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
+  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
+  't.PrecioFinal AS Precio ' +
+  'FROM Trabajos t ' +
+  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo'
+  return allAsync(db, query, []).then((row) => {
+    db.close()
+    return row
+  })
+}
+
 export function searchDentistsByName (dentistName, fileName) {
   db = new sqlite3.Database(fileName)
   var query = ''
