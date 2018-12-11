@@ -55,10 +55,11 @@ export function getWorkDetails (workId, fileName) {
 
 export function getWorkIndications (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = ''
-  return getAsync(db, query, [workId]).then((row) => {
-    db.close()
-    return row
+  var query = 'SELECT IdTrabajoDetalle, IdTrabajo, Descripcion, Precio ' +
+  'FROM TrabajosDetalle ' +
+  'WHERE IdTrabajo = ?'
+  return allAsync(db, query, [workId]).then((rows) => {
+    return rows
   })
 }
 
