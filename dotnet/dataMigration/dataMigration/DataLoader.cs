@@ -187,7 +187,72 @@ namespace dataMigration
             return dentistas;
         }
 
-        protected static int? CleanUpInt(OleDbDataReader reader, string columnName)
+        public List<FacturaAccess> GetFacturas()
+        {
+            List<FacturaAccess> facturas = new List<FacturaAccess>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM [FACTURAS]";
+                OleDbCommand command = new OleDbCommand(query, conn);
+                reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["Nº de Factura"].GetType().Name != "DBNull")
+                        {
+                            FacturaAccess f = new FacturaAccess();
+                            f.Colegiado = CleanUpInt(reader, "Colegiado nº");
+                            f.Nombre = CleanUpString(reader, "Nombre");
+                            f.Direccion = CleanUpString(reader, "Dirección");
+                            f.CP = CleanUpString(reader, "CP");
+                            f.Poblacion = CleanUpString(reader, "Población");
+                            f.IdFactura = Convert.ToInt32(reader["Nº de Factura"]);
+                            f.Fecha = CleanUpDateTime(reader, "Fecha");
+                            f.Concepto0 = CleanUpString(reader, "Concepto");
+                            f.Importe0 = CleanUpDecimal(reader, "Importe");
+                            f.Total = CleanUpDecimal(reader, "Total");
+                            f.Descuento = CleanUpDecimal(reader, "Descuento");
+                            f.CIFNIF = CleanUpString(reader, "CIF/NIF");
+                            f.Concepto1 = CleanUpString(reader, "Concepto1");
+                            f.Importe1 = CleanUpDecimal(reader, "Total1");
+                            f.Concepto2 = CleanUpString(reader, "Concepto2");
+                            f.Importe2 = CleanUpDecimal(reader, "Total2");
+                            f.Concepto3 = CleanUpString(reader, "Concepto3");
+                            f.Importe3 = CleanUpDecimal(reader, "Total3");
+                            f.Concepto4 = CleanUpString(reader, "Concepto4");
+                            f.Importe4 = CleanUpDecimal(reader, "Total4");
+                            f.Concepto5 = CleanUpString(reader, "Concepto5");
+                            f.Importe5 = CleanUpDecimal(reader, "Total5");
+                            f.Concepto6 = CleanUpString(reader, "Concepto6");
+                            f.Importe6 = CleanUpDecimal(reader, "Total6");
+                            f.Concepto7 = CleanUpString(reader, "Concepto7");
+                            f.Importe7 = CleanUpDecimal(reader, "Total7");
+                            f.Concepto8 = CleanUpString(reader, "Concepto8");
+                            f.Importe8 = CleanUpDecimal(reader, "Total8");
+                            f.Banco = Convert.ToBoolean(reader["Banco"]);
+                            f.Efectivo = Convert.ToBoolean(reader["Efectivo"]);
+
+                            facturas.Add(f);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return facturas;
+        }
+
+
+                            protected static int? CleanUpInt(OleDbDataReader reader, string columnName)
         {
             if (reader[columnName].GetType().Name == "DBNull")
                 return null;

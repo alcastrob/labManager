@@ -18,25 +18,35 @@ namespace dataMigration
             List<FichaTrabajoAccess> trabajosBruto = loader.GetFichaTrabajoData();
             List<PruebaAccess> pruebasBruto = loader.GetPruebaData();
             List<DentistaAccess> dentistasBruto = loader.GetDentistaData();
+            List<FacturaAccess> facturasBruto = loader.GetFacturas();
 
             DataTransform transformer = new DataTransform();
-            Tuple<List<Detalle>, List<TrabajoTemp>> tuple = transformer.TransformFichas(trabajosBruto);
+            Tuple<List<TrabajoDetalle>, List<TrabajoTemp>> tuple = transformer.TransformFichas(trabajosBruto);
 
             List<TrabajoTemp> listFichasTemp = tuple.Item2;
-            List<Detalle> listDetalles = tuple.Item1;
+            List<TrabajoDetalle> listTrabajoDetalles = tuple.Item1;
             List<Prueba> listPruebas = transformer.TransformPruebas(pruebasBruto);
             List<Dentista> listDentistas = transformer.TransformDentista(dentistasBruto);
             transformer.AddMissingDentistas(listFichasTemp, listDentistas);
             List<TipoTrabajo> listTiposTrabajo = transformer.GetTipoTrabajoDataObject();
             listFichasTemp = transformer.AdaptTipoTrabajoInFichaTrabajoTemp(listFichasTemp);
 
-            List<Trabajo> listFichas = transformer.TransformFichas2(listFichasTemp);
+            Tuple<List<FacturaDetalle>, List<FacturaTemp>> tupleFact = transformer.TransformFacturas(facturasBruto, listDentistas);
+
+            List<FacturaDetalle> listFacturasDetalle = tupleFact.Item1;
+            List<FacturaTemp> listFactura = tupleFact.Item2;
+
+
+            List<Trabajo> listTrabajos = transformer.TransformFichas2(listFichasTemp);
 
             //------
             Console.WriteLine("Writing the data to the SQLite file");
-            //recorder.WriteTrabajos(listFichas);
             //recorder.WriteDentistas(listDentistas);
-            recorder.WritePruebas(listPruebas);
+            //recorder.WriteTrabajos(listTrabajos);
+            //recorder.WritePruebas(listPruebas);
+            //recorder.WriteTrabajosDetalle(listTrabajoDetalles);
+            //recorder.WriteFacturas(listFactura);
+            recorder.WriteFacturasDetalles(listFacturasDetalle);
 
             //var result = from c in listFichasTemp
             //             where c.TipoTrabajo != "5" &&

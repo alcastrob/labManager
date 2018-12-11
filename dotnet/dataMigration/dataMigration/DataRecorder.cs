@@ -157,6 +157,114 @@ namespace dataMigration
                 connection.Close();
             }
         }
+
+        public void WriteTrabajosDetalle(List<TrabajoDetalle> detalles)
+        {
+            Console.WriteLine("Inserting on TrabajosDetalle table");
+            try
+            {
+                connection.Open();
+                foreach (TrabajoDetalle detalle in detalles)
+                {
+                    var query = new System.Text.StringBuilder();
+                    query.AppendLine(@"INSERT INTO TrabajosDetalle (");
+                    query.AppendLine(@"IdTrabajoDetalle, IdTrabajo, Descripcion,");
+                    query.AppendLine(@"Precio)");
+                    query.AppendLine(@"VALUES (");
+                    query.AppendLine(@"@IdTrabajoDetalle, @IdTrabajo, @Descripcion, @Precio");
+                    query.AppendLine(@");");
+
+                    SQLiteCommand command = new SQLiteCommand(query.ToString(), connection);
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.Add(new SQLiteParameter("@IdTrabajoDetalle", detalle.IdTrabajoDetalle));
+                    command.Parameters.Add(new SQLiteParameter("@IdTrabajo", detalle.IdTrabajo));
+                    command.Parameters.Add(new SQLiteParameter("@Descripcion", detalle.Descripcion));
+                    command.Parameters.Add(new SQLiteParameter("@Precio", detalle.Precio));
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public void WriteFacturas(List<FacturaTemp> facturas)
+        {
+            Console.WriteLine("Inserting on Facturas table");
+            try
+            {
+                connection.Open();
+                foreach (FacturaTemp factura in facturas)
+                {
+                    var query = new System.Text.StringBuilder();
+                    query.AppendLine(@"INSERT INTO Facturas (");
+                    query.AppendLine(@"IdFactura, IdColegiado, Fecha, Total, ");
+                    query.AppendLine(@"Descuento, Banco, Efectivo)");
+                    query.AppendLine(@"VALUES (");
+                    query.AppendLine(@"@IdFactura, @IdColegiado, @Fecha, @Total,");
+                    query.AppendLine(@"@Descuento, @Banco, @Efectivo");
+                    query.AppendLine(@");");
+
+                    SQLiteCommand command = new SQLiteCommand(query.ToString(), connection);
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.Add(new SQLiteParameter("@IdFactura", factura.IdFactura));
+                    command.Parameters.Add(new SQLiteParameter("@IdColegiado", factura.IdColegiado));
+                    command.Parameters.Add(new SQLiteParameter("@Fecha", factura.Fecha));
+                    command.Parameters.Add(new SQLiteParameter("@Total", factura.Total));
+                    command.Parameters.Add(new SQLiteParameter("@Descuento", factura.Descuento));
+                    command.Parameters.Add(new SQLiteParameter("@Banco", factura.Banco));
+                    command.Parameters.Add(new SQLiteParameter("@Efectivo", factura.Efectivo));                    
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public void WriteFacturasDetalles(List<FacturaDetalle> facturasDetalle)
+        {
+            Console.WriteLine("Inserting on FacturasDetalle table");
+            try
+            {
+                connection.Open();
+                foreach (FacturaDetalle factura in facturasDetalle)
+                {
+                    var query = new System.Text.StringBuilder();
+                    query.AppendLine(@"INSERT INTO FacturasDetalle (");
+                    query.AppendLine(@"IdFacturaDetalle, IdFactura, Descripcion, Precio)");
+                    query.AppendLine(@"VALUES (");
+                    query.AppendLine(@"@IdFacturaDetalle, @IdFactura, @Descripcion, @Precio");
+                    query.AppendLine(@");");
+
+                    SQLiteCommand command = new SQLiteCommand(query.ToString(), connection);
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.Add(new SQLiteParameter("@IdFacturaDetalle", factura.IdFacturaDetalle));
+                    command.Parameters.Add(new SQLiteParameter("@IdFactura", factura.IdFactura));
+                    command.Parameters.Add(new SQLiteParameter("@Descripcion", factura.Descripcion));
+                    command.Parameters.Add(new SQLiteParameter("@Precio", factura.Precio));
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
     }
 }
 
