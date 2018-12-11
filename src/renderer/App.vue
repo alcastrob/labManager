@@ -51,8 +51,7 @@
   table.table-bordered tr:hover td {
     background-color:#DDD8D2;
   }
-  table.table-bordered,
-  table.table-bordered tr,
+  table.table-bordered th,
   table.table-bordered td {
     border: 1px solid #454849;
   }

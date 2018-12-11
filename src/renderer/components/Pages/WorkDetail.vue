@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-8">
-          <h1>Trabajo nº {{workData.IdTrabajo}}</h1>
+          <h1>Trabajo nº {{work.IdTrabajo}}</h1>
         </div>
         <div class="col-md-4">
           <div class="float-right">
@@ -39,32 +39,32 @@
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="nombre">Nombre</label>
-          <input type="text" class="form-control" v-model="workData.Nombre">
+          <input type="text" class="form-control" v-model="work.Nombre">
         </div> <!-- col-md-6 -->
         <div class="col-md-5">
           <label for="paciente">Paciente</label>
-          <input type="text" class="form-control" v-model="workData.Paciente">
+          <input type="text" class="form-control" v-model="work.Paciente">
         </div> <!-- col-md-6 -->
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
-          <select class="form-control" id="tipoTrabajo" v-model="workData.IdTipoTrabajo">
+          <select class="form-control" id="tipoTrabajo" v-model="work.IdTipoTrabajo">
             <option disabled value="">Seleccione un opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
         </div> <!-- col-md-6 -->
         <div class="col-md-2">
             <label for="precioMetal">Precio metal</label>
-            <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="workData.PrecioMetal">
+            <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="work.PrecioMetal">
         </div> <!-- col-md-2 -->
         <div class="col-md-2">
             <label for="color">Color</label>
-            <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="workData.Color">
+            <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="work.Color">
         </div> <!-- col-md-2 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
           <h4>Indicaciones</h4>
-          <workDetailTable></workDetailTable>
+          <workDetailTable :workId="workId"></workDetailTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
@@ -74,13 +74,13 @@
         </div> <!-- col-md-8 -->
         <div class="col-md-4 mt-3">
           <label for="fEntrada">Fecha entrada</label>
-          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="workData.FechaEntrada">
+          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada">
           <br>
           <label for="fPrevista">Fecha prevista</label>
-          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="workData.FechaPrevista">
+          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
           <br>
           <label for="fSalida">Fecha salida</label>
-          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="workData.FechaTerminacion">
+          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
@@ -103,18 +103,17 @@ export default {
   },
   data () {
     return {
-      workData: '',
-      workTypes: '',
-      id: this.workId
+      work: '',
+      workTypes: ''
     }
   },
-  methods: { },
+  methods: {},
   mounted () {
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types
     })
-    getWorkDetails(this.id, 'labManager.sqlite').then((work) => {
-      this.workData = work
+    getWorkDetails(this.workId, 'labManager.sqlite').then((workDetails) => {
+      this.work = workDetails
     })
   }
 }

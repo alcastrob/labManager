@@ -26,27 +26,7 @@ export function createNewDatabase (fileName) {
   db = new sqlite3.Database(fileName, createTable)
 }
 
-export function getWorkDetails (workId, fileName) {
-  db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdTrabajo, IdDentista, IdTipoTrabajo, Paciente, ' +
-  'Color, FechaTerminacion, FechaEntrada, FechaPrevista, PrecioFinal, ' +
-  'PrecioMetal, PrecioTotal, PrecioFija, Nombre FROM Trabajos WHERE IdTrabajo = ?'
-  return getAsync(db, query, [workId]).then((row) => {
-    // db.close()
-    return row
-  })
-}
-
-export function getDentistDetails (dentistId, fileName) {
-  db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
-  'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
-  'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE IdDentista = ?'
-  return getAsync(db, query, [dentistId]).then((row) => {
-    db.close()
-    return row
-  })
-}
+// Works ----------------------------------------------------------------------
 
 export function getWorksList (fileName) {
   db = new sqlite3.Database(fileName)
@@ -62,10 +42,12 @@ export function getWorksList (fileName) {
   })
 }
 
-export function searchDentistsByName (dentistName, fileName) {
+export function getWorkDetails (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = ''
-  return getAsync(db, query, [dentistName]).then((row) => {
+  var query = 'SELECT IdTrabajo, IdDentista, IdTipoTrabajo, Paciente, ' +
+  'Color, FechaTerminacion, FechaEntrada, FechaPrevista, PrecioFinal, ' +
+  'PrecioMetal, PrecioTotal, PrecioFija, Nombre FROM Trabajos WHERE IdTrabajo = ?'
+  return getAsync(db, query, [workId]).then((row) => {
     db.close()
     return row
   })
@@ -80,12 +62,36 @@ export function getWorkIndications (workId, fileName) {
   })
 }
 
+// Work Types -----------------------------------------------------------------
+
 export function getWorkTypes (fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
 
   return allAsync(db, query, []).then((row) => {
     // db.close()
+    return row
+  })
+}
+
+// Dentists -------------------------------------------------------------------
+
+export function getDentistDetails (dentistId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
+  'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
+  'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE IdDentista = ?'
+  return getAsync(db, query, [dentistId]).then((row) => {
+    db.close()
+    return row
+  })
+}
+
+export function searchDentistsByName (dentistName, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = ''
+  return getAsync(db, query, [dentistName]).then((row) => {
+    db.close()
     return row
   })
 }
