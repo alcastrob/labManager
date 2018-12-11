@@ -63,6 +63,17 @@ export function getWorkIndications (workId, fileName) {
   })
 }
 
+export function getWorkTests (workId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdPrueba, Descripcion, ' +
+  'FechaSalida, FechaEntrada, Comentario ' +
+  'FROM Pruebas ' +
+  'WHERE IdTrabajo = ?'
+  return allAsync(db, query, [workId]).then((rows) => {
+    return rows
+  })
+}
+
 // Work Types -----------------------------------------------------------------
 
 export function getWorkTypes (fileName) {

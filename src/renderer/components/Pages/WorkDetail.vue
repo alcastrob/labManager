@@ -70,7 +70,7 @@
       <div class="row">
         <div class="col-md-8 mt-3">
           <h4>Pruebas</h4>
-          <test-table></test-table>
+          <test-table :workId="workId"></test-table>
         </div> <!-- col-md-8 -->
         <div class="col-md-4 mt-3">
           <label for="fEntrada">Fecha entrada</label>

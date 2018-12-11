@@ -7,35 +7,35 @@
       <th class="">Fecha entrada</th>
       <th class="">Comentario</th>
     </tr>
-    <tr>
-      <td class="pt-3-half" contenteditable="true">Prueba 1</td>
-      <td class="pt-3-half text-right" contenteditable="true">01/12/2018</td>
-      <td class="pt-3-half text-right" contenteditable="true">04/12/2018</td>
-      <td class="pt-3-half" contenteditable="true">Sin comentarios</td>
+    <tr v-for="test in tests" v-bind:key="test.IdPrueba">
+      <td class="pt-3-half" contenteditable="true">{{test.Descripcion}}</td>
+      <td class="pt-3-half text-right" contenteditable="true">{{test.FechaSalida | formatDateDMY}}</td>
+      <td class="pt-3-half text-right" contenteditable="true">{{test.FechaEntrada | formatDateDMY}}</td>
+      <td class="pt-3-half" contenteditable="true">{{test.Comentario}}</td>
     </tr>
-    <tr>
-      <td class="pt-3-half" contenteditable="true">Prueba 2</td>
-      <td class="pt-3-half text-right" contenteditable="true">02/12/2018</td>
-      <td class="pt-3-half text-right" contenteditable="true">05/12/2018</td>
-      <td class="pt-3-half" contenteditable="true">Sin comentarios</td>
-    </tr>
-    <tr>
-      <td class="pt-3-half" contenteditable="true">Prueba 2</td>
-      <td class="pt-3-half text-right" contenteditable="true">03/12/2018</td>
-      <td class="pt-3-half text-right" contenteditable="true">06/12/2018</td>
-      <td class="pt-3-half" contenteditable="true">Sin comentarios</td>
-   </tr>
   </table>
 </div>
 </template>
 
 <script>
+import { getWorkTests } from '../../../main/dal.js'
+
 export default {
   name: 'testTable',
-  data () {
-    return {}
+  props: {
+    workId: Number
   },
-  methods: {}
+  data () {
+    return {
+      tests: ''
+    }
+  },
+  methods: {},
+  mounted () {
+    getWorkTests(this.workId, 'labManager.sqlite').then((workTests) => {
+      this.tests = workTests
+    })
+  }
 }
 </script>
 
