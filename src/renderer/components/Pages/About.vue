@@ -5,11 +5,18 @@
     <p>Los elementos externos que han sido licenciados para esta aplicación son:
     <ul>
         <li>
-        Icono de la aplicación diseñado por BanzaiTokyo.
-        <br>
-        https://www.iconspedia.com/icon/tooth-icon-29053.html
-        <br>
-        Licencia CC Attribution
+          Icono de la aplicación diseñado por BanzaiTokyo.
+          <br>
+          https://www.iconspedia.com/icon/tooth-icon-29053.html
+          <br>
+          Licencia CC Attribution
+        </li>
+        <li>
+          Plantilla HTML diseñada por Start Bootstrap
+          <br>
+          https://startbootstrap.com/template-overviews/sb-admin/
+          <br>
+          Licencia MIT
         </li>
     </ul>
     </p>

@@ -1,5 +1,5 @@
 <template>
-<div id="table" class="table-editable">    
+<div id="table" class="table-editable">
     <table class="table table-bordered table-responsive-md table-striped">
     <tr>
         <th class="">Descripción</th>

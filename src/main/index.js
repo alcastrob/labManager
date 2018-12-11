@@ -136,13 +136,13 @@ const menuTemplate = [{
     {
       label: 'Trabajos',
       click () {
-        mainWindow.webContents.send('navigation:works')
+        mainWindow.webContents.send('navigation:worksList')
       }
     },
     {
       label: 'Dentistas',
       click () {
-        mainWindow.webContents.send('navigation:dentists')
+        mainWindow.webContents.send('navigation:dentistsList')
       }
     },
     {

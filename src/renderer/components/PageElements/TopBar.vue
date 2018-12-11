@@ -4,19 +4,19 @@
     <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
       <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" v-on:click="navigateTo('dashboard')">
+        <a class="nav-link dropdown-toggle" href="#" id="dashboardButton" role="button" v-on:click="navigateTo('dashboard')">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           Indicadores
         </a>
       </li>
       <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" v-on:click="navigateTo('workDetail')">
+        <a class="nav-link dropdown-toggle" href="#" id="worksListButton" role="button" v-on:click="navigateTo('workDetail')">
           <i class="fas fa-fw fa-teeth"></i>
           Trabajos
         </a>
       </li>
       <li class="nav-item dropdown no-arrow">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" v-on:click="navigateTo('dentistDetail')">
+        <a class="nav-link dropdown-toggle" href="#" id="dentistListButton" role="button" v-on:click="navigateTo('dentistDetail')">
           <i class="fas fa-fw fa-id-badge"></i>
           Dentistas
         </a>
@@ -52,6 +52,7 @@ export default {
 </script>
 
 <style>
+
 .navbar-nav .form-inline .input-group {
   width: 100%;
 }

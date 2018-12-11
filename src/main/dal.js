@@ -72,7 +72,6 @@ export function getWorkTypes (fileName) {
 
   return allAsync(db, query, []).then((row) => {
     // db.close()
-    console.log(row)
     return row
   })
 }

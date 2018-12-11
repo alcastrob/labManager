@@ -1,6 +1,5 @@
 <template>
   <div>
-    <breadcrumb/>
     <div class="row">
       <iconCard/>
       <iconCard/>
@@ -15,14 +14,13 @@
 <script>
 import topBar from '../PageElements/TopBar'
 import lateralBar from '../PageElements/LateralBar'
-import breadcrumb from '../PageElements/Breadcrumb'
 import iconCard from '../PageElements/IconCard'
 import areaChart from '../PageElements/AreaChart'
 import dataTable from '../PageElements/DataTable'
 
 export default {
   name: 'dashboard',
-  components: { topBar, lateralBar, breadcrumb, iconCard, areaChart, dataTable },
+  components: { topBar, lateralBar, iconCard, areaChart, dataTable },
   data () {
     return {}
   },

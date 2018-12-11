@@ -49,14 +49,15 @@ export default {
       this.navigateTo('about')
     })
     ipcRenderer.on('navigation:dashboard', () => {
-      debugger
       this.navigateTo('dashboard')
     })
-    ipcRenderer.on('navigation:works', () => {
+    ipcRenderer.on('navigation:worksList', () => {
       this.navigateTo('workDetail')
     })
-    ipcRenderer.on('navigation:dentistDetail', () => {
-      console.log('aaaa')
+    ipcRenderer.on('navigation:workDetail', () => {
+      this.navigateTo('workDetail')
+    })
+    ipcRenderer.on('navigation:dentistsList', () => {
       this.navigateTo('dentistDetail')
     })
   },

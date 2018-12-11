@@ -6,6 +6,8 @@
 
 <script>
   import mainPage from './components/pages/mainPage.vue'
+  import 'jquery/dist/jquery.min.js'
+  import 'bootstrap/dist/js/bootstrap.min.js'
   export default {
     name: 'labManager',
     components: {
@@ -25,4 +27,33 @@
   @import url('~@/assets/css/sb-admin.css');
   @import url('~@/assets/css/nunito/nunito.css');
   @import url('~@/assets/css/animate/animate.min.css');
+  body {
+    background-color: #E4DFDA;
+    color: #150626;
+    font-family: 'Nunito', sans-serif;
+  }
+  .btn-warning {
+    background-color: #D4B483;
+    border-color: #D4B483;
+  }
+  .bg-dark {
+    background-color: #4A4D4F!important;
+  }
+  table.table-bordered tr th {
+    background-color:#AFA8A1;
+  }
+  table.table-bordered tr:nth-child(odd) {
+    background-color: #F2ECE6;
+  }
+  table.table-bordered tr:nth-child(even) {
+    background-color: #FFF6ED;
+  }
+  table.table-bordered tr:hover td {
+    background-color:#DDD8D2;
+  }
+  table.table-bordered,
+  table.table-bordered tr,
+  table.table-bordered td {
+    border: 1px solid #454849;
+  }
 </style>

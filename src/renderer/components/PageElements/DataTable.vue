@@ -5,7 +5,6 @@
         Trabajos</div>
     <div class="card-body">
         <div class="table-responsive">
-        <button v-on:click="fillTable">X</button>
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
             <tr>
@@ -52,22 +51,12 @@
 </template>
 
 <script>
-import { createNewDatabase } from '../../../main/dal.js'
-
-// var dal = require('../../../main/dal.js')
-
 export default {
   name: 'dataTable',
   data () {
     return {}
   },
-  methods: {
-    fillTable: function () {
-    //   console.log(dal)
-    //   dal.search()
-      createNewDatabase('./kk.sqlite')
-    }
-  }
+  methods: { }
 }
 </script>
 
