@@ -10,11 +10,15 @@
         <td class="pt-3-half text-right" contenteditable="true">{{indication.Precio}}</td>
     </tr>
     </table>
+    <p class="text-right pr-1">
+      Total: {{getSum()}}€
+    </p>
 </div>
 </template>
 
 <script>
 import { getWorkIndications } from '../../../main/dal.js'
+import _ from 'lodash'
 
 export default {
   name: 'workDetailTable',
@@ -26,7 +30,11 @@ export default {
       workIndications: ''
     }
   },
-  methods: {},
+  methods: {
+    getSum: function () {
+      return _.sumBy(['Precio'], _.partial(_.sumBy, this.workIndications))
+    }
+  },
   mounted () {
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat

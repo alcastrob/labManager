@@ -45,7 +45,8 @@ export function getWorksList (fileName) {
 export function getWorkDetails (workId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdTrabajo, IdDentista, IdTipoTrabajo, Paciente, ' +
-  'Color, FechaTerminacion, FechaEntrada, FechaPrevista, PrecioFinal, ' +
+  'Color, date(FechaTerminacion) AS FechaTerminacion, date(FechaEntrada) AS FechaEntrada, ' +
+  'date(FechaPrevista) AS FechaPrevista, PrecioFinal, ' +
   'PrecioMetal, PrecioTotal, PrecioFija, Nombre FROM Trabajos WHERE IdTrabajo = ?'
   return getAsync(db, query, [workId]).then((row) => {
     db.close()
@@ -55,7 +56,7 @@ export function getWorkDetails (workId, fileName) {
 
 export function getWorkIndications (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdTrabajoDetalle, IdTrabajo, Descripcion, Precio ' +
+  var query = 'SELECT IdTrabajoDetalle, Descripcion, Precio ' +
   'FROM TrabajosDetalle ' +
   'WHERE IdTrabajo = ?'
   return allAsync(db, query, [workId]).then((rows) => {
