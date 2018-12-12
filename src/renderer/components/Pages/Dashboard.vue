@@ -13,14 +13,13 @@
 
 <script>
 import topBar from '../PageElements/TopBar'
-import lateralBar from '../PageElements/LateralBar'
 import iconCard from '../PageElements/IconCard'
 import areaChart from '../PageElements/AreaChart'
 import workList from '../PageElements/workList'
 
 export default {
   name: 'dashboard',
-  components: { topBar, lateralBar, iconCard, areaChart, workList },
+  components: { topBar, iconCard, areaChart, workList },
   data () {
     return {}
   },

@@ -64,13 +64,13 @@
       <div class="row">
         <div class="col-md-12 mt-3">
           <h4>Indicaciones</h4>
-          <workDetailTable :workId="workId"></workDetailTable>
+          <workIndicationsTable :workId="workId"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-8 mt-3">
           <h4>Pruebas</h4>
-          <test-table :workId="workId"></test-table>
+          <workTestsTable :workId="workId"></workTestsTable>
         </div> <!-- col-md-8 -->
         <div class="col-md-4 mt-3">
           <label for="fEntrada">Fecha entrada</label>
@@ -88,8 +88,8 @@
 </template>
 
 <script>
-import workDetailTable from '../PageElements/WorkDetailTable'
-import testTable from '../PageElements/TestTable'
+import workIndicationsTable from '../PageElements/WorkIndicationsTable'
+import workTestsTable from '../PageElements/workTestsTable'
 import { getWorkDetails, getWorkTypes } from '../../../main/dal.js'
 
 export default {
@@ -98,8 +98,8 @@ export default {
     workId: Number
   },
   components: {
-    workDetailTable,
-    testTable
+    workIndicationsTable,
+    workTestsTable
   },
   data () {
     return {

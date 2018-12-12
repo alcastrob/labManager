@@ -55,4 +55,18 @@
   table.table-bordered td {
     border: 1px solid #454849;
   }
+
+  table.table-bordered i {
+    display:none;
+  }
+  table.table-bordered tr:hover > td >  i {
+    display:block;
+  }
+  /* table.table-bordered td:last-child i {
+    display:none;
+  }
+  table.table-bordered tr:hover > td:last-child > i {
+    display:block;
+  } */
+
 </style>
