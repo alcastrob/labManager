@@ -6,8 +6,12 @@
         <div id="content-wrapper">
           <div class="container-fluid">
             <dashboard v-if="currentPage === 'dashboard'" />
+            <newWork v-if="currentPage === 'newWork'" />
+            <worksList v-if="currentPage === 'worksList'" />
             <workDetail v-if="currentPage === 'workDetail'" :workId="currentId" />
+            <dentistsList v-if="currentPage === 'dentistsList'" />
             <dentistDetail v-if="currentPage === 'dentistDetail'" />
+            <invoices v-if="currentPage === 'invoices'" />
             <about v-if="currentPage === 'about'"/>
           </div>
         </div>
@@ -21,7 +25,11 @@ import dashboard from './dashboard'
 import about from './About'
 import topbar from '../PageElements/TopBar'
 import workDetail from './WorkDetail'
+import newWork from './NewWork'
 import dentistDetail from './DentistDetail'
+import dentistsList from './DentistsList'
+import worksList from './WorksList'
+import invoices from './Invoices'
 
 var {ipcRenderer} = require('electron')
 
@@ -32,18 +40,42 @@ export default {
     about,
     topbar,
     workDetail,
-    dentistDetail
+    newWork,
+    worksList,
+    dentistDetail,
+    dentistsList,
+    invoices
   },
   data () {
     return {
       currentPage: 'dashboard',
-      currentId: null
+      currentId: null,
+      previousPage: null,
+      canNavigateBack: false
     }
   },
   methods: {
     navigateTo: function (pageName, id) {
-      this.currentPage = pageName
+      console.log('Current: ' + this.currentPage)
+      console.log('Previous: ' + this.previousPage)
+      console.log('Requested: ' + pageName)
+      if (pageName === 'back') {
+        var tmp = this.currentPage
+        this.currentPage = this.previousPage
+        this.previousPage = tmp
+        this.canNavigateBack = false
+      } else {
+        this.previousPage = this.currentPage
+        this.currentPage = pageName
+        this.canNavigateBack = this.evaluateCanNavigateBack()
+      }
       this.currentId = id
+    },
+    evaluateCanNavigateBack: function () {
+      switch (this.currentPage) {
+        case 'workDetail': return true
+        default: return false
+      }
     }
   },
   mounted () {
@@ -52,6 +84,10 @@ export default {
     })
     ipcRenderer.on('navigation:dashboard', () => {
       this.navigateTo('dashboard')
+    })
+    ipcRenderer.on('navigation:back', () => {
+      console.log(this.previousPage)
+      this.navigateTo(this.previousPage)
     })
     ipcRenderer.on('navigation:newWork', () => {
       this.navigateTo('newWork')

@@ -66,9 +66,12 @@ export function getWorkIndications (workId, fileName) {
 
 export function getWorkTests (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdPrueba, Descripcion, ' +
-  'FechaSalida, FechaEntrada, Comentario ' +
-  'FROM Pruebas ' +
+  var query = 'SELECT p.IdPrueba, p.Descripcion, p.FechaSalida, ' +
+  'p.FechaEntrada, p.Comentario, t1.Descripcion As TurnoEntrada, ' +
+  't2.Descripcion AS TurnoSalida ' +
+  'FROM Pruebas p ' +
+  'LEFT JOIN Turnos t1 ON p.IdTurnoFechaEntrada = t1.IdTurno ' +
+  'LEFT JOIN Turnos t2 ON p.IdTurnoFechaSalida = t2.IdTurno ' +
   'WHERE IdTrabajo = ?'
   return allAsync(db, query, [workId]).then((rows) => {
     return rows

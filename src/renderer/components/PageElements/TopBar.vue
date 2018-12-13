@@ -9,7 +9,7 @@
         </a>
       </li>
       <li class="nav-item no-arrow mx-1">
-        <a class="nav-link" href="#" id="dashboardButton" role="button" v-on:click="navigateTo('back')">
+        <a class="nav-link" href="#" id="dashboardButton" role="button" v-on:click="navigateTo('back')" v-if="this.$parent.canNavigateBack">
           <i class="fas fa-fw fa-caret-square-left"></i>
           Atrás
         </a>

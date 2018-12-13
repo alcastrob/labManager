@@ -5,7 +5,9 @@
       <th></th>
       <th class="">Prueba</th>
       <th class="">Fecha salida</th>
+      <th class="">Reparto salida</th>
       <th class="">Fecha entrada</th>
+      <th class="">Reparto entrada</th>
       <th class="">Comentario</th>
     </tr>
     <tr v-for="test in tests" v-bind:key="test.IdPrueba">
@@ -14,7 +16,9 @@
       </td>
       <td class="pt-3-half" contenteditable="true">{{test.Descripcion}}</td>
       <td class="pt-3-half text-right" contenteditable="true">{{test.FechaSalida | formatDateDMY}}</td>
+      <td class="pt-3-half" contenteditable="true">{{test.TurnoEntrada}}</td>
       <td class="pt-3-half text-right" contenteditable="true">{{test.FechaEntrada | formatDateDMY}}</td>
+      <td class="pt-3-half" contenteditable="true">{{test.TurnoSalida}}
       <td class="pt-3-half" contenteditable="true">{{test.Comentario}}</td>
     </tr>
   </table>
