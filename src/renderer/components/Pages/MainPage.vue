@@ -53,14 +53,23 @@ export default {
     ipcRenderer.on('navigation:dashboard', () => {
       this.navigateTo('dashboard')
     })
+    ipcRenderer.on('navigation:newWork', () => {
+      this.navigateTo('newWork')
+    })
     ipcRenderer.on('navigation:worksList', () => {
-      this.navigateTo('workDetail')
+      this.navigateTo('worksList')
     })
     ipcRenderer.on('navigation:workDetail', () => {
       this.navigateTo('workDetail')
     })
     ipcRenderer.on('navigation:dentistsList', () => {
+      this.navigateTo('dentistLists')
+    })
+    ipcRenderer.on('navigation:dentistDetail', () => {
       this.navigateTo('dentistDetail')
+    })
+    ipcRenderer.on('navigation:invoices', () => {
+      this.navigateTo('invoices')
     })
   },
   created () { }

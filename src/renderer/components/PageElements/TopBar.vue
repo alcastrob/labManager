@@ -1,30 +1,50 @@
 <template>
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top fixed-top">
-    <div class="navbar navbar-brand mr-1">labManager</div>
     <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="dashboardButton" role="button" v-on:click="navigateTo('dashboard')">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          Indicadores
+      <li class="nav-item no-arrow mx-1">
+        <a class="nav-link" href="#" id="dashboardButton" role="button" v-on:click="navigateTo('dashboard')">
+          <i class="fas fa-fw fa-tooth"></i>
+          Inicio
         </a>
       </li>
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="worksListButton" role="button" v-on:click="navigateTo('workDetail')">
+      <li class="nav-item no-arrow mx-1">
+        <a class="nav-link" href="#" id="dashboardButton" role="button" v-on:click="navigateTo('back')">
+          <i class="fas fa-fw fa-caret-square-left"></i>
+          Atrás
+        </a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item no-arrow mx-1">
+        <a class="nav-link" href="#" id="worksListButton" role="button" v-on:click="navigateTo('newWork')">
           <i class="fas fa-fw fa-teeth"></i>
-          Trabajos
+          Nuevo Trabajo
         </a>
       </li>
-      <li class="nav-item dropdown no-arrow">
-        <a class="nav-link dropdown-toggle" href="#" id="dentistListButton" role="button" v-on:click="navigateTo('dentistDetail')">
+      <li class="nav-item no-arrow mr-1">
+        <a class="nav-link" href="#" id="worksListButton" role="button" v-on:click="navigateTo('worksList')">
+          <i class="fa fa-fw fa-list"></i>
+          Listado Trabajos
+        </a>
+      </li>
+      <li class="nav-item no-arrow">
+        <a class="nav-link" href="#" id="dentistListButton" role="button" v-on:click="navigateTo('dentistsList')">
           <i class="fas fa-fw fa-id-badge"></i>
-          Dentistas
+          Listado Dentistas
+        </a>
+      </li>
+      <li class="nav-item no-arrow">
+        <a class="nav-link" href="#" id="dentistListButton" role="button" v-on:click="navigateTo('invoices')">
+          <i class="fas fa-fw fa-money-bill-alt"></i>
+          Gestión Económica
         </a>
       </li>
     </ul>
 
     <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+    <form class="d-none d-md-inline-block form-inline ml-1 mr-0 mr-md-3 my-2 my-md-0">
       <div class="input-group">
         <input type="text" class="form-control" placeholder="Buscar..." >
         <div class="input-group-append">
