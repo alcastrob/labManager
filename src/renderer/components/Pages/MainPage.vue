@@ -56,9 +56,9 @@ export default {
   },
   methods: {
     navigateTo: function (pageName, id) {
-      console.log('Current: ' + this.currentPage)
-      console.log('Previous: ' + this.previousPage)
-      console.log('Requested: ' + pageName)
+      // console.log('Current: ' + this.currentPage)
+      // console.log('Previous: ' + this.previousPage)
+      // console.log('Requested: ' + pageName)
       if (pageName === 'back') {
         var tmp = this.currentPage
         this.currentPage = this.previousPage
