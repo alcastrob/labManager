@@ -3,7 +3,7 @@ import accounting from 'accounting'
 import moment from 'moment'
 import Vue from 'vue'
 import VueEvents from 'vue-events'
-import Vuetable from 'vuetable-2/src/components/Vuetable'
+import Vuetable from './vuetable/Vuetable'
 import VuetablePaginationInfo from './vuetable/VuetablePaginationInfo'
 import FilterBar from './FilterBar'
 import CssConfig from './VuetableCssConfig.js'
@@ -19,8 +19,8 @@ export default {
     VuetablePaginationBootstrap
   },
   props: {
-    apiUrl: {
-      type: String,
+    data: {
+      type: Array,
       required: true
     },
     fields: {
@@ -38,9 +38,6 @@ export default {
       default() {
         return {}
       }
-    },
-    detailRowComponent: {
-      type: String
     }
   },
   data () {
@@ -73,14 +70,15 @@ export default {
         {
           ref: 'vuetable',
           props: {
-            apiUrl: this.apiUrl,
+            apimode: false,
+            data: this.data,
             fields: this.fields,
-            paginationPath: "",
-            perPage: 10,
-            multiSort: true,
-            sortOrder: this.sortOrder,
-            appendParams: this.appendParams,
-            detailRowComponent: this.detailRowComponent,
+            // paginationPath: "",
+            // perPage: 10,
+            // multiSort: true,
+            // sortOrder: this.sortOrder,
+            // appendParams: this.appendParams,
+            // detailRowComponent: this.detailRowComponent,
             css: this.css.table,
           },
           on: {
@@ -134,7 +132,7 @@ export default {
     },
     onCellClicked (data, field, event) {
       console.log('cellClicked: ', field.name)
-      this.$refs.vuetable.toggleDetailRow(data.id)
+      //this.$refs.vuetable.toggleDetailRow(data.id)
     },
     onFilterSet (filterText) {
       this.appendParams.filter = filterText

@@ -28,7 +28,7 @@ import workDetail from './WorkDetail'
 import newWork from './NewWork'
 import dentistDetail from './DentistDetail'
 import dentistsList from './DentistsList'
-import worksList from './WorksList'
+import worksList from './WorksList/WorksList'
 import invoices from './Invoices'
 
 var {ipcRenderer} = require('electron')

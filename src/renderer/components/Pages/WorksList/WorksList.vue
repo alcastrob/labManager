@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    <my-vuetable api-url="https://vuetable.ratiw.net/api/users"
-      :fields="fields" :sort-order="sortOrder" :append-params="moreParams"
-      detail-row-component="my-detail-row">
+    <my-vuetable :fields="fields" :data="data" :sort-order="sortOrder" :append-params="moreParams">
       <template slot="actions" scope="props">
         <i class="fa fa-times-circle" @click="onAction('delete-item', props.rowData, props.rowIndex)"></i>
       </template>
@@ -13,9 +11,7 @@
 <script>
 import Vue from 'vue'
 import FieldDefs from './FieldDefs.js'
-import MyVuetable from '../ReusableTable/MyVuetable'
-import DetailRow from '../ReusableTable/DetailRow'
-Vue.component('my-detail-row', DetailRow)
+import MyVuetable from '../../ReusableTable/MyVuetable'
 
 export default {
   name: 'app',
@@ -32,16 +28,23 @@ export default {
           direction: 'asc'
         }
       ],
-      moreParams: {}
+      moreParams: {},
+      data: [{
+        name: 'Angel',
+        surname: 'Castro'
+      },
+      {
+        name: 'Angel2',
+        surname: 'Castro2'
+      }]
     }
   },
   methods: {
     onAction (action, data, index) {
       console.log('slot action: ' + action, data.name, index)
-    },
-  }
+    }
+  },
 }
 </script>
 <style>
-/* @import url('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css'); */
 </style>
