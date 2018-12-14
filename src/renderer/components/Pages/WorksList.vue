@@ -1,27 +1,10 @@
 <template>
   <div id="app">
-    <my-vuetable
-      api-url="https://vuetable.ratiw.net/api/users"
-      :fields="fields"
-      :sort-order="sortOrder"
-      :append-params="moreParams"
-      detail-row-component="my-detail-row"
-    >
+    <my-vuetable api-url="https://vuetable.ratiw.net/api/users"
+      :fields="fields" :sort-order="sortOrder" :append-params="moreParams"
+      detail-row-component="my-detail-row">
       <template slot="actions" scope="props">
-        <div class="custom-actions">
-          <button class="btn btn-default btn-sm"
-            @click="onAction('view-item', props.rowData, props.rowIndex)">
-            <span class="glyphicon glyphicon-zoom-in"></span>
-          </button>
-          <button class="btn btn-default btn-sm"
-            @click="onAction('edit-item', props.rowData, props.rowIndex)">
-            <i class="glyphicon glyphicon-pencil"></i>
-          </button>
-          <button class="btn btn-default btn-sm"
-            @click="onAction('delete-item', props.rowData, props.rowIndex)">
-            <i class="glyphicon glyphicon-trash"></i>
-          </button>
-        </div>
+        <i class="fa fa-times-circle" @click="onAction('delete-item', props.rowData, props.rowIndex)"></i>
       </template>
     </my-vuetable>
   </div>
@@ -60,7 +43,5 @@ export default {
 }
 </script>
 <style>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.7/semantic.min.css');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css');
-/* @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'); */
+/* @import url('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css'); */
 </style>

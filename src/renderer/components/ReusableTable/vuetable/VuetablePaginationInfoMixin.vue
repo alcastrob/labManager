@@ -5,14 +5,14 @@ export default {
       type: Object,
       default() {
         return {
-          infoClass: 'left floated left aligned six wide column'
+          infoClass: ''
         }
       }
     },
     infoTemplate: {
       type: String,
       default() {
-        return "Mostrando de {from} a {to} de {total} elementos"
+        return "Mostrando de {from} a {to} de un total de {total}"
       }
     },
     noDataTemplate: {

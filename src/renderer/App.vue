@@ -42,6 +42,10 @@
   table.table-bordered tr th {
     background-color:#AFA8A1;
   }
+  table.table-bordered tr th:hover {
+    background-color:#AFA8A1;
+    color: #fff!important;
+  }
   table.table-bordered tr:nth-child(odd) {
     background-color: #F2ECE6;
   }
@@ -55,12 +59,21 @@
   table.table-bordered td {
     border: 1px solid #454849;
   }
-
   table.table-bordered i {
     display:none;
   }
   table.table-bordered tr:hover > td >  i {
     display:block;
+  }
+  .pagination>li>a,
+  .pagination>li>span
+  .pagination>li.disabled>a {
+    border: 1px solid #AFA8A1!important;
+    color: #150626;
+  }
+  .pagination>li.active>a {
+    background: #AFA8A1!important;
+    color: #fff;
   }
   /* table.table-bordered td:last-child i {
     display:none;

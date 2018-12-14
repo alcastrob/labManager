@@ -32,3 +32,5 @@ export default {
   mixins: [VuetablePaginationMixin]
 }
 </script>
+
+

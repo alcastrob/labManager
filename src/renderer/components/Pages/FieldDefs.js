@@ -1,19 +1,9 @@
 export default [
   {
-    name: '__handle',
+    name: '__slot:actions',
+    title: '',
     titleClass: 'center aligned',
-    dataClass: 'center aligned'
-  },
-  {
-    name: '__sequence',
-    title: '#',
-    titleClass: 'center aligned',
-    dataClass: 'right aligned'
-  },
-  {
-    name: '__checkbox',
-    titleClass: 'center aligned',
-    dataClass: 'center aligned'
+    dataClass: '',
   },
   {
     name: 'name',
@@ -48,17 +38,5 @@ export default [
     titleClass: 'center aligned',
     dataClass: 'right aligned',
     callback: 'formatNumber'
-  },
-  // {
-  //   name: '__component:custom-actions',
-  //   title: 'Actions',
-  //   titleClass: 'center aligned',
-  //   dataClass: 'center aligned',
-  // },
-  {
-    name: '__slot:actions',
-    title: 'Slot Actions',
-    titleClass: 'center aligned',
-    dataClass: 'center aligned',
   }
 ]
