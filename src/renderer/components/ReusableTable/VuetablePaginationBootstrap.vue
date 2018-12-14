@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import VuetablePaginationMixin from 'vuetable-2/src/components/VuetablePaginationMixin'
+import VuetablePaginationMixin from './vuetable/VuetablePaginationMixin'
 
 export default {
   mixins: [VuetablePaginationMixin]

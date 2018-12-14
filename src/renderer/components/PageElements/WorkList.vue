@@ -5,7 +5,7 @@
     Trabajos</div>
   <div class="card-body">
     <div class="table-responsive">
-      <table class="table table-bordered" id="workList" width="100%" cellspacing="0">
+      <table class="table table-bordered" id="workListTable" width="100%" cellspacing="0">
         <tr>
           <th>Dentista</th>
           <th>Paciente</th>
@@ -16,7 +16,7 @@
           <th>F. Terminación</th>
           <th>Importe</th>
         </tr>
-        <tr v-for="work in workList" v-bind:key="work.IdTrabajo" v-on:click="showWork(work.IdTrabajo)">
+        <tr v-for="work in getData()" v-bind:key="work.IdTrabajo" v-on:click="showWork(work.IdTrabajo)">
           <td>{{work.NombreDentista}}</td>
           <td>{{work.Paciente}}</td>
           <td>{{work.TipoTrabajo}}</td>
@@ -28,28 +28,55 @@
         </tr>
       </table>
     </div>
+    <pagination></pagination>
   </div>
 </div>
 </template>
 
 <script>
 import { getWorksList } from '../../../main/dal.js'
+import pagination from './table/pagination'
+import _ from 'lodash'
+
+const pageSize = 10
 
 export default {
-  name: 'workList',
+  name: 'worklist',
+  components: {
+    pagination
+  },
   data () {
     return {
-      workList: ''
+      dataset: '',
+      pageSize: pageSize,
+      currentPage: 1
     }
   },
   methods: {
     showWork: function (idWork) {
       this.$parent.$parent.navigateTo('workDetail', idWork)
+    },
+    // Pagination
+    loadPage: function (page) {
+      this.currentPage = page
+    },
+    getData: function () {
+      var arraySize = this.dataset.length - 1
+      var left = (this.currentPage - 1) * this.pageSize
+      var right = (this.currentPage * this.pageSize)
+      if (right > arraySize) {
+        right = arraySize
+      }
+
+      if (left < 0 || left > arraySize)
+        return []
+      else
+        return _.slice(this.dataset, left, right)
     }
   },
   mounted () {
     getWorksList('labManager.sqlite').then((works) => {
-      this.workList = works
+      this.dataset = works
     })
   }
 }
