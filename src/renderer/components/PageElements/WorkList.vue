@@ -5,7 +5,7 @@
     Trabajos
   </div>
   <div class="card-body">
-    <myTable :headers="headers" :rawDataset="rawDataset"/>
+    <myTable :headers="headers" />
   </div>
 </div>
 </template>
@@ -22,47 +22,63 @@ export default {
   data () {
     return {
       headers: [ {
-          title: 'Nº trabajo',
+          title: 'Nº',
+          dataField: 'IdTrabajo',
           titleClass: '',
-          rowClass: '',
-          sortExpression: 'IdTrabajo'
+          rowClass: ''
         }, {
           title: 'Dentista',
-          sortExpression: 'NombreDentista'
+          dataField: 'NombreDentista',
+          titleClass: '',
+          rowClass: ''
         }, {
           title: 'Paciente',
-          sortExpression: 'Paciente'
+          dataField: 'Paciente',
+          titleClass: '',
+          rowClass: ''
         }, {
           title: 'Tipo',
-          sortExpression: 'TipoTrabajo'
+          dataField: 'TipoTrabajo',
+          titleClass: '',
+          rowClass: ''
         }, {
           title: 'Color',
-          sortExpression: 'Color'
+          dataField: 'Color',
+          titleClass: '',
+          rowClass: ''
         }, {
           title: 'F. Entrada',
-          sortExpression: 'FechaEntrada'
+          dataField: 'FechaEntrada',
+          titleClass: '',
+          rowClass: ''
         }, {
           title: 'F. Prevista',
-          sortExpression: 'FechaPrevista'
+          dataField: 'FechaPrevista',
+          titleClass: '',
+          rowClass: ''
         }, {
           title: 'F. Terminación',
-          sortExpression: 'FechaSalida'
+          dataField: 'FechaSalida',
+          titleClass: '',
+          rowClass: ''
         }, {
           title: 'Importe',
-          sortExpression: 'Precio'
+          dataField: 'Precio',
+          titleClass: '',
+          rowClass: 'text-right'
         } ],
-      rawDataset: []
+      searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color']
     }
   },
   methods: {
     navigateToWork: function (idWork) {
       this.$parent.$parent.navigateTo('workDetail', idWork)
-    },
+    }
   },
   mounted () {
     getWorksList('labManager.sqlite').then((works) => {
-      this.rawDataset = works
-    })
+      this.$children[0].setDataset(works)
+      })
   }
 }
 </script>
