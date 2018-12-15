@@ -2,21 +2,22 @@
 <div class="card mb-3">
   <div class="card-header">
     <i class="fas fa-teeth"></i>
-    Trabajos</div>
+    Trabajos
+  </div>
   <div class="card-body">
     <div class="table-responsive">
       <filter-bar></filter-bar>
       <table class="table table-bordered" id="workListTable" width="100%" cellspacing="0">
         <tr>
-          <th>Nº trabajo</th>
-          <th>Dentista</th>
-          <th>Paciente</th>
-          <th>Tipo</th>
-          <th>Color</th>
-          <th>F. Entrada</th>
-          <th>F. Prevista</th>
-          <th>F. Terminación</th>
-          <th>Importe</th>
+          <th v-for="header in headers" v-bind:key="header.sortExpression"
+           v-on:click="sortByExpression(header.sortExpression)">
+           {{header.title}}
+           <span class="fas" :class="{'fa-sort-amount-down': currentSortCriteria === header.sortExpression && currentSortDesc === true,
+            'fa-sort-amount-up': currentSortCriteria === header.sortExpression && currentSortDesc === false}"></span>
+           <!-- <span class="{{sortingIcon(header.sortExpression)}}"></span> -->
+           <!-- <span :class="{'fas fa-sort-amount-down': this.currentSortCriteria === header.title}"></span> -->
+           <!-- <i :class="{'fas fa-sort-amount-up': true}"></i> -->
+          </th>
         </tr>
         <tr v-for="work in getData()" v-bind:key="work.IdTrabajo" v-on:click="showWork(work.IdTrabajo)">
           <td>{{work.IdTrabajo}}</td>
@@ -55,7 +56,37 @@ export default {
       rawDataset: '',
       filteredDataset: '',
       pageSize: pageSize,
-      currentPage: 1
+      currentPage: 1,
+      headers: [ {
+          title: 'Nº trabajo',
+          sortExpression: 'IdTrabajo'
+        }, {
+          title: 'Dentista',
+          sortExpression: 'NombreDentista'
+        }, {
+          title: 'Paciente',
+          sortExpression: 'Paciente'
+        }, {
+          title: 'Tipo',
+          sortExpression: 'TipoTrabajo'
+        }, {
+          title: 'Color',
+          sortExpression: 'Color'
+        }, {
+          title: 'F. Entrada',
+          sortExpression: 'FechaEntrada'
+        }, {
+          title: 'F. Prevista',
+          sortExpression: 'FechaPrevista'
+        }, {
+          title: 'F. Terminación',
+          sortExpression: 'FechaSalida'
+        }, {
+          title: 'Importe',
+          sortExpression: 'Precio'
+        } ],
+      currentSortCriteria: '',
+      currentSortDesc: ''
     }
   },
   methods: {
@@ -105,15 +136,35 @@ export default {
         return []
       else
         return _.slice(this.filteredDataset, left, right)
+    },
+    // Sorting
+    sortByExpression: function(expression) {
+      if (expression === this.currentSortCriteria) {
+        this.currentSortDesc = !this.currentSortDesc
+      } else {
+        this.currentSortCriteria = expression
+        this.currentSortDesc = true
+      }
+      this.sortBy()
+    },
+    sortBy: function() {
+      console.log(this.filteredDataset)
+      var x = this.currentSortCriteria
+      this.filteredDataset = _.sortBy(this.filteredDataset, function(row) {
+        return row[x]
+        })
+      if (!this.currentSortDesc) {
+        this.filteredDataset = _.reverse(this.filteredDataset)
+      }
     }
-    // Filtering
-
   },
   mounted () {
     getWorksList('labManager.sqlite').then((works) => {
         this.rawDataset = works
         this.filteredDataset = works
       })
+    this.currentSortCriteria = 'IdTrabajo'
+    this.currentSortDesc = true
   }
 }
 </script>

@@ -9,7 +9,7 @@
           <span>&laquo;</span>
         </a>
       </li>
-      <li class="page-item" v-for="n in pp" v-bind:key="n" :class="{'active': isCurrentPage(n)}">
+      <li class="page-item" v-for="n in pageSelectors" v-bind:key="n" :class="{'active': isCurrentPage(n)}">
         <a class="page-link" href="#" @click.prevent="loadPage(n)">{{n}}</a>
       </li>
       <li class="page-item" :class="{'disabled': isOnLastPage}">
@@ -48,7 +48,7 @@ export default {
     }
   },
   computed: {
-    pp () {
+    pageSelectors() {
       if (this.lastPage() === 0) {
         return []
       } else {
@@ -67,26 +67,6 @@ export default {
           if (value2 <= this.lastPage()) array.push(value2)
         }
         return array
-      }
-    },
-    pageSelectors () {
-      var lastPage = Math.ceil(this.$parent.rawDataset.length/this.$parent.pageSize)
-      if (lastPage === 0) {
-        return []
-      } else {
-        var returnedValue = []
-        if (this.$parent.currentPage <= 3) {
-          returnedValue = [1, 2, 3, 4, 5]
-        } else if (lastPage - this.$parent.currentPage <= 2) {
-          for (var i = lastPage - 4; i <= lastPage; i++) {
-            returnedValue.push(i)
-          }
-        } else {
-          for (var i = this.$parent.currentPage - 2; i <= this.$parent.currentPage + 2; i++) {
-            returnedValue.push(i)
-          }
-        }
-        return returnedValue
       }
     },
     isOnFirstPage () {
