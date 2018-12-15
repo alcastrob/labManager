@@ -1,6 +1,6 @@
 <template>
   <nav class="float-right">
-    Mostrando registros de {{((this.$parent.currentPage-1) * this.$parent.pageSize)+1}} a {{this.$parent.currentPage * this.$parent.pageSize}} de un total de {{this.$parent.dataset.length}}
+    Mostrando registros de {{recordFrom}} a {{recordTo}} de un total de {{this.$parent.filteredDataset.length}}
     <br>
     <div class="float-right">
     <ul class="pagination">
@@ -9,7 +9,7 @@
           <span>&laquo;</span>
         </a>
       </li>
-      <li class="page-item" v-for="n in pageSelectors" v-bind:key="n" :class="{'active': isCurrentPage(n)}">
+      <li class="page-item" v-for="n in pp" v-bind:key="n" :class="{'active': isCurrentPage(n)}">
         <a class="page-link" href="#" @click.prevent="loadPage(n)">{{n}}</a>
       </li>
       <li class="page-item" :class="{'disabled': isOnLastPage}">
@@ -32,7 +32,6 @@ export default {
   },
   methods: {
     loadPage: function (page) {
-      console.log(page)
       if (page === 'prev') {
         this.$parent.currentPage --
       } else if (page === 'next') {
@@ -43,11 +42,35 @@ export default {
     },
     isCurrentPage(page) {
       return page === this.$parent.currentPage
+    },
+    lastPage() {
+      return Math.ceil(this.$parent.filteredDataset.length/this.$parent.pageSize)
     }
   },
   computed: {
+    pp () {
+      if (this.lastPage() === 0) {
+        return []
+      } else {
+        var array = []
+        for (var i=4; i>0; i--) {
+          var value = this.$parent.currentPage - i
+          if (value > 0) array.push(value)
+        }
+        array.push(this.$parent.currentPage)
+        if(this.lastPage() > this.$parent.currentPage+1 && this.$parent.currentPage > 3){
+          array.shift()
+        }
+        var soFar = array.length
+        for (var j=1; j<=(5-soFar); j++) {
+          var value2 = this.$parent.currentPage + j
+          if (value2 <= this.lastPage()) array.push(value2)
+        }
+        return array
+      }
+    },
     pageSelectors () {
-      var lastPage = Math.ceil(this.$parent.dataset.length/this.$parent.pageSize)
+      var lastPage = Math.ceil(this.$parent.rawDataset.length/this.$parent.pageSize)
       if (lastPage === 0) {
         return []
       } else {
@@ -70,13 +93,25 @@ export default {
       return this.$parent.currentPage === 1
     },
     isOnLastPage () {
-      var lastPage = Math.ceil(this.$parent.dataset.length/this.$parent.pageSize)
-      if (lastPage === 0) {
+      if (this.lastPage() === 0) {
         return false
       } else {
-        return this.$parent.currentPage === lastPage
+        return this.$parent.currentPage === this.lastPage()
       }
+    },
+    recordFrom () {
+      return ((this.$parent.currentPage - 1) * this.$parent.pageSize) + 1
+    },
+    recordTo() {
+      var to = this.$parent.currentPage * this.$parent.pageSize
+      if (this.$parent.filteredDataset.length < to) {
+        return this.$parent.filteredDataset.length
+      } else {
+        return to
+      }
+
     }
+
   }
 }
 </script>

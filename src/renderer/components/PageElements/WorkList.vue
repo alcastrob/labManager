@@ -8,6 +8,7 @@
       <filter-bar></filter-bar>
       <table class="table table-bordered" id="workListTable" width="100%" cellspacing="0">
         <tr>
+          <th>Nº trabajo</th>
           <th>Dentista</th>
           <th>Paciente</th>
           <th>Tipo</th>
@@ -18,6 +19,7 @@
           <th>Importe</th>
         </tr>
         <tr v-for="work in getData()" v-bind:key="work.IdTrabajo" v-on:click="showWork(work.IdTrabajo)">
+          <td>{{work.IdTrabajo}}</td>
           <td>{{work.NombreDentista}}</td>
           <td>{{work.Paciente}}</td>
           <td>{{work.TipoTrabajo}}</td>
@@ -50,8 +52,8 @@ export default {
   },
   data () {
     return {
-      dataset: '',
-      dataset2: '',
+      rawDataset: '',
+      filteredDataset: '',
       pageSize: pageSize,
       currentPage: 1
     }
@@ -60,40 +62,39 @@ export default {
     showWork: function (idWork) {
       this.$parent.$parent.navigateTo('workDetail', idWork)
     },
-    initializeDataset: function () {
-      getWorksList('labManager.sqlite').then((works) => {
-        this.dataset = works
-        this.dataset2 = works
-      })
-    },
     // Filter
     applyFilter: function (filter) {
-      // var tempDataset
-      // getWorksList('labManager.sqlite').then((works) => {
-      //   tempDataset = works
-      // })
-
-      console.log(this.dataset)
+      var lowercaseFilter = filter.toString().toLowerCase()
       if (filter !== '') {
-        // this.dataset2 = _.filter(this.dataset, {NombreDentista: filter})
-        // console.log(this.dataset2)
-        this.dataset2 = _.filter(this.dataset, function(row){
+        var a = _.filter(this.rawDataset, function(row){
           if (row.NombreDentista === null) return false
-          return row.NombreDentista.toLowerCase().includes(filter.toLowerCase())
-          // return row.NombreDentista === filter
+          return row.NombreDentista.toLowerCase().includes(lowercaseFilter)
         })
-        // console.log(tempDataset)
-        // this.dataset = tempDataset
+        var b = _.filter(this.rawDataset, function(row){
+          if (row.Paciente === null) return false
+          return row.Paciente.toString().toLowerCase().includes(lowercaseFilter)
+        })
+        var c = _.filter(this.rawDataset, function(row){
+          if (row.IdTrabajo === null) return false
+          return row.IdTrabajo.toString().toLowerCase().includes(lowercaseFilter)
+        })
+        var d = _.filter(this.rawDataset, function(row){
+          if (row.Color === null) return false
+          return row.Color.toString().toLowerCase().includes(lowercaseFilter)
+        })
+        this.filteredDataset = _.union(a, b, c, d, function(row) { return row.IdTrabajo})
+        this.filteredDataset = _.sortBy(this.filteredDataset, function(row) { return row.IdTrabajo})
       } else {
-        this.dataset2 = this.dataset
+        this.filteredDataset = this.rawDataset
       }
+      this.currentPage = 1
     },
     // Pagination
     loadPage: function (page) {
       this.currentPage = page
     },
     getData: function () {
-      var arraySize = this.dataset.length - 1
+      var arraySize = this.rawDataset.length - 1
       var left = (this.currentPage - 1) * this.pageSize
       var right = (this.currentPage * this.pageSize)
       if (right > arraySize) {
@@ -103,16 +104,16 @@ export default {
       if (left < 0 || left > arraySize)
         return []
       else
-        return _.slice(this.dataset2, left, right)
+        return _.slice(this.filteredDataset, left, right)
     }
     // Filtering
 
   },
   mounted () {
-    // getWorksList('labManager.sqlite').then((works) => {
-    //   this.dataset = works
-    // })
-    this.initializeDataset()
+    getWorksList('labManager.sqlite').then((works) => {
+        this.rawDataset = works
+        this.filteredDataset = works
+      })
   }
 }
 </script>
