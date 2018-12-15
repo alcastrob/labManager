@@ -5,7 +5,7 @@
     Trabajos
   </div>
   <div class="card-body">
-    <myTable :headers="headers" />
+    <myTable :headers="headers" :searchFields="searchFields"/>
   </div>
 </div>
 </template>

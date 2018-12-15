@@ -10,7 +10,7 @@
           'fa-sort-amount-up': currentSortCriteria === header.dataField && currentSortDesc === false}"></span>
         </th>
       </tr>
-      <tr v-for="work in getPaginatedData()" v-bind:key="work.IdTrabajo" v-on:click="navigateToWork(work.IdTrabajo)">
+      <tr v-for="work in getPaginatedData()" v-bind:key="work[0]" v-on:click="navigateToWork(work.IdTrabajo)">
         <template v-for="column in headers">
           <td v-bind:key="column.dataField" v-bind:class="column.rowClass">{{work[column.dataField]}}</td>
         </template>
@@ -51,10 +51,6 @@ export default {
       type: Array,
       required: true
     },
-    // rawDataset: {
-    //   type: Array,
-    //   required: true
-    // },
     searchFields: {
       type: Array,
       required: true
@@ -62,7 +58,6 @@ export default {
   },
   methods: {
     setDataset: function (dataset) {
-      debugger
       this.rawDataset = dataset
       this.applyFilter('') // Just to load all the data
     },
