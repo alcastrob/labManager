@@ -1,5 +1,8 @@
 <template>
   <nav class="float-right">
+    Mostrando registros de {{((this.$parent.currentPage-1) * this.$parent.pageSize)+1}} a {{this.$parent.currentPage * this.$parent.pageSize}} de un total de {{this.$parent.dataset.length}}
+    <br>
+    <div class="float-right">
     <ul class="pagination">
       <li class="page-item" :class="{'disabled': isOnFirstPage}">
         <a class="page-link" href="#" @click.prevent="loadPage('prev')">
@@ -15,6 +18,7 @@
         </a>
       </li>
     </ul>
+    </div>
   </nav>
 </template>
 

@@ -5,6 +5,7 @@
     Trabajos</div>
   <div class="card-body">
     <div class="table-responsive">
+      <filter-bar></filter-bar>
       <table class="table table-bordered" id="workListTable" width="100%" cellspacing="0">
         <tr>
           <th>Dentista</th>
@@ -36,6 +37,7 @@
 <script>
 import { getWorksList } from '../../../main/dal.js'
 import pagination from './table/pagination'
+import filterBar from './table/filterBar'
 import _ from 'lodash'
 
 const pageSize = 10
@@ -43,11 +45,13 @@ const pageSize = 10
 export default {
   name: 'worklist',
   components: {
-    pagination
+    pagination,
+    filterBar
   },
   data () {
     return {
       dataset: '',
+      dataset2: '',
       pageSize: pageSize,
       currentPage: 1
     }
@@ -55,6 +59,34 @@ export default {
   methods: {
     showWork: function (idWork) {
       this.$parent.$parent.navigateTo('workDetail', idWork)
+    },
+    initializeDataset: function () {
+      getWorksList('labManager.sqlite').then((works) => {
+        this.dataset = works
+        this.dataset2 = works
+      })
+    },
+    // Filter
+    applyFilter: function (filter) {
+      // var tempDataset
+      // getWorksList('labManager.sqlite').then((works) => {
+      //   tempDataset = works
+      // })
+
+      console.log(this.dataset)
+      if (filter !== '') {
+        // this.dataset2 = _.filter(this.dataset, {NombreDentista: filter})
+        // console.log(this.dataset2)
+        this.dataset2 = _.filter(this.dataset, function(row){
+          if (row.NombreDentista === null) return false
+          return row.NombreDentista.toLowerCase().includes(filter.toLowerCase())
+          // return row.NombreDentista === filter
+        })
+        // console.log(tempDataset)
+        // this.dataset = tempDataset
+      } else {
+        this.dataset2 = this.dataset
+      }
     },
     // Pagination
     loadPage: function (page) {
@@ -71,13 +103,16 @@ export default {
       if (left < 0 || left > arraySize)
         return []
       else
-        return _.slice(this.dataset, left, right)
+        return _.slice(this.dataset2, left, right)
     }
+    // Filtering
+
   },
   mounted () {
-    getWorksList('labManager.sqlite').then((works) => {
-      this.dataset = works
-    })
+    // getWorksList('labManager.sqlite').then((works) => {
+    //   this.dataset = works
+    // })
+    this.initializeDataset()
   }
 }
 </script>
