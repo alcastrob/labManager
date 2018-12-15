@@ -5,60 +5,26 @@
     Trabajos
   </div>
   <div class="card-body">
-    <div class="table-responsive">
-      <filter-bar></filter-bar>
-      <table class="table table-bordered" id="workListTable" width="100%" cellspacing="0">
-        <tr>
-          <th v-for="header in headers" v-bind:key="header.sortExpression"
-           v-on:click="sortByExpression(header.sortExpression)">
-           {{header.title}}
-           <span class="fas" :class="{'fa-sort-amount-down': currentSortCriteria === header.sortExpression && currentSortDesc === true,
-            'fa-sort-amount-up': currentSortCriteria === header.sortExpression && currentSortDesc === false}"></span>
-           <!-- <span class="{{sortingIcon(header.sortExpression)}}"></span> -->
-           <!-- <span :class="{'fas fa-sort-amount-down': this.currentSortCriteria === header.title}"></span> -->
-           <!-- <i :class="{'fas fa-sort-amount-up': true}"></i> -->
-          </th>
-        </tr>
-        <tr v-for="work in getData()" v-bind:key="work.IdTrabajo" v-on:click="showWork(work.IdTrabajo)">
-          <td>{{work.IdTrabajo}}</td>
-          <td>{{work.NombreDentista}}</td>
-          <td>{{work.Paciente}}</td>
-          <td>{{work.TipoTrabajo}}</td>
-          <td>{{work.Color}}</td>
-          <td>{{work.FechaEntrada | formatDateDMY}}</td>
-          <td>{{work.FechaPrevista | formatDateDMY}}</td>
-          <td>{{work.FechaSalida | formatDateDMY}}</td>
-          <td>{{work.Precio}} €</td>
-        </tr>
-      </table>
-    </div>
-    <pagination></pagination>
+    <myTable></myTable>
   </div>
 </div>
 </template>
 
 <script>
 import { getWorksList } from '../../../main/dal.js'
-import pagination from './table/pagination'
-import filterBar from './table/filterBar'
-import _ from 'lodash'
-
-const pageSize = 10
+import { myTable } from './table/myTable'
 
 export default {
   name: 'worklist',
   components: {
-    pagination,
-    filterBar
+    myTable
   },
   data () {
     return {
-      rawDataset: '',
-      filteredDataset: '',
-      pageSize: pageSize,
-      currentPage: 1,
       headers: [ {
           title: 'Nº trabajo',
+          titleClass: '',
+          rowClass: '',
           sortExpression: 'IdTrabajo'
         }, {
           title: 'Dentista',
@@ -90,7 +56,7 @@ export default {
     }
   },
   methods: {
-    showWork: function (idWork) {
+    navigateToWork: function (idWork) {
       this.$parent.$parent.navigateTo('workDetail', idWork)
     },
     // Filter
@@ -119,43 +85,6 @@ export default {
         this.filteredDataset = this.rawDataset
       }
       this.currentPage = 1
-    },
-    // Pagination
-    loadPage: function (page) {
-      this.currentPage = page
-    },
-    getData: function () {
-      var arraySize = this.rawDataset.length - 1
-      var left = (this.currentPage - 1) * this.pageSize
-      var right = (this.currentPage * this.pageSize)
-      if (right > arraySize) {
-        right = arraySize
-      }
-
-      if (left < 0 || left > arraySize)
-        return []
-      else
-        return _.slice(this.filteredDataset, left, right)
-    },
-    // Sorting
-    sortByExpression: function(expression) {
-      if (expression === this.currentSortCriteria) {
-        this.currentSortDesc = !this.currentSortDesc
-      } else {
-        this.currentSortCriteria = expression
-        this.currentSortDesc = true
-      }
-      this.sortBy()
-    },
-    sortBy: function() {
-      console.log(this.filteredDataset)
-      var x = this.currentSortCriteria
-      this.filteredDataset = _.sortBy(this.filteredDataset, function(row) {
-        return row[x]
-        })
-      if (!this.currentSortDesc) {
-        this.filteredDataset = _.reverse(this.filteredDataset)
-      }
     }
   },
   mounted () {
@@ -168,6 +97,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>
