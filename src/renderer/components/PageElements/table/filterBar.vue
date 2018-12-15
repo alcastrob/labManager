@@ -21,13 +21,11 @@ export default {
   },
   methods: {
     doFilter () {
-      //this.$events.fire('filter-set', this.filterText)
       this.$parent.applyFilter(this.filterText)
     },
     resetFilter () {
       this.filterText = ''
       this.$parent.applyFilter(this.filterText)
-      // this.$events.fire('filter-reset')
     }
   }
 }

@@ -22,8 +22,6 @@
   </nav>
 </template>
 
-:class="{'active': n===this.$parent.currentPage}"
-
 <script>
 
 export default {
@@ -89,9 +87,7 @@ export default {
       } else {
         return to
       }
-
     }
-
   }
 }
 </script>
