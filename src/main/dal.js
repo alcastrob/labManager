@@ -92,6 +92,19 @@ export function getWorkTypes (fileName) {
 
 // Dentists -------------------------------------------------------------------
 
+export function getDentistList (fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
+  'DatosFiscales, DatosBancarios, DatosInteres, ' +
+  'Direccion, CP, Poblacion, CorreoElectronico, ' +
+  'Telefono, Telefono2 ' +
+  'FROM Dentistas'
+  return allAsync(db, query, []).then((row) => {
+    db.close()
+    return row
+  })
+}
+
 export function getDentistDetails (dentistId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +

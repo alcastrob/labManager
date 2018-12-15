@@ -124,3 +124,8 @@ export default {
   }
 }
 </script>
+<style>
+.invisible {
+  display: none;
+}
+</style>
