@@ -5,14 +5,14 @@
     Trabajos
   </div>
   <div class="card-body">
-    <myTable></myTable>
+    <myTable :headers="headers" :rawDataset="rawDataset"/>
   </div>
 </div>
 </template>
 
 <script>
+import myTable from './table/myTable'
 import { getWorksList } from '../../../main/dal.js'
-import { myTable } from './table/myTable'
 
 export default {
   name: 'worklist',
@@ -51,49 +51,18 @@ export default {
           title: 'Importe',
           sortExpression: 'Precio'
         } ],
-      currentSortCriteria: '',
-      currentSortDesc: ''
+      rawDataset: []
     }
   },
   methods: {
     navigateToWork: function (idWork) {
       this.$parent.$parent.navigateTo('workDetail', idWork)
     },
-    // Filter
-    applyFilter: function (filter) {
-      var lowercaseFilter = filter.toString().toLowerCase()
-      if (filter !== '') {
-        var a = _.filter(this.rawDataset, function(row){
-          if (row.NombreDentista === null) return false
-          return row.NombreDentista.toLowerCase().includes(lowercaseFilter)
-        })
-        var b = _.filter(this.rawDataset, function(row){
-          if (row.Paciente === null) return false
-          return row.Paciente.toString().toLowerCase().includes(lowercaseFilter)
-        })
-        var c = _.filter(this.rawDataset, function(row){
-          if (row.IdTrabajo === null) return false
-          return row.IdTrabajo.toString().toLowerCase().includes(lowercaseFilter)
-        })
-        var d = _.filter(this.rawDataset, function(row){
-          if (row.Color === null) return false
-          return row.Color.toString().toLowerCase().includes(lowercaseFilter)
-        })
-        this.filteredDataset = _.union(a, b, c, d, function(row) { return row.IdTrabajo})
-        this.filteredDataset = _.sortBy(this.filteredDataset, function(row) { return row.IdTrabajo})
-      } else {
-        this.filteredDataset = this.rawDataset
-      }
-      this.currentPage = 1
-    }
   },
   mounted () {
     getWorksList('labManager.sqlite').then((works) => {
-        this.rawDataset = works
-        this.filteredDataset = works
-      })
-    this.currentSortCriteria = 'IdTrabajo'
-    this.currentSortDesc = true
+      this.rawDataset = works
+    })
   }
 }
 </script>

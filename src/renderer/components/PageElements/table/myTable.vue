@@ -41,14 +41,20 @@ export default {
   },
   data () {
     return {
-      rawDataset: '',
+      // rawDataset: '',
       filteredDataset: '',
       pageSize: pageSize,
       currentPage: 1,
+      currentSortCriteria: '',
+      currentSortDesc: ''
     }
   },
   props: {
     headers: {
+      type: Array,
+      required: true
+    },
+    rawDataset: {
       type: Array,
       required: true
     }
@@ -59,6 +65,7 @@ export default {
       this.currentPage = page
     },
     getData: function () {
+      this.filteredDataset = this.rawDataset
       var arraySize = this.rawDataset.length - 1
       var left = (this.currentPage - 1) * this.pageSize
       var right = (this.currentPage * this.pageSize)
@@ -90,7 +97,38 @@ export default {
       if (!this.currentSortDesc) {
         this.filteredDataset = _.reverse(this.filteredDataset)
       }
+    },
+    // Filter
+    applyFilter: function (filter) {
+      var lowercaseFilter = filter.toString().toLowerCase()
+      if (filter !== '') {
+        var a = _.filter(this.rawDataset, function(row){
+          if (row.NombreDentista === null) return false
+          return row.NombreDentista.toLowerCase().includes(lowercaseFilter)
+        })
+        var b = _.filter(this.rawDataset, function(row){
+          if (row.Paciente === null) return false
+          return row.Paciente.toString().toLowerCase().includes(lowercaseFilter)
+        })
+        var c = _.filter(this.rawDataset, function(row){
+          if (row.IdTrabajo === null) return false
+          return row.IdTrabajo.toString().toLowerCase().includes(lowercaseFilter)
+        })
+        var d = _.filter(this.rawDataset, function(row){
+          if (row.Color === null) return false
+          return row.Color.toString().toLowerCase().includes(lowercaseFilter)
+        })
+        this.filteredDataset = _.union(a, b, c, d, function(row) { return row.IdTrabajo})
+        this.filteredDataset = _.sortBy(this.filteredDataset, function(row) { return row.IdTrabajo})
+      } else {
+        this.filteredDataset = this.rawDataset
+      }
+      this.currentPage = 1
     }
+  },
+  mounted () {
+    this.currentSortCriteria = 'IdTrabajo'
+    this.currentSortDesc = true
   }
 }
 </script>

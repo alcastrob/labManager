@@ -15,11 +15,11 @@
 import topBar from '../PageElements/TopBar'
 import iconCard from '../PageElements/IconCard'
 import areaChart from '../PageElements/AreaChart'
-import workList from '../PageElements/workList'
+import workList from '../PageElements/WorkList'
 
 export default {
   name: 'dashboard',
-  components: { topBar, iconCard, areaChart, workList },
+  components: { topBar, iconCard, areaChart, workList},
   data () {
     return {}
   },
