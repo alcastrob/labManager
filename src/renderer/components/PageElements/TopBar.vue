@@ -65,7 +65,8 @@ export default {
   },
   methods: {
     navigateTo (pageName) {
-      this.$parent.navigateTo(pageName)
+      // this.$parent.navigateTo(pageName)
+      this.$root.$emit('navigation:navigateTo', {page: pageName})
     }
   }
 }

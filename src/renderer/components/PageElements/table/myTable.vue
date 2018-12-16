@@ -43,7 +43,9 @@ export default {
       pageSize: pageSize,
       currentPage: 1,
       currentSortCriteria: '',
-      currentSortDesc: ''
+      currentSortDesc: '',
+      currentSeachCriteria: '',
+      state: null
     }
   },
   props: {
@@ -63,11 +65,23 @@ export default {
   methods: {
     setDataset: function (dataset) {
       this.rawDataset = dataset
+      debugger
+      if (this.state !== null){
+
+      }
+
       this.applyFilter('') // Just to load all the data
     },
     clickOn: function(index) {
-      console.log(this)
-      this.$root.$emit('table:click:' + this.eventId, index)
+      // This method must pass the state of the table to the destination component just for the "Back" functionality
+      var data = {
+        index: index,
+        filter: this.currentSeachCriteria,
+        sortCriteria: this.currentSortCriteria,
+        sortDirection: this.currentSortDesc,
+        currentPage: this.currentPage,
+        component: this.eventId}
+      this.$root.$emit('table:click:' + this.eventId, data)
     },
     // Pagination
     loadPage: function (page) {
@@ -108,6 +122,7 @@ export default {
     // Filter
     applyFilter: function (searchCriteria) {
       if (searchCriteria !== '' && this.searchFields.length > 0) {
+        this.currentSeachCriteria = searchCriteria
         var lowercaseFilter = searchCriteria.toString().toLowerCase()
         this.filteredDataset = []
         for (var i=0; i != this.searchFields.length; i++){
@@ -124,11 +139,20 @@ export default {
         this.filteredDataset = this.rawDataset
       }
       this.currentPage = 1
-    }
+    },
   },
   mounted () {
     this.currentSortCriteria = this.searchFields[0]
     this.currentSortDesc = true
+    this.$root.$on('table:setState:' + this.eventId, (data) => {
+      console.log('table:setState')
+      this.state = data
+      // debugger
+      // this.currentSeachCriteria = data.filter
+      // this.currentSortCriteria = data.sortCriteria
+      // this.currentSortDesc = data.sortDirection
+      // this.currentPage = data.currentPage
+    })
   }
 }
 </script>

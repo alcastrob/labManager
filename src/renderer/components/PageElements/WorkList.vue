@@ -73,11 +73,7 @@ export default {
       eventId: 'work'
     }
   },
-  methods: {
-    // navigateToWork: function (idWork) {
-    //   this.$parent.$parent.navigateTo('workDetail', idWork)
-    // }
-  },
+  methods: { },
   mounted () {
     getWorksList('labManager.sqlite').then((works) => {
       this.$children[0].setDataset(works)

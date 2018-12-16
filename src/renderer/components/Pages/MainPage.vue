@@ -51,22 +51,29 @@ export default {
       currentPage: 'dashboard',
       currentId: null,
       previousPage: null,
-      canNavigateBack: false
+      canNavigateBack: false,
+      backStates: []
     }
   },
   methods: {
-    navigateTo: function (pageName, id) {
+    // Navigation methods---------
+    navigateTo: function (pageName, eventData) {
       if (pageName === 'back') {
         var tmp = this.currentPage
         this.currentPage = this.previousPage
         this.previousPage = tmp
         this.canNavigateBack = false
-      } else {
+        var state = this.backStates.pop()
+        this.$root.$emit('table:setState:' + state.component, state)
+      } else if(pageName !== this.currentPage) {
         this.previousPage = this.currentPage
         this.currentPage = pageName
         this.canNavigateBack = this.evaluateCanNavigateBack()
+        if (eventData !== undefined && eventData.id !== undefined) {
+          this.currentId = eventData.id.index
+          this.backStates.push(eventData.id)
+        }
       }
-      this.currentId = id
     },
     evaluateCanNavigateBack: function () {
       switch (this.currentPage) {
@@ -105,7 +112,7 @@ export default {
       this.navigateTo('invoices')
     })
     this.$root.$on('navigation:navigateTo', (data) => {
-      this.navigateTo(data.page, data.id)
+      this.navigateTo(data.page, data)
     })
   },
   created () { }
