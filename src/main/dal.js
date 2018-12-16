@@ -30,7 +30,7 @@ export function createNewDatabase (fileName) {
 
 export function getWorksList (fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
+  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
   't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
   't.PrecioFinal AS Precio ' +
   'FROM Trabajos t ' +
@@ -94,7 +94,7 @@ export function getWorkTypes (fileName) {
 
 export function getDentistList (fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
+  var query = 'SELECT IdDentista AS Key, IdDentista, NombreDentista, NombreClinica, ' +
   'DatosFiscales, DatosBancarios, DatosInteres, ' +
   'Direccion, CP, Poblacion, CorreoElectronico, ' +
   'Telefono, Telefono2 ' +

@@ -4,7 +4,7 @@
     Listado de dentistas
   </h1>
   <div>
-    <myTable :headers="headers" :searchFields="searchFields"/>
+    <myTable :headers="headers" :searchFields="searchFields" :eventId="dentist"/>
   </div>
 </div>
 </template>
@@ -88,6 +88,10 @@ export default {
     getDentistList('labManager.sqlite').then((dentists) => {
       this.$children[0].setDataset(dentists)
       })
+    this.$root.$on('table:click:dentist', (key) => {
+      console.log('a: ' + key)
+      this.$root.$emit('navigation:navigateTo', {page: 'dentistDetail', id: key})
+    })
   }
 }
 </script>

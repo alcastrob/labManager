@@ -5,7 +5,7 @@
     Trabajos
   </div>
   <div class="card-body">
-    <myTable :headers="headers" :searchFields="searchFields"/>
+    <myTable :eventId="eventId" :headers="headers" :searchFields="searchFields" />
   </div>
 </div>
 </template>
@@ -13,6 +13,8 @@
 <script>
 import myTable from './table/myTable'
 import { getWorksList } from '../../../main/dal.js'
+
+const EVENTID = "WorksList"
 
 export default {
   name: 'worklist',
@@ -67,18 +69,22 @@ export default {
           titleClass: '',
           rowClass: 'text-right'
         } ],
-      searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color']
+      searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
+      eventId: 'work'
     }
   },
   methods: {
-    navigateToWork: function (idWork) {
-      this.$parent.$parent.navigateTo('workDetail', idWork)
-    }
+    // navigateToWork: function (idWork) {
+    //   this.$parent.$parent.navigateTo('workDetail', idWork)
+    // }
   },
   mounted () {
     getWorksList('labManager.sqlite').then((works) => {
       this.$children[0].setDataset(works)
       })
+    this.$root.$on('table:click:' + EVENTID, (key) => {
+      this.$root.$emit('navigation:navigateTo', {page: 'workDetail', id: key, comeBack: EVENTID})
+    })
   }
 }
 </script>

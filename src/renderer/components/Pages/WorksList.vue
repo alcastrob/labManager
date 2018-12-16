@@ -2,7 +2,7 @@
   <div>
     <h1>Listado de Trabajos</h1>
     <div>
-      <myTable :headers="headers" :searchFields="searchFields"/>
+      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId"/>
     </div>
   </div>
 </template>
@@ -10,6 +10,8 @@
 <script>
 import myTable from '../PageElements/table/myTable'
 import { getWorksList } from '../../../main/dal.js'
+
+  const EVENTID = "WorksList"
 
 export default {
   name: 'workslist',
@@ -64,7 +66,8 @@ export default {
           titleClass: '',
           rowClass: 'text-right'
         } ],
-      searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color']
+      searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
+      eventId: EVENTID
     }
   },
   methods: {
@@ -74,6 +77,9 @@ export default {
     getWorksList('labManager.sqlite').then((works) => {
       this.$children[0].setDataset(works)
       })
+    this.$root.$on('table:click:' + EVENTID, (key) => {
+      this.$root.$emit('navigation:navigateTo', {page: 'workDetail', id: key, comeBack: EVENTID})
+    })
   }
 }
 </script>

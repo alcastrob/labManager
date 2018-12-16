@@ -104,6 +104,9 @@ export default {
     ipcRenderer.on('navigation:invoices', () => {
       this.navigateTo('invoices')
     })
+    this.$root.$on('navigation:navigateTo', (data) => {
+      this.navigateTo(data.page, data.id)
+    })
   },
   created () { }
 }
