@@ -72,7 +72,6 @@ export default {
         return ''
       }
       if (message.includes('<month>')) {
-        debugger
         moment.locale('es')
         message = message.replace('<month>', moment().format('MMMM'))
       }

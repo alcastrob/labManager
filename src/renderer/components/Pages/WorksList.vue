@@ -49,22 +49,26 @@ export default {
           title: 'F. Entrada',
           dataField: 'FechaEntrada',
           titleClass: '',
-          rowClass: ''
+          rowClass: '',
+          formatter: 'date'
         }, {
           title: 'F. Prevista',
           dataField: 'FechaPrevista',
           titleClass: '',
-          rowClass: ''
+          rowClass: '',
+          formatter: 'date'
         }, {
           title: 'F. Terminación',
           dataField: 'FechaSalida',
           titleClass: '',
-          rowClass: ''
+          rowClass: '',
+          formatter: 'date'
         }, {
           title: 'Importe',
           dataField: 'Precio',
           titleClass: '',
-          rowClass: 'text-right'
+          rowClass: 'text-right',
+          formatter: 'money'
         } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
       eventId: EVENTID

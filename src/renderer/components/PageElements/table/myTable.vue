@@ -12,7 +12,7 @@
       </tr>
       <tr v-for="work in getPaginatedData()" v-bind:key="work[0]" v-on:click="clickOn(work['Key'])">
         <template v-for="column in headers">
-          <td v-bind:key="column.dataField" v-bind:class="column.rowClass">{{work[column.dataField]}}</td>
+          <td v-bind:key="column.dataField" v-bind:class="column.rowClass">{{formatRow(work[column.dataField], column.formatter)}}</td>
         </template>
         <!-- <td>{{work.FechaEntrada | formatDateDMY}}</td>
         <td>{{work.FechaPrevista | formatDateDMY}}</td>
@@ -26,6 +26,7 @@
 <script>
 import pagination from './pagination'
 import filterBar from './filterBar'
+import moment from 'moment'
 import _ from 'lodash'
 
 const pageSize = 10
@@ -45,7 +46,11 @@ export default {
       currentSortCriteria: '',
       currentSortDesc: '',
       currentSeachCriteria: '',
-      state: null
+      state: null,
+      moneyFormatter: new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'EUR'
+      })
     }
   },
   props: {
@@ -63,6 +68,15 @@ export default {
     }
   },
   methods: {
+    formatRow(row, formatter) {
+      if(formatter === 'date' && row !== null && row !== undefined) {
+        return moment(row).format('DD/MM/YYYY')
+      } else if(formatter === 'money' && row !== null && row !== undefined) {
+        return this.moneyFormatter.format(row)
+      } else {
+      return row
+      }
+    },
     setDataset: function (dataset) {
       this.rawDataset = dataset
 
@@ -144,6 +158,7 @@ export default {
   mounted () {
     this.currentSortCriteria = this.searchFields[0]
     this.currentSortDesc = true
+    moment.locale('es')
     this.$root.$on('table:setState:' + this.eventId, (data) => {
       console.log('table:setState')
       this.state = data
