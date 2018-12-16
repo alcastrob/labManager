@@ -20,6 +20,8 @@
 
 <script>
 import _ from 'lodash'
+import moment from 'moment'
+
 export default {
   name: 'myIconCard',
   data () {
@@ -47,30 +49,37 @@ export default {
       type: String,
       required: true
     },
-    rawData: {
+    dataset: {
       type: Array,
       required: true
     },
-    secondaryRawData: {
+    secondaryDataset: {
       type: Array,
       required: false
     }
   },
   computed: {
     messageToShow() {
-      return this.processMessage(this.message, this.rawData)
+      return this.processMessage(this.message, this.dataset)
     },
     secondaryMessageToShow() {
-      return this.processMessage(this.secondMessage, this.secondaryRawData)
+      return this.processMessage(this.secondMessage, this.secondaryDataset)
     }
   },
   methods: {
     processMessage(message, dataset) {
       if (message === undefined) {
         return ''
-      } else if (message.includes('<count>')) {
+      }
+      if (message.includes('<month>')) {
+        debugger
+        moment.locale('es')
+        message = message.replace('<month>', moment().format('MMMM'))
+      }
+      if (message.includes('<count>')) {
         return message.replace('<count>', dataset.length)
-      } else if (message.includes('<sum(')) {
+      }
+      if (message.includes('<sum(')) {
         var left = message.indexOf('(')
         var right = message.indexOf(')')
         var param = message.substr(left+1, right-1-left)
