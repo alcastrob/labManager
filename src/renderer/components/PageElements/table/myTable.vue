@@ -65,9 +65,9 @@ export default {
   methods: {
     setDataset: function (dataset) {
       this.rawDataset = dataset
-      debugger
-      if (this.state !== null){
 
+      if (this.state !== null){
+        // TODO: set the values here (more or less)
       }
 
       this.applyFilter('') // Just to load all the data

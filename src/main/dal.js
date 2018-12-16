@@ -78,6 +78,71 @@ export function getWorkTests (workId, fileName) {
   })
 }
 
+// Custom queries for Work (KPIs)----------------------------------------------
+
+export function getWorkInExecution (fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
+  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
+  't.PrecioFinal AS Precio ' +
+  'FROM Trabajos t ' +
+  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
+  'WHERE FechaTerminacion is NULL'
+  return allAsync(db, query, []).then((row) => {
+    // db.close()
+    return row
+  })
+}
+
+export function getWorksEndedThisMonth(fileName) {
+db = new sqlite3.Database(fileName)
+var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
+'t.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
+'t.PrecioFinal AS Precio ' +
+'FROM Trabajos t ' +
+'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
+'WHERE FechaTerminacion >= date("now","localtime", "start of month") ' +
+'AND FechaTerminacion <= date("now","localtime", "start of month","+1 month","-1 day")'
+return allAsync(db, query, []).then((row) => {
+  // db.close()
+  return row
+})
+}
+
+export function getWorksEndedLast30days(fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
+  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
+  't.PrecioFinal AS Precio ' +
+  'FROM Trabajos t ' +
+  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
+  'WHERE FechaTerminacion >= date("now","localtime", "-30 days")'
+  return allAsync(db, query, []).then((row) => {
+    // db.close()
+    return row
+  })
+  }
+
+  export function getWorksEndedPrevious30days(fileName) {
+    db = new sqlite3.Database(fileName)
+    var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
+    't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
+    't.PrecioFinal AS Precio ' +
+    'FROM Trabajos t ' +
+    'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+    'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
+    'WHERE FechaTerminacion >= date("now","localtime", "-60 days") '+ 
+    'AND FechaTerminacion <= date("now","localtime", "-30 days")'
+    return allAsync(db, query, []).then((row) => {
+      // db.close()
+      return row
+    })
+    }
+
+
 // Work Types -----------------------------------------------------------------
 
 export function getWorkTypes (fileName) {
