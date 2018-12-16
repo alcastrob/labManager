@@ -58,43 +58,19 @@ export default {
   },
   computed: {
     messageToShow() {
-      if (this.message.includes('<count>')){
-        return this.message.replace('<count>', this.rawData.length)
-      } else if (this.message.includes('<sum(')){
-        var left = this.message.indexOf('(')
-        var right = this.message.indexOf(')')
-        var param = this.message.substr(left+1, right-1-left)
-        var sum = _.sumBy(this.rawData, function(row){
-          return row[param]
-        })
-        return this.message.replace('<sum(' + param + ')>', this.formatter.format(sum))
-      } else {
-        return this.secondMessage
-      }
+      return this.processMessage(this.message, this.rawData)
     },
     secondaryMessageToShow() {
-      if (this.secondMessage === undefined){
-        return ''
-      } else if(this.secondMessage.includes('<count>')){
-        return this.secondMessage.replace('<count>', this.secondaryRawData.length)
-      } else if (this.secondMessage.includes('<sum(')){
-        var left = this.secondMessage.indexOf('(')
-        var right = this.secondMessage.indexOf(')')
-        var param = this.secondMessage.substr(left+1, right-1-left)
-        var sum = _.sumBy(this.secondaryRawData, function(row){
-          return row[param]
-        })
-        return this.secondMessage.replace('<sum(' + param + ')>', this.formatter.format(sum))
-      } else {
-        return this.secondMessage
-      }
+      return this.processMessage(this.secondMessage, this.secondaryRawData)
     }
   },
   methods: {
     processMessage(message, dataset) {
-      if (message.includes('<count>')){
+      if (message === undefined) {
+        return ''
+      } else if (message.includes('<count>')) {
         return message.replace('<count>', dataset.length)
-      } else if (message.includes('<sum(')){
+      } else if (message.includes('<sum(')) {
         var left = message.indexOf('(')
         var right = message.indexOf(')')
         var param = message.substr(left+1, right-1-left)
