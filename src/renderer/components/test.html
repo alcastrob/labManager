@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" type="text/css" href="./test.css">
+</head>
+<body>
+  <div id="printable" class="box">
+    <!-- class="invisible" -->
+    <!--  -->
+    <p class="left"><span class="composite">&nbsp;&nbsp;{{workData.TipoTrabajo}}&nbsp;&nbsp;</span>
+      <span class="right">Trabajo nº {{workData.IdTrabajo}}</span>
+    </p>
+
+    <table>
+      <tr>
+        <td>Clínica o Dr/a: </td>
+        <td>{{workData.NombreDentista}}</td>
+      </tr>
+      <tr>
+        <td>Paciente: </td>
+        <td>{{workData.Paciente}}</td>
+      </tr>
+      <tr>
+        <td>Trabajos a realizar:</td>
+        <td>Color: {{workData.Color}}</td>
+      </tr>
+      <tr>
+        <td colspan="2" v-for="detail in workIndications" :key="detail.IdTrabajoDetalle">{{detail.Descripcion}}</td>
+      </tr>
+    </table>
+
+    <br>
+    <br>
+
+    <table>
+      <tr>
+        <th></th>
+        <th>Entrada</th>
+        <th>Salida</th>
+        <th>Hora</th>
+      </tr>
+      <tr>
+        <td>P. METAL</td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>BIZCOCHO</td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>TERMINAR</td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+    <br>
+    <span>Nota:</span>
+    <br>
+    <br>
+    &nbsp;
+  </div>
+</body>
+</html>

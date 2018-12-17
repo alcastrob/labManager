@@ -1,0 +1,33 @@
+.box {
+  font-family: sans-serif;
+  width: 600px;
+  border: solid 1px #ccc;
+  text-align: left;
+  padding: 1em;
+  margin: 2em auto;
+  }
+p {
+  text-align: center;
+}
+table {
+  margin: 0 auto;
+  width: 500px;
+}
+tr>th {
+  text-align: right;
+}
+tr>td {
+  border: solid 1px #000;
+}
+tr>th {
+  width: 150px;
+}
+.left {
+  text-align:left;
+}
+.right {
+  float:right;
+}
+.composite {
+  background-color: #e1A;
+}

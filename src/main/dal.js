@@ -37,19 +37,22 @@ export function getWorksList (fileName) {
   'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
   'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo'
   return allAsync(db, query, []).then((row) => {
-    db.close()
+    // db.close()
     return row
   })
 }
 
 export function getWorkDetails (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdTrabajo, IdDentista, IdTipoTrabajo, Paciente, ' +
-  'Color, date(FechaTerminacion) AS FechaTerminacion, date(FechaEntrada) AS FechaEntrada, ' +
-  'date(FechaPrevista) AS FechaPrevista, PrecioFinal, ' +
-  'PrecioMetal, PrecioTotal, PrecioFija, Nombre FROM Trabajos WHERE IdTrabajo = ?'
+  var query = 'SELECT t.IdTrabajo, tt.Descripcion AS TipoTrabajo, t.IdDentista, d.NombreClinica, d.NombreDentista, ' +
+  't.IdTipoTrabajo, t.Paciente, t.Color, date(t.FechaTerminacion) AS FechaTerminacion, date(t.FechaEntrada) as FechaEntrada, date(t.FechaPrevista) as FechaPrevista, ' +
+  't.PrecioFinal, t.PrecioMetal, t.PrecioTotal, t.PrecioFija, t.Nombre ' +
+  'FROM Trabajos t ' +
+  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
+  'WHERE t.IdTrabajo = ?'
   return getAsync(db, query, [workId]).then((row) => {
-    db.close()
+    // db.close()
     return row
   })
 }

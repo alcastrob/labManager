@@ -23,18 +23,18 @@
 </template>
 
 <script>
-import { getWorkIndications } from '../../../main/dal.js'
 import _ from 'lodash'
 
 export default {
   name: 'workIndicationsTable',
   props: {
-    workId: Number
+    workIndications: {
+      type: [Object, Array],
+      required: true
+    }
   },
   data () {
-    return {
-      workIndications: ''
-    }
+    return { }
   },
   methods: {
     getSum: function () {
@@ -47,9 +47,6 @@ export default {
     }
   },
   mounted () {
-    getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
-      this.workIndications = workIndicat
-    })
   }
 }
 </script>

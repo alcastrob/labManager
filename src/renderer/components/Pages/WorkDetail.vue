@@ -12,7 +12,7 @@
               <span>Imprimir etiqueta</span>
             </button>
             <div class="dropdown-menu">
-              <a href="#" class="dropdown-item">Garantía</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Garantia')">Garantía</a>
               <a href="#" class="dropdown-item">Resina</a>
               <a href="#" class="dropdown-item">Compostura</a>
               <a href="#" class="dropdown-item">Aditamentos</a>
@@ -53,18 +53,18 @@
           </select>
         </div> <!-- col-md-6 -->
         <div class="col-md-2">
-            <label for="precioMetal">Precio metal</label>
-            <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="work.PrecioMetal">
+          <label for="precioMetal">Precio metal</label>
+          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="work.PrecioMetal">
         </div> <!-- col-md-2 -->
         <div class="col-md-2">
-            <label for="color">Color</label>
-            <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="work.Color">
+          <label for="color">Color</label>
+          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="work.Color">
         </div> <!-- col-md-2 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
           <h4>Indicaciones</h4>
-          <workIndicationsTable :workId="workId"></workIndicationsTable>
+          <workIndicationsTable :workIndications="workIndications"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
@@ -84,13 +84,15 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
+  <printed-label ref="print" :workData="work" :workIndications="workIndications"></printed-label>
   </div>
 </template>
 
 <script>
 import workIndicationsTable from '../PageElements/WorkIndicationsTable'
 import workTestsTable from '../PageElements/workTestsTable'
-import { getWorkDetails, getWorkTypes } from '../../../main/dal.js'
+import printedLabel from '../PrintedLabel'
+import { getWorkDetails, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
 
 export default {
   name: 'workDetail',
@@ -99,21 +101,30 @@ export default {
   },
   components: {
     workIndicationsTable,
-    workTestsTable
+    workTestsTable,
+    printedLabel
   },
   data () {
     return {
-      work: '',
-      workTypes: ''
+      work: {},
+      workTypes: {},
+      workIndications: {}
     }
   },
-  methods: {},
+  methods: {
+    printLabel: function(type) {
+      this.$refs.print.print()
+    }
+  },
   mounted () {
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types
     })
     getWorkDetails(this.workId, 'labManager.sqlite').then((workDetails) => {
       this.work = workDetails
+    })
+    getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
+      this.workIndications = workIndicat
     })
   }
 }
