@@ -84,11 +84,11 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
-  <printed-label1 ref="label1" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label1>
-  <printed-label2 ref="label2" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label2>
-  <printed-label3 ref="label3" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label3>
-  <printed-label4 ref="label4" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label4>
-  <printed-label5 ref="label5" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label5>
+  <printed-label1 ref="label1" :workData="work" :workIndications="workIndications"></printed-label1>
+  <printed-label2 ref="label2" :workData="work" :workIndications="workIndications"></printed-label2>
+  <printed-label3 ref="label3" :workData="work" :workIndications="workIndications"></printed-label3>
+  <printed-label4 ref="label4" :workData="work" :workIndications="workIndications"></printed-label4>
+  <printed-label5 ref="label5" :workData="work" :workIndications="workIndications"></printed-label5>
   </div>
 </template>
 
@@ -120,13 +120,11 @@ export default {
     return {
       work: {},
       workTypes: {},
-      workIndications: {},
-      _labelName: ''
+      workIndications: {}
     }
   },
   methods: {
     printLabel: function(type) {
-      this._labelName = type
       switch(type) {
         case 'Garantia':
           break;
@@ -135,20 +133,20 @@ export default {
         case 'Implantes':
         case 'Metal-Cerámica':
         case 'Zirconio':
-          this.$refs.label1.print()
+          this.$refs.label1.print(type)
           break;
         case 'Esqueléticos':
-          this.$refs.label2.print()
+          this.$refs.label2.print(type)
           break;
         case 'Compostura':
         case 'Ortodoncia':
-          this.$refs.label3.print()
+          this.$refs.label3.print(type)
           break;
         case 'Resina':
-          this.$refs.label4.print()
+          this.$refs.label4.print(type)
           break;
         case 'Aditamentos':
-          this.$refs.label5.print()
+          this.$refs.label5.print(type)
         default:
           return ''
       }
@@ -185,22 +183,13 @@ export default {
         case 'Implantes':
           return '~@/assets/implantes.jpg'
         case 'E-max':
-          return '~@/assets/e-max.jpg'
+          return 'e-max.jpg'
         case 'Composite':
           return '~@/assets/composite.jpg'
         case 'Metal-Cerámica':
           return '~@/assets/metal-ceramica.jpg'
         default:
           return ''
-      }
-    },
-    labelName: function() {
-      if (this._labelName !== undefined)
-      {
-        return this._labelName
-      }
-      else {
-        return ''
       }
     }
    }

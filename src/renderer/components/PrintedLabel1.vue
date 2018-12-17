@@ -1,10 +1,17 @@
 <template>
-  <div id="printableLabel1" class="box invisible">
-    <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
+  <div id="printableLabel1" class="box">
+    <!-- invisible -->
+    <div style="position: absolute; top: +60px; left: 0px; z-index: 10;" class="labelTitle">
       {{labelName}}
     </div>
     <div style="position: absolute;" class="labelTitle">
-      <img :src="colorBackgroundJpeg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
+      <img src="~@/assets/composite.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
+      <!-- <img :src="background" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;"> -->
+      <!-- <img src="~@/assets/composite.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Composite'">
+      <img src="~@/assets/e-max.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='E-Max'">
+      <img src="~@/assets/implantes.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Implantes'">
+      <img src="~@/assets/metal-ceramica.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Metal-Cerámica'">
+      <img src="~@/assets/zirconio.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Zirconio'"> -->
     </div>
     <div style="position: absolute; top: +60px; left: +300px; z-index:2; text-align: right; width: 300px;" >
       <span class="labelSubtitle">Trabajo nº </span>
@@ -119,7 +126,8 @@ export default {
         .noBorder {
           border: none;
         }
-        `
+        `,
+      name: ''
     }
   },
   props: {
@@ -130,23 +138,22 @@ export default {
     workIndications: {
       type: [Object, Array],
       required: true
-    },
-    labelName: {
-      type: String,
-      required: true
-    },
-    colorBackgroundJpeg: {
-      type: String,
-      required: true
     }
   },
   methods: {
-    print () {
+    print (label) {
+      // debugger
+      console.log(label)
+      this.name = label
+      this.$forceUpdate()
       const d = new Printd()
       d.print( document.getElementById('printableLabel1'), this.cssText)
     }
   },
-  mounted () {
+  computed: {
+    labelName: function() {
+      return this.name
+    }
   }
 }
 </script>

@@ -4,7 +4,7 @@
       {{labelName}}
     </div>
     <div style="position: absolute;" class="labelTitle">
-      <img :src="colorBackgroundJpeg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
+      <img src="~@/assets/aditamentos.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
     </div>
     <div style="position: absolute; top: +60px; left: +300px; z-index:2; text-align: right; width: 300px;" >
       <span class="labelSubtitle">Trabajo nº </span>
@@ -119,7 +119,8 @@ export default {
         .noBorder {
           border: none;
         }
-        `
+        `,
+      name: 'Aditamentos'
     }
   },
   props: {
@@ -130,23 +131,22 @@ export default {
     workIndications: {
       type: [Object, Array],
       required: true
-    },
-    labelName: {
-      type: String,
-      required: true
-    },
-    colorBackgroundJpeg: {
-      type: String,
-      required: true
     }
   },
   methods: {
-    print () {
+    print (label) {
+      // debugger
+      console.log(label)
+      this.name = label
+      this.$forceUpdate()
       const d = new Printd()
       d.print( document.getElementById('printableLabel5'), this.cssText)
     }
   },
-  mounted () {
+  computed: {
+    labelName: function() {
+      return this.name
+    }
   }
 }
 </script>
