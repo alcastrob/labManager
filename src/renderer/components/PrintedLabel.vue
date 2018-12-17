@@ -2,11 +2,21 @@
   <div id="printable" class="box">
     <!-- class="invisible" -->
     <!--  -->
-    <p class="left">
-      <span class="labelTitle" v-bind:class="cssClass()">&nbsp;&nbsp;{{workData.TipoTrabajo}}&nbsp;&nbsp;</span>
-      <span class="right labelTitle">Trabajo nº {{workData.IdTrabajo}}</span>
-    </p>
-
+    <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
+      {{workData.TipoTrabajo}}
+    </div>
+    <div style="position: absolute;" class="labelTitle">
+      <img src="../assets/composite.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
+    </div>
+    <div style="position: absolute; top: +60px; left: +300px; z-index:2; text-align: right; width: 300px;" >
+      <span class="labelSubtitle">Trabajo nº </span>
+      <span class="labelTitle">{{workData.IdTrabajo}}</span>
+    </div>
+<!-- position: absolute; top: -10px; -->
+    <br>
+    <br>
+    <br>
+    <br>
     <table>
       <tr>
         <td class="noBorder">Clínica o Dr/a: </td>
@@ -71,7 +81,7 @@ export default {
       cssText: `
         .box {
           font-family: sans-serif;
-          width: 500px;
+          width: 600px;
           border: solid 1px #ccc;
           text-align: left;
           padding: 1em;
@@ -79,6 +89,11 @@ export default {
           }
         .labelTitle {
           font-size: 2.5rem;
+          font-weight: 300;
+          line-height: 1.2;
+        }
+        .labelSubtitle {
+          font-size: 1.5rem;
           font-weight: 300;
           line-height: 1.2;
         }
@@ -106,9 +121,6 @@ export default {
         }
         .noBorder {
           border: none;
-        }
-        .background {
-          background-color: #e1A;
         }
         `
     }
@@ -156,6 +168,11 @@ export default {
   font-weight: 300;
   line-height: 1.2;
 }
+.labelSubtitle {
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
 p {
   text-align: center;
 }
@@ -180,9 +197,5 @@ tr>th {
 }
 .noBorder {
   border: none;
-}
-.background {
-  background-color: red!important;
-  color: white!important;
 }
 </style>

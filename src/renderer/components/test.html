@@ -11,9 +11,17 @@
   <div id="printable" class="box">
     <!-- class="invisible" -->
     <!--  -->
-    <p class="left"><span class="composite">&nbsp;&nbsp;{{workData.TipoTrabajo}}&nbsp;&nbsp;</span>
-      <span class="right">Trabajo nº {{workData.IdTrabajo}}</span>
-    </p>
+    <div style="text-align: center;">
+      <div style="position: relative; display: inline;" class="labelTitle">
+        <img src="../assets/composite.jpg" style="width: 250px">
+        <div style="position: absolute; top: 0px; left: 0px;">
+        {{workData.TipoTrabajo}}
+        </div>
+      </div>
+      <div style="display: inline;" class="labelTitle">
+          Trabajo nº {{workData.IdTrabajo}}
+      </div>
+    </div>
 
     <table>
       <tr>
