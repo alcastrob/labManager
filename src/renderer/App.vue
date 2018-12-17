@@ -75,11 +75,4 @@
     background: #AFA8A1!important;
     color: #fff;
   }
-  /* table.table-bordered td:last-child i {
-    display:none;
-  }
-  table.table-bordered tr:hover > td:last-child > i {
-    display:block;
-  } */
-
 </style>

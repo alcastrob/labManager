@@ -1,18 +1,15 @@
 <template>
-  <div id="printable" class="box">
-    <!-- class="invisible" -->
-    <!--  -->
+  <div id="printableLabel2" class="box invisible">
     <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
-      {{workData.TipoTrabajo}}
+      {{labelName}}
     </div>
     <div style="position: absolute;" class="labelTitle">
-      <img src="../assets/composite.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
+      <img :src="colorBackgroundJpeg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
     </div>
     <div style="position: absolute; top: +60px; left: +300px; z-index:2; text-align: right; width: 300px;" >
       <span class="labelSubtitle">Trabajo nº </span>
       <span class="labelTitle">{{workData.IdTrabajo}}</span>
     </div>
-<!-- position: absolute; top: -10px; -->
     <br>
     <br>
     <br>
@@ -46,13 +43,13 @@
         <th>Hora</th>
       </tr>
       <tr>
-        <td>P. METAL</td>
+        <td>P. ESTRUCTURA</td>
         <td></td>
         <td></td>
         <td></td>
       </tr>
       <tr>
-        <td>BIZCOCHO</td>
+        <td>P. DIENTES</td>
         <td></td>
         <td></td>
         <td></td>
@@ -64,18 +61,13 @@
         <td></td>
       </tr>
     </table>
-    <br>
-    <span>Nota:</span>
-    <br>
-    <br>
-    &nbsp;
   </div>
 </template>
 
 <script>
 import {Printd} from 'printd'
 export default {
-  name: 'printedLabel1',
+  name: 'printedLabel2',
   data () {
     return {
       cssText: `
@@ -133,69 +125,23 @@ export default {
     workIndications: {
       type: [Object, Array],
       required: true
+    },
+    labelName: {
+      type: String,
+      required: true
+    },
+    colorBackgroundJpeg: {
+      type: String,
+      required: true
     }
   },
   methods: {
     print () {
       const d = new Printd()
-      d.print( document.getElementById('printable'), this.cssText)
-    },
-    cssClass() {
-      if (this.workData.TipoTrabajo !== undefined) {
-        // var x = this.workData.TipoTrabajo.toLowerCase()
-        // return x
-        console.log(this.workData.TipoTrabajo)
-        return 'background'
-      }
-      return ''
+      d.print( document.getElementById('printableLabel2'), this.cssText)
     }
   },
   mounted () {
   }
 }
 </script>
-<style>
-.box {
-  font-family: sans-serif;
-  width: 600px;
-  border: solid 1px #ccc;
-  text-align: left;
-  padding: 1em;
-  margin: 2em auto;
-  }
-.labelTitle {
-  font-size: 2.5rem;
-  font-weight: 300;
-  line-height: 1.2;
-}
-.labelSubtitle {
-  font-size: 1.5rem;
-  font-weight: 300;
-  line-height: 1.2;
-}
-p {
-  text-align: center;
-}
-table {
-  margin: 0 auto;
-  width: 500px;
-}
-tr>th {
-  text-align: right;
-}
-tr>td {
-  border: solid 1px #000;
-}
-tr>th {
-  width: 150px;
-}
-.left {
-  text-align:left;
-}
-.right {
-  float:right;
-}
-.noBorder {
-  border: none;
-}
-</style>

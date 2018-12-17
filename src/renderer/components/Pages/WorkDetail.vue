@@ -13,16 +13,16 @@
             </button>
             <div class="dropdown-menu">
               <a href="#" class="dropdown-item" v-on:click="printLabel('Garantia')">Garantía</a>
-              <a href="#" class="dropdown-item">Resina</a>
-              <a href="#" class="dropdown-item">Compostura</a>
-              <a href="#" class="dropdown-item">Aditamentos</a>
-              <a href="#" class="dropdown-item">Esqueléticos</a>
-              <a href="#" class="dropdown-item">Ortodoncia</a>
-              <a href="#" class="dropdown-item">Zirconio</a>
-              <a href="#" class="dropdown-item">Implantes</a>
-              <a href="#" class="dropdown-item">E-Max</a>
-              <a href="#" class="dropdown-item">Composite</a>
-              <a href="#" class="dropdown-item">Metal-Cerámica</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Resina')">Resina</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Compostura')">Compostura</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')">Aditamentos</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Esqueléticos')">Esqueléticos</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Ortodoncia')">Ortodoncia</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Zirconio')">Zirconio</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Implantes')">Implantes</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('E-Max')">E-Max</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
+              <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
             </div> <!-- dropdown-menu -->
           </div>
         </div>
@@ -84,14 +84,22 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
-  <printed-label ref="print" :workData="work" :workIndications="workIndications"></printed-label>
+  <printed-label1 ref="label1" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label1>
+  <printed-label2 ref="label2" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label2>
+  <printed-label3 ref="label3" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label3>
+  <printed-label4 ref="label4" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label4>
+  <printed-label5 ref="label5" :workData="work" :workIndications="workIndications" :labelName="labelName" :colorBackgroundJpeg="labelColorBackgroundJpeg"></printed-label5>
   </div>
 </template>
 
 <script>
 import workIndicationsTable from '../PageElements/WorkIndicationsTable'
 import workTestsTable from '../PageElements/workTestsTable'
-import printedLabel from '../PrintedLabel'
+import printedLabel1 from '../PrintedLabel1'
+import printedLabel2 from '../PrintedLabel2'
+import printedLabel3 from '../PrintedLabel3'
+import printedLabel4 from '../PrintedLabel4'
+import printedLabel5 from '../PrintedLabel5'
 import { getWorkDetails, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
 
 export default {
@@ -102,18 +110,48 @@ export default {
   components: {
     workIndicationsTable,
     workTestsTable,
-    printedLabel
+    printedLabel1,
+    printedLabel2,
+    printedLabel3,
+    printedLabel4,
+    printedLabel5
   },
   data () {
     return {
       work: {},
       workTypes: {},
-      workIndications: {}
+      workIndications: {},
+      _labelName: ''
     }
   },
   methods: {
     printLabel: function(type) {
-      this.$refs.print.print()
+      this._labelName = type
+      switch(type) {
+        case 'Garantia':
+          break;
+        case 'Composite':
+        case 'E-Max':
+        case 'Implantes':
+        case 'Metal-Cerámica':
+        case 'Zirconio':
+          this.$refs.label1.print()
+          break;
+        case 'Esqueléticos':
+          this.$refs.label2.print()
+          break;
+        case 'Compostura':
+        case 'Ortodoncia':
+          this.$refs.label3.print()
+          break;
+        case 'Resina':
+          this.$refs.label4.print()
+          break;
+        case 'Aditamentos':
+          this.$refs.label5.print()
+        default:
+          return ''
+      }
     }
   },
   mounted () {
@@ -126,7 +164,46 @@ export default {
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
     })
-  }
+  },
+  computed: {
+    labelColorBackgroundJpeg: function() {
+      switch(this._labelName) {
+        case 'Garantia':
+          return  ''
+        case 'Resina':
+          return '~@/assets/resina.jpg'
+        case 'Compostura':
+          return '~@/assets/compostura.jpg'
+        case 'Aditamentos':
+          return ''
+        case 'Esqueléticos':
+          return '~@/assets/esqueleticos.jpg'
+        case 'Ortodoncia':
+          return '~@/assets/ortodoncia.jpg'
+        case 'Zirconio':
+          return '~@/assets/zirconio.jpg'
+        case 'Implantes':
+          return '~@/assets/implantes.jpg'
+        case 'E-max':
+          return '~@/assets/e-max.jpg'
+        case 'Composite':
+          return '~@/assets/composite.jpg'
+        case 'Metal-Cerámica':
+          return '~@/assets/metal-ceramica.jpg'
+        default:
+          return ''
+      }
+    },
+    labelName: function() {
+      if (this._labelName !== undefined)
+      {
+        return this._labelName
+      }
+      else {
+        return ''
+      }
+    }
+   }
 }
 </script>
 
