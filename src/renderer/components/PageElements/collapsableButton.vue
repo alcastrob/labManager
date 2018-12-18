@@ -1,3 +1,16 @@
+<template>
+</template>
+
+<script>
+export default {
+  data () {
+    return {}
+  },
+  methods: {}
+}
+</script>
+
+<style lang="scss">
 @mixin transition($settings) {
   -webkit-transition: $settings;
   -moz-transition: $settings;
@@ -35,3 +48,4 @@
     }
   }
 }
+</style>

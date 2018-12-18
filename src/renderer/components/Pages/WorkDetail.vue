@@ -2,36 +2,38 @@
   <div>
     <div class="container">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
           <h1>Trabajo nº {{work.IdTrabajo}}</h1>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 mt-2">
           <div class="float-right">
-            <button class="btn btn-warning btn-sm mt-1 dropdown-toggle" type="button" data-toggle="dropdown">
-              <i class="fas fa-tags pr-1"></i>
-              <span>Imprimir etiqueta</span>
-            </button>
-            <div class="dropdown-menu">
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Garantia')">Garantía</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Resina')">Resina</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Compostura')">Compostura</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')">Aditamentos</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Esqueléticos')">Esqueléticos</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Ortodoncia')">Ortodoncia</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Zirconio')">Zirconio</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Implantes')">Implantes</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('E-Max')">E-Max</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
-            </div> <!-- dropdown-menu -->
-            <button class="btn btn-success btn-sm mt-1 btn-collapsible" type="button">
-              <i class="fas fa-certificate"></i>
-              <span>Declaración de Conformidad</span>
-            </button>
-            <a class="btn btn-success btn-sm btn-collapsible" href="#">
-              <i class="fas fa-dolly"></i>
-              <span>Nota de entrega</span>
-            </a>
+            <div>
+              <a class="btn btn-warning btn-sm btn-collapsible" href="#">
+                <i class="fas fa-certificate"></i>
+                <span>Declaración de Conformidad</span>
+              </a>
+              <a class="btn btn-warning btn-sm btn-collapsible" href="#">
+                <i class="fas fa-dolly"></i>
+                <span>Nota de entrega</span>
+              </a>
+              <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                <i class="fas fa-tags pr-1"></i>
+                <span>Imprimir etiqueta</span>
+              </button>
+              <div class="dropdown-menu">
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Garantia')">Garantía</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Resina')">Resina</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Compostura')">Compostura</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')">Aditamentos</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Esqueléticos')">Esqueléticos</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Ortodoncia')">Ortodoncia</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Zirconio')">Zirconio</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Implantes')">Implantes</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('E-Max')">E-Max</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
+              </div> <!-- dropdown-menu -->
+            </div>
           </div>
         </div>
       </div> <!-- row -->
@@ -191,6 +193,42 @@ export default {
 }
 </script>
 
-<style>
-@import '../../assets/css/animatedButtons.css'
+<style lang="scss">
+@mixin transition($settings) {
+  -webkit-transition: $settings;
+  -moz-transition: $settings;
+  -ms-transition: $settings;
+  -o-transition: $settings;
+  transition: $settings;
+}
+
+.btn-collapsible {
+  overflow: hidden;
+  @include transition(all 500ms ease-in-out);
+  max-width: 40px;
+  &.btn-xs {
+    max-width: 25px;
+  }
+  &.btn-sm {
+    max-width: 34px;
+  }
+  &.btn-lg {
+    max-width: 50px;
+  }
+  span {
+    opacity: 0;
+    text-indent: -6px;
+    display: inline-block;
+    @include transition(all 500ms ease-in-out);
+  }
+  &:hover {
+    max-width: 300px;
+    @include transition(all 300ms ease-in-out);
+    span {
+      opacity: 1;
+      text-indent: 0px;
+      @include transition(all 300ms ease-in-out);
+    }
+  }
+}
 </style>
