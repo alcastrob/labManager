@@ -1,5 +1,5 @@
 <template>
-  <div id="printableLabel5" class="box invisible">
+  <div class="box invisible">
     <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
       {{labelName}}
     </div>

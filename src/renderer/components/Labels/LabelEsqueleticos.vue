@@ -1,6 +1,6 @@
 <template>
-  <div id="printableLabel2" class="box invisible">
-    <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
+  <div class="box invisible">
+    <div style="position: absolute; top: +60px; left: +130px; z-index: 10;" class="labelTitle">
       {{labelName}}
     </div>
     <div style="position: absolute;" class="labelTitle">

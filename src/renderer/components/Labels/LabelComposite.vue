@@ -1,5 +1,5 @@
 <template>
-  <div id="printableLabel1" class="box">
+  <div class="box">
     <div style="position: absolute; top: +60px; left: 0px; z-index: 10;" class="labelTitle">
       {{labelName}}
     </div>
