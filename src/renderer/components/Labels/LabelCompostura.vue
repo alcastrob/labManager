@@ -1,5 +1,5 @@
 <template>
-  <div class="box invisible">
+  <div class="box invisible" id="labelCompostura">
     <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
       {{labelName}}
     </div>
@@ -126,7 +126,7 @@ export default {
       this.name = label
       this.$forceUpdate()
       const d = new Printd()
-      d.print( document.getElementById('printableLabel3'), this.cssText)
+      d.print( document.getElementById('labelCompostura'), this.cssText)
     }
   },
   computed: {
