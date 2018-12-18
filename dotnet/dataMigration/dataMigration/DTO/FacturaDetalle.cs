@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace dataMigration.DTO
 {
-    class Detalle
+    class FacturaDetalle
     {
-        public int IdDetalle { get; set; }
-        public int IdNota { get; set; }
+        public int IdFacturaDetalle { get; set; }
+        public int IdFactura { get; set; }
         public string Descripcion { get; set; }
-        public decimal? Precio { get; set; }
+        public decimal Precio { get; set; }
     }
 }

@@ -12,11 +12,12 @@ namespace dataMigration
         private int counterFichas = 1;
         private int counterPruebas = 1;
         private int counterDentistas = 1;
+        private int counterFacturasDetalle = 1;
 
         #region "Trabajos"
-        public Tuple<List<Detalle>, List<TrabajoTemp>> TransformFichas(List<FichaTrabajoAccess> fichas)
+        public Tuple<List<TrabajoDetalle>, List<TrabajoTemp>> TransformFichas(List<FichaTrabajoAccess> fichas)
         {
-            List<Detalle> detallesFichas = new List<Detalle>();
+            List<TrabajoDetalle> detallesFichas = new List<TrabajoDetalle>();
             List<TrabajoTemp> fichasTrabajo = new List<TrabajoTemp>();
 
             foreach (FichaTrabajoAccess ficha in fichas)
@@ -25,7 +26,7 @@ namespace dataMigration
                 ProcessIndicaciones(detallesFichas, ficha);
                 fichasTrabajo.Add(MapFichaTrabajoAccess(ficha));
             }
-            return new Tuple<List<Detalle>, List<TrabajoTemp>>(detallesFichas, fichasTrabajo);
+            return new Tuple<List<TrabajoDetalle>, List<TrabajoTemp>>(detallesFichas, fichasTrabajo);
         }
 
         private TrabajoTemp MapFichaTrabajoAccess(FichaTrabajoAccess ficha)
@@ -66,77 +67,77 @@ namespace dataMigration
 
             return returnedValue;
         }
-
-        private void ProcessIndicaciones(List<Detalle> detalles, FichaTrabajoAccess ficha)
+        
+        private void ProcessIndicaciones(List<TrabajoDetalle> detalles, FichaTrabajoAccess ficha)
         {
             if (!string.IsNullOrEmpty(ficha.Indicaciones1))
             {
-                detalles.Add(new Detalle
+                detalles.Add(new TrabajoDetalle
                 {
-                    IdDetalle = counterFichas++,
-                    IdNota = ficha.Id,
+                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones1,
-                    Precio = ficha.Precio1
+                    Precio = Convert.ToDecimal(ficha.Precio1)
                 });
             }
             if (!string.IsNullOrEmpty(ficha.Indicaciones2))
             {
-                detalles.Add(new Detalle
+                detalles.Add(new TrabajoDetalle
                 {
-                    IdDetalle = counterFichas++,
-                    IdNota = ficha.Id,
+                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones2,
-                    Precio = ficha.Precio1
+                    Precio = Convert.ToDecimal(ficha.Precio2)
                 });
             }
             if (!string.IsNullOrEmpty(ficha.Indicaciones3))
             {
-                detalles.Add(new Detalle
+                detalles.Add(new TrabajoDetalle
                 {
-                    IdDetalle = counterFichas++,
-                    IdNota = ficha.Id,
+                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones3,
-                    Precio = ficha.Precio1
+                    Precio = Convert.ToDecimal(ficha.Precio3)
                 });
             }
             if (!string.IsNullOrEmpty(ficha.Indicaciones4))
             {
-                detalles.Add(new Detalle
+                detalles.Add(new TrabajoDetalle
                 {
-                    IdDetalle = counterFichas++,
-                    IdNota = ficha.Id,
+                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones4,
-                    Precio = ficha.Precio1
+                    Precio = Convert.ToDecimal(ficha.Precio4)
                 });
             }
             if (!string.IsNullOrEmpty(ficha.Indicaciones5))
             {
-                detalles.Add(new Detalle
+                detalles.Add(new TrabajoDetalle
                 {
-                    IdDetalle = counterFichas++,
-                    IdNota = ficha.Id,
+                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones5,
-                    Precio = ficha.Precio1
+                    Precio = Convert.ToDecimal(ficha.Precio5)
                 });
             }
             if (!string.IsNullOrEmpty(ficha.Indicaciones6))
             {
-                detalles.Add(new Detalle
+                detalles.Add(new TrabajoDetalle
                 {
-                    IdDetalle = counterFichas++,
-                    IdNota = ficha.Id,
+                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones6,
-                    Precio = ficha.Precio1
+                    Precio = Convert.ToDecimal(ficha.Precio6)
                 });
             }
             if (!string.IsNullOrEmpty(ficha.Indicaciones7))
             {
-                detalles.Add(new Detalle
+                detalles.Add(new TrabajoDetalle
                 {
-                    IdDetalle = counterFichas++,
-                    IdNota = ficha.Id,
+                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones7,
-                    Precio = ficha.Precio1
+                    Precio = Convert.ToDecimal(ficha.Precio7)
                 });
             }
         }
@@ -332,6 +333,144 @@ namespace dataMigration
                 }
             }
             return fichas;
+        }
+        #endregion
+
+        #region "Facturas"
+        public Tuple<List<FacturaDetalle>, List<FacturaTemp>> TransformFacturas(List<FacturaAccess> facturasBruto, List<Dentista> dentistas)
+        {
+            List<FacturaDetalle> detallesFacturas = new List<FacturaDetalle>();
+            List<FacturaTemp> facturas = new List<FacturaTemp>();
+
+            foreach (FacturaAccess factura in facturasBruto)
+            {
+                //Creamos los correspondientes detalles de esta factura
+                ProcessFactura(detallesFacturas, factura);
+                var query = dentistas.Where(d => d.NombreDentista == factura.Nombre && d.Direccion == factura.Direccion);
+                if (query.Count() != 1)
+                {
+                    query = dentistas.Where(d => d.NombreDentista == factura.Nombre);
+                    if (query.Count() != 1)
+                    {
+                        throw new ApplicationException();
+                    }                    
+                }
+                facturas.Add(MapFacturaAccess(factura, query.First().IdDentista));
+            }
+
+            return new Tuple<List<FacturaDetalle>, List<FacturaTemp>>(detallesFacturas, facturas);
+        }
+
+        private void ProcessFactura(List<FacturaDetalle> detalles, FacturaAccess factura)
+        {
+            if (!string.IsNullOrEmpty(factura.Concepto0))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto0,
+                    Precio = Convert.ToDecimal(factura.Importe0)
+                });
+            }
+            if (!string.IsNullOrEmpty(factura.Concepto1))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto1,
+                    Precio = Convert.ToDecimal(factura.Importe1)
+                });
+            }
+            if (!string.IsNullOrEmpty(factura.Concepto2))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto2,
+                    Precio = Convert.ToDecimal(factura.Importe2)
+                });
+            }
+            if (!string.IsNullOrEmpty(factura.Concepto3))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto3,
+                    Precio = Convert.ToDecimal(factura.Importe3)
+                });
+            }
+            if (!string.IsNullOrEmpty(factura.Concepto4))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto4,
+                    Precio = Convert.ToDecimal(factura.Importe4)
+                });
+            }
+            if (!string.IsNullOrEmpty(factura.Concepto5))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto5,
+                    Precio = Convert.ToDecimal(factura.Importe5)
+                });
+            }
+            if (!string.IsNullOrEmpty(factura.Concepto6))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto6,
+                    Precio = Convert.ToDecimal(factura.Importe6)
+                });
+            }
+            if (!string.IsNullOrEmpty(factura.Concepto7))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto7,
+                    Precio = Convert.ToDecimal(factura.Importe7)
+                });
+            }
+            if (!string.IsNullOrEmpty(factura.Concepto8))
+            {
+                detalles.Add(new FacturaDetalle
+                {
+                    IdFacturaDetalle = counterFacturasDetalle++,
+                    IdFactura = factura.IdFactura,
+                    Descripcion = factura.Concepto8,
+                    Precio = Convert.ToDecimal(factura.Importe8)
+                });
+            }
+        }
+
+        private FacturaTemp MapFacturaAccess(FacturaAccess factura, int IdColegiado)
+        {
+            // Probably using automapper would be a better idea. But this
+            // implementation is good enough for this tiny case.
+            FacturaTemp returnedValue = new FacturaTemp
+            {
+                IdFactura = factura.IdFactura,
+                IdColegiado = IdColegiado,
+                Fecha = Convert.ToDateTime(factura.Fecha),
+                Total = Convert.ToDecimal(factura.Total),
+                Descuento = Convert.ToDecimal(factura.Descuento),
+                Banco = factura.Banco,
+                Efectivo = factura.Efectivo
+            };            
+
+            return returnedValue;
         }
         #endregion
 

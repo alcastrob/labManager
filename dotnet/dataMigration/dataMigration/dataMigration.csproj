@@ -66,7 +66,10 @@
     <Compile Include="DataLoader.cs" />
     <Compile Include="DTO\Dentista.cs" />
     <Compile Include="DTO\DentistaAccess.cs" />
-    <Compile Include="DTO\Detalle.cs" />
+    <Compile Include="DTO\FacturaDetalle.cs" />
+    <Compile Include="DTO\FacturaTemp.cs" />
+    <Compile Include="DTO\TrabajoDetalle.cs" />
+    <Compile Include="DTO\FacturaAccess.cs" />
     <Compile Include="DTO\Trabajo.cs" />
     <Compile Include="DTO\TrabajoTemp.cs" />
     <Compile Include="DTO\FichaTrabajoAccess.cs" />
