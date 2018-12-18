@@ -46,7 +46,7 @@ export function getWorkDetails (workId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT t.IdTrabajo, tt.Descripcion AS TipoTrabajo, t.IdDentista, d.NombreClinica, d.NombreDentista, ' +
   't.IdTipoTrabajo, t.Paciente, t.Color, date(t.FechaTerminacion) AS FechaTerminacion, date(t.FechaEntrada) as FechaEntrada, date(t.FechaPrevista) as FechaPrevista, ' +
-  't.PrecioFinal, t.PrecioMetal, t.PrecioTotal, t.PrecioFija, t.Nombre ' +
+  't.PrecioFinal, t.PrecioMetal, t.Nombre ' +
   'FROM Trabajos t ' +
   'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
   'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
