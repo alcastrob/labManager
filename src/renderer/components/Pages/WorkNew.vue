@@ -1,9 +1,9 @@
 <template>
-  <div>
+<div>
     <div class="container">
       <div class="row">
         <div class="col-md-8">
-          <h1>Trabajo nº {{work.IdTrabajo}}</h1>
+          <h1>Nuevo Trabajo</h1>
         </div>
         <div class="col-md-4">
           <div class="float-right">
@@ -24,14 +24,6 @@
               <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
               <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
             </div> <!-- dropdown-menu -->
-            <button class="btn btn-success btn-sm mt-1" type="button">
-              <i class="fas fa-certificate"></i>
-              <span>Declaración de Conformidad</span>
-            </button>
-            <button class="btn btn-success btn-sm mt-1" type="button">
-              <i class="fas fa-dolly"></i>
-              <span>Nota de entrega</span>
-            </button>
           </div>
         </div>
       </div> <!-- row -->
@@ -77,8 +69,7 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-8 mt-3">
-          <h4>Pruebas</h4>
-          <workTestsTable :workId="workId"></workTestsTable>
+          <h4>Aditamentos</h4>
         </div> <!-- col-md-8 -->
         <div class="col-md-4 mt-3">
           <label for="fEntrada">Fecha entrada</label>
@@ -109,12 +100,8 @@ import printedLabel3 from '../PrintedLabel3'
 import printedLabel4 from '../PrintedLabel4'
 import printedLabel5 from '../PrintedLabel5'
 import { getWorkDetails, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
-
 export default {
-  name: 'workDetail',
-  props: {
-    workId: Number
-  },
+  name: 'WorkNew',
   components: {
     workIndicationsTable,
     workTestsTable,
@@ -131,40 +118,8 @@ export default {
       workIndications: {}
     }
   },
-  methods: {
-    printLabel: function(type) {
-      switch(type) {
-        case 'Garantia':
-          break;
-        case 'Composite':
-        case 'E-Max':
-        case 'Implantes':
-        case 'Metal-Cerámica':
-        case 'Zirconio':
-          this.$refs.label1.print(type)
-          break;
-        case 'Esqueléticos':
-          this.$refs.label2.print(type)
-          break;
-        case 'Compostura':
-        case 'Ortodoncia':
-          this.$refs.label3.print(type)
-          break;
-        case 'Resina':
-          this.$refs.label4.print(type)
-          break;
-        case 'Aditamentos':
-          this.$refs.label5.print(type)
-        default:
-          return ''
-      }
-    }
-  },
+  methods: {} ,
   mounted () {
-    // Check the required parameters (props)
-    if (this.workId === undefined || this.workId === null)
-      throw 'Missing prop value workId in WorkDetail.vue'
-
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types
     })
@@ -174,7 +129,7 @@ export default {
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
     })
-  }
+  },
 }
 </script>
 

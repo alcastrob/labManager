@@ -6,11 +6,11 @@
         <div id="content-wrapper">
           <div class="container-fluid">
             <dashboard v-if="currentPage === 'dashboard'" />
-            <newWork v-if="currentPage === 'newWork'" />
+            <workNew v-if="currentPage === 'workNew'" />
             <worksList v-if="currentPage === 'worksList'" />
             <workDetail v-if="currentPage === 'workDetail'" :workId="currentId" />
-            <dentistsList v-if="currentPage === 'dentistsList'" />
-            <dentistDetail v-if="currentPage === 'dentistDetail'" />
+            <dentistsList v-if="currentPage === 'dentistsList'"/>
+            <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="currentId" />
             <invoices v-if="currentPage === 'invoices'" />
             <about v-if="currentPage === 'about'"/>
           </div>
@@ -25,7 +25,7 @@ import dashboard from './dashboard'
 import about from './About'
 import topbar from '../PageElements/TopBar'
 import workDetail from './WorkDetail'
-import newWork from './NewWork'
+import workNew from './WorkNew'
 import dentistDetail from './DentistDetail'
 import dentistsList from './DentistsList'
 import worksList from './WorksList'
@@ -40,7 +40,7 @@ export default {
     about,
     topbar,
     workDetail,
-    newWork,
+    workNew,
     worksList,
     dentistDetail,
     dentistsList,
@@ -69,15 +69,18 @@ export default {
         this.previousPage = this.currentPage
         this.currentPage = pageName
         this.canNavigateBack = this.evaluateCanNavigateBack()
+        debugger
+        // I can't figure out how eventData.eventData mutated into eventData.id
         if (eventData !== undefined && eventData.id !== undefined) {
           this.currentId = eventData.id.index
-          this.backStates.push(eventData.id)
+          this.backStates.push(eventData)
         }
       }
     },
     evaluateCanNavigateBack: function () {
       switch (this.currentPage) {
         case 'workDetail': return true
+        case 'dentistDetail': return true
         default: return false
       }
     }
@@ -90,11 +93,10 @@ export default {
       this.navigateTo('dashboard')
     })
     ipcRenderer.on('navigation:back', () => {
-      console.log(this.previousPage)
       this.navigateTo(this.previousPage)
     })
-    ipcRenderer.on('navigation:newWork', () => {
-      this.navigateTo('newWork')
+    ipcRenderer.on('navigation:workNew', () => {
+      this.navigateTo('workNew')
     })
     ipcRenderer.on('navigation:worksList', () => {
       this.navigateTo('worksList')

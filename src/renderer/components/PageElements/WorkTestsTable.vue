@@ -47,6 +47,9 @@ export default {
     }
   },
   mounted () {
+    // Check the required parameters (props)
+    if (this.workId === undefined || this.workId === null)
+      throw 'Missing prop workId in WorkTestTable.vue'
     getWorkTests(this.workId, 'labManager.sqlite').then((workTests) => {
       this.tests = workTests
     })

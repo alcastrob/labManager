@@ -4,7 +4,7 @@
     Listado de dentistas
   </h1>
   <div>
-    <myTable :headers="headers" :searchFields="searchFields" :eventId="dentist"/>
+    <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId"/>
   </div>
 </div>
 </template>
@@ -12,6 +12,9 @@
 <script>
 import myTable from '../PageElements/table/myTable'
 import { getDentistList } from '../../../main/dal.js'
+
+const EVENTID = 'DentistsList'
+
 export default {
   name: 'dentistslist',
   components: {
@@ -80,7 +83,8 @@ export default {
           titleClass: '',
           rowClass: ''
         } ],
-      searchFields: ['NombreDentista', 'NombreClinica', 'DatosFiscales', 'DatosBancarios', 'Direccion', 'Poblacion', 'CP', 'CorreoElectronico', 'Telefono', 'Telefono2', 'DatosInteres']
+      searchFields: ['NombreDentista', 'NombreClinica', 'DatosFiscales', 'DatosBancarios', 'Direccion', 'Poblacion', 'CP', 'CorreoElectronico', 'Telefono', 'Telefono2', 'DatosInteres'],
+      eventId: EVENTID
     }
   },
   methods: {},
@@ -88,9 +92,8 @@ export default {
     getDentistList('labManager.sqlite').then((dentists) => {
       this.$children[0].setDataset(dentists)
       })
-    this.$root.$on('table:click:dentist', (key) => {
-      console.log('a: ' + key)
-      this.$root.$emit('navigation:navigateTo', {page: 'dentistDetail', id: key})
+    this.$root.$on('table:click:' + EVENTID, (eventData) => {
+      this.$root.$emit('navigation:navigateTo', {page: 'dentistDetail', eventData: eventData, comeBack: EVENTID})
     })
   }
 }

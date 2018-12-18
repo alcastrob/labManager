@@ -9,11 +9,11 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica</label>
-          <input type="text" class="form-control" id="clinica" placeholder="Nombre de la clínica" v-model="dentist.NombreClinica">
+          <input type="text" class="form-control" id="clinica" placeholder="Nombre de la clínica">
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="dentista">Dentista</label>
-          <input type="text" class="form-control" id="dentista" placeholder="Nombre de el/la dentista" v-model="dentist.NombreDentista">
+          <input type="text" class="form-control" id="dentista" placeholder="Nombre de el/la dentista">
         </div> <!-- col-md-6 -->
       </div> <!-- row -->
       <div class="row">
@@ -24,27 +24,27 @@
       <div class="row">
         <div class="col-md-6">
           <label for="calle">Calle</label>
-          <textarea class="form-control" id="calle" placeholder="Calle, plaza, avenida..." rows="2" v-model="dentist.Direccion"></textarea>
+          <textarea class="form-control" id="calle" placeholder="Calle, plaza, avenida..." rows="2"></textarea>
         </div> <!-- col-md-6 -->
         <div class="col-md-2">
           <label for="codigoPostal">Código Postal</label>
-          <input type="text" class="form-control" id="codigoPostal" placeholder="CP" v-model="dentist.DatosBancarios">
+          <input type="text" class="form-control" id="codigoPostal" placeholder="CP">
         </div> <!-- col-md-2 -->
         <div class="col-md-4">
           <label for="ciudad">Localidad</label>
-          <input type="text" class="form-control" id="ciudad" placeholder="Ciudad" v-model="dentist.Poblacion">
+          <input type="text" class="form-control" id="ciudad" placeholder="Ciudad">
         </div> <!-- col-md-4 -->
         <div class="col-md-6 mt-3">
           <label for="correoElectronico">Correo electrónico</label>
-          <input type="text" class="form-control" id="correoElectronico" placeholder="xxx@yyy.zzz" v-model="dentist.CorreoElectronico">
+          <input type="text" class="form-control" id="correoElectronico" placeholder="xxx@yyy.zzz">
         </div> <!-- col-md-6 -->
         <div class="col-md-3 mt-3">
           <label for="telefono1">Teléfono 1</label>
-          <input type="text" class="form-control" id="telefono1" placeholder="123 456 789" v-model="dentist.Telefono">
+          <input type="text" class="form-control" id="telefono1" placeholder="123 456 789">
         </div> <!-- col-md-3 -->
         <div class="col-md-3 mt-3">
           <label for="telefono2">Teléfono 2</label>
-          <input type="text" class="form-control" id="telefono2" placeholder="123 456 789" v-model="dentist.Telefono2">
+          <input type="text" class="form-control" id="telefono2" placeholder="123 456 789">
         </div> <!-- col-md-3 -->
       </div> <!-- row -->
 
@@ -56,11 +56,11 @@
       <div class="row">
         <div class="col-md-4">
           <label for="datosFiscales">CIF/NIF</label>
-          <input type="text" class="form-control" id="datosFiscales" placeholder="CIF / NIF" v-model="dentist.DatosFiscales">
+          <input type="text" class="form-control" id="datosFiscales" placeholder="CIF / NIF">
         </div> <!-- col-md-4 -->
         <div class="col-md-4">
           <label for="datosBancarios">Datos bancarios</label>
-          <input type="text" class="form-control" id="datosBancarios" placeholder="Número de cuenta" v-model="dentist.DatosBancarios">
+          <input type="text" class="form-control" id="datosBancarios" placeholder="Número de cuenta">
         </div> <!-- col-md-4 -->
       </div>
       <div class="row mt-3">
@@ -70,7 +70,7 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12">
-          <textarea class="form-control" id="datosInteres" rows="3" v-model="dentist.DatosInteres"></textarea>
+          <textarea class="form-control" id="datosInteres" rows="3"></textarea>
         </div>
       </div> <!-- row -->
     </div>
@@ -78,27 +78,12 @@
 </template>
 
 <script>
-import { getDentistDetails } from '../../../main/dal.js'
 export default {
   name: 'dentistDetail',
-  props: {
-    dentistId: Number
-  },
   data () {
-    return {
-      dentist: {}
-    }
+    return {}
   },
-  methods: {},
-  mounted () {
-    // Check the required parameters (props)
-    if (this.dentistId === undefined || this.dentistId === null)
-      throw 'Missing prop value dentistId in DentistDetail.vue'
-
-    getDentistDetails(this.dentistId, 'labManager.sqlite').then((dentistDetail) => {
-      this.dentist = dentistDetail
-    })
-  }
+  methods: {}
 }
 </script>
 

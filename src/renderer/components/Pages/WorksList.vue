@@ -59,7 +59,7 @@ export default {
           formatter: 'date'
         }, {
           title: 'F. Terminación',
-          dataField: 'FechaSalida',
+          dataField: 'FechaTerminacion',
           titleClass: '',
           rowClass: '',
           formatter: 'date'
@@ -79,8 +79,8 @@ export default {
     getWorksList('labManager.sqlite').then((works) => {
       this.$children[0].setDataset(works)
       })
-    this.$root.$on('table:click:' + EVENTID, (eventData) => {
-      this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: EVENTID})
+    this.$root.$on('table:click:' + this.eventId, (eventData) => {
+      this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
     })
   }
 }

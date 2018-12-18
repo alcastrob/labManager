@@ -18,7 +18,7 @@
 
     <ul class="navbar-nav ml-auto">
       <li class="nav-item no-arrow mx-1">
-        <a class="nav-link" href="#" id="worksListButton" role="button" v-on:click="navigateTo('newWork')">
+        <a class="nav-link" href="#" id="worksListButton" role="button" v-on:click="navigateTo('workNew')">
           <i class="fas fa-fw fa-teeth"></i>
           Nuevo Trabajo
         </a>
@@ -65,7 +65,6 @@ export default {
   },
   methods: {
     navigateTo (pageName) {
-      // this.$parent.navigateTo(pageName)
       this.$root.$emit('navigation:navigateTo', {page: pageName})
     }
   }

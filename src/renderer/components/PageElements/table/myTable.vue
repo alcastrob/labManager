@@ -1,7 +1,7 @@
 <template>
   <div class="table-responsive">
     <filter-bar></filter-bar>
-    <table class="table table-bordered" id="workListTable" width="100%" cellspacing="0">
+    <table class="table table-bordered" width="100%" cellspacing="0">
       <tr>
         <th v-for="header in headers" v-bind:key="header.dataField"
           v-on:click="sortByExpression(header.dataField)" v-bind:class="header.titleClass">
@@ -10,13 +10,10 @@
           'fa-sort-amount-up': currentSortCriteria === header.dataField && currentSortDesc === false}"></span>
         </th>
       </tr>
-      <tr v-for="work in getPaginatedData()" v-bind:key="work[0]" v-on:click="clickOn(work['Key'])">
+      <tr v-for="row in getPaginatedData()" v-bind:key="row[0]" v-on:click="clickOn(row['Key'])">
         <template v-for="column in headers">
-          <td v-bind:key="column.dataField" v-bind:class="column.rowClass">{{formatRow(work[column.dataField], column.formatter)}}</td>
+          <td v-bind:key="column.dataField" v-bind:class="column.rowClass">{{formatRow(row[column.dataField], column.formatter)}}</td>
         </template>
-        <!-- <td>{{work.FechaEntrada | formatDateDMY}}</td>
-        <td>{{work.FechaPrevista | formatDateDMY}}</td>
-        <td>{{work.FechaSalida | formatDateDMY}}</td> -->
       </tr>
     </table>
     <pagination></pagination>
@@ -79,6 +76,10 @@ export default {
     },
     setDataset: function (dataset) {
       this.rawDataset = dataset
+      //Let's check if the dataset contains the required Key column
+      if (_.some(dataset, ['Key', undefined])) {
+        throw 'Missing Key column in passed dataset in MyTable.vue'
+      }
 
       if (this.state !== null){
         // TODO: set the values here (more or less)
@@ -156,11 +157,20 @@ export default {
     },
   },
   mounted () {
+    // Check the required parameters (props)
+    if (this.headers === undefined || this.headers === null)
+      throw 'Missing prop headers in myTable.vue'
+    if (this.searchFields === undefined || this.searchFields === null)
+      throw 'Missing prop searchFields in myTable.vue'
+    if (this.eventId === undefined || this.eventId === null)
+      throw 'Missing prop eventId in myTable.vue'
+
+
+
     this.currentSortCriteria = this.searchFields[0]
     this.currentSortDesc = true
     moment.locale('es')
     this.$root.$on('table:setState:' + this.eventId, (data) => {
-      console.log('table:setState')
       this.state = data
       // debugger
       // this.currentSeachCriteria = data.filter
