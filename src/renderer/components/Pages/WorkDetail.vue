@@ -24,14 +24,14 @@
               <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
               <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
             </div> <!-- dropdown-menu -->
-            <button class="btn btn-success btn-sm mt-1" type="button">
+            <button class="btn btn-success btn-sm mt-1 btn-collapsible" type="button">
               <i class="fas fa-certificate"></i>
               <span>Declaración de Conformidad</span>
             </button>
-            <button class="btn btn-success btn-sm mt-1" type="button">
+            <a class="btn btn-success btn-sm btn-collapsible" href="#">
               <i class="fas fa-dolly"></i>
               <span>Nota de entrega</span>
-            </button>
+            </a>
           </div>
         </div>
       </div> <!-- row -->
@@ -192,4 +192,5 @@ export default {
 </script>
 
 <style>
+@import '../../assets/css/animatedButtons.css'
 </style>
