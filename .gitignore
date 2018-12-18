@@ -10,3 +10,8 @@ npm-debug.log.*
 thumbs.db
 !.gitkeep
 labManager.sqlite
+dotnet/dataMigration/.vs/
+dotnet/dataMigration/dataMigration/bin/Debug/dataMigration.exe
+dotnet/dataMigration/dataMigration/bin/
+dotnet/dataMigration/dataMigration/obj/
+dotnet/dataMigration/packages/
