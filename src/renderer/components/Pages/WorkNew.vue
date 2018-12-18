@@ -83,33 +83,32 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
-  <printed-label1 ref="label1" :workData="work" :workIndications="workIndications"></printed-label1>
-  <printed-label2 ref="label2" :workData="work" :workIndications="workIndications"></printed-label2>
-  <printed-label3 ref="label3" :workData="work" :workIndications="workIndications"></printed-label3>
-  <printed-label4 ref="label4" :workData="work" :workIndications="workIndications"></printed-label4>
-  <printed-label5 ref="label5" :workData="work" :workIndications="workIndications"></printed-label5>
+    <div ref="labelContainer"></div>
   </div>
 </template>
 
 <script>
 import workIndicationsTable from '../PageElements/WorkIndicationsTable'
 import workTestsTable from '../PageElements/workTestsTable'
-import printedLabel1 from '../PrintedLabel1'
-import printedLabel2 from '../PrintedLabel2'
-import printedLabel3 from '../PrintedLabel3'
-import printedLabel4 from '../PrintedLabel4'
-import printedLabel5 from '../PrintedLabel5'
+import labelEsqueleticos from '../Labels/LabelEsqueleticos'
+import labelCompostura from '../Labels/labelCompostura'
+import labelOrtodoncia from '../Labels/labelOrtodoncia'
+import labelResina from '../Labels/LabelResina'
+import labelAditamentos from '../Labels/labelAditamentos'
+import labelComposite from '../Labels/labelComposite'
+import labelEmax from '../Labels/labelEmax'
+import labelImplantes from '../Labels/labelImplantes'
+import labelMetalCeramica from '../Labels/labelMetalCeramica'
+import labelZirconio from '../Labels/labelZirconio'
+
+import Vue from 'Vue'
 import { getWorkDetails, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
+
 export default {
   name: 'WorkNew',
   components: {
     workIndicationsTable,
-    workTestsTable,
-    printedLabel1,
-    printedLabel2,
-    printedLabel3,
-    printedLabel4,
-    printedLabel5
+    workTestsTable
   },
   data () {
     return {
@@ -118,7 +117,50 @@ export default {
       workIndications: {}
     }
   },
-  methods: {} ,
+  methods: {
+    printLabel: function(type) {
+      var ComponentClass = this.mapType(type)
+      var instance = new ComponentClass({
+          propsData: {
+            workData: this.work,
+            workIndications: this.workIndications
+            }
+      })
+      instance.$mount()
+      this.$refs.labelContainer.appendChild(instance.$el)
+      instance.print(type)
+      this.$refs.labelContainer.removeChild(instance.$el)
+    },
+    mapType(type) {
+      switch(type) {
+        case 'Garantia':
+          //TO DO
+          return Vue.extend(labelGarantia)
+        case 'Composite':
+          return Vue.extend(labelComposite)
+        case 'E-Max':
+          return Vue.extend(labelEmax)
+        case 'Implantes':
+          return Vue.extend(labelImplantes)
+        case 'Metal-Cerámica':
+          return Vue.extend(labelMetalCeramica)
+        case 'Zirconio':
+          return Vue.extend(labelZirconio)
+        case 'Esqueléticos':
+          return Vue.extend(labelEsqueleticos)
+        case 'Compostura':
+          return Vue.extend(labelCompostura)
+        case 'Ortodoncia':
+          return Vue.extend(labelOrtodoncia)
+        case 'Resina':
+          return Vue.extend(labelResina)
+        case 'Aditamentos':
+          return Vue.extend(labelAditamentos)
+        default:
+          throw 'Unexpected label type in WorkDetail.printLabel()'
+      }
+    }
+  },
   mounted () {
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types

@@ -1,16 +1,10 @@
 <template>
-  <div id="printableLabel1" class="box invisible">
+  <div id="printableLabel1" class="box">
     <div style="position: absolute; top: +60px; left: 0px; z-index: 10;" class="labelTitle">
       {{labelName}}
     </div>
     <div style="position: absolute;" class="labelTitle">
-      <img src="~@/assets/composite.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
-      <!-- <img :src="background" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;"> -->
-      <!-- <img src="~@/assets/composite.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Composite'">
-      <img src="~@/assets/e-max.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='E-Max'">
-      <img src="~@/assets/implantes.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Implantes'">
-      <img src="~@/assets/metal-ceramica.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Metal-Cerámica'">
-      <img src="~@/assets/zirconio.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Zirconio'"> -->
+      <img src="~@/assets/zirconio.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
     </div>
     <div style="position: absolute; top: +60px; left: +300px; z-index:2; text-align: right; width: 300px;" >
       <span class="labelSubtitle">Trabajo nº </span>
@@ -78,7 +72,7 @@
 <script>
 import {Printd} from 'printd'
 export default {
-  name: 'printedLabel1',
+  name: 'labelZirconio',
   data () {
     return {
       cssText: `

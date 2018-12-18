@@ -69,7 +69,6 @@ export default {
         this.previousPage = this.currentPage
         this.currentPage = pageName
         this.canNavigateBack = this.evaluateCanNavigateBack()
-        debugger
         // I can't figure out how eventData.eventData mutated into eventData.id
         if (eventData !== undefined && eventData.id !== undefined) {
           this.currentId = eventData.id.index

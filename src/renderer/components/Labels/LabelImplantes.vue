@@ -1,10 +1,16 @@
 <template>
-  <div id="printableLabel4" class="box invisible">
-    <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
+  <div id="printableLabel1" class="box">
+    <div style="position: absolute; top: +60px; left: 0px; z-index: 10;" class="labelTitle">
       {{labelName}}
     </div>
     <div style="position: absolute;" class="labelTitle">
-      <img src="~@/assets/resina.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
+      <img src="~@/assets/implantes.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
+      <!-- <img :src="background" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;"> -->
+      <!-- <img src="~@/assets/composite.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Composite'">
+      <img src="~@/assets/e-max.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='E-Max'">
+      <img src="~@/assets/implantes.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Implantes'">
+      <img src="~@/assets/metal-ceramica.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Metal-Cerámica'">
+      <img src="~@/assets/zirconio.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;" v-if="labelName==='Zirconio'"> -->
     </div>
     <div style="position: absolute; top: +60px; left: +300px; z-index:2; text-align: right; width: 300px;" >
       <span class="labelSubtitle">Trabajo nº </span>
@@ -43,13 +49,13 @@
         <th>Hora</th>
       </tr>
       <tr>
-        <td>TRUWAS</td>
+        <td>P. METAL</td>
         <td></td>
         <td></td>
         <td></td>
       </tr>
       <tr>
-        <td>P. DIENTES</td>
+        <td>BIZCOCHO</td>
         <td></td>
         <td></td>
         <td></td>
@@ -72,7 +78,7 @@
 <script>
 import {Printd} from 'printd'
 export default {
-  name: 'printedLabel4',
+  name: 'labelImplantes',
   data () {
     return {
       cssText: `
@@ -120,7 +126,7 @@ export default {
           border: none;
         }
         `,
-      name: 'Resina'
+      name: ''
     }
   },
   props: {
@@ -138,7 +144,7 @@ export default {
       this.name = label
       this.$forceUpdate()
       const d = new Printd()
-      d.print( document.getElementById('printableLabel4'), this.cssText)
+      d.print( document.getElementById('printableLabel1'), this.cssText)
     }
   },
   computed: {

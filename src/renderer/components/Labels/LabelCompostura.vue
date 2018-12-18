@@ -1,10 +1,10 @@
 <template>
-  <div id="printableLabel2" class="box invisible">
+  <div id="printableLabel3" class="box invisible">
     <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
       {{labelName}}
     </div>
     <div style="position: absolute;" class="labelTitle">
-      <img src="~@/assets/composite.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
+      <img src="~@/assets/compostura.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
     </div>
     <div style="position: absolute; top: +60px; left: +300px; z-index:2; text-align: right; width: 300px;" >
       <span class="labelSubtitle">Trabajo nº </span>
@@ -43,31 +43,24 @@
         <th>Hora</th>
       </tr>
       <tr>
-        <td>P. ESTRUCTURA</td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>P. DIENTES</td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>TERMINAR</td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td class="noBorder"></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
       </tr>
     </table>
+    <br>
+    <span>Nota:</span>
+    <br>
+    <br>
+    &nbsp;
   </div>
 </template>
 
 <script>
 import {Printd} from 'printd'
 export default {
-  name: 'printedLabel2',
+  name: 'labelCompostura',
   data () {
     return {
       cssText: `
@@ -115,7 +108,7 @@ export default {
           border: none;
         }
         `,
-      name: 'Esqueléticos'
+      name: ''
     }
   },
   props: {
@@ -133,7 +126,7 @@ export default {
       this.name = label
       this.$forceUpdate()
       const d = new Printd()
-      d.print( document.getElementById('printableLabel2'), this.cssText)
+      d.print( document.getElementById('printableLabel3'), this.cssText)
     }
   },
   computed: {

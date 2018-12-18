@@ -43,7 +43,6 @@ export function getWorksList (fileName) {
 }
 
 export function getWorkDetails (workId, fileName) {
-  debugger
   db = new sqlite3.Database(fileName)
   var query = 'SELECT t.IdTrabajo, tt.Descripcion AS TipoTrabajo, t.IdDentista, d.NombreClinica, d.NombreDentista, ' +
   't.IdTipoTrabajo, t.Paciente, t.Color, date(t.FechaTerminacion) AS FechaTerminacion, date(t.FechaEntrada) as FechaEntrada, date(t.FechaPrevista) as FechaPrevista, ' +
