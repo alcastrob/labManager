@@ -108,7 +108,7 @@ import labelZirconio from '../Labels/labelZirconio'
 import collapsableButton from '../PageElements/collapsableButton'
 
 import Vue from 'Vue'
-import { getWorkDetails, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
+import { getWork, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
 
 export default {
   name: 'workDetail',
@@ -179,7 +179,7 @@ export default {
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types
     })
-    getWorkDetails(this.workId, 'labManager.sqlite').then((workDetails) => {
+    getWork(this.workId, 'labManager.sqlite').then((workDetails) => {
       this.work = workDetails
     })
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {

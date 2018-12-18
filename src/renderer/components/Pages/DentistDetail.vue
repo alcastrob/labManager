@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { getDentistDetails } from '../../../main/dal.js'
+import { getDentist } from '../../../main/dal.js'
 export default {
   name: 'dentistDetail',
   props: {
@@ -95,7 +95,7 @@ export default {
     if (this.dentistId === undefined || this.dentistId === null)
       throw 'Missing prop value dentistId in DentistDetail.vue'
 
-    getDentistDetails(this.dentistId, 'labManager.sqlite').then((dentistDetail) => {
+    getDentist(this.dentistId, 'labManager.sqlite').then((dentistDetail) => {
       this.dentist = dentistDetail
     })
   }

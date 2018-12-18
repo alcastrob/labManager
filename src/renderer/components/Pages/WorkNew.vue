@@ -8,14 +8,11 @@
         <div class="col-md-6 mt-2">
           <div class="float-right">
             <div>
-              <collapsable-button iconCss="fas fa-certificate" text="Declaración de Conformidad" eventName="work:DeclarationOfConformity"></collapsable-button>
-              <collapsable-button iconCss="fas fa-dolly" text="Nota de entrega" eventName="work:DeviveryNote"></collapsable-button>
               <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Garantia')">Garantía</a>
                 <a href="#" class="dropdown-item" v-on:click="printLabel('Resina')">Resina</a>
                 <a href="#" class="dropdown-item" v-on:click="printLabel('Compostura')">Compostura</a>
                 <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')">Aditamentos</a>
@@ -104,17 +101,15 @@ import labelEmax from '../Labels/labelEmax'
 import labelImplantes from '../Labels/labelImplantes'
 import labelMetalCeramica from '../Labels/labelMetalCeramica'
 import labelZirconio from '../Labels/labelZirconio'
-import collapsableButton from '../PageElements/collapsableButton'
 
 import Vue from 'Vue'
-import { getWorkDetails, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
+import { getWork, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
 
 export default {
   name: 'WorkNew',
   components: {
     workIndicationsTable,
-    workTestsTable,
-    collapsableButton
+    workTestsTable
   },
   data () {
     return {
@@ -182,17 +177,11 @@ export default {
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types
     })
-    getWorkDetails(this.workId, 'labManager.sqlite').then((workDetails) => {
+    getWork(this.workId, 'labManager.sqlite').then((workDetails) => {
       this.work = workDetails
     })
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
-    })
-    this.$root.$on('work:DeviveryNote', () => {
-      console.log("DeliveryNote")
-    })
-    this.$root.$on('work:DeclarationOfConformity', () => {
-      console.log("DeclarationOfConformity")
     })
   },
 }

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { getWorkTests } from '../../../main/dal.js'
+import { getWorkTestsList } from '../../../main/dal.js'
 import _ from 'lodash'
 
 export default {
@@ -50,7 +50,7 @@ export default {
     // Check the required parameters (props)
     if (this.workId === undefined || this.workId === null)
       throw 'Missing prop workId in WorkTestTable.vue'
-    getWorkTests(this.workId, 'labManager.sqlite').then((workTests) => {
+    getWorkTestsList(this.workId, 'labManager.sqlite').then((workTests) => {
       this.tests = workTests
     })
   }
