@@ -1,12 +1,44 @@
 <template>
+  <a class="btn btn-warning btn-sm btn-collapsible" href="#" v-on:click="sendEvent()">
+    <i v-bind:class="this.iconCss"></i>
+    <span>{{text}}</span>
+  </a>
 </template>
 
 <script>
 export default {
+  name: 'collapsableButton',
   data () {
     return {}
   },
-  methods: {}
+  props: {
+    iconCss: {
+      type: String,
+      required: true
+    },
+    text: {
+      type: String,
+      required: true
+    },
+    eventName: {
+      type: String,
+      required: true
+    }
+  },
+  methods: {
+    sendEvent: function() {
+      this.$root.$emit(this.eventName)
+    }
+  },
+  mounted() {
+    // Check the required parameters (props)
+    if (this.text === undefined || this.text === null)
+      throw 'Missing prop value workId in WorkDetail.vue'
+    if (this.iconCss === undefined || this.iconCss === null)
+      throw 'Missing prop value workId in WorkDetail.vue'
+    if (this.eventName === undefined || this.eventName === null)
+      throw 'Missing prop value workId in WorkDetail.vue'
+  }
 }
 </script>
 

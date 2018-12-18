@@ -2,28 +2,32 @@
 <div>
     <div class="container">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
           <h1>Nuevo Trabajo</h1>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 mt-2">
           <div class="float-right">
-            <button class="btn btn-warning btn-sm mt-1 dropdown-toggle" type="button" data-toggle="dropdown">
-              <i class="fas fa-tags pr-1"></i>
-              <span>Imprimir etiqueta</span>
-            </button>
-            <div class="dropdown-menu">
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Garantia')">Garantía</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Resina')">Resina</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Compostura')">Compostura</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')">Aditamentos</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Esqueléticos')">Esqueléticos</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Ortodoncia')">Ortodoncia</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Zirconio')">Zirconio</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Implantes')">Implantes</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('E-Max')">E-Max</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
-              <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
-            </div> <!-- dropdown-menu -->
+            <div>
+              <collapsable-button iconCss="fas fa-certificate" text="Declaración de Conformidad" eventName="work:DeclarationOfConformity"></collapsable-button>
+              <collapsable-button iconCss="fas fa-dolly" text="Nota de entrega" eventName="work:DeviveryNote"></collapsable-button>
+              <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                <i class="fas fa-tags pr-1"></i>
+                <span>Imprimir etiqueta</span>
+              </button>
+              <div class="dropdown-menu">
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Garantia')">Garantía</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Resina')">Resina</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Compostura')">Compostura</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')">Aditamentos</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Esqueléticos')">Esqueléticos</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Ortodoncia')">Ortodoncia</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Zirconio')">Zirconio</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Implantes')">Implantes</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('E-Max')">E-Max</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
+              </div> <!-- dropdown-menu -->
+            </div>
           </div>
         </div>
       </div> <!-- row -->
@@ -100,6 +104,7 @@ import labelEmax from '../Labels/labelEmax'
 import labelImplantes from '../Labels/labelImplantes'
 import labelMetalCeramica from '../Labels/labelMetalCeramica'
 import labelZirconio from '../Labels/labelZirconio'
+import collapsableButton from '../PageElements/collapsableButton'
 
 import Vue from 'Vue'
 import { getWorkDetails, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
@@ -108,11 +113,23 @@ export default {
   name: 'WorkNew',
   components: {
     workIndicationsTable,
-    workTestsTable
+    workTestsTable,
+    collapsableButton
   },
   data () {
     return {
-      work: {},
+      work: {
+        idTrabajo: 0,
+        NombreDentista: '',
+        idTipoTrabajo: 0,
+        Paciente: '',
+        Color: '',
+        FechaEntrada: '',
+        FechaPrevista: '',
+        FechaTerminacion: '',
+        Precio: 0,
+        Nombre: ''
+      },
       workTypes: {},
       workIndications: {}
     }
@@ -170,6 +187,12 @@ export default {
     })
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
+    })
+    this.$root.$on('work:DeviveryNote', () => {
+      console.log("DeliveryNote")
+    })
+    this.$root.$on('work:DeclarationOfConformity', () => {
+      console.log("DeclarationOfConformity")
     })
   },
 }

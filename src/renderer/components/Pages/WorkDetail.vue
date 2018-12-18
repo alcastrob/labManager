@@ -8,14 +8,8 @@
         <div class="col-md-6 mt-2">
           <div class="float-right">
             <div>
-              <a class="btn btn-warning btn-sm btn-collapsible" href="#">
-                <i class="fas fa-certificate"></i>
-                <span>Declaración de Conformidad</span>
-              </a>
-              <a class="btn btn-warning btn-sm btn-collapsible" href="#">
-                <i class="fas fa-dolly"></i>
-                <span>Nota de entrega</span>
-              </a>
+              <collapsable-button iconCss="fas fa-certificate" text="Declaración de Conformidad" eventName="work:DeclarationOfConformity"></collapsable-button>
+              <collapsable-button iconCss="fas fa-dolly" text="Nota de entrega" eventName="work:DeviveryNote"></collapsable-button>
               <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
@@ -111,6 +105,7 @@ import labelEmax from '../Labels/labelEmax'
 import labelImplantes from '../Labels/labelImplantes'
 import labelMetalCeramica from '../Labels/labelMetalCeramica'
 import labelZirconio from '../Labels/labelZirconio'
+import collapsableButton from '../PageElements/collapsableButton'
 
 import Vue from 'Vue'
 import { getWorkDetails, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
@@ -122,7 +117,8 @@ export default {
   },
   components: {
     workIndicationsTable,
-    workTestsTable
+    workTestsTable,
+    collapsableButton
   },
   data () {
     return {
@@ -189,46 +185,12 @@ export default {
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
     })
+    this.$root.$on('work:DeviveryNote', () => {
+      console.log("DeliveryNote")
+    })
+    this.$root.$on('work:DeclarationOfConformity', () => {
+      console.log("DeclarationOfConformity")
+    })
   }
 }
 </script>
-
-<style lang="scss">
-@mixin transition($settings) {
-  -webkit-transition: $settings;
-  -moz-transition: $settings;
-  -ms-transition: $settings;
-  -o-transition: $settings;
-  transition: $settings;
-}
-
-.btn-collapsible {
-  overflow: hidden;
-  @include transition(all 500ms ease-in-out);
-  max-width: 40px;
-  &.btn-xs {
-    max-width: 25px;
-  }
-  &.btn-sm {
-    max-width: 34px;
-  }
-  &.btn-lg {
-    max-width: 50px;
-  }
-  span {
-    opacity: 0;
-    text-indent: -6px;
-    display: inline-block;
-    @include transition(all 500ms ease-in-out);
-  }
-  &:hover {
-    max-width: 300px;
-    @include transition(all 300ms ease-in-out);
-    span {
-      opacity: 1;
-      text-indent: 0px;
-      @include transition(all 300ms ease-in-out);
-    }
-  }
-}
-</style>
