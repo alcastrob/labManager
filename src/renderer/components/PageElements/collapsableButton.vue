@@ -1,5 +1,5 @@
 <template>
-  <a class="btn btn-warning btn-sm btn-collapsible" href="#" v-on:click="sendEvent()">
+  <a class="btn btn-warning btn-collapsible" href="#" v-on:click="sendEvent()">
     <i v-bind:class="this.iconCss"></i>
     <span>{{text}}</span>
   </a>

@@ -9,7 +9,7 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica</label>
-          <input type="text" class="form-control" id="clinica" placeholder="Nombre de la clínica" v-model="data.NombreClinica">
+          <input type="text" class="form-control" id="clinica" placeholder="Nombre de la clínica" v-model="data.NombreClinica" ref="inputClinica">
         <small class="form-text text-danger" v-if="requiresValidation && data.NombreClinica === ''" ref="clinicaValidator">El nombre de la clínica no puede estar en blanco</small>
 
         </div> <!-- col-md-6 -->
@@ -129,6 +129,9 @@ export default {
       return !this.requiresValidation
        || this.data.NombreClinica !== ''
     }
+  },
+  mounted () {
+    this.$refs.inputClinica.focus()
   }
 }
 </script>

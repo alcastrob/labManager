@@ -10,7 +10,7 @@
             <div>
               <collapsable-button iconCss="fas fa-certificate" text="Declaración de Conformidad" eventName="work:DeclarationOfConformity"></collapsable-button>
               <collapsable-button iconCss="fas fa-dolly" text="Nota de entrega" eventName="work:DeviveryNote"></collapsable-button>
-              <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+              <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
               </button>
