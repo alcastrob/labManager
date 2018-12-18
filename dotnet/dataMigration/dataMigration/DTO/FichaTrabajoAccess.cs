@@ -48,8 +48,6 @@ namespace dataMigration.DTO
         public decimal? Precio6 { get; set; }
         public decimal? Precio7 { get; set; }
         public decimal? PrecioMetal { get; set; }
-        public decimal? PrecioTotal { get; set; }
-        public decimal? PrecioFija { get; set; }
         public string TipoTrabajo { get; set; }
     }
 }

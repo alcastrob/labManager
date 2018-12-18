@@ -31,14 +31,14 @@ namespace dataMigration
                     query.AppendLine(@"	IdTrabajo, IdDentista, IdTipoTrabajo,");
                     query.AppendLine(@"	Paciente, Color, FechaTerminacion,");
                     query.AppendLine(@"	FechaEntrada, FechaPrevista, PrecioFinal,");
-                    query.AppendLine(@"	PrecioMetal, PrecioTotal, PrecioFija,");
+                    query.AppendLine(@"	PrecioMetal,");
                     query.AppendLine(@"	Nombre");
                     query.AppendLine(@")");
                     query.AppendLine(@"VALUES (");
                     query.AppendLine(@"	@IdTrabajo,	@IdDentista, @IdTipoTrabajo,");
                     query.AppendLine(@"	@Paciente, @Color, @FechaTerminacion,");
                     query.AppendLine(@"	@FechaEntrada, @FechaPrevista, @PrecioFinal,");
-                    query.AppendLine(@"	@PrecioMetal, @PrecioTotal, @PrecioFija,");
+                    query.AppendLine(@"	@PrecioMetal,");
                     query.AppendLine(@"	@Nombre");
                     query.AppendLine(@");");
 
@@ -54,8 +54,6 @@ namespace dataMigration
                     command.Parameters.Add(new SQLiteParameter("FechaPrevista", trabajo.FechaPrevista));
                     command.Parameters.Add(new SQLiteParameter("PrecioFinal", trabajo.PrecioFinal));
                     command.Parameters.Add(new SQLiteParameter("PrecioMetal", trabajo.PrecioMetal));
-                    command.Parameters.Add(new SQLiteParameter("PrecioTotal", trabajo.PrecioTotal));
-                    command.Parameters.Add(new SQLiteParameter("PrecioFija", trabajo.PrecioFija));
                     command.Parameters.Add(new SQLiteParameter("Nombre", trabajo.Nombre));
                     command.ExecuteNonQuery();
                 }

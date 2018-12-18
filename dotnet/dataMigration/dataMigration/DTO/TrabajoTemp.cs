@@ -19,8 +19,6 @@ namespace dataMigration.DTO
         public DateTime? FechaPrevista { get; set; }
         public string Nombre { get; set; }
         public decimal? PrecioMetal { get; set; }
-        public decimal? PrecioTotal { get; set; }
-        public decimal? PrecioFija { get; set; }
         public int IdTipoTrabajo { get; set; }
         public string TipoTrabajo { get; set; }
     }

@@ -81,8 +81,6 @@ namespace dataMigration
                         f.Precio6 = CleanUpDecimal(reader, "Precio6");
                         f.Precio7 = CleanUpDecimal(reader, "Precio7");
                         f.PrecioMetal = CleanUpDecimal(reader, "Precio metal");
-                        f.PrecioTotal = CleanUpDecimal(reader, "Precio total");
-                        f.PrecioFija = CleanUpDecimal(reader, "Precio fija");
                         f.TipoTrabajo = CleanUpString(reader, "Tipo de trabajo");
 
                         fichasTrabajo.Add(f);

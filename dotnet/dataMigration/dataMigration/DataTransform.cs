@@ -44,8 +44,6 @@ namespace dataMigration
                 FechaPrevista = ficha.FechaPrevista,
                 Nombre = ficha.Nombre,
                 PrecioMetal = ficha.PrecioMetal,
-                PrecioTotal = ficha.PrecioTotal,
-                PrecioFija = ficha.PrecioFija,
                 TipoTrabajo = ficha.TipoTrabajo
             };
             if (ficha.PrecioFinal == null)
@@ -166,8 +164,6 @@ namespace dataMigration
                 FechaPrevista = ficha.FechaPrevista,
                 Nombre = ficha.Nombre,
                 PrecioMetal = ficha.PrecioMetal,
-                PrecioTotal = ficha.PrecioTotal,
-                PrecioFija = ficha.PrecioFija,
                 IdTipoTrabajo = ficha.IdTipoTrabajo
             };
             return returnedValue;
