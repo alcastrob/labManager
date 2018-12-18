@@ -28,6 +28,7 @@ export function createNewDatabase (fileName) {
 
 // Works ----------------------------------------------------------------------
 
+//Tested
 export function getWorksList (fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
@@ -42,6 +43,7 @@ export function getWorksList (fileName) {
   })
 }
 
+//Tested
 export function getWork (workId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT t.IdTrabajo, tt.Descripcion AS TipoTrabajo, t.IdDentista, d.NombreClinica, d.NombreDentista, ' +
@@ -59,6 +61,7 @@ export function getWork (workId, fileName) {
 
 // Work Indications------------------------------------------------------------
 
+//Tested
 export function getWorkIndications (workId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdTrabajoDetalle, Descripcion, Precio ' +
@@ -94,6 +97,7 @@ export function deleteWorkIndications(workIndicationId, fileName){
 
 // Work Tests------------------------------------------------------------------
 
+//Tested
 export function getWorkTestsList (workId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT p.IdPrueba, p.Descripcion, p.FechaSalida, ' +
@@ -137,6 +141,7 @@ export function deleteWorkTest(workTestId, fileName){
 
 // Custom queries for Work (KPIs)----------------------------------------------
 
+//Tested
 export function getWorkInExecution (fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
@@ -152,6 +157,7 @@ export function getWorkInExecution (fileName) {
   })
 }
 
+//Tested
 export function getWorksEndedThisMonth(fileName) {
 db = new sqlite3.Database(fileName)
 var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
@@ -168,6 +174,7 @@ return allAsync(db, query, []).then((row) => {
 })
 }
 
+//Tested
 export function getWorksEndedLast30days(fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
@@ -183,6 +190,7 @@ export function getWorksEndedLast30days(fileName) {
   })
   }
 
+  //Tested
   export function getWorksEndedPrevious30days(fileName) {
     db = new sqlite3.Database(fileName)
     var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
@@ -202,6 +210,7 @@ export function getWorksEndedLast30days(fileName) {
 
 // Work Types -----------------------------------------------------------------
 
+//Tested
 export function getWorkTypes (fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
@@ -262,6 +271,7 @@ export function deleteAdjuntsOfWork(adjuntId, fileName){
 
 // Dentists -------------------------------------------------------------------
 
+//Tested
 export function getDentistList (fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdDentista AS Key, IdDentista, NombreDentista, NombreClinica, ' +
@@ -286,16 +296,17 @@ export function getDentist (dentistId, fileName) {
   })
 }
 
+//Tested
 export function insertDentist(dentist, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO Dentistas (NombreDentista, NombreClinica, ' +
     'DatosFiscales, Direccion, DatosBancarios, DatosInteres, ' +
     'CorreoElectronico, CP, Poblacion, Telefono, Telefono2) ' +
     'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-  return run(db, query, [dentist.NombreDentista, dentist.NombreClinica, dentist.DatosFiscales,
+  runAsync(db, query, [dentist.NombreDentista, dentist.NombreClinica, dentist.DatosFiscales,
     dentist.Direccion, dentist.DatosBancarios, dentist.DatosInteres,
     dentist.CorreoElectronico, dentist.CP, dentist.Poblacion,
-    dentist.Telefono, dentist.Telefono2dentist])
+    dentist.Telefono, dentist.Telefono2])
 }
 
 export function updateDentist(dentist, fileName) {
@@ -344,6 +355,18 @@ function getAsync (db, sql, params) {
 function allAsync (db, sql, params) {
   return new Promise(function (resolve, reject) {
     db.all(sql, params, function (err, row) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(row)
+      }
+    })
+  })
+}
+
+function runAsync (db, sql, params) {
+  return new Promise(function (resolve, reject) {
+    db.run(sql, params, function (err, row) {
       if (err) {
         reject(err)
       } else {

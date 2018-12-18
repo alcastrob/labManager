@@ -11,6 +11,7 @@
             <workDetail v-if="currentPage === 'workDetail'" :workId="currentId" />
             <dentistsList v-if="currentPage === 'dentistsList'"/>
             <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="currentId" />
+            <dentistNew v-if="currentPage === 'dentistNew'" />
             <invoices v-if="currentPage === 'invoices'" />
             <about v-if="currentPage === 'about'"/>
           </div>
@@ -28,6 +29,7 @@ import workDetail from './WorkDetail'
 import workNew from './WorkNew'
 import dentistDetail from './DentistDetail'
 import dentistsList from './DentistsList'
+import dentistNew from './DentistNew'
 import worksList from './WorksList'
 import invoices from './Invoices'
 
@@ -44,6 +46,7 @@ export default {
     worksList,
     dentistDetail,
     dentistsList,
+    dentistNew,
     invoices
   },
   data () {
@@ -108,6 +111,9 @@ export default {
     })
     ipcRenderer.on('navigation:dentistDetail', () => {
       this.navigateTo('dentistDetail')
+    })
+    ipcRenderer.on('navigation:dentistNew', () => {
+      this.navigateTo('dentistNew')
     })
     ipcRenderer.on('navigation:invoices', () => {
       this.navigateTo('invoices')

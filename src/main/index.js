@@ -140,15 +140,9 @@ const menuTemplate = [{
       }
     },
     {
-      label: 'Dentistas',
+      label: 'Nuevo Dentista',
       click () {
-        mainWindow.webContents.send('navigation:dentistsList')
-      }
-    },
-    {
-      label: 'Ficha Trabajo',
-      click () {
-        mainWindow.webContents.send('navigation:workDetail')
+        mainWindow.webContents.send('navigation:dentistNew')
       }
     }
   ]
