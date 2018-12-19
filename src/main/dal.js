@@ -59,6 +59,13 @@ export function getWork (workId, fileName) {
   })
 }
 
+export function insertWork(work, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = ''
+  // return run(db, query, [workIndication.IdTrabajo,
+  //   workIndication.Descripcion , workIndication.Precio])
+  }
+
 // Work Indications------------------------------------------------------------
 
 //Tested

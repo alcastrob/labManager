@@ -41,27 +41,23 @@
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="nombre">Nombre</label>
-          <input type="text" class="form-control" v-model="work.Nombre">
+          <input type="text" class="form-control" v-model="data.Nombre">
         </div> <!-- col-md-6 -->
         <div class="col-md-5">
           <label for="paciente">Paciente</label>
-          <input type="text" class="form-control" v-model="work.Paciente">
+          <input type="text" class="form-control" v-model="data.Paciente">
         </div> <!-- col-md-6 -->
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
-          <select class="form-control" id="tipoTrabajo" v-model="work.IdTipoTrabajo">
+          <select class="form-control" id="tipoTrabajo" v-model="data.IdTipoTrabajo">
             <option disabled value="">Seleccione un opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
         </div> <!-- col-md-6 -->
-        <div class="col-md-2">
-          <label for="precioMetal">Precio metal</label>
-          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="work.PrecioMetal">
-        </div> <!-- col-md-2 -->
-        <div class="col-md-2">
+        <div class="col-md-4">
           <label for="color">Color</label>
-          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="work.Color">
-        </div> <!-- col-md-2 -->
+          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="data.Color">
+        </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
@@ -70,22 +66,22 @@
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
-        <div class="col-md-4 mt-3">
+        <div class="col-md-6 mt-3">
           <label for="fEntrada">Fecha entrada</label>
-          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada">
+          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="data.FechaEntrada">
+          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
+          <i class="far fa-calendar-alt"></i>
+          Poner fecha de hoy
+          </a>
         </div> <!-- col-md-4 -->
-        <div class="col-md-4 mt-3">
+        <div class="col-md-6 mt-3">
           <label for="fPrevista">Fecha prevista</label>
-          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
-        </div> <!-- col-md-4 -->
-        <div class="col-md-4 mt-3">
-          <label for="fSalida">Fecha salida</label>
-          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
+          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="data.FechaPrevista">
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-4">
-          <workAdjuncts v-if="workAdjunctsData===true"></workAdjuncts>
+          <div ref="workAdjunctsContainer"></div>
         </div> <!-- col-md-8 -->
       </div> <!-- row -->
       <div class="row">
@@ -115,7 +111,7 @@ import collapsableButton from '../PageElements/collapsableButton'
 import workAdjuncts from '../PageElements/WorkAdjuncts'
 
 import Vue from 'Vue'
-import { getWork, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
+import { getWork, getWorkTypes, getWorkIndications, insertWork } from '../../../main/dal.js'
 
 export default {
   name: 'WorkNew',
@@ -128,7 +124,7 @@ export default {
   data () {
     return {
       requiresValidation: false,
-      work: {
+      data: {
         idTrabajo: 0,
         NombreDentista: '',
         idTipoTrabajo: 0,
@@ -136,13 +132,12 @@ export default {
         Color: '',
         FechaEntrada: '',
         FechaPrevista: '',
-        FechaTerminacion: '',
-        Precio: 0,
         Nombre: ''
       },
       workTypes: {},
       workIndications: {},
-      workAdjunctsData: false
+      adjuncts: null
+
     }
   },
   methods: {
@@ -192,13 +187,29 @@ export default {
       this.requiresValidation = true
 
       if (this.canBeSaved) {
-        insertDentist(this.data, 'labManager.sqlite')
+        insertWork(this.data, 'labManager.sqlite')
       }
     },
     canBeSaved: function() {
       return true
       // return !this.requiresValidation
       //  || this.data.NombreClinica !== ''
+    },
+    setStartDateToToday: function() {
+      var today = new Date()
+      var dd = today.getDate()
+
+      var mm = today.getMonth()+1
+      var yyyy = today.getFullYear()
+      if(dd<10) {
+          dd='0'+dd;
+      }
+
+      if(mm<10) {
+          mm='0'+mm;
+      }
+
+      this.data.FechaEntrada = yyyy + '-' + mm + '-' + dd
     }
   },
   mounted () {
@@ -212,7 +223,12 @@ export default {
       this.workIndications = workIndicat
     })
     this.$root.$on('work:visibleWorkAdjuncts', () => {
-      this.workAdjunctsData = true
+      if(this.adjuncts === null){
+        var ComponentClass = Vue.extend(workAdjuncts)
+        this.adjuncts = new ComponentClass()
+        this.adjuncts.$mount()
+        this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
+      }
     })
   }
 }

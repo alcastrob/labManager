@@ -5,13 +5,13 @@ import Notifications from 'vue-notification'
 import App from './App'
 import router from './router'
 import store from './store'
-// import moment from 'moment'
+import moment from 'moment'
 
-// Vue.filter('formatDateDMY', function (value) {
-//   if (value) {
-//     return moment(String(value)).format('DD/MM/YYYY')
-//   }
-// })
+Vue.filter('formatDateDMY', function (value) {
+  if (value) {
+    return moment(String(value)).format('DD/MM/YYYY')
+  }
+})
 
 Vue.use(Notifications)
 
