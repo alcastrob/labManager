@@ -285,6 +285,7 @@ export function getDentistList (fileName) {
   })
 }
 
+//Tested
 export function getDentist (dentistId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
@@ -309,18 +310,18 @@ export function insertDentist(dentist, fileName) {
     dentist.Telefono, dentist.Telefono2])
 }
 
+//Tested
 export function updateDentist(dentist, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'UPDATE Dentistas ' +
-    'SET IdDentista = ?, NombreDentista = ?, NombreClinica = ?, ' +
+    'SET NombreDentista = ?, NombreClinica = ?, ' +
     'DatosFiscales = ?, Direccion = ?, DatosBancarios = ?, ' +
     'DatosInteres = ?, CorreoElectronico = ?, CP = ?, ' +
     'Poblacion = ?, Telefono = ?, Telefono2 = ? ' +
     'WHERE IdDentista = ? '
-  return run(db, query, [dentist.NombreDentista, dentist.NombreClinica, dentist.DatosFiscales,
-    dentist.Direccion, dentist.DatosBancarios, dentist.DatosInteres,
-    dentist.CorreoElectronico, dentist.CP, dentist.Poblacion,
-    dentist.Telefono, dentist.Telefono2dentist, dentist.IdDentista])
+  runAsync(db, query, [dentist.NombreDentista, dentist.NombreClinica,
+    dentist.DatosFiscales, dentist.Direccion, dentist.DatosBancarios, dentist.DatosInteres, dentist.CorreoElectronico, dentist.CP, dentist.Poblacion, dentist.Telefono, dentist.Telefono2,
+    dentist.IdDentista])
 }
 
 export function deleteDentist(dentistId, fileName){

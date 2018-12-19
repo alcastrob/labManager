@@ -112,16 +112,15 @@ export default {
   },
   methods: {
     save: function() {
-      this.$notify({
-        type: 'warn',
-        title: 'Important message',
-        text: 'Hello user! This is a notification!'
-      });
-      console.log('notify')
+      // this.$notify({
+      //   type: 'warn',
+      //   title: 'Important message',
+      //   text: 'Hello user! This is a notification!'
+      // });
+      // console.log('notify')
       this.requiresValidation = true
 
       if (this.canBeSaved) {
-        console.log(this.data)
         insertDentist(this.data, 'labManager.sqlite')
       }
     },

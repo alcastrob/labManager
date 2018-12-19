@@ -72,10 +72,14 @@ export default {
         this.previousPage = this.currentPage
         this.currentPage = pageName
         this.canNavigateBack = this.evaluateCanNavigateBack()
-        // I can't figure out how eventData.eventData mutated into eventData.id
-        if (eventData !== undefined && eventData.id !== undefined) {
-          this.currentId = eventData.id.index
+        // I can't figure out how eventData.eventData mutated into eventData.id for Works. In Dentists it still remains as eventData
+        if (eventData !== undefined && (eventData.id !== undefined || eventData.eventData !== undefined)) {
           this.backStates.push(eventData)
+          if (eventData.id !== undefined) {
+            this.currentId = eventData.id.index
+          } else if (eventData.eventData !== undefined) {
+            this.currentId = eventData.eventData.index
+          }
         }
       }
     },
