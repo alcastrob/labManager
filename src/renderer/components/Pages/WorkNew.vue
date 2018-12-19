@@ -8,7 +8,8 @@
         <div class="col-md-6 mt-2">
           <div class="float-right">
             <div>
-              <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+              <collapsable-button iconCss="fas fa-map-pin" text="Aditamentos" eventName="work:visibleWorkAdjuncts"></collapsable-button>
+              <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
               </button>
@@ -69,19 +70,28 @@
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
-        <div class="col-md-8 mt-3">
-          <h4>Aditamentos</h4>
-        </div> <!-- col-md-8 -->
         <div class="col-md-4 mt-3">
           <label for="fEntrada">Fecha entrada</label>
           <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada">
-          <br>
+        </div> <!-- col-md-4 -->
+        <div class="col-md-4 mt-3">
           <label for="fPrevista">Fecha prevista</label>
           <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
-          <br>
+        </div> <!-- col-md-4 -->
+        <div class="col-md-4 mt-3">
           <label for="fSalida">Fecha salida</label>
           <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
         </div> <!-- col-md-4 -->
+      </div> <!-- row -->
+      <div class="row">
+        <div class="col-md-12 mt-4">
+          <workAdjuncts v-if="workAdjunctsData===true"></workAdjuncts>
+        </div> <!-- col-md-8 -->
+      </div> <!-- row -->
+      <div class="row">
+        <div class="col-md-12 mt-3">
+          <button class="btn btn-info btn-block" v-on:click="save()" v-bind:class="{disabled: !canBeSaved()}">Guardar</button>
+        </div>
       </div> <!-- row -->
     </div> <!-- container -->
     <div ref="labelContainer"></div>
@@ -101,6 +111,8 @@ import labelEmax from '../Labels/labelEmax'
 import labelImplantes from '../Labels/labelImplantes'
 import labelMetalCeramica from '../Labels/labelMetalCeramica'
 import labelZirconio from '../Labels/labelZirconio'
+import collapsableButton from '../PageElements/collapsableButton'
+import workAdjuncts from '../PageElements/WorkAdjuncts'
 
 import Vue from 'Vue'
 import { getWork, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
@@ -109,10 +121,13 @@ export default {
   name: 'WorkNew',
   components: {
     workIndicationsTable,
-    workTestsTable
+    workTestsTable,
+    collapsableButton,
+    workAdjuncts
   },
   data () {
     return {
+      requiresValidation: false,
       work: {
         idTrabajo: 0,
         NombreDentista: '',
@@ -126,7 +141,8 @@ export default {
         Nombre: ''
       },
       workTypes: {},
-      workIndications: {}
+      workIndications: {},
+      workAdjunctsData: false
     }
   },
   methods: {
@@ -171,6 +187,18 @@ export default {
         default:
           throw 'Unexpected label type in WorkDetail.printLabel()'
       }
+    },
+    save: function() {
+      this.requiresValidation = true
+
+      if (this.canBeSaved) {
+        insertDentist(this.data, 'labManager.sqlite')
+      }
+    },
+    canBeSaved: function() {
+      return true
+      // return !this.requiresValidation
+      //  || this.data.NombreClinica !== ''
     }
   },
   mounted () {
@@ -183,7 +211,10 @@ export default {
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
     })
-  },
+    this.$root.$on('work:visibleWorkAdjuncts', () => {
+      this.workAdjunctsData = true
+    })
+  }
 }
 </script>
 
