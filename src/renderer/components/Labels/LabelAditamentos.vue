@@ -1,71 +1,64 @@
 <template>
-  <div class="box invisible" id="labelAditamentos">
-    <div style="position: absolute; top: +60px; left: +130px; z-index: 1;" class="labelTitle">
+  <div class="box" id="labelAditamentos">
+    <p class="labelTitle background">
       {{labelName}}
+      <span class="float-right no-background">
+        <span class="labelSubtitle">Trabajo nº </span>
+        <span class="labelTitle">{{workData.IdTrabajo}}</span>
+      </span>
+    </p>
+    <div style="padding-top: 0px;">
+      <table>
+        <tr>
+          <td class="noBorder" valign="top">Clínica o Dr/a: </td>
+          <td class="noBorder" valign="top">{{workData.NombreDentista}}</td>
+        </tr>
+        <tr>
+          <td class="noBorder pt-2" valign="top">Paciente: </td>
+          <td class="noBorder pt-2" valign="top">{{workData.Paciente}}</td>
+        </tr>
+      </table>
     </div>
-    <div style="position: absolute;" class="labelTitle">
-      <img src="~@/assets/aditamentos.jpg" style="width: 250px; height: 70px; z-index: 0; position: absolute; left: +50px;">
-    </div>
-    <div style="position: absolute; top: +60px; left: +300px; z-index:2; text-align: right; width: 300px;" >
-      <span class="labelSubtitle">Trabajo nº </span>
-      <span class="labelTitle">{{workData.IdTrabajo}}</span>
-    </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <table>
-      <tr>
-        <td class="noBorder">Clínica o Dr/a: </td>
-        <td class="noBorder">{{workData.NombreDentista}}</td>
-      </tr>
-      <tr>
-        <td class="noBorder">Paciente: </td>
-        <td class="noBorder">{{workData.Paciente}}</td>
-      </tr>
-    </table>
-
-    <br>
-    <br>
 
     <table>
       <tr>
-        <td style="width: 150px;" class="noBorder">CAJA</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">CAJA</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">CUBETA</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">CUBETA</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">ARTICULADOR</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">ARTICULADOR</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">PLETINAS</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">PLETINAS</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">TORNILLOS</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">TORNILLOS</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">ANÁLOGOS</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">ANÁLOGOS</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">POSTE IMPRESIÓN</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">POSTE IMPRESIÓN</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">INTERFACE</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">INTERFACE</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">OTROS</td>
-        <td style="width: 400px; height: 45px;">&nbsp;</td>
+        <td style="width: 120px;" class="noBorder">OTROS</td>
+        <td style="height: 25px;">&nbsp;</td>
       </tr>
     </table>
+    <br>
   </div>
 </template>
 
@@ -76,18 +69,27 @@ export default {
   data () {
     return {
       cssText: `
+       @page {
+          size: auto;
+          margin: 2mm 2mm 2mm 2mm;
+        }
+        body{
+          margin: 0px;
+        }
+        * {
+          -webkit-print-color-adjust:exact;
+          }
         .box {
           font-family: sans-serif;
-          width: 600px;
-          border: solid 1px #ccc;
+          font-size: .9em;
           text-align: left;
-          padding: 1em;
-          margin: 2em auto;
-          }
+        }
         .labelTitle {
-          font-size: 2.5rem;
+          font-size: 2rem;
           font-weight: 300;
           line-height: 1.2;
+          text-align: left;
+          background-color: #C892FB;
         }
         .labelSubtitle {
           font-size: 1.5rem;
@@ -99,16 +101,14 @@ export default {
         }
         table {
           margin: 0 auto;
-          width: 500px;
-        }
-        tr>th {
-          text-align: right;
+          width: 400px;
         }
         tr>td {
           border: solid 1px #000;
         }
         tr>th {
           width: 150px;
+          text-align: right;
         }
         .left {
           text-align:left;
@@ -155,3 +155,55 @@ export default {
   }
 }
 </script>
+<style>
+  @page {
+    size: auto;
+    margin: 2mm 2mm 2mm 2mm;
+  }
+  body{
+    margin: 0px;
+  }
+  * {
+    -webkit-print-color-adjust:exact;
+    }
+  .box {
+    font-family: sans-serif;
+    font-size: .9em;
+    text-align: left;
+  }
+  .labelTitle {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.2;
+    text-align: left;
+    background-color: #C892FB;
+  }
+  .labelSubtitle {
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+  }
+  p {
+    text-align: center;
+  }
+  table {
+    margin: 0 auto;
+    width: 400px;
+  }
+  tr>td {
+    border: solid 1px #000;
+  }
+  tr>th {
+    width: 150px;
+    text-align: right;
+  }
+  .left {
+    text-align:left;
+  }
+  .right {
+    float:right;
+  }
+  .noBorder {
+    border: none;
+  }
+</style>

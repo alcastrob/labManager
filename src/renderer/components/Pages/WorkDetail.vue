@@ -88,7 +88,7 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
-    <div ref="labelContainer"></div>
+    <div ref="labelContainer" style="width: 430px; border: solid 1px #000"></div>
   </div>
 </template>
 
