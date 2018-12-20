@@ -1,11 +1,9 @@
 <template>
-  <div class="input-group" >
-    <!-- v-on:blur="resultsVisible=false" -->
-    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off" v-on:blur="resultsVisible=false">
+  <div class="input-group">
+    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup">
     <div class="input-group-append">
     </div>
-     <!-- style="box-shadow: 10px 10px 5px grey;" -->
-    <div v-if="resultsVisible" class="typeahead-dropdown list-group" style="z-index: 10000;">
+    <div v-if="resultsVisible" class="typeahead-dropdown list-group myTypeahead">
       <a href='#' class="list-group-item" v-on:click="createNew(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</a>
       <div v-for="dentist in data" :key='dentist.IdDentista'>
         <a href="#" class="list-group-item" v-on:click="selectDentist(dentist.NombreDentista, dentist.IdDentista)">{{dentist.NombreDentista}}</a>
@@ -16,7 +14,10 @@
 
 <script>
 import { searchDentistsByName } from '../../../main/dal.js'
+import { mixin as clickaway } from 'vue-clickaway';
+
 export default {
+  mixins: [ clickaway ],
   name: 'dentistSearch',
   data () {
     return {
@@ -40,13 +41,15 @@ export default {
     },
     selectDentist: function(nombre, id) {
       this.query = nombre
-      this.resultsVisible = false
-      console.log(nombre)
-      //send message with the id
       this.selectedId = id
+      this.resultsVisible = false
+      this.$root.$emit('work:dentistSelected', this.selectedId)
     },
     createNew: function(nombre) {
       console.log('New')
+    },
+    hidePopup: function() {
+      this.resultsVisible = false
     }
   }
 }
@@ -54,10 +57,16 @@ export default {
 
 <style lang="scss">
 @import url('~@/assets/css/typeaheadjs.css');
+
+.myTypeahead {
+  z-index: 100;
+  box-shadow: 5px 5px 2px grey;
+}
+
 // Boostrap Typeahead CSS
 $input-border-radius: 6px;
 @mixin show-dropdown {
-  z-index: 10000;
+  z-index: 100;
   display: block;
   box-shadow: 10px 10px 5px grey;
   background-color: fuchsia;
@@ -73,7 +82,7 @@ a {
 .input-inline-button {
   display: inline-block;
   position: absolute;
-  z-index: 10004;
+  z-index: 104;
   right: 0;
   top: 0;
   text-decoration: none;
@@ -122,14 +131,14 @@ a {
     }
   }
   &-input {
-    z-index: 10000;
+    z-index: 100;
     position: relative;
     &.form-control {
       border-top-right-radius: $input-border-radius !important;
       border-bottom-right-radius: $input-border-radius !important;
     }
     &:focus {
-      z-index: 10003;
+      z-index: 103;
       padding-bottom: 8px;
       height: 36px;
       border-bottom-left-radius: 0;

@@ -130,7 +130,7 @@ export default {
       requiresValidation: false,
       data: {
         idTrabajo: 0,
-        NombreDentista: '',
+        idDentista: 0,
         idTipoTrabajo: 0,
         Paciente: '',
         Color: '',
@@ -233,6 +233,9 @@ export default {
         this.adjuncts.$mount()
         this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
       }
+    })
+    this.$root.$on('work:dentistSelected', (id) => {
+      this.data.idDentista = id
     })
   }
 }
