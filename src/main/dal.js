@@ -337,12 +337,14 @@ export function deleteDentist(dentistId, fileName){
   return run(db, query, [dentistId])
 }
 
+//Tested
 export function searchDentistsByName (dentistName, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = ''
-  return getAsync(db, query, [dentistName]).then((row) => {
-    db.close()
-    return row
+  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
+  'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
+  'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE NombreDentista LIKE ?'
+  return allAsync(db, query, ['%' + dentistName + '%']).then((rows) => {
+    return rows
   })
 }
 
