@@ -21,21 +21,17 @@
         :dataset="worksEndedLast30days"
         :secondaryDataset="worksEndedPrevious30days"/>
     </div>
-    <areaChart/>
-    <workList/>
   </div>
 </template>
 
 <script>
 import topBar from '../PageElements/TopBar'
 import myIconCard from '../PageElements/iconCards/myIconCard'
-import areaChart from '../PageElements/AreaChart'
-import workList from '../PageElements/WorkList'
 import { getWorkInExecution, getWorksEndedThisMonth, getWorksEndedLast30days, getWorksEndedPrevious30days } from '../../../main/dal.js'
 
 export default {
   name: 'dashboard',
-  components: { topBar, myIconCard, areaChart, workList},
+  components: { topBar, myIconCard },
   data () {
     return {
       worksInExecutionDataset: [],

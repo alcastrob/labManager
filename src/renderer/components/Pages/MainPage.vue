@@ -8,10 +8,10 @@
             <dashboard v-if="currentPage === 'dashboard'" />
             <workNew v-if="currentPage === 'workNew'" />
             <worksList v-if="currentPage === 'worksList'" />
-            <workDetail v-if="currentPage === 'workDetail'" :workId="currentId" />
+            <workDetail v-if="currentPage === 'workDetail'" :workId="childrenComponentData" />
             <dentistsList v-if="currentPage === 'dentistsList'"/>
-            <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="currentId" />
-            <dentistNew v-if="currentPage === 'dentistNew'" />
+            <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="childrenComponentData" />
+            <dentistNew v-if="currentPage === 'dentistNew'" :dentistName="childrenComponentData" />
             <invoices v-if="currentPage === 'invoices'" />
             <about v-if="currentPage === 'about'"/>
           </div>
@@ -52,7 +52,7 @@ export default {
   data () {
     return {
       currentPage: 'dashboard',
-      currentId: null,
+      childrenComponentData: null,
       previousPage: null,
       canNavigateBack: false,
       backStates: []
@@ -76,9 +76,13 @@ export default {
         if (eventData !== undefined && (eventData.id !== undefined || eventData.eventData !== undefined)) {
           this.backStates.push(eventData)
           if (eventData.id !== undefined) {
-            this.currentId = eventData.id.index
+            this.childrenComponentData = eventData.id.index
           } else if (eventData.eventData !== undefined) {
-            this.currentId = eventData.eventData.index
+            if (eventData.eventData.index !== undefined) {
+              this.childrenComponentData = eventData.eventData.index
+            } else if (eventData.eventData.name !== undefined) {
+              this.childrenComponentData = eventData.eventData.name
+            }
           }
         }
       }
@@ -87,6 +91,7 @@ export default {
       switch (this.currentPage) {
         case 'workDetail': return true
         case 'dentistDetail': return true
+        case 'dentistNew': return true
         default: return false
       }
     }

@@ -1,12 +1,12 @@
 <template>
   <div class="input-group">
-    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup">
+    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica">
     <div class="input-group-append">
     </div>
-    <div v-if="resultsVisible" class="typeahead-dropdown list-group myTypeahead">
-      <a href='#' class="list-group-item" v-on:click="createNew(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</a>
+    <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
+      <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</span>
       <div v-for="dentist in data" :key='dentist.IdDentista'>
-        <a href="#" class="list-group-item" v-on:click="selectDentist(dentist.NombreDentista, dentist.IdDentista)">{{dentist.NombreDentista}}</a>
+        <span class="list-group-item clickable" v-on:click="selectDentist(dentist.NombreDentista, dentist.IdDentista)">{{dentist.NombreDentista}}</span>
       </div>
     </div>
   </div>
@@ -15,6 +15,7 @@
 <script>
 import { searchDentistsByName } from '../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway';
+import _ from 'lodash'
 
 export default {
   mixins: [ clickaway ],
@@ -24,12 +25,14 @@ export default {
       resultsVisible: false,
       query: '',
       data: [],
-      selectedId: -1
+      selectedId: -1,
+      focus: false
     }
   },
   methods: {
     search: function() {
       this.resultsVisible = true
+      this.focus = true
       if (this.query.length > 3) {
         searchDentistsByName(this.query, 'labManager.sqlite').then((dentistDetails) => {
           this.data = dentistDetails
@@ -39,18 +42,34 @@ export default {
         this.selectedId = -1
       }
     },
-    selectDentist: function(nombre, id) {
-      this.query = nombre
+    selectDentist: function(name, id) {
+      this.query = name
       this.selectedId = id
       this.resultsVisible = false
       this.$root.$emit('work:dentistSelected', this.selectedId)
     },
-    createNew: function(nombre) {
-      console.log('New')
+    createNew: function(name) {
+      // this.$root.$emit('navigation:navigateTo', {page: 'dentistNew'})
+      this.$root.$emit('navigation:navigateTo', {
+        page: 'dentistNew',
+        eventData: {
+          name: name
+        }
+      })
+    },
+    canCreate: function(name) {
+      return !(_.some(this.data, {'NombreDentista': name}))
+    },
+    canDisplayDropdown: function() {
+      this.resultVisible =  (this.query !== '' && this.canCreate(this.query) && this.focus)
+      return this.resultVisible
     },
     hidePopup: function() {
-      this.resultsVisible = false
+      this.focus = false
     }
+  },
+  mounted () {
+    this.$refs.clinica.focus()
   }
 }
 </script>
@@ -60,7 +79,7 @@ export default {
 
 .myTypeahead {
   z-index: 100;
-  box-shadow: 5px 5px 2px grey;
+  box-shadow: 5px 5px 1px #CCCCCC;
 }
 
 // Boostrap Typeahead CSS
@@ -164,5 +183,9 @@ a {
       visibility: visible;
     }
   }
+}
+
+.clickable{
+  cursor: pointer;
 }
 </style>
