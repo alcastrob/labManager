@@ -8,7 +8,7 @@
     </tr>
     <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
       <td class="pt-3" style="width: 41px;"><i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i></td>
-      <td class="pt-3-half" contenteditable="true">{{indication.Descripcion}}</td>
+      <td class="pt-3-half" contenteditable="true" v-on:keyup="trackChanges($event, indication.IdTrabajoDetalle)">{{indication.Descripcion}}</td>
       <td class="pt-3-half text-right" contenteditable="true">{{indication.Precio}}</td>
     </tr>
     <tr>
@@ -89,6 +89,11 @@ export default {
 
         this.$refs.newPrecio.parentElement.children[1].focus()
       }
+    },
+    trackChanges(event, id) {
+      // if (event.currentTarget.innerText !== _.find(data.currentId, value))
+        //Look for the last UPDATE on the stack, and rewrite it with the new value
+        //If doesn't exist, create an UPDATE
     }
   },
   mounted () {
