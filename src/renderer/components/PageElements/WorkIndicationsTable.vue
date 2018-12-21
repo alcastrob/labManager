@@ -14,12 +14,8 @@
     <tr>
       <td class="pt-3" style="width: 41px;">
       </td>
-      <td class="pt-3-half" contenteditable="true">
-
-      </td>
-      <td class="pt-3-half text-right" contenteditable="true" ref="newPrecio" @blur="lostFocusOnLastRow(2)">
-
-      </td>
+      <td class="pt-3-half" contenteditable="true" ref="newDescripcion"></td>
+      <td class="pt-3-half text-right" contenteditable="true" ref="newPrecio" @blur="lostFocusOnLastRow()"></td>
     </tr>
     </table>
     <p class="text-right pr-1">
@@ -82,7 +78,7 @@ export default {
     isNotEmpty(value){
       return !(value === null || value === undefined || value === '')
     },
-    lostFocusOnLastRow(whichTdPositionToFocus){
+    lostFocusOnLastRow(){
       if (this.isNotEmpty(this.$refs.newDescripcion.innerText) || this.isNotEmpty(this.$refs.newPrecio.innerText)) {
         this.data.push({
           Descripcion: this.$refs.newDescripcion.innerText,
