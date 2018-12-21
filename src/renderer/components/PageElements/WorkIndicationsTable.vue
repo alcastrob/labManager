@@ -7,13 +7,19 @@
       <th class="text-right">Precio</th>
     </tr>
     <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
+      <td class="pt-3" style="width: 41px;"><i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i></td>
+      <td class="pt-3-half" contenteditable="true">{{indication.Descripcion}}</td>
+      <td class="pt-3-half text-right" contenteditable="true">{{indication.Precio}}</td>
+    </tr>
+    <tr>
       <td class="pt-3" style="width: 41px;">
-        <i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)" v-if="canBeDeleted(indication)"></i>
       </td>
       <td class="pt-3-half" contenteditable="true">
-        {{indication.Descripcion}}
+
       </td>
-      <td class="pt-3-half text-right" contenteditable="true">{{indication.Precio}}</td>
+      <td class="pt-3-half text-right" contenteditable="true" ref="newPrecio" @blur="lostFocusOnLastRow(2)">
+
+      </td>
     </tr>
     </table>
     <p class="text-right pr-1">
@@ -42,7 +48,10 @@ class changeLogItem {
   }
 }
 
+var newIds = 10000000
+
 export default {
+
   name: 'workIndicationsTable',
   props: {
     workIndications: {
@@ -53,7 +62,8 @@ export default {
   data () {
     return {
       data: [],
-      changes: []
+      changes: [],
+      dataLoaded: false
      }
   },
   methods: {
@@ -67,13 +77,22 @@ export default {
       this.changes.push(new changeLogItem('delete', rowId, null))
     },
     canBeDeleted(value){
-      // if (value === null || value === undefined) {
-      //   return false
-      // }
       return this.isNotEmpty(value.Descripcion) && this.isNotEmpty(value.Precio)
     },
     isNotEmpty(value){
       return !(value === null || value === undefined || value === '')
+    },
+    lostFocusOnLastRow(whichTdPositionToFocus){
+      if (this.isNotEmpty(this.$refs.newDescripcion.innerText) || this.isNotEmpty(this.$refs.newPrecio.innerText)) {
+        this.data.push({
+          Descripcion: this.$refs.newDescripcion.innerText,
+          IdTrabajoDetalle: newIds++,
+          Precio: this.$refs.newPrecio.innerText})
+        this.$refs.newDescripcion.innerText = ''
+        this.$refs.newPrecio.innerText = ''
+
+        this.$refs.newPrecio.parentElement.children[1].focus()
+      }
     }
   },
   mounted () {
@@ -85,9 +104,14 @@ export default {
     // The dataset is loaded in the container component, so it could be not available during the mount because this load is async. This line will be invoked whenever the prop dataset is updated in the container component.
     this.$watch('workIndications', function (newVal, oldVal) {
       this.data = newVal.slice(0) // For cloning the array, not passing the reference. This way the watcher doesn't  went bananas.
-      console.log('workIndications updated')
-      this.data.push({Descripcion: '', IdTrabajoDetalle: null, Precio: ''})
+      // this.data.push({Descripcion: '', IdTrabajoDetalle: null, Precio: ''})
     })
+
+    this.$watch('data', function(newVal, oldVal) {
+      if (!(_.some(this.data, {'Descripcion': '', 'Precio': ''}))) {
+        //this.data.push({Descripcion: '', IdTrabajoDetalle: null, Precio: ''})
+      }
+    }, { deep: true })
   }
 }
 </script>
