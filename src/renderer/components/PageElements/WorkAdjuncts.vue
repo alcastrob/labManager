@@ -1,5 +1,6 @@
 <template>
 <div>
+  <hr>
   <h4>Aditamentos</h4>
 
   <!-- <div class="container" style="border: solid 1px #000; "> -->
