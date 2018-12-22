@@ -1,5 +1,5 @@
 <template>
-  <div class="box" id="labelAditamentos">
+  <div class="box" id="labelAditamentos" style="width=500px;">
     <p class="labelTitle background">
       {{labelName}}
       <span class="float-right no-background">
@@ -10,54 +10,16 @@
     <div style="padding-top: 0px;">
       <table>
         <tr>
-          <td class="noBorder" valign="top">Clínica o Dr/a: </td>
-          <td class="noBorder" valign="top">{{workData.NombreDentista}}</td>
+          <td class="noBorder" valign="top" style="width: 120px;">Clínica o Dr/a: </td>
+          <td class="noBorder" valign="top" style="width: 120px;">{{workData.NombreDentista}}</td>
         </tr>
         <tr>
-          <td class="noBorder pt-2" valign="top">Paciente: </td>
-          <td class="noBorder pt-2" valign="top">{{workData.Paciente}}</td>
+          <td class="noBorder pt-2" valign="top" style="width: 120px;">Paciente: </td>
+          <td class="noBorder pt-2" valign="top" style="width: 120px;">{{workData.Paciente}}</td>
         </tr>
       </table>
     </div>
 
-    <table>
-      <tr>
-        <td style="width: 120px;" class="noBorder">CAJA</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="width: 120px;" class="noBorder">CUBETA</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="width: 120px;" class="noBorder">ARTICULADOR</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="width: 120px;" class="noBorder">PLETINAS</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="width: 120px;" class="noBorder">TORNILLOS</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="width: 120px;" class="noBorder">ANÁLOGOS</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="width: 120px;" class="noBorder">POSTE IMPRESIÓN</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="width: 120px;" class="noBorder">INTERFACE</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="width: 120px;" class="noBorder">OTROS</td>
-        <td style="height: 25px;">&nbsp;</td>
-      </tr>
-    </table>
     <br>
   </div>
 </template>
