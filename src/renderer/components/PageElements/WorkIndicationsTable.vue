@@ -9,11 +9,7 @@
     <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
       <td class="pt-3" style="width: 41px;"><i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i></td>
       <td class="pt-3-half" contenteditable="true" v-on:keyup="trackChanges($event, indication.IdTrabajoDetalle)">{{indication.Descripcion}}</td>
-      <td class="pt-3-half text-right">
-        <input type="number" class="text-right numberTd" value="indication.Precio">
-      </td>
-      <!-- <td class="pt-3-half text-right" contenteditable="true" v-on:keyup="checkNumber($event, indication.Precio)">{{indication.Precio}}</td> -->
-      <!-- :class="{'bg-danger text-white shake': isNaN(parseFloat(indication.Precio))}" -->
+      <td class="pt-3-half text-right" contenteditable="true" v-on:blur="updatePrice($event, indication.IdTrabajoDetalle)" :class="{'bg-danger text-white shake': isPriceNotANumber(indication.Precio)}">{{indication.Precio}}</td>
     </tr>
     <tr>
       <td class="pt-3" style="width: 41px;">
@@ -23,10 +19,7 @@
     </tr>
     </table>
     <div>
-      <p class="text-right pr-1" :class="{'float-right d-inline-block bg-danger text-white shake': isNaN(parseFloat(getSum()))}">
-        <!-- Total: {{isNaN(getSum())?'???':getSum()}}€ -->
-        Total: {{sum}}€
-      </p>
+      <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger shake': sumError}">{{getSum()}}</p>
     </div>
 </div>
 </template>
@@ -66,15 +59,49 @@ export default {
     return {
       data: [],
       changes: [],
-      dataLoaded: false
+      dataLoaded: false,
+      sumError: false,
+       moneyFormatter: new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'EUR'
+      })
      }
   },
   methods: {
     getSum: function () {
-      // return _.sumBy(['Precio'], _.partial(_.sumBy, this.data))
-      return _.sumBy(this.data, function(n) {
-        return parseFloat(n.Precio)
-      })
+      try {
+        var sum = _.sumBy(this.data, function(n) {
+          if (n.Precio.indexOf(',') !== -1){
+            throw 'comma'
+          }
+          var temp = parseFloat(n.Precio)
+          if (isNaN(temp)){
+            throw 'NaN'
+          } else {
+            return temp
+          }
+        })
+        this.sumError = false
+        return 'Total: ' + this.moneyFormatter.format(sum)
+      }
+      catch(err){
+        this.sumError = true
+        return 'Error en los datos a sumar'
+      }
+    },
+    updatePrice(event, id) {
+      var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
+      if (this.isEmpty(event.srcElement.innerText)) {
+        elementInArray.Precio = 0
+      } else {
+        elementInArray.Precio =  event.srcElement.innerText
+      }
+    },
+    isPriceNotANumber(price){
+      if (price.indexOf(',') !== -1){
+        return true
+      }
+      return (isNaN(parseFloat(price)))
     },
     deleteRow: function (rowId) {
       this.data = _.remove(this.data, function (n) {
@@ -85,8 +112,11 @@ export default {
     canBeDeleted(value){
       return this.isNotEmpty(value.Descripcion) && this.isNotEmpty(value.Precio)
     },
+    isEmpty(value){
+      return (value === null || value === undefined || value === '')
+    },
     isNotEmpty(value){
-      return !(value === null || value === undefined || value === '')
+      return !this.isEmpty(value)
     },
     lostFocusOnLastRow(){
       if (this.isNotEmpty(this.$refs.newDescripcion.innerText) || this.isNotEmpty(this.$refs.newPrecio.innerText)) {
@@ -96,7 +126,6 @@ export default {
           Precio: this.$refs.newPrecio.innerText})
         this.$refs.newDescripcion.innerText = ''
         this.$refs.newPrecio.innerText = ''
-
         this.$refs.newPrecio.parentElement.children[1].focus()
       }
     },
@@ -104,18 +133,6 @@ export default {
       // if (event.currentTarget.innerText !== _.find(data.currentId, value))
         //Look for the last UPDATE on the stack, and rewrite it with the new value
         //If doesn't exist, create an UPDATE
-    },
-    checkNumber(event, id) {
-      console.log('check:' + id)
-      debugger
-      // event.preventDefault();
-    }
-  },
-  computed: {
-    sum: function() {
-      return _.sumBy(this.data, function(n) {
-        return parseFloat(n.Precio) ||0
-      })
     }
   },
   mounted () {
@@ -142,24 +159,5 @@ export default {
 <style>
 .pt-3-half {
     padding-top: 1.4rem;
-}
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    /* display: none; <- Crashes Chrome on hover */
-    -webkit-appearance: none;
-    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
-}
-.numberTd {
-    width: 110%;
-    padding: 12px;
-    /* margin: -13px; */
-    margin-left: -15px;
-    margin-right: -12px;
-    margin-top: -13px;
-    margin-bottom: -16px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    border: 0px;
 }
 </style>
