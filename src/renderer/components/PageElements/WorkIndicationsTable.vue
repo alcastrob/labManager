@@ -1,6 +1,6 @@
 <template>
 <div id="table" class="table-editable">
-    <table class="table table-bordered table-responsive-md table-striped">
+    <table class="table table-bordered table-responsive-xs table-striped">
     <tr>
       <th></th>
       <th>Descripción</th>
@@ -9,7 +9,11 @@
     <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
       <td class="pt-3" style="width: 41px;"><i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i></td>
       <td class="pt-3-half" contenteditable="true" v-on:keyup="trackChanges($event, indication.IdTrabajoDetalle)">{{indication.Descripcion}}</td>
-      <td class="pt-3-half text-right" contenteditable="true">{{indication.Precio}}</td>
+      <td class="pt-3-half text-right">
+        <input type="number" class="text-right numberTd" value="indication.Precio">
+      </td>
+      <!-- <td class="pt-3-half text-right" contenteditable="true" v-on:keyup="checkNumber($event, indication.Precio)">{{indication.Precio}}</td> -->
+      <!-- :class="{'bg-danger text-white shake': isNaN(parseFloat(indication.Precio))}" -->
     </tr>
     <tr>
       <td class="pt-3" style="width: 41px;">
@@ -18,9 +22,12 @@
       <td class="pt-3-half text-right" contenteditable="true" ref="newPrecio" @blur="lostFocusOnLastRow()"></td>
     </tr>
     </table>
-    <p class="text-right pr-1">
-      Total: {{getSum()}}€
-    </p>
+    <div>
+      <p class="text-right pr-1" :class="{'float-right d-inline-block bg-danger text-white shake': isNaN(parseFloat(getSum()))}">
+        <!-- Total: {{isNaN(getSum())?'???':getSum()}}€ -->
+        Total: {{sum}}€
+      </p>
+    </div>
 </div>
 </template>
 
@@ -64,7 +71,10 @@ export default {
   },
   methods: {
     getSum: function () {
-      return _.sumBy(['Precio'], _.partial(_.sumBy, this.data))
+      // return _.sumBy(['Precio'], _.partial(_.sumBy, this.data))
+      return _.sumBy(this.data, function(n) {
+        return parseFloat(n.Precio)
+      })
     },
     deleteRow: function (rowId) {
       this.data = _.remove(this.data, function (n) {
@@ -94,6 +104,18 @@ export default {
       // if (event.currentTarget.innerText !== _.find(data.currentId, value))
         //Look for the last UPDATE on the stack, and rewrite it with the new value
         //If doesn't exist, create an UPDATE
+    },
+    checkNumber(event, id) {
+      console.log('check:' + id)
+      debugger
+      // event.preventDefault();
+    }
+  },
+  computed: {
+    sum: function() {
+      return _.sumBy(this.data, function(n) {
+        return parseFloat(n.Precio) ||0
+      })
     }
   },
   mounted () {
@@ -120,5 +142,24 @@ export default {
 <style>
 .pt-3-half {
     padding-top: 1.4rem;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+.numberTd {
+    width: 110%;
+    padding: 12px;
+    /* margin: -13px; */
+    margin-left: -15px;
+    margin-right: -12px;
+    margin-top: -13px;
+    margin-bottom: -16px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border: 0px;
 }
 </style>

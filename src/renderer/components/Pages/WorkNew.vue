@@ -19,10 +19,6 @@
           <dentist-search id="clinica"></dentist-search>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
-          <label for="nombre">Nombre</label>
-          <input type="text" class="form-control" v-model="data.Nombre">
-        </div> <!-- col-md-6 -->
-        <div class="col-md-5">
           <label for="paciente">Paciente</label>
           <input type="text" class="form-control" v-model="data.Paciente">
         </div> <!-- col-md-6 -->
@@ -33,10 +29,10 @@
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
         </div> <!-- col-md-6 -->
-        <div class="col-md-4">
+        <div class="col-md-2">
           <label for="color">Color</label>
           <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="data.Color">
-        </div> <!-- col-md-4 -->
+        </div> <!-- col-md-2 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
@@ -45,7 +41,7 @@
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
-        <div class="col-md-6 mt-3">
+        <div class="col-md-4 mt-3">
           <label for="fEntrada">Fecha entrada</label>
           <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="data.FechaEntrada">
           <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
@@ -53,10 +49,14 @@
           Poner fecha de hoy
           </a>
         </div> <!-- col-md-4 -->
-        <div class="col-md-6 mt-3">
+        <div class="col-md-4 mt-3">
           <label for="fPrevista">Fecha prevista</label>
           <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="data.FechaPrevista">
         </div> <!-- col-md-4 -->
+        <div class="col-md-4 mt-3">
+          <label for="fSalida">Fecha salida</label>
+          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="data.FechaTerminacion">
+        </div>
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-4">
