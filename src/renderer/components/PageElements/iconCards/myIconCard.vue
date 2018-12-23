@@ -8,7 +8,7 @@
         <div class="mr-5"><h5>{{messageToShow}}</h5></div>
         <div class="mr-5 font-italic text-gray">{{secondaryMessageToShow}}</div>
     </div>
-    <a class="card-footer text-white clearfix small z-1" href="#">
+    <a class="card-footer text-white clearfix small z-1" href="#" v-on:click="showDetails()">
         <span class="float-left">Ver detalles</span>
         <span class="float-right">
         <i class="fas fa-angle-right"></i>
@@ -89,7 +89,11 @@ export default {
       } else {
         return message
       }
+    },
+    showDetails() {
+      this.$root.$emit('navigation:navigateTo', { page:'worksList', eventData: dataset, comeBack: this.eventId})
     }
+
   },
   mounted () {
   }

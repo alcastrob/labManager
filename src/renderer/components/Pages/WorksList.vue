@@ -74,7 +74,6 @@ export default {
       eventId: EVENTID
     }
   },
-  methods: { },
   mounted () {
     getWorksList('labManager.sqlite').then((works) => {
       this.$children[0].setDataset(works)

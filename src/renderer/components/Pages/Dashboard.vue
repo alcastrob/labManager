@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="row">
-      
+      <myIconCard message="<count> trabajos recibidos hoy"
+        cssClass="bg-primary"
+        icon="fas fa-tasks"
+        :dataset="inboundWorksToday"/>
     </div>
   </div>
 </template>
@@ -9,17 +12,21 @@
 <script>
 import topBar from '../PageElements/TopBar'
 import myIconCard from '../PageElements/iconCards/myIconCard'
-// import {  } from '../../../main/dal.js'
+import { getInboundWorksToday } from '../../../main/dal.js'
 
 export default {
   name: 'dashboard',
   components: { topBar, myIconCard },
   data () {
     return {
+      inboundWorksToday: []
     }
   },
   mounted () {
-    
+    getInboundWorksToday('labManager.sqlite').then((count) => {
+      this.inboundWorksToday = count
+      console.log(count)
+      })
   }
 }
 </script>

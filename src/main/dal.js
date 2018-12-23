@@ -148,6 +148,15 @@ export function deleteWorkTest(workTestId, fileName){
 
 // Custom queries for Work (KPIs)----------------------------------------------
 
+export function getInboundWorksToday(fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM Trabajos ' +
+  'WHERE FechaEntrada >= date("now","localtime") AND FechaEntrada < date("now", "localtime", "+1 day")'
+  return allAsync(db, query, []).then((row) => {
+    return row
+  })
+}
+
 //Tested
 export function getWorkInExecution (fileName) {
   db = new sqlite3.Database(fileName)
