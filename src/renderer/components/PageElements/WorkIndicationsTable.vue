@@ -8,7 +8,16 @@
     </tr>
     <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
       <td class="pt-3" style="width: 41px;"><i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i></td>
-      <td class="pt-3-half" contenteditable="true" v-on:keyup="trackChanges($event, indication.IdTrabajoDetalle)">{{indication.Descripcion}}</td>
+
+      <td class="noMargins" v-on:keyup="trackChanges($event, indication.IdTrabajoDetalle)">
+        <input type="text" v-model="indication.Descripcion" class="inputInTd">
+        <div class="typeahead-dropdown list-group myTypeahead" v-if="canDisplayDropdown()">
+          <span class="list-group-item clickable">
+            <i class="fas fa-align-left mr-1"></i>
+            Usar como texto libre</span>
+        </div>
+      </td>
+
       <td class="pt-3-half text-right" contenteditable="true" v-on:blur="updatePrice($event, indication.IdTrabajoDetalle)" :class="{'bg-danger text-white shake': isPriceNotANumber(indication.Precio)}">{{indication.Precio}}</td>
     </tr>
     <tr>
@@ -61,7 +70,7 @@ export default {
       changes: [],
       dataLoaded: false,
       sumError: false,
-       moneyFormatter: new Intl.NumberFormat('es-ES', {
+      moneyFormatter: new Intl.NumberFormat('es-ES', {
         style: 'currency',
         currency: 'EUR'
       })
@@ -133,6 +142,9 @@ export default {
       // if (event.currentTarget.innerText !== _.find(data.currentId, value))
         //Look for the last UPDATE on the stack, and rewrite it with the new value
         //If doesn't exist, create an UPDATE
+    },
+    canDisplayDropdown: function() {
+      return false
     }
   },
   mounted () {
@@ -159,5 +171,26 @@ export default {
 <style>
 .pt-3-half {
     padding-top: 1.4rem;
+}
+.noMargins {
+  padding: 0px!important;
+  margin: 0px;
+  position:relative;
+}
+.inputInTd {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    margin: 0px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+
+    position:absolute;
+    top:0px;
+    height:100%;
+
+    border: 0px;
+    background: transparent;
 }
 </style>
