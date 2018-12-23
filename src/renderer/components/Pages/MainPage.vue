@@ -12,7 +12,7 @@
             <dentistsList v-if="currentPage === 'dentistsList'"/>
             <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="childrenComponentData" />
             <dentistNew v-if="currentPage === 'dentistNew'" :dentistName="childrenComponentData" />
-            <invoices v-if="currentPage === 'invoices'" />
+            <finances v-if="currentPage === 'finances'" />
             <about v-if="currentPage === 'about'"/>
           </div>
         </div>
@@ -31,7 +31,7 @@ import dentistDetail from './DentistDetail'
 import dentistsList from './DentistsList'
 import dentistNew from './DentistNew'
 import worksList from './WorksList'
-import invoices from './Invoices'
+import finances from './Finances'
 
 var {ipcRenderer} = require('electron')
 
@@ -47,7 +47,7 @@ export default {
     dentistDetail,
     dentistsList,
     dentistNew,
-    invoices
+    finances
   },
   data () {
     return {
@@ -124,8 +124,8 @@ export default {
     ipcRenderer.on('navigation:dentistNew', () => {
       this.navigateTo('dentistNew')
     })
-    ipcRenderer.on('navigation:invoices', () => {
-      this.navigateTo('invoices')
+    ipcRenderer.on('navigation:finances', () => {
+      this.navigateTo('finances')
     })
     this.$root.$on('navigation:navigateTo', (data) => {
       this.navigateTo(data.page, data)

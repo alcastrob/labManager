@@ -58,7 +58,7 @@
         <td style="width: 400px; height: 45px;">&nbsp;</td>
       </tr>
       <tr>
-        <td style="width: 150px;" class="noBorder">INTERFACE</td>
+        <td style="width: 150px;" class="noBorder">INTERFASE</td>
         <td style="width: 400px; height: 45px;">&nbsp;</td>
       </tr>
       <tr>

@@ -36,7 +36,7 @@
         </a>
       </li>
       <li class="nav-item no-arrow">
-        <a class="nav-link" href="#" id="dentistListButton" role="button" v-on:click="navigateTo('invoices')">
+        <a class="nav-link" href="#" id="dentistListButton" role="button" v-on:click="navigateTo('finances')">
           <i class="fas fa-fw fa-money-bill-alt"></i>
           Gestión Económica
         </a>
