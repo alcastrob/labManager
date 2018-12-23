@@ -1,8 +1,6 @@
 <template>
   <div class="input-group">
     <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica">
-    <div class="input-group-append">
-    </div>
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
       <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</span>
       <div v-for="dentist in data" :key='dentist.IdDentista'>
