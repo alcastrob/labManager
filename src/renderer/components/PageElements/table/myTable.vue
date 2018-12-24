@@ -103,17 +103,24 @@ export default {
       this.currentPage = page
     },
     getPaginatedData: function () {
+      if (this.rawDataset.length === 0){
+        return []
+      }
+      debugger
+
       var arraySize = this.rawDataset.length - 1
       var left = (this.currentPage - 1) * this.pageSize
       var right = (this.currentPage * this.pageSize)
       if (right > arraySize) {
-        right = arraySize
+        right = arraySize + 1
       }
 
       if (left < 0 || left > arraySize)
         return []
-      else
-        return _.slice(this.filteredDataset, left, right)
+      else {
+        var x = _.slice(this.filteredDataset, left, right )
+        return x
+      }
     },
     // Sorting
     sortByExpression: function(expression) {
