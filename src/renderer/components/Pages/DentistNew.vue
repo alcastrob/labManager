@@ -113,7 +113,7 @@ export default {
     dentistName: {
       type: String,
       required: false
-    },
+    }
   },
   methods: {
     save: function() {

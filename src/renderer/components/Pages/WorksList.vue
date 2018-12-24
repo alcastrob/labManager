@@ -74,13 +74,24 @@ export default {
       eventId: EVENTID
     }
   },
+  props: {
+    dataset: {
+      type: Array,
+      required: false
+    }
+  },
   mounted () {
-    getWorksList('labManager.sqlite').then((works) => {
-      this.$children[0].setDataset(works)
+    if (this.dataset === undefined || this.dataset === null) {
+      getWorksList('labManager.sqlite').then((works) => {
+        this.$children[0].setDataset(works)
       })
-    this.$root.$on('table:click:' + this.eventId, (eventData) => {
-      this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
-    })
+      this.$root.$on('table:click:' + this.eventId, (eventData) => {
+        this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
+      })
+    } else {
+      debugger
+      this.$children[0].setDataset(this.dataset)
+    }
   }
 }
 </script>

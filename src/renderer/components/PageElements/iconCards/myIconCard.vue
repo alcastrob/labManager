@@ -91,7 +91,7 @@ export default {
       }
     },
     showDetails() {
-      this.$root.$emit('navigation:navigateTo', { page:'worksList', eventData: dataset, comeBack: this.eventId})
+      this.$root.$emit('navigation:navigateTo', { page:'worksList', eventData: {dataset: this.dataset}, comeBack: this.eventId})
     }
 
   },

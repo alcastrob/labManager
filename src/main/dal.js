@@ -166,7 +166,7 @@ export function getWorkInExecution (fileName) {
   'FROM Trabajos t ' +
   'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
   'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-  'WHERE FechaTerminacion is NULL'
+  'WHERE FechaTerminacion is NULL OR FechaTerminacion >= date("now", "localtime")'
   return allAsync(db, query, []).then((row) => {
     // db.close()
     return row

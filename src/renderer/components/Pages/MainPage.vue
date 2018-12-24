@@ -7,7 +7,7 @@
           <div class="container-fluid">
             <dashboard v-if="currentPage === 'dashboard'" />
             <workNew v-if="currentPage === 'workNew'" />
-            <worksList v-if="currentPage === 'worksList'" />
+            <worksList v-if="currentPage === 'worksList'" :dataset="childrenComponentData" />
             <workDetail v-if="currentPage === 'workDetail'" :workId="childrenComponentData" />
             <dentistsList v-if="currentPage === 'dentistsList'"/>
             <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="childrenComponentData" />
@@ -72,7 +72,9 @@ export default {
         this.previousPage = this.currentPage
         this.currentPage = pageName
         this.canNavigateBack = this.evaluateCanNavigateBack()
+        this.childrenComponentData = null
         // I can't figure out how eventData.eventData mutated into eventData.id for Works. In Dentists it still remains as eventData
+        // debugger
         if (eventData !== undefined && (eventData.id !== undefined || eventData.eventData !== undefined)) {
           this.backStates.push(eventData)
           if (eventData.id !== undefined) {
@@ -82,6 +84,8 @@ export default {
               this.childrenComponentData = eventData.eventData.index
             } else if (eventData.eventData.name !== undefined) {
               this.childrenComponentData = eventData.eventData.name
+            } else if (eventData.eventData.dataset !== undefined) {
+              this.childrenComponentData = eventData.eventData.dataset
             }
           }
         }
