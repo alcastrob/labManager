@@ -130,19 +130,22 @@ const menuTemplate = [{
     {
       label: 'Indicadores',
       click () {
-        mainWindow.webContents.send('navigation:dashboard')
+        mainWindow.webContents.send
+        ('navigation:navigateTo', {page: 'dashboard'})
       }
     },
     {
       label: 'Trabajos',
       click () {
-        mainWindow.webContents.send('navigation:worksList')
+        mainWindow.webContents.send
+        ('navigation:navigateTo', {page: 'worksList'})
       }
     },
     {
       label: 'Nuevo Dentista',
       click () {
-        mainWindow.webContents.send('navigation:dentistNew')
+        mainWindow.webContents.send
+        ('navigation:navigateTo', {page: 'dentistNew'})
       }
     }
   ]
@@ -153,7 +156,7 @@ const menuTemplate = [{
     {
       label: 'Acerca de',
       click () {
-        mainWindow.webContents.send('navigation:about')
+        mainWindow.webContents.send('navigation:navigateTo', {page: 'about'})
       }
     }
   ]

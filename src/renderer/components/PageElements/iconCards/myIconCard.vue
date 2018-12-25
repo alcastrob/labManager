@@ -5,8 +5,8 @@
         <div class="card-body-icon">
           <i :class="icon" ></i>
         </div>
-        <div class="mr-5"><h5>{{messageToShow}}</h5></div>
-        <div class="mr-5 font-italic text-gray">{{secondaryMessageToShow}}</div>
+        <div class="mr-5"><h5>{{message}}</h5></div>
+        <div class="mr-5 font-italic text-gray">{{secondMessage}}</div>
     </div>
     <a class="card-footer text-white clearfix small z-1" href="#" v-on:click="showDetails()">
         <span class="float-left">Ver detalles</span>
@@ -19,19 +19,8 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import moment from 'moment'
-
 export default {
   name: 'myIconCard',
-  data () {
-    return {
-      formatter: new Intl.NumberFormat('es-ES', {
-          style: 'currency',
-          currency: 'EUR'
-        })
-    }
-  },
   props: {
     icon: {
       type: String,
@@ -45,57 +34,23 @@ export default {
       type: String,
       required: false
     },
-    cssClass: {
+    listHeading: {
       type: String,
       required: true
     },
-    dataset: {
-      type: Array,
+    filter: {
+      type: String,
       required: true
     },
-    secondaryDataset: {
-      type: Array,
-      required: false
-    }
-  },
-  computed: {
-    messageToShow() {
-      return this.processMessage(this.message, this.dataset)
-    },
-    secondaryMessageToShow() {
-      return this.processMessage(this.secondMessage, this.secondaryDataset)
+    cssClass: {
+      type: String,
+      required: true
     }
   },
   methods: {
-    processMessage(message, dataset) {
-      if (message === undefined) {
-        return ''
-      }
-      if (message.includes('<month>')) {
-        moment.locale('es')
-        message = message.replace('<month>', moment().format('MMMM'))
-      }
-      if (message.includes('<count>')) {
-        return message.replace('<count>', dataset.length)
-      }
-      if (message.includes('<sum(')) {
-        var left = message.indexOf('(')
-        var right = message.indexOf(')')
-        var param = message.substr(left+1, right-1-left)
-        var sum = _.sumBy(dataset, function(row){
-          return row[param]
-        })
-        return message.replace('<sum(' + param + ')>', this.formatter.format(sum))
-      } else {
-        return message
-      }
-    },
     showDetails() {
-      this.$root.$emit('navigation:navigateTo', { page:'worksList', eventData: {dataset: this.dataset}, comeBack: this.eventId})
+      this.$root.$emit('navigation:navigateTo', { page:'worksList', eventData: {title: this.listHeading, filter: this.filter}, comeBack: this.eventId})
     }
-
-  },
-  mounted () {
   }
 }
 </script>

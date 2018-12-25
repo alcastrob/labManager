@@ -7,7 +7,7 @@
           <div class="container-fluid">
             <dashboard v-if="currentPage === 'dashboard'" />
             <workNew v-if="currentPage === 'workNew'" />
-            <worksList v-if="currentPage === 'worksList'" :dataset="childrenComponentData" />
+            <worksList v-if="currentPage === 'worksList'" :listHeading="childrenComponentData" :filter="childrenSecondaryComponentData" />
             <workDetail v-if="currentPage === 'workDetail'" :workId="childrenComponentData" />
             <dentistsList v-if="currentPage === 'dentistsList'"/>
             <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="childrenComponentData" />
@@ -32,6 +32,7 @@ import dentistsList from './DentistsList'
 import dentistNew from './DentistNew'
 import worksList from './WorksList'
 import finances from './Finances'
+import { EventEmitter } from 'electron';
 
 var {ipcRenderer} = require('electron')
 
@@ -53,6 +54,7 @@ export default {
     return {
       currentPage: 'dashboard',
       childrenComponentData: null,
+      childrenSecondaryComponentData: null,
       previousPage: null,
       canNavigateBack: false,
       backStates: []
@@ -73,19 +75,20 @@ export default {
         this.currentPage = pageName
         this.canNavigateBack = this.evaluateCanNavigateBack()
         this.childrenComponentData = null
-        // I can't figure out how eventData.eventData mutated into eventData.id for Works. In Dentists it still remains as eventData
-        // debugger
-        if (eventData !== undefined && (eventData.id !== undefined || eventData.eventData !== undefined)) {
-          this.backStates.push(eventData)
+        this.childrenSecondaryComponentData = null
+        debugger
+        if (eventData !== undefined){
           if (eventData.id !== undefined) {
+            // I can't figure out how eventData.eventData mutated into eventData.id for Works. In Dentists it still remains as eventData
             this.childrenComponentData = eventData.id.index
           } else if (eventData.eventData !== undefined) {
             if (eventData.eventData.index !== undefined) {
               this.childrenComponentData = eventData.eventData.index
             } else if (eventData.eventData.name !== undefined) {
               this.childrenComponentData = eventData.eventData.name
-            } else if (eventData.eventData.dataset !== undefined) {
-              this.childrenComponentData = eventData.eventData.dataset
+            } else if (eventData.eventData.filter !== undefined) {
+              this.childrenComponentData = eventData.eventData.title
+              this.childrenSecondaryComponentData = eventData.eventData.filter
             }
           }
         }
@@ -101,35 +104,11 @@ export default {
     }
   },
   mounted () {
-    ipcRenderer.on('navigation:about', () => {
-      this.navigateTo('about')
-    })
-    ipcRenderer.on('navigation:dashboard', () => {
-      this.navigateTo('dashboard')
-    })
-    ipcRenderer.on('navigation:back', () => {
-      this.navigateTo(this.previousPage)
-    })
-    ipcRenderer.on('navigation:workNew', () => {
-      this.navigateTo('workNew')
-    })
-    ipcRenderer.on('navigation:worksList', () => {
-      this.navigateTo('worksList')
-    })
-    ipcRenderer.on('navigation:workDetail', () => {
-      this.navigateTo('workDetail')
-    })
-    ipcRenderer.on('navigation:dentistsList', () => {
-      this.navigateTo('dentistLists')
-    })
-    ipcRenderer.on('navigation:dentistDetail', () => {
-      this.navigateTo('dentistDetail')
-    })
-    ipcRenderer.on('navigation:dentistNew', () => {
-      this.navigateTo('dentistNew')
-    })
-    ipcRenderer.on('navigation:finances', () => {
-      this.navigateTo('finances')
+    // ipcRenderer.on('navigation:back', () => {
+    //   this.navigateTo(this.previousPage)
+    // })
+    ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
+      this.navigateTo(eventData.page)
     })
     this.$root.$on('navigation:navigateTo', (data) => {
       this.navigateTo(data.page, data)

@@ -1,6 +1,7 @@
 <template>
   <div class="table-responsive">
-    <filter-bar></filter-bar>
+    <!-- <filter-bar></filter-bar> -->
+    <div ref="filterContainer"></div>
     <table class="table table-bordered" width="100%" cellspacing="0">
       <tr>
         <th v-for="header in headers" v-bind:key="header.dataField"
@@ -23,8 +24,10 @@
 <script>
 import pagination from './pagination'
 import filterBar from './filterBar'
+import workFilterBar from '../../PageElements/WorkFilterBar'
 import moment from 'moment'
 import _ from 'lodash'
+import Vue from 'Vue'
 
 const pageSize = 10
 
@@ -62,6 +65,10 @@ export default {
     eventId: {
       type: String,
       required: true
+    },
+    filterType: {
+      type: String,
+      required: false
     }
   },
   methods: {
@@ -106,8 +113,6 @@ export default {
       if (this.rawDataset.length === 0){
         return []
       }
-      debugger
-
       var arraySize = this.rawDataset.length - 1
       var left = (this.currentPage - 1) * this.pageSize
       var right = (this.currentPage * this.pageSize)
@@ -172,8 +177,6 @@ export default {
     if (this.eventId === undefined || this.eventId === null)
       throw 'Missing prop eventId in myTable.vue'
 
-
-
     this.currentSortCriteria = this.searchFields[0]
     this.currentSortDesc = true
     moment.locale('es')
@@ -185,6 +188,16 @@ export default {
       // this.currentSortDesc = data.sortDirection
       // this.currentPage = data.currentPage
     })
+
+    var ComponentClass
+    if (this.filterType === 'WorkFilterBar'){
+      ComponentClass = Vue.extend(workFilterBar)
+    } else {
+      ComponentClass = Vue.extend(filterBar)
+    }
+    var instance = new ComponentClass()
+    instance.$mount()
+    this.$refs.filterContainer.appendChild(instance.$el)
   }
 }
 </script>

@@ -96,7 +96,6 @@ export default {
       }
     },
     totalRecords() {
-      console.log(this.$parent.filteredDataset.length)
       return this.$parent.filteredDataset.length
     }
   }

@@ -148,11 +148,12 @@ export function deleteWorkTest(workTestId, fileName){
 
 // Custom queries for Work (KPIs)----------------------------------------------
 
+//Tested
 export function getInboundWorksToday(fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT * FROM Trabajos ' +
+  var query = 'SELECT COUNT(1) AS Count FROM Trabajos ' +
   'WHERE FechaEntrada >= date("now","localtime") AND FechaEntrada < date("now", "localtime", "+1 day")'
-  return allAsync(db, query, []).then((row) => {
+  return getAsync(db, query, []).then((row) => {
     return row
   })
 }
@@ -160,14 +161,10 @@ export function getInboundWorksToday(fileName) {
 //Tested
 export function getWorkInExecution (fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-  't.PrecioFinal AS Precio ' +
-  'FROM Trabajos t ' +
-  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
+  var query = 'SELECT COUNT(1) AS Count ' +
+  'FROM Trabajos ' +
   'WHERE FechaTerminacion is NULL OR FechaTerminacion >= date("now", "localtime")'
-  return allAsync(db, query, []).then((row) => {
+  return getAsync(db, query, []).then((row) => {
     // db.close()
     return row
   })
@@ -176,15 +173,11 @@ export function getWorkInExecution (fileName) {
 //Tested
 export function getWorksEndedThisMonth(fileName) {
 db = new sqlite3.Database(fileName)
-var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-'t.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-'t.PrecioFinal AS Precio ' +
+var query = 'SELECT COUNT(1) AS Count ' +
 'FROM Trabajos t ' +
-'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-'WHERE FechaTerminacion >= date("now","localtime", "start of month") ' +
-'AND FechaTerminacion <= date("now","localtime", "start of month","+1 month","-1 day")'
-return allAsync(db, query, []).then((row) => {
+'WHERE FechaTerminacion >= date("now", "localtime", "start of month") ' +
+'AND FechaTerminacion <= date("now", "localtime", "start of month", "+1 month", "-1 day")'
+return getAsync(db, query, []).then((row) => {
   // db.close()
   return row
 })
@@ -193,14 +186,10 @@ return allAsync(db, query, []).then((row) => {
 //Tested
 export function getWorksEndedLast30days(fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-  't.PrecioFinal AS Precio ' +
-  'FROM Trabajos t ' +
-  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-  'WHERE FechaTerminacion >= date("now","localtime", "-30 days")'
-  return allAsync(db, query, []).then((row) => {
+  var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
+  'FROM Trabajos ' +
+  'WHERE FechaTerminacion >= date("now", "localtime", "-30 days")'
+  return getAsync(db, query, []).then((row) => {
     // db.close()
     return row
   })
@@ -209,15 +198,11 @@ export function getWorksEndedLast30days(fileName) {
   //Tested
   export function getWorksEndedPrevious30days(fileName) {
     db = new sqlite3.Database(fileName)
-    var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-    't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-    't.PrecioFinal AS Precio ' +
-    'FROM Trabajos t ' +
-    'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-    'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-    'WHERE FechaTerminacion >= date("now","localtime", "-60 days") '+
-    'AND FechaTerminacion <= date("now","localtime", "-30 days")'
-    return allAsync(db, query, []).then((row) => {
+    var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
+  'FROM Trabajos ' +
+    'WHERE FechaTerminacion >= date("now", "localtime", "-60 days") '+
+    'AND FechaTerminacion <= date("now", "localtime", "-30 days")'
+    return getAsync(db, query, []).then((row) => {
       // db.close()
       return row
     })

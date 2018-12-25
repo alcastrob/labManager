@@ -1,8 +1,10 @@
 <template>
   <div>
     <h1>Listado de Trabajos</h1>
+    {{listHeading}}<br>
+    {{filter}}
     <div>
-      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" ref="table"/>
+      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" filterType="WorkFilterBar" ref="table"/>
     </div>
   </div>
 </template>
@@ -75,23 +77,22 @@ export default {
     }
   },
   props: {
-    dataset: {
-      type: Array,
+    listHeading: {
+      type: String,
+      required: false
+    },
+    filter: {
+      type: String,
       required: false
     }
   },
   mounted () {
-    if (this.dataset === undefined || this.dataset === null) {
-      getWorksList('labManager.sqlite').then((works) => {
-        this.$children[0].setDataset(works)
-      })
-      this.$root.$on('table:click:' + this.eventId, (eventData) => {
-        this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
-      })
-    } else {
-      debugger
-      this.$children[0].setDataset(this.dataset)
-    }
+    getWorksList('labManager.sqlite').then((works) => {
+      this.$children[0].setDataset(works)
+    })
+    this.$root.$on('table:click:' + this.eventId, (eventData) => {
+      this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
+    })
   }
 }
 </script>

@@ -1,10 +1,11 @@
 <template>
   <div>
     <div class="row">
-      <myIconCard message="<count> trabajos recibidos hoy"
+      <myIconCard :message="worksReceivedTodayCopy()"
+        filter="hh"
+        listHeading="Trabajos recibidos hoy"
         cssClass="bg-primary"
-        icon="fas fa-tasks"
-        :dataset="inboundWorksToday"/>
+        icon="fas fa-tasks" />
     </div>
   </div>
 </template>
@@ -19,14 +20,18 @@ export default {
   components: { topBar, myIconCard },
   data () {
     return {
-      inboundWorksToday: []
+      inboundWorksToday: 0
     }
   },
   mounted () {
     getInboundWorksToday('labManager.sqlite').then((count) => {
-      this.inboundWorksToday = count
-      console.log(count)
+      this.inboundWorksToday = count.Count
       })
+  },
+  methods: {
+    worksReceivedTodayCopy: function() {
+      return this.inboundWorksToday + ' trabajos recibidos hoy'
+    }
   }
 }
 </script>
