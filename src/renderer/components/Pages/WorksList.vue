@@ -2,8 +2,8 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6">
-        <h1 v-if="this.listHeading === null">Listado de Trabajos</h1>
-        <h1 v-else>{{listHeading}}</h1>
+        <h1 v-if="showCustomHeader">{{listHeading}}</h1>
+        <h1 v-else>Listado de Trabajos</h1>
       </div>
     </div> <!-- row -->
     <div>
@@ -76,7 +76,8 @@ export default {
           formatter: 'money'
         } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
-      eventId: EVENTID
+      eventId: EVENTID,
+      filterChanged: false
     }
   },
   props: {
@@ -113,10 +114,20 @@ export default {
       })
     }
   },
+  computed: {
+    showCustomHeader: function() {
+      console.log(this.listHeading)
+      console.log(this.filterChanged)
+      return this.listHeading !== null && !this.filterChanged
+    }
+  },
   mounted () {
     this.updateDatasetWithFilters()
 
-    this.$root.$on('worksFilter:updated', this.updateDatasetWithFilters)
+    this.$root.$on('worksFilter:updated', (event) => {
+      this.updateDatasetWithFilters(event)
+      this.filterChanged = true
+    })
 
     //Table click event
     this.$root.$on('table:click:' + this.eventId, (eventData) => {

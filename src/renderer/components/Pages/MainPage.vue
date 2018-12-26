@@ -79,9 +79,10 @@ export default {
         this.canNavigateBack = this.evaluateCanNavigateBack()
         this.childrenComponentData = null
         this.childrenSecondaryComponentData = null
-        // debugger
         if (eventData !== undefined && eventData.eventData !== undefined){
           if (eventData.eventData.index !== undefined) {
+            // For navigation from lists to detail components
+            debugger
             this.childrenComponentData = eventData.eventData.index
           } else if (eventData.eventData.name !== undefined) {
             this.childrenComponentData = eventData.eventData.name
@@ -108,8 +109,7 @@ export default {
     this.$root.$on('navigation:navigateTo', (data) => {
       this.navigateTo(data.page, data)
     })
-  },
-  created () { }
+  }
 }
 </script>
 
