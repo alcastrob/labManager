@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-6">
         <h1 v-if="this.listHeading === null">Listado de Trabajos</h1>
-        <h1>{{listHeading}}</h1>
+        <h1 v-else>{{listHeading}}</h1>
       </div>
     </div> <!-- row -->
     <div>

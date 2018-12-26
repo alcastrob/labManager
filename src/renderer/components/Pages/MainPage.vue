@@ -68,8 +68,11 @@ export default {
         this.currentPage = this.previousPage
         this.previousPage = tmp
         this.canNavigateBack = false
+        this.childrenComponentData = null,
+        this.childrenSecondaryComponentData = null
         var state = this.backStates.pop()
         this.$root.$emit('table:setState:' + state.component, state)
+
       } else if(pageName !== this.currentPage) {
         this.previousPage = this.currentPage
         this.currentPage = pageName
@@ -77,19 +80,14 @@ export default {
         this.childrenComponentData = null
         this.childrenSecondaryComponentData = null
         // debugger
-        if (eventData !== undefined){
-          if (eventData.id !== undefined) {
-            // I can't figure out how eventData.eventData mutated into eventData.id for Works. In Dentists it still remains as eventData
-            this.childrenComponentData = eventData.id.index
-          } else if (eventData.eventData !== undefined) {
-            if (eventData.eventData.index !== undefined) {
-              this.childrenComponentData = eventData.eventData.index
-            } else if (eventData.eventData.name !== undefined) {
-              this.childrenComponentData = eventData.eventData.name
-            } else if (eventData.eventData.filter !== undefined) {
-              this.childrenComponentData = eventData.eventData.title
-              this.childrenSecondaryComponentData = eventData.eventData.filter
-            }
+        if (eventData !== undefined && eventData.eventData !== undefined){
+          if (eventData.eventData.index !== undefined) {
+            this.childrenComponentData = eventData.eventData.index
+          } else if (eventData.eventData.name !== undefined) {
+            this.childrenComponentData = eventData.eventData.name
+          } else if (eventData.eventData.filter !== undefined) {
+            this.childrenComponentData = eventData.eventData.title
+            this.childrenSecondaryComponentData = eventData.eventData.filter
           }
         }
       }
@@ -104,9 +102,6 @@ export default {
     }
   },
   mounted () {
-    // ipcRenderer.on('navigation:back', () => {
-    //   this.navigateTo(this.previousPage)
-    // })
     ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
       this.navigateTo(eventData.page)
     })
