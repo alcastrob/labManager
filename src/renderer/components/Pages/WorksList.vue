@@ -1,7 +1,11 @@
 <template>
-  <div>
-    <h1 v-if="this.listHeading === null">Listado de Trabajos</h1>
-    <h1>{{listHeading}}</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h1 v-if="this.listHeading === null">Listado de Trabajos</h1>
+        <h1>{{listHeading}}</h1>
+      </div>
+    </div> <!-- row -->
     <div>
       <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" filterType="WorkFilterBar" :filterName="filter" ref="table"/>
     </div>
