@@ -83,7 +83,7 @@
           <label for="fPrevista">Fecha prevista</label>
           <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
           <br>
-          <label for="fSalida">Fecha salida</label>
+          <label for="fSalida">Fecha terminación</label>
           <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
         </div> <!-- col-md-4 -->
       </div> <!-- row -->

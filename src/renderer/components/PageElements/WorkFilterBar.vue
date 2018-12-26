@@ -13,7 +13,7 @@
         </option-line>
         <option-line id="fPrevista" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna']" description="Fecha prevista: " ref="fPrevista">
         </option-line>
-        <option-line id="fSalida" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna o en el futuro']" description="Fecha salida: " ref="fSalida">
+        <option-line id="fSalida" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna o en el futuro']" description="Fecha terminación: " ref="fSalida">
         </option-line>
         <option-line id="tipo" :isMultiple="true" :options="['Fija', 'Resina', 'Ortodoncia', 'Esquelético', 'Zirconio', 'Compostura', 'Implante']" description="Tipo: " ref="tipo">
         </option-line>

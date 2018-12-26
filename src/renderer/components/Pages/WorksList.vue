@@ -87,6 +87,23 @@ export default {
   },
   methods: {
     updateDatasetWithFilters (eventData) {
+      if (eventData === undefined) {
+        switch(this.filter) {
+          case 'receivedToday':
+            eventData = {fEntrada: 'Hoy'}
+            break
+          case 'inProgress':
+            eventData = {fSalida: 'Ninguna o en el futuro'}
+            break;
+          case 'closedThisMonth':
+            eventData = {fSalida: 'Este mes'}
+            break
+          case 'closedLast30days':
+            eventData = {fSalida: 'Últimos 30 días'}
+            break
+        }
+      }
+
       getWorksList('labManager.sqlite', eventData).then((works) => {
         this.$children[0].setDataset(works)
       })
@@ -95,15 +112,12 @@ export default {
   mounted () {
     this.updateDatasetWithFilters()
 
-    //Works filter updated
     this.$root.$on('worksFilter:updated', this.updateDatasetWithFilters)
 
     //Table click event
     this.$root.$on('table:click:' + this.eventId, (eventData) => {
       this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
     })
-
-    this.$refs.table
   }
 }
 </script>

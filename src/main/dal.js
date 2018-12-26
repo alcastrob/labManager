@@ -34,7 +34,6 @@ export function createNewDatabase (fileName) {
 export function getWorksList (fileName, customFilters) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT * FROM vTrabajos WHERE 1=1'
-  debugger
   if (customFilters !== undefined){
     if (customFilters.fEntrada !== undefined){
       query += processDateQuery('FechaEntrada', customFilters.fEntrada)
