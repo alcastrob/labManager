@@ -1,5 +1,5 @@
 <template>
-  <a class="btn btn-outline-info btn-sm" :class="{active: this.isSelected}" href="#" v-on:click="sendEvent()">
+  <a class="btn btn-outline-info btn-sm" :class="{active: this.isSelected}" href="#" v-on:click="toggleState()">
     <span>{{text}}</span>
   </a>
 </template>
@@ -23,18 +23,17 @@ export default {
     }
   },
   methods: {
-    sendEvent: function() {
-      this.toggleState()
-      this.$root.$emit(this.eventName, {text: this.text, isSelected: this.isSelected})
-    },
     toggleState: function() {
       this.isSelected = !this.isSelected
+      this.$root.$emit(this.eventName, {text: this.text, isSelected: this.isSelected})
     },
     select: function() {
       this.isSelected = true
+      //Unnecesry to send the event back to optionLine because this method is used inside the optionLine component
     },
     clear: function() {
       this.isSelected = false
+      //Unnecesry to send the event back to optionLine because this method is used inside the optionLine component
     }
   },
   mounted() {

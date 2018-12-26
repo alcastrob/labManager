@@ -66,7 +66,7 @@ export default {
           formatter: 'date'
         }, {
           title: 'Importe',
-          dataField: 'Precio',
+          dataField: 'PrecioFinal',
           titleClass: '',
           rowClass: 'text-right',
           formatter: 'money'
@@ -85,16 +85,25 @@ export default {
       required: false
     }
   },
+  methods: {
+    updateDatasetWithFilters (eventData) {
+      getWorksList('labManager.sqlite', eventData).then((works) => {
+        this.$children[0].setDataset(works)
+      })
+    }
+  },
   mounted () {
-    getWorksList('labManager.sqlite').then((works) => {
-      this.$children[0].setDataset(works)
-    })
+    this.updateDatasetWithFilters()
+
+    //Works filter updated
+    this.$root.$on('worksFilter:updated', this.updateDatasetWithFilters)
+
+    //Table click event
     this.$root.$on('table:click:' + this.eventId, (eventData) => {
       this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
     })
+
+    this.$refs.table
   }
 }
 </script>
-
-<style>
-</style>

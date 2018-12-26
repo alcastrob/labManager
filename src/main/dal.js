@@ -3,6 +3,8 @@
 var sqlite3 = require('sqlite3').verbose()
 var db
 
+import _ from 'lodash'
+
 function createTable () {
   db.run('CREATE TABLE TipoTrabajos (' +
   '    IdTipoTrabajo INTEGER PRIMARY KEY AUTOINCREMENT,' +
@@ -29,18 +31,60 @@ export function createNewDatabase (fileName) {
 // Works ----------------------------------------------------------------------
 
 //Tested
-export function getWorksList (fileName) {
+export function getWorksList (fileName, customFilters) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-  't.PrecioFinal AS Precio ' +
-  'FROM Trabajos t ' +
-  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo'
+  var query = 'SELECT * FROM vTrabajos WHERE 1=1'
+  debugger
+  if (customFilters !== undefined){
+    if (customFilters.fEntrada !== undefined){
+      query += processDateQuery('FechaEntrada', customFilters.fEntrada)
+    }
+    if (customFilters.fPrevista !== undefined){
+      query += processDateQuery('FechaPrevista', customFilters.fPrevista)
+    }
+    if (customFilters.fSalida !== undefined){
+      query += processDateQuery('FechaTerminacion', customFilters.fSalida)
+    }
+    if (customFilters.tipo !== undefined && customFilters.tipo.length > 0){
+      query += processTypeQuery('TipoTrabajo', customFilters.tipo)
+    }
+  }
+
   return allAsync(db, query, []).then((row) => {
     // db.close()
     return row
   })
+}
+
+function processTypeQuery(field, values){
+  var returnedValue = ` AND ${field} IN (`
+  _.forEach(values, (value) => returnedValue += `"${value}",`)
+
+  return returnedValue.substring(0, returnedValue.length - 1) + ')'
+}
+
+function processDateQuery(field, value){
+  switch(value){
+    case 'Hoy':
+      return ` AND ${field} >= date("now","localtime") AND ${field} < date("now", "localtime", "+1 day")`
+    case 'Esta semana':
+      return ` AND (${field} BETWEEN date('now', 'weekday 1', '-7 day') AND date('now', 'weekday 1', '-1 day'))`
+    case 'Últimos 7 días':
+      return ` AND ${field} >= date("now", "localtime", "-7 day")`
+    case 'Últimos 15 días':
+    return ` AND ${field} >= date("now", "localtime", "-15 day")`
+    case 'Últimos 30 días':
+    return ` AND ${field} >= date("now", "localtime", "-30 day")`
+    case 'Este mes':
+      return ` AND ${field} >= date("now", "localtime", "start of month")
+      AND ${field} <= date("now", "localtime", "start of month", "+1 month", "-1 day")`
+    case 'Ninguna':
+      return ` AND ${field} is null`
+    case 'Ninguna o en el futuro':
+      return ` AND (${field} is null OR ${field} > date("now", "localtime"))`
+    default:
+      throw 'Not recognized the WHERE parameter ' + value
+  }
 }
 
 //Tested

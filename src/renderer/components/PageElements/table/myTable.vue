@@ -95,7 +95,7 @@ export default {
         // TODO: set the values here (more or less)
       }
 
-      this.applyFilter('') // Just to load all the data
+      this.applyTextFilter('') // Just to load all the data
     },
     clickOn: function(index) {
       // This method must pass the state of the table to the destination component just for the "Back" functionality
@@ -150,11 +150,12 @@ export default {
       }
     },
     // Filter
-    applyFilter: function (searchCriteria) {
+    applyTextFilter: function (searchCriteria) {
       if (searchCriteria !== '' && this.searchFields.length > 0) {
         this.currentSeachCriteria = searchCriteria
         var lowercaseFilter = searchCriteria.toString().toLowerCase()
         this.filteredDataset = []
+
         for (var i=0; i != this.searchFields.length; i++){
           var currentSearchField = this.searchFields[i]
           var subset = _.filter(this.rawDataset, function(row){
@@ -205,9 +206,10 @@ export default {
       ComponentClass = Vue.extend(filterBar)
       instance = new ComponentClass()
     }
+    instance.$parent = this
+    instance.$root = this.$root
     instance.$mount()
     this.$refs.filterContainer.appendChild(instance.$el)
-    instance.$parent = this
   }
 }
 </script>

@@ -50,7 +50,6 @@ export default {
       }
     },
     select: function(selectedOption){
-      console.log(selectedOption)
       _.forEach(_.filter(this.$children, ['text', selectedOption]), function(button) {
         button.select()
       })
@@ -70,6 +69,7 @@ export default {
           }
         })
       }
+      this.$root.$emit('optionLine:' + this.$attrs.id + ':updatedFilter')
     })
   },
   computed: {

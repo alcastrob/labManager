@@ -6,14 +6,14 @@
         <input type="text" v-model="filterText" @keyup.enter="doFilter">
         <button class="ml-1 btn btn-secondary" @click="doFilter">Filtrar</button>
         <button class="ml-1 btn btn-outline-secondary" @click="resetFilter">Cancelar filtrado</button>
-        <a href="#" data-toggle="collapse" data-target="#filter-options" class="pl-4"><i class="fas fa-filter"></i> Más opciones</a>
+        <a href="#" data-toggle="collapse" data-target="#filter-options" class="pl-4"><i class="fas fa-filter"></i> Otras opciones de filtrado</a>
       </div>
       <div id="filter-options" class="collapse">
         <option-line id="fEntrada" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes']" description="Fecha entrada: " ref="fEntrada">
         </option-line>
         <option-line id="fPrevista" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna']" description="Fecha prevista: " ref="fPrevista">
         </option-line>
-        <option-line id="fSalida" :isMultiple="false" :options="['Ninguna o en el futuro', 'Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna']" description="Fecha salida: " ref="fSalida">
+        <option-line id="fSalida" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna o en el futuro']" description="Fecha salida: " ref="fSalida">
         </option-line>
         <option-line id="tipo" :isMultiple="true" :options="['Fija', 'Resina', 'Ortodoncia', 'Esquelético', 'Zirconio', 'Compostura', 'Implante']" description="Tipo: " ref="tipo">
         </option-line>
@@ -46,10 +46,7 @@ export default {
   },
   methods: {
     doFilter () {
-      this.$parent.applyFilter(this.filterText, this.$refs.fEntrada.getSelected(),
-      this.$refs.fPrevista.getSelected(),
-      this.$refs.fSalida.getSelected(),
-      this.$refs.tipo.getSelected())
+      this.$parent.applyTextFilter(this.filterText)
     },
     resetFilter () {
       this.filterText = ''
@@ -57,7 +54,16 @@ export default {
       this.$refs.fPrevista.clear()
       this.$refs.fSalida.clear()
       this.$refs.tipo.clear()
-      this.$parent.applyFilter(this.filterText)
+      this.$parent.applyTextFilter(this.filterText)
+      this.sendEventToWorksList()
+    },
+    sendEventToWorksList() {
+      this.$root.$emit('worksFilter:updated', {
+        fEntrada: this.$refs.fEntrada.getSelected(),
+        fPrevista: this.$refs.fPrevista.getSelected(),
+        fSalida: this.$refs.fSalida.getSelected(),
+        tipo: this.$refs.tipo.getSelected()
+      })
     }
   },
   mounted () {
@@ -67,30 +73,46 @@ export default {
         this.$refs.fPrevista.clear()
         this.$refs.fSalida.clear()
         this.$refs.tipo.clear()
+        this.sendEventToWorksList()
         break
       case 'inProgress':
         this.$refs.fEntrada.clear()
         this.$refs.fPrevista.clear()
         this.$refs.fSalida.select('Ninguna o en el futuro')
         this.$refs.tipo.clear()
+        this.sendEventToWorksList()
         break
       case 'closedThisMonth':
         this.$refs.fEntrada.clear()
         this.$refs.fPrevista.clear()
         this.$refs.fSalida.select('Este mes')
         this.$refs.tipo.clear()
+        this.sendEventToWorksList()
         break
       case 'closedLast30days':
         this.$refs.fEntrada.clear()
         this.$refs.fPrevista.clear()
         this.$refs.fSalida.select('Últimos 30 días')
         this.$refs.tipo.clear()
+        this.sendEventToWorksList()
+        break
+      case null:
+        this.$refs.fEntrada.clear()
+        this.$refs.fPrevista.clear()
+        this.$refs.fSalida.clear()
+        this.$refs.tipo.clear()
         break
       default:
         console.log('Event: ' + this.filterName)
         throw 'Not recognized filter name'
-        break
     }
+    this.$root.$on('optionLine:' + this.$refs.fEntrada.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
+
+    this.$root.$on('optionLine:' + this.$refs.fPrevista.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
+
+    this.$root.$on('optionLine:' + this.$refs.fSalida.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
+
+    this.$root.$on('optionLine:' + this.$refs.tipo.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
   }
 }
 </script>
