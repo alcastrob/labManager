@@ -68,6 +68,10 @@ export default {
     filterType: {
       type: String,
       required: false
+    },
+    filterName: {
+      type: String,
+      required: false
     }
   },
   methods: {
@@ -188,13 +192,19 @@ export default {
       // this.currentPage = data.currentPage
     })
 
-    var ComponentClass
+    var ComponentClass, instance
+
     if (this.filterType === 'WorkFilterBar'){
       ComponentClass = Vue.extend(workFilterBar)
+      instance = new ComponentClass({
+        propsData: {
+          filterName: this.filterName
+        }
+      })
     } else {
       ComponentClass = Vue.extend(filterBar)
+      instance = new ComponentClass()
     }
-    var instance = new ComponentClass()
     instance.$mount()
     this.$refs.filterContainer.appendChild(instance.$el)
     instance.$parent = this

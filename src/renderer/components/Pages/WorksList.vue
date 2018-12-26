@@ -2,10 +2,8 @@
   <div>
     <h1 v-if="this.listHeading === null">Listado de Trabajos</h1>
     <h1>{{listHeading}}</h1>
-    <br>
-    {{filter}}
     <div>
-      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" filterType="WorkFilterBar" ref="table"/>
+      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" filterType="WorkFilterBar" :filterName="filter" ref="table"/>
     </div>
   </div>
 </template>

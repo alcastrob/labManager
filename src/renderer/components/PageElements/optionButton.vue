@@ -30,6 +30,9 @@ export default {
     toggleState: function() {
       this.isSelected = !this.isSelected
     },
+    select: function() {
+      this.isSelected = true
+    },
     clear: function() {
       this.isSelected = false
     }

@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <myIconCard :message="worksReceivedTodayCopy()"
-        filter="hh"
+        filter="receivedToday"
         listHeading="Trabajos recibidos hoy"
         cssClass="bg-primary"
         icon="fas fa-tasks" />

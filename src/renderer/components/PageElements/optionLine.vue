@@ -48,6 +48,12 @@ export default {
       } else {
         return _.first(y)
       }
+    },
+    select: function(selectedOption){
+      console.log(selectedOption)
+      _.forEach(_.filter(this.$children, ['text', selectedOption]), function(button) {
+        button.select()
+      })
     }
   },
   mounted () {
@@ -55,7 +61,7 @@ export default {
       throw 'Missing id in optionLine. This component requires an unique id.'
     if (this.options === undefined || this.options === null)
       throw 'Missing prop options in optionLine.vue'
-    
+
     this.$root.$on(this.eventName, data => {
       if (!this.isMultiple) {
         _.forEach(this.$children, function(child) {

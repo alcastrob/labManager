@@ -6,23 +6,23 @@
 <div>
     <div class="row">
       <myIconCard :message="worksInProgress()"
-        filter="oo"
+        filter="inProgress"
         listHeading="Trabajos en curso"
         cssClass="bg-primary"
         icon="fas fa-tasks" />
       <myIconCard :message="worksEndedThisMonth()"
-        filter="qq"
+        filter="closedThisMonth"
         listHeading="Trabajos cerrados este mes"
         cssClass="bg-secondary"
         icon="fas fa-calendar-alt" />
       <myIconCard :message="worksCountEndedLast30Days()"
         :secondMessage="worksCountEndedPrevious30Days()"
-        filter="ww"
+        filter="closedLast30days"
         listHeading="Trabajos cerrados en los últimos 30 días"
         cssClass="bg-info" icon="fas fa-chart-line" />
       <myIconCard :message="worksSumEndedLast30Days()"
         :secondMessage="worksSumEndedPrevious30Days()"
-        filter="ww"
+        filter="closedLast30days"
         listHeading="Trabajos cerrados en los últimos 30 días"
         cssClass="bg-success"
         icon="fas fa-euro-sign" />

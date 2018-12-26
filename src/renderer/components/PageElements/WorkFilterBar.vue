@@ -13,7 +13,7 @@
         </option-line>
         <option-line id="fPrevista" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna']" description="Fecha prevista: " ref="fPrevista">
         </option-line>
-        <option-line id="fSalida" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna']" description="Fecha salida: " ref="fSalida">
+        <option-line id="fSalida" :isMultiple="false" :options="['Ninguna o en el futuro', 'Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna']" description="Fecha salida: " ref="fSalida">
         </option-line>
         <option-line id="tipo" :isMultiple="true" :options="['Fija', 'Resina', 'Ortodoncia', 'Esquelético', 'Zirconio', 'Compostura', 'Implante']" description="Tipo: " ref="tipo">
         </option-line>
@@ -25,12 +25,19 @@
 <script>
 import optionButton from './optionButton'
 import optionLine from './optionLine'
+import { throws } from 'assert';
 
 export default {
   name: 'workFilterBar',
   components: {
     optionButton,
     optionLine
+  },
+  props: {
+    filterName: {
+      type: String,
+      required: false
+    }
   },
   data () {
     return {
@@ -39,7 +46,6 @@ export default {
   },
   methods: {
     doFilter () {
-      console.log(this.$refs.fSalida.getSelected())
       this.$parent.applyFilter(this.filterText, this.$refs.fEntrada.getSelected(),
       this.$refs.fPrevista.getSelected(),
       this.$refs.fSalida.getSelected(),
@@ -52,6 +58,38 @@ export default {
       this.$refs.fSalida.clear()
       this.$refs.tipo.clear()
       this.$parent.applyFilter(this.filterText)
+    }
+  },
+  mounted () {
+    switch (this.filterName){
+      case 'receivedToday':
+        this.$refs.fEntrada.select('Hoy')
+        this.$refs.fPrevista.clear()
+        this.$refs.fSalida.clear()
+        this.$refs.tipo.clear()
+        break
+      case 'inProgress':
+        this.$refs.fEntrada.clear()
+        this.$refs.fPrevista.clear()
+        this.$refs.fSalida.select('Ninguna o en el futuro')
+        this.$refs.tipo.clear()
+        break
+      case 'closedThisMonth':
+        this.$refs.fEntrada.clear()
+        this.$refs.fPrevista.clear()
+        this.$refs.fSalida.select('Este mes')
+        this.$refs.tipo.clear()
+        break
+      case 'closedLast30days':
+        this.$refs.fEntrada.clear()
+        this.$refs.fPrevista.clear()
+        this.$refs.fSalida.select('Últimos 30 días')
+        this.$refs.tipo.clear()
+        break
+      default:
+        console.log('Event: ' + this.filterName)
+        throw 'Not recognized filter name'
+        break
     }
   }
 }
