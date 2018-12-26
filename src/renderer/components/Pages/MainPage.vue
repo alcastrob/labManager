@@ -76,7 +76,7 @@ export default {
         this.canNavigateBack = this.evaluateCanNavigateBack()
         this.childrenComponentData = null
         this.childrenSecondaryComponentData = null
-        debugger
+        // debugger
         if (eventData !== undefined){
           if (eventData.id !== undefined) {
             // I can't figure out how eventData.eventData mutated into eventData.id for Works. In Dentists it still remains as eventData

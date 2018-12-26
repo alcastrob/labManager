@@ -1,6 +1,5 @@
 <template>
   <div class="table-responsive">
-    <!-- <filter-bar></filter-bar> -->
     <div ref="filterContainer"></div>
     <table class="table table-bordered" width="100%" cellspacing="0">
       <tr>
@@ -198,6 +197,7 @@ export default {
     var instance = new ComponentClass()
     instance.$mount()
     this.$refs.filterContainer.appendChild(instance.$el)
+    instance.$parent = this
   }
 }
 </script>
