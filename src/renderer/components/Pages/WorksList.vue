@@ -116,8 +116,6 @@ export default {
   },
   computed: {
     showCustomHeader: function() {
-      console.log(this.listHeading)
-      console.log(this.filterChanged)
       return this.listHeading !== null && !this.filterChanged
     }
   },

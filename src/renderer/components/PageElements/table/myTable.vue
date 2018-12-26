@@ -45,7 +45,6 @@ export default {
       currentSortCriteria: '',
       currentSortDesc: '',
       currentSeachCriteria: '',
-      state: null,
       moneyFormatter: new Intl.NumberFormat('es-ES', {
         style: 'currency',
         currency: 'EUR'
@@ -91,28 +90,25 @@ export default {
         throw 'Missing Key column in passed dataset in MyTable.vue'
       }
 
-      if (this.state !== null){
-        // TODO: set the values here (more or less)
-      }
-
       this.applyTextFilter('') // Just to load all the data
     },
     clickOn: function(index) {
       // This method must pass the state of the table to the destination component just for the "Back" functionality
-      var data = {
+      this.$root.$emit('table:click:' + this.eventId, {
         index: index,
         filter: this.currentSeachCriteria,
         sortCriteria: this.currentSortCriteria,
         sortDirection: this.currentSortDesc,
         currentPage: this.currentPage,
-        component: this.eventId}
-      this.$root.$emit('table:click:' + this.eventId, data)
+        component: this.eventId
+        })
     },
     // Pagination
     loadPage: function (page) {
       this.currentPage = page
     },
     getPaginatedData: function () {
+      debugger
       if (this.rawDataset.length === 0){
         return []
       }
@@ -126,8 +122,7 @@ export default {
       if (left < 0 || left > arraySize)
         return []
       else {
-        var x = _.slice(this.filteredDataset, left, right )
-        return x
+        return _.slice(this.filteredDataset, left, right)
       }
     },
     // Sorting
@@ -141,6 +136,7 @@ export default {
       this.sortBy()
     },
     sortBy: function() {
+      debugger
       var x = this.currentSortCriteria
       this.filteredDataset = _.sortBy(this.filteredDataset, function(row) {
         return row[x]
@@ -151,6 +147,7 @@ export default {
     },
     // Filter
     applyTextFilter: function (searchCriteria) {
+      debugger
       if (searchCriteria !== '' && this.searchFields.length > 0) {
         this.currentSeachCriteria = searchCriteria
         var lowercaseFilter = searchCriteria.toString().toLowerCase()
@@ -173,6 +170,7 @@ export default {
     },
   },
   mounted () {
+    debugger
     // Check the required parameters (props)
     if (this.headers === undefined || this.headers === null)
       throw 'Missing prop headers in myTable.vue'
@@ -184,17 +182,19 @@ export default {
     this.currentSortCriteria = this.searchFields[0]
     this.currentSortDesc = true
     moment.locale('es')
+
     this.$root.$on('table:setState:' + this.eventId, (data) => {
-      this.state = data
-      // debugger
-      // this.currentSeachCriteria = data.filter
-      // this.currentSortCriteria = data.sortCriteria
-      // this.currentSortDesc = data.sortDirection
-      // this.currentPage = data.currentPage
+      debugger
+      this.filteredDataset = []
+      this.applyTextFilter(data.filter)
+      this.currentSortCriteria = data.sortCriteria
+      this.currentSortDesc = data.sortDirection
+      this.currentPage = data.currentPage
+      console.log(this.filteredDataset)
     })
 
+    // Loading the filter component based ion configuration
     var ComponentClass, instance
-
     if (this.filterType === 'WorkFilterBar'){
       ComponentClass = Vue.extend(workFilterBar)
       instance = new ComponentClass({

@@ -82,11 +82,15 @@ export default {
         if (eventData !== undefined && eventData.eventData !== undefined){
           if (eventData.eventData.index !== undefined) {
             // For navigation from lists to detail components
-            debugger
             this.childrenComponentData = eventData.eventData.index
+
+            this.backStates.push(eventData.eventData)
+
           } else if (eventData.eventData.name !== undefined) {
+            // Create a new dentist from the new work component, passing the name for completeness.
             this.childrenComponentData = eventData.eventData.name
           } else if (eventData.eventData.filter !== undefined) {
+            // From the cards. Passing the event name and the works list heading and the filter to apply
             this.childrenComponentData = eventData.eventData.title
             this.childrenSecondaryComponentData = eventData.eventData.filter
           }
