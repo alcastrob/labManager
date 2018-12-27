@@ -9,7 +9,7 @@
         </router-link>
       </li>
       <li class="nav-item no-arrow mx-1">
-        <a href="#" class="nav-link" role="button" v-on:click="$router.back()">
+        <a href="#" class="nav-link" role="button" v-on:click="goBack()">
           <i class="fas fa-fw fa-caret-square-left"></i>
           Atrás
         </a>
@@ -61,7 +61,14 @@
 import VueRouter from 'vue-router'
 
 export default {
-  name: 'topBar'
+  name: 'topBar',
+  methods: {
+    goBack() {
+      console.log('before: ' + this.$router.currentRoute.path)
+      this.$router.back()
+      console.log('after: ' + this.$router.currentRoute.path)
+    }
+  }
 }
 </script>
 

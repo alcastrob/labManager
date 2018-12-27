@@ -98,6 +98,7 @@ export default {
         break
       case null:
       case '':
+      case undefined:
         this.$refs.fEntrada.clear()
         this.$refs.fPrevista.clear()
         this.$refs.fSalida.clear()

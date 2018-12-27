@@ -49,6 +49,7 @@ export function getWorksList (fileName, customFilters) {
     }
   }
 
+  console.log('query:' + query)
   return allAsync(db, query, []).then((row) => {
     // db.close()
     return row
@@ -69,11 +70,11 @@ function processDateQuery(field, value){
     case 'Esta semana':
       return ` AND (${field} BETWEEN date('now', 'weekday 1', '-7 day') AND date('now', 'weekday 1', '-1 day'))`
     case 'Últimos 7 días':
-      return ` AND ${field} >= date("now", "localtime", "-7 day")`
+      return ` AND (${field} BETWEEN date("now", "localtime", "-7 day") AND date("now", "localtime", "+1 day"))`
     case 'Últimos 15 días':
-    return ` AND ${field} >= date("now", "localtime", "-15 day")`
+    return ` AND (${field} BETWEEN date("now", "localtime", "-15 day") AND date("now", "localtime", "+1 day"))`
     case 'Últimos 30 días':
-    return ` AND ${field} >= date("now", "localtime", "-30 day")`
+    return ` AND (${field} BETWEEN date("now", "localtime", "-30 day") AND date("now", "localtime", "+1 day"))`
     case 'Este mes':
       return ` AND ${field} >= date("now", "localtime", "start of month")
       AND ${field} <= date("now", "localtime", "start of month", "+1 month", "-1 day")`

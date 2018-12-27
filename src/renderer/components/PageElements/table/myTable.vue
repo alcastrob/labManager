@@ -217,7 +217,6 @@ export default {
           filterName: this.filterName
         }
       })
-      console.log('Here: ' + this.filterName)
     } else {
       ComponentClass = Vue.extend(filterBar)
       instance = new ComponentClass()
