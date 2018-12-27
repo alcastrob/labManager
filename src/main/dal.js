@@ -66,7 +66,7 @@ function processTypeQuery(field, values){
 function processDateQuery(field, value){
   switch(value){
     case 'Hoy':
-      return ` AND ${field} >= date("now","localtime") AND ${field} < date("now", "localtime", "+1 day")`
+      return ` AND (${field} BETWEEN date("now","localtime") AND  date("now", "localtime", "+1 day"))`
     case 'Esta semana':
       return ` AND (${field} BETWEEN date('now', 'weekday 1', '-7 day') AND date('now', 'weekday 1', '-1 day'))`
     case 'Últimos 7 días':
@@ -76,10 +76,10 @@ function processDateQuery(field, value){
     case 'Últimos 30 días':
     return ` AND (${field} BETWEEN date("now", "localtime", "-30 day") AND date("now", "localtime", "+1 day"))`
     case 'Este mes':
-      return ` AND ${field} >= date("now", "localtime", "start of month")
-      AND ${field} <= date("now", "localtime", "start of month", "+1 month", "-1 day")`
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month")
+      AND date("now", "localtime", "start of month", "+1 month", "-1 day"))`
     case 'Ninguna':
-      return ` AND ${field} is null`
+      return ` AND (${field} is null)`
     case 'Ninguna o en el futuro':
       return ` AND (${field} is null OR ${field} > date("now", "localtime"))`
     default:

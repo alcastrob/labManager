@@ -64,9 +64,36 @@ export default {
   name: 'topBar',
   methods: {
     goBack() {
-      console.log('before: ' + this.$router.currentRoute.path)
-      this.$router.back()
-      console.log('after: ' + this.$router.currentRoute.path)
+       if (this.doubleBack && this.isFirstTimeUser) {
+        console.log('double back')
+        this.$router.go(-2)
+        this.isFirstTimeUser = false
+      } else {
+        console.log('single back')
+        this.$router.back()
+      }
+    }
+  },
+  data() {
+    return {
+      doubleBack: false,
+      isFirstTimeUser: true,
+    }
+  },
+  watch: {
+    $route(to, from) {
+      // console.log('route: ' + from.fullPath + ' > ' + to.fullPath)
+      if (from.query.filter !== undefined && to.fullPath.indexOf('/works/details/') !== -1){
+        this.doubleBack = true
+      } else {
+        this.doubleBack = false
+      }
+      if (from.fullPath === '/finances' && to.fullPath.indexOf('/works/list' !== -1)) {
+        this.isFirstTimeUser = true
+      }
+      if (from.fullPath === '/' && to.fullPath.indexOf('/works/list' !== -1)) {
+        this.isFirstTimeUser = true
+      }
     }
   }
 }

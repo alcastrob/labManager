@@ -42,16 +42,16 @@ export default new Router({
           component: workDetail
         },
         {
+          path: 'dentists/new',
+          component: dentistNew
+        },
+        {
           path: 'dentists/list',
           component: dentistsList
         },
         {
           path: 'dentists/details/:id',
           component: dentistDetails
-        },
-        {
-          path: 'dentists/new',
-          component: dentistNew
         },
         {
           path: 'finances',
@@ -61,10 +61,18 @@ export default new Router({
     }
   ],
   scrollBehavior (to, from, savedPosition) {
+    let position = { x: 0, y: 0 }
+    // Keep scroll position when using browser buttons
+    if (savedPosition) {
+      position = savedPosition
+    }
+
+    // Workaround for transitions scrolling to the top of the page
+    // However, there are still some problems being fixed by the vue team
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        resolve(savedPosition)
-      }, 50)
+        resolve(position)
+      }, 100)
     })
   }
 })

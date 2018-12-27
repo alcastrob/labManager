@@ -57,6 +57,9 @@ export default {
         }
       })
     }
+  },
+  beforeRouteEnter(to, from, next){
+    debugger
   }
 }
 </script>

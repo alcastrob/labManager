@@ -25,7 +25,7 @@
 <script>
 import optionButton from './optionButton'
 import optionLine from './optionLine'
-import { throws } from 'assert';
+// import { throws } from 'assert';
 
 export default {
   name: 'workFilterBar',
