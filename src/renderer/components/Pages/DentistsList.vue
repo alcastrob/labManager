@@ -6,7 +6,7 @@
       </div>
       <div class="col-md-6 mt-2">
         <div class="float-right">
-          <collapsable-button iconCss="fas fa-plus-circle" text="Nuevo dentista" eventName="dentist:NewDentist"></collapsable-button>
+          <collapsable-button iconCss="fas fa-plus-circle" text="Nuevo dentista" pathTo="/dentists/new"></collapsable-button>
         </div>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
@@ -88,12 +88,12 @@ export default {
       // this.$children[0].setDataset(dentists)
       this.$refs.dentistTable.setDataset(dentists)
     })
-    this.$root.$on('table:click:' + EVENTID, (eventData) => {
-      this.$root.$emit('navigation:navigateTo', {page: 'dentistDetail', eventData: eventData, comeBack: EVENTID})
-    })
-    this.$root.$on('dentist:NewDentist', () => {
-      this.$root.$emit('navigation:navigateTo', {page: 'dentistNew'})
-    })
+    // this.$root.$on('table:click:' + EVENTID, (eventData) => {
+    //   this.$root.$emit('navigation:navigateTo', {page: 'dentistDetail', eventData: eventData, comeBack: EVENTID})
+    // })
+    // this.$root.$on('dentist:NewDentist', () => {
+    //   this.$root.$emit('navigation:navigateTo', {page: 'dentistNew'})
+    // })
   }
 }
 </script>

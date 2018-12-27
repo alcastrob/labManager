@@ -109,12 +109,6 @@ export default {
       }
     }
   },
-  props: {
-    dentistName: {
-      type: String,
-      required: false
-    }
-  },
   methods: {
     save: function() {
       // this.$notify({
@@ -140,7 +134,7 @@ export default {
   },
   mounted () {
     this.$refs.elementToFocus.focus()
-    this.data.NombreDentista = this.dentistName
+    this.data.NombreDentista = this.$route.query.name
   }
 }
 </script>

@@ -109,12 +109,12 @@ export default {
     }
   },
   mounted () {
-    ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
-      this.navigateTo(eventData.page)
-    })
-    this.$root.$on('navigation:navigateTo', (data) => {
-      this.navigateTo(data.page, data)
-    })
+    // ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
+    //   this.navigateTo(eventData.page)
+    // })
+    // this.$root.$on('navigation:navigateTo', (data) => {
+    //   this.navigateTo(data.page, data)
+    // })
   }
 }
 </script>

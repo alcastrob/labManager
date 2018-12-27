@@ -123,9 +123,9 @@ export default {
     })
 
     //Table click event
-    this.$root.$on('table:click:' + this.eventId, (eventData) => {
-      this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
-    })
+    // this.$root.$on('table:click:' + this.eventId, (eventData) => {
+    //   this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
+    // })
   }
 }
 </script>

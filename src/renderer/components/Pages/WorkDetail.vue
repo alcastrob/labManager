@@ -8,8 +8,8 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <collapsable-button iconCss="fas fa-certificate" text="Declaración de Conformidad" eventName="work:DeclarationOfConformity"></collapsable-button>
-              <collapsable-button iconCss="fas fa-dolly" text="Nota de entrega" eventName="work:DeviveryNote"></collapsable-button>
+              <collapsable-button iconCss="fas fa-certificate" text="Declaración de Conformidad" pathTo="/"></collapsable-button>
+              <collapsable-button iconCss="fas fa-dolly" text="Nota de entrega" pathTo="/"></collapsable-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
@@ -51,10 +51,10 @@
           <label for="precioMetal">Precio metal</label>
           <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="work.PrecioMetal">
         </div> <!-- col-md-2 -->
-        <div class="col-md-2">
+        <div class="col-md-4">
           <label for="color">Color</label>
           <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="work.Color">
-        </div> <!-- col-md-2 -->
+        </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">

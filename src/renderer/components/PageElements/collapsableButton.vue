@@ -1,11 +1,13 @@
 <template>
-  <a class="btn btn-warning btn-collapsible" href="#" v-on:click="sendEvent()">
+  <router-link :to="pathTo" class="btn btn-warning btn-collapsible">
     <i v-bind:class="this.iconCss"></i>
     <span>{{text}}</span>
-  </a>
+  </router-link>
 </template>
 
 <script>
+import VueRouter from 'vue-router'
+
 export default {
   name: 'collapsableButton',
   data () {
@@ -20,24 +22,19 @@ export default {
       type: String,
       required: true
     },
-    eventName: {
+    pathTo: {
       type: String,
       required: true
-    }
-  },
-  methods: {
-    sendEvent: function() {
-      this.$root.$emit(this.eventName)
     }
   },
   mounted() {
     // Check the required parameters (props)
     if (this.text === undefined || this.text === null)
-      throw 'Missing prop value workId in WorkDetail.vue'
+      throw 'Missing prop value text in WorkDetail.vue'
     if (this.iconCss === undefined || this.iconCss === null)
-      throw 'Missing prop value workId in WorkDetail.vue'
-    if (this.eventName === undefined || this.eventName === null)
-      throw 'Missing prop value workId in WorkDetail.vue'
+      throw 'Missing prop value iconCss in WorkDetail.vue'
+    if (this.pathTo === undefined || this.pathTo === null)
+      throw 'Missing prop value pathTo in WorkDetail.vue'
   }
 }
 </script>

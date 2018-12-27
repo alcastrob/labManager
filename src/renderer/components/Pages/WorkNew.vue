@@ -29,10 +29,10 @@
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
         </div> <!-- col-md-6 -->
-        <div class="col-md-2">
+        <div class="col-md-4">
           <label for="color">Color</label>
           <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="data.Color">
-        </div> <!-- col-md-2 -->
+        </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">

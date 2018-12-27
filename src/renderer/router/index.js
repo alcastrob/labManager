@@ -10,17 +10,13 @@ import dentistsList from '../components/Pages/DentistsList.vue'
 import dentistDetails from '../components/Pages/DentistDetail.vue'
 import finances from '../components/Pages/Finances.vue'
 import dashboard from '../components/Pages/Dashboard.vue'
+import dentistNew from '../components/Pages/DentistNew.vue'
 
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'landing-page',
-    //   component: require('@/components/LandingPage').default
-    // },
     {
       path: '/',
       component: mainPage,
@@ -52,6 +48,10 @@ export default new Router({
         {
           path: 'dentists/details/:id',
           component: dentistDetails
+        },
+        {
+          path: 'dentists/new',
+          component: dentistNew
         },
         {
           path: 'finances',

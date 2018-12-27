@@ -47,10 +47,9 @@ export default {
       this.$root.$emit('work:dentistSelected', this.selectedId)
     },
     createNew: function(name) {
-      // this.$root.$emit('navigation:navigateTo', {page: 'dentistNew'})
-      this.$root.$emit('navigation:navigateTo', {
-        page: 'dentistNew',
-        eventData: {
+      this.$router.push({
+        path: '/dentists/new',
+        query: {
           name: name
         }
       })
