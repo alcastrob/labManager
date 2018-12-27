@@ -126,14 +126,15 @@ const menuTemplate = [{
       click () {}
     }
   ]
-}, 
+},
 {
   label: 'Ayuda',
   submenu: [
     {
       label: 'Acerca de',
       click () {
-        mainWindow.webContents.send('navigation:navigateTo', {page: 'about'})
+        mainWindow.webContents.send
+        ('navigation:navigateTo', {page: '/about'})
       }
     }
   ]

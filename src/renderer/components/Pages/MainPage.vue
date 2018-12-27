@@ -5,15 +5,6 @@
       <div id="wrapper">
         <div id="content-wrapper">
           <div class="container-fluid">
-            <!-- <dashboard v-if="currentPage === 'dashboard'" />
-            <workNew v-if="currentPage === 'workNew'" />
-            <worksList v-if="currentPage === 'worksList'" :listHeading="childrenComponentData" :filter="childrenSecondaryComponentData" />
-            <workDetail v-if="currentPage === 'workDetail'" :workId="childrenComponentData" />
-            <dentistsList v-if="currentPage === 'dentistsList'"/>
-            <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="childrenComponentData" />
-            <dentistNew v-if="currentPage === 'dentistNew'" :dentistName="childrenComponentData" />
-            <finances v-if="currentPage === 'finances'" />
-            <about v-if="currentPage === 'about'"/> -->
             <router-view></router-view>
           </div>
         </div>
@@ -24,33 +15,13 @@
 
 <script>
 import topbar from '../PageElements/TopBar'
-// import dashboard from './dashboard'
-// import about from './About'
-// import workDetail from './WorkDetail'
-// import workNew from './WorkNew'
-// import dentistDetail from './DentistDetail'
-// import dentistsList from './DentistsList'
-// import dentistNew from './DentistNew'
-// import worksList from './WorksList'
-// import finances from './Finances'
-import { EventEmitter } from 'electron'
 import VueRouter from 'vue-router'
-
 var {ipcRenderer} = require('electron')
 
 export default {
   name: 'mainPage',
   components: {
     topbar
-    // dashboard,
-    // about,
-    // workDetail,
-    // workNew,
-    // worksList,
-    // dentistDetail,
-    // dentistsList,
-    // dentistNew,
-    // finances
   },
   data () {
     return {
@@ -109,12 +80,11 @@ export default {
     }
   },
   mounted () {
-    // ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
-    //   this.navigateTo(eventData.page)
-    // })
-    // this.$root.$on('navigation:navigateTo', (data) => {
-    //   this.navigateTo(data.page, data)
-    // })
+    ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
+      this.$router.push({
+        path: eventData.page
+      })
+    })
   }
 }
 </script>

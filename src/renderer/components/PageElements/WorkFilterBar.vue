@@ -97,21 +97,18 @@ export default {
         this.sendEventToWorksList()
         break
       case null:
+      case '':
         this.$refs.fEntrada.clear()
         this.$refs.fPrevista.clear()
         this.$refs.fSalida.clear()
         this.$refs.tipo.clear()
         break
       default:
-        console.log('Event: ' + this.filterName)
-        throw 'Not recognized filter name'
+        throw 'Not recognized filter name: ' + this.filterName
     }
     this.$root.$on('optionLine:' + this.$refs.fEntrada.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-
     this.$root.$on('optionLine:' + this.$refs.fPrevista.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-
     this.$root.$on('optionLine:' + this.$refs.fSalida.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-
     this.$root.$on('optionLine:' + this.$refs.tipo.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
   }
 }

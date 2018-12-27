@@ -182,13 +182,13 @@ export default {
       this.logInfo()
     },
     logInfo: function() {
-      console.log('this.rawDataset: ' +this.rawDataset.length)
-      console.log('this.filteredDataset: ' + this.filteredDataset.length)
-      console.log('this.currentSeachCriteria: ' + this.currentSeachCriteria)
-      console.log('this.currentPage: ' + this.currentPage)
-      console.log('this.currentSortCriteria: ' + this.currentSortCriteria)
-      console.log('this.currentSortDesc: ' + this.currentSortDesc)
-      console.log('this.currentPage: ' + this.currentPage)
+      // console.log('this.rawDataset: ' +this.rawDataset.length)
+      // console.log('this.filteredDataset: ' + this.filteredDataset.length)
+      // console.log('this.currentSeachCriteria: ' + this.currentSeachCriteria)
+      // console.log('this.currentPage: ' + this.currentPage)
+      // console.log('this.currentSortCriteria: ' + this.currentSortCriteria)
+      // console.log('this.currentSortDesc: ' + this.currentSortDesc)
+      // console.log('this.currentPage: ' + this.currentPage)
     }
   },
   mounted () {
@@ -217,6 +217,7 @@ export default {
           filterName: this.filterName
         }
       })
+      console.log('Here: ' + this.filterName)
     } else {
       ComponentClass = Vue.extend(filterBar)
       instance = new ComponentClass()

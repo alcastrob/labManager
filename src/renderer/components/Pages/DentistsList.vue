@@ -85,15 +85,8 @@ export default {
   methods: {},
   mounted () {
     getDentistList('labManager.sqlite').then((dentists) => {
-      // this.$children[0].setDataset(dentists)
       this.$refs.dentistTable.setDataset(dentists)
     })
-    // this.$root.$on('table:click:' + EVENTID, (eventData) => {
-    //   this.$root.$emit('navigation:navigateTo', {page: 'dentistDetail', eventData: eventData, comeBack: EVENTID})
-    // })
-    // this.$root.$on('dentist:NewDentist', () => {
-    //   this.$root.$emit('navigation:navigateTo', {page: 'dentistNew'})
-    // })
   }
 }
 </script>

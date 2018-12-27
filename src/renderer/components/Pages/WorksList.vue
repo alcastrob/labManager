@@ -112,20 +112,16 @@ export default {
       return this.listHeading !== undefined && !this.filterChanged
     }
   },
-  mounted () {
+  created () {
     this.listHeading = this.$route.query.title
     this.filter = this.$route.query.filter
     this.updateDatasetWithFilters()
-
+  },
+  mounted () {
     this.$root.$on('worksFilter:updated', (event) => {
       this.updateDatasetWithFilters(event)
       this.filterChanged = true
     })
-
-    //Table click event
-    // this.$root.$on('table:click:' + this.eventId, (eventData) => {
-    //   this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
-    // })
   }
 }
 </script>

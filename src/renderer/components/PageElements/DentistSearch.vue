@@ -164,11 +164,6 @@ a {
       }
     }
   }
-  &-input-filter {
-    // display: inline-block;
-    // border: 1px solid;
-    // @extend .input-group-addon ;
-  }
 }
 
 .hover-reveal-group {
