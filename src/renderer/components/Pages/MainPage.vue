@@ -1,11 +1,11 @@
 <template>
 <div id="page-top">
     <topbar />
-    <div class="mt-5">
+    <div class="mt-3">
       <div id="wrapper">
         <div id="content-wrapper">
           <div class="container-fluid">
-            <dashboard v-if="currentPage === 'dashboard'" />
+            <!-- <dashboard v-if="currentPage === 'dashboard'" />
             <workNew v-if="currentPage === 'workNew'" />
             <worksList v-if="currentPage === 'worksList'" :listHeading="childrenComponentData" :filter="childrenSecondaryComponentData" />
             <workDetail v-if="currentPage === 'workDetail'" :workId="childrenComponentData" />
@@ -13,7 +13,8 @@
             <dentistDetail v-if="currentPage === 'dentistDetail'" :dentistId="childrenComponentData" />
             <dentistNew v-if="currentPage === 'dentistNew'" :dentistName="childrenComponentData" />
             <finances v-if="currentPage === 'finances'" />
-            <about v-if="currentPage === 'about'"/>
+            <about v-if="currentPage === 'about'"/> -->
+            <router-view></router-view>
           </div>
         </div>
       </div>
@@ -22,33 +23,34 @@
 </template>
 
 <script>
-import dashboard from './dashboard'
-import about from './About'
 import topbar from '../PageElements/TopBar'
-import workDetail from './WorkDetail'
-import workNew from './WorkNew'
-import dentistDetail from './DentistDetail'
-import dentistsList from './DentistsList'
-import dentistNew from './DentistNew'
-import worksList from './WorksList'
-import finances from './Finances'
-import { EventEmitter } from 'electron';
+// import dashboard from './dashboard'
+// import about from './About'
+// import workDetail from './WorkDetail'
+// import workNew from './WorkNew'
+// import dentistDetail from './DentistDetail'
+// import dentistsList from './DentistsList'
+// import dentistNew from './DentistNew'
+// import worksList from './WorksList'
+// import finances from './Finances'
+import { EventEmitter } from 'electron'
+import VueRouter from 'vue-router'
 
 var {ipcRenderer} = require('electron')
 
 export default {
   name: 'mainPage',
   components: {
-    dashboard,
-    about,
-    topbar,
-    workDetail,
-    workNew,
-    worksList,
-    dentistDetail,
-    dentistsList,
-    dentistNew,
-    finances
+    topbar
+    // dashboard,
+    // about,
+    // workDetail,
+    // workNew,
+    // worksList,
+    // dentistDetail,
+    // dentistsList,
+    // dentistNew,
+    // finances
   },
   data () {
     return {

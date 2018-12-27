@@ -5,15 +5,14 @@
         <div class="col-md-8">
           <h1>Dentista</h1>
           <div class="row">
-            <div class="col-md-6 mb-3 mt-3">
-              <label for="clinica">Clínica</label>
-              <input type="text" class="form-control" id="clinica" placeholder="Nombre de la clínica" v-model="data.NombreClinica" ref="inputClinica">
-            <small class="form-text text-danger" v-if="requiresValidation && data.NombreClinica === ''" ref="clinicaValidator">El nombre de la clínica no puede estar en blanco</small>
-
-            </div> <!-- col-md-6 -->
             <div class="col-md-6 mt-3">
               <label for="dentista">Dentista</label>
               <input type="text" class="form-control" id="dentista" placeholder="Nombre de el/la dentista" v-model="data.NombreDentista">
+            </div> <!-- col-md-6 -->
+            <div class="col-md-6 mb-3 mt-3">
+              <label for="clinica">Clínica</label>
+              <input type="text" class="form-control" id="clinica" placeholder="Nombre de la clínica" v-model="data.NombreClinica" ref="inputClinica">
+              <small class="form-text text-danger" v-if="requiresValidation && data.NombreClinica === ''" ref="clinicaValidator">El nombre de la clínica no puede estar en blanco</small>
             </div> <!-- col-md-6 -->
           </div> <!-- row -->
           <div class="row">
@@ -98,14 +97,9 @@
 import { getDentist, updateDentist } from '../../../main/dal.js'
 export default {
   name: 'dentistDetail',
-  props: {
-    dentistId: {
-      type: Number,
-      required: true
-    }
-  },
   data () {
     return {
+      dentistId: 0,
       requiresValidation: false,
       isDirty: false,
       data: {}
@@ -127,10 +121,8 @@ export default {
     }
   },
   mounted () {
-    // Check the required parameters (props)
-    if (this.dentistId === undefined || this.dentistId === null)
-      throw 'Missing prop value dentistId in DentistDetail.vue'
-
+    this.dentistId = this.$route.params.id
+    
     getDentist(this.dentistId, 'labManager.sqlite').then((dentistDetail) => {
       this.data = dentistDetail
     })

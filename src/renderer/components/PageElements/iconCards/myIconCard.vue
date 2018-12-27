@@ -49,7 +49,13 @@ export default {
   },
   methods: {
     showDetails() {
-      this.$root.$emit('navigation:navigateTo', { page:'worksList', eventData: {title: this.listHeading, filter: this.filter}, comeBack: this.eventId})
+      this.$router.push({
+        path: '/works/list',
+        query: {
+          title: this.listHeading,
+          filter: this.filter
+        }
+      })
     }
   }
 }

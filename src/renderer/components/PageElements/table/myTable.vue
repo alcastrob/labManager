@@ -71,6 +71,10 @@ export default {
     filterName: {
       type: String,
       required: false
+    },
+    urlBase: {
+      type: String,
+      required: true
     }
   },
   methods: {
@@ -94,21 +98,24 @@ export default {
     },
     clickOn: function(index) {
       // This method must pass the state of the table to the destination component just for the "Back" functionality
-      this.$root.$emit('table:click:' + this.eventId, {
-        index: index,
-        filter: this.currentSeachCriteria,
-        sortCriteria: this.currentSortCriteria,
-        sortDirection: this.currentSortDesc,
-        currentPage: this.currentPage,
-        component: this.eventId
-        })
+      // this.$root.$emit('table:click:' + this.eventId, {
+      //   index: index,
+      //   filter: this.currentSeachCriteria,
+      //   sortCriteria: this.currentSortCriteria,
+      //   sortDirection: this.currentSortDesc,
+      //   currentPage: this.currentPage,
+      //   component: this.eventId,
+      //   filteredDataset: this.filteredDataset
+      //   })
+      this.$router.push({
+        path: this.urlBase + index
+      })
     },
     // Pagination
     loadPage: function (page) {
       this.currentPage = page
     },
     getPaginatedData: function () {
-      debugger
       if (this.rawDataset.length === 0){
         return []
       }
@@ -136,7 +143,6 @@ export default {
       this.sortBy()
     },
     sortBy: function() {
-      debugger
       var x = this.currentSortCriteria
       this.filteredDataset = _.sortBy(this.filteredDataset, function(row) {
         return row[x]
@@ -147,7 +153,6 @@ export default {
     },
     // Filter
     applyTextFilter: function (searchCriteria) {
-      debugger
       if (searchCriteria !== '' && this.searchFields.length > 0) {
         this.currentSeachCriteria = searchCriteria
         var lowercaseFilter = searchCriteria.toString().toLowerCase()
@@ -167,10 +172,26 @@ export default {
         this.filteredDataset = this.rawDataset
       }
       this.currentPage = 1
+      this.logInfo()
     },
+    restoreState: function(data){
+      this.filteredDataset = data.filteredDataset
+      this.currentSortCriteria = data.sortCriteria
+      this.currentSortDesc = data.sortDirection
+      this.currentPage = data.currentPage
+      this.logInfo()
+    },
+    logInfo: function() {
+      console.log('this.rawDataset: ' +this.rawDataset.length)
+      console.log('this.filteredDataset: ' + this.filteredDataset.length)
+      console.log('this.currentSeachCriteria: ' + this.currentSeachCriteria)
+      console.log('this.currentPage: ' + this.currentPage)
+      console.log('this.currentSortCriteria: ' + this.currentSortCriteria)
+      console.log('this.currentSortDesc: ' + this.currentSortDesc)
+      console.log('this.currentPage: ' + this.currentPage)
+    }
   },
   mounted () {
-    debugger
     // Check the required parameters (props)
     if (this.headers === undefined || this.headers === null)
       throw 'Missing prop headers in myTable.vue'
@@ -178,20 +199,14 @@ export default {
       throw 'Missing prop searchFields in myTable.vue'
     if (this.eventId === undefined || this.eventId === null)
       throw 'Missing prop eventId in myTable.vue'
+    if (this.urlBase === undefined || this.urlBase === null)
+      throw 'Missing prop urlBase in myTable.vue'
 
     this.currentSortCriteria = this.searchFields[0]
     this.currentSortDesc = true
     moment.locale('es')
 
-    this.$root.$on('table:setState:' + this.eventId, (data) => {
-      debugger
-      this.filteredDataset = []
-      this.applyTextFilter(data.filter)
-      this.currentSortCriteria = data.sortCriteria
-      this.currentSortDesc = data.sortDirection
-      this.currentPage = data.currentPage
-      console.log(this.filteredDataset)
-    })
+    this.$root.$on('table:setState:' + this.eventId, this.restoreState)
 
     // Loading the filter component based ion configuration
     var ComponentClass, instance

@@ -7,7 +7,7 @@
       </div>
     </div> <!-- row -->
     <div>
-      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" filterType="WorkFilterBar" :filterName="filter" ref="table"/>
+      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" filterType="WorkFilterBar" :filterName="filter" ref="table" urlBase="/works/details/"/>
     </div>
   </div>
 </template>
@@ -77,19 +77,12 @@ export default {
         } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
       eventId: EVENTID,
-      filterChanged: false
+      filterChanged: false,
+      listHeading: '',
+      filter: ''
     }
   },
-  props: {
-    listHeading: {
-      type: String,
-      required: false
-    },
-    filter: {
-      type: String,
-      required: false
-    }
-  },
+  props: { },
   methods: {
     updateDatasetWithFilters (eventData) {
       if (eventData === undefined) {
@@ -116,10 +109,12 @@ export default {
   },
   computed: {
     showCustomHeader: function() {
-      return this.listHeading !== null && !this.filterChanged
+      return this.listHeading !== undefined && !this.filterChanged
     }
   },
   mounted () {
+    this.listHeading = this.$route.query.title
+    this.filter = this.$route.query.filter
     this.updateDatasetWithFilters()
 
     this.$root.$on('worksFilter:updated', (event) => {

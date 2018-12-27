@@ -3,13 +3,13 @@
     <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
       <li class="nav-item no-arrow mx-1">
-        <a class="nav-link" href="#" id="dashboardButton" role="button" v-on:click="navigateTo('dashboard')">
+        <router-link to="/" class="nav-link" role="button">
           <i class="fas fa-fw fa-tooth"></i>
           Inicio
-        </a>
+        </router-link>
       </li>
       <li class="nav-item no-arrow mx-1">
-        <a class="nav-link" href="#" id="dashboardButton" role="button" v-on:click="navigateTo('back')" v-if="this.$parent.canNavigateBack">
+        <a href="#" class="nav-link" role="button" v-on:click="$router.back()">
           <i class="fas fa-fw fa-caret-square-left"></i>
           Atrás
         </a>
@@ -18,28 +18,28 @@
 
     <ul class="navbar-nav ml-auto">
       <li class="nav-item no-arrow mx-1">
-        <a class="nav-link" href="#" id="worksListButton" role="button" v-on:click="navigateTo('workNew')">
+        <router-link to="/works/new" class="nav-link" role="button">
           <i class="fas fa-fw fa-teeth"></i>
           Nuevo Trabajo
-        </a>
+        </router-link>
       </li>
       <li class="nav-item no-arrow mr-1">
-        <a class="nav-link" href="#" id="worksListButton" role="button" v-on:click="navigateTo('worksList')">
+        <router-link to="/works/list" class="nav-link" role="button">
           <i class="fa fa-fw fa-list"></i>
           Listado Trabajos
-        </a>
+        </router-link>
       </li>
       <li class="nav-item no-arrow">
-        <a class="nav-link" href="#" id="dentistListButton" role="button" v-on:click="navigateTo('dentistsList')">
+        <router-link to="/dentists/list" class="nav-link" role="button">
           <i class="fas fa-fw fa-id-badge"></i>
           Listado Dentistas
-        </a>
+        </router-link>
       </li>
       <li class="nav-item no-arrow">
-        <a class="nav-link" href="#" id="dentistListButton" role="button" v-on:click="navigateTo('finances')">
+        <router-link to="/finances" class="nav-link" role="button">
           <i class="fas fa-fw fa-money-bill-alt"></i>
           Gestión Económica
-        </a>
+        </router-link>
       </li>
     </ul>
 
@@ -58,16 +58,10 @@
 </template>
 
 <script>
+import VueRouter from 'vue-router'
+
 export default {
-  name: 'topBar',
-  data () {
-    return {}
-  },
-  methods: {
-    navigateTo (pageName) {
-      this.$root.$emit('navigation:navigateTo', {page: pageName})
-    }
-  }
+  name: 'topBar'
 }
 </script>
 
