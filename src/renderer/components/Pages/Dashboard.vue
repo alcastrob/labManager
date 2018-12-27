@@ -1,11 +1,30 @@
 <template>
   <div>
-    <div class="row">
-      <myIconCard :message="worksReceivedTodayCopy()"
-        filter="receivedToday"
-        listHeading="Trabajos recibidos hoy"
-        cssClass="bg-primary"
-        icon="fas fa-tasks" />
+    <div class="container">
+      <div class="row">
+        <myIconCard :message="worksReceivedTodayCopy"
+          filter="receivedToday"
+          listHeading="Trabajos recibidos hoy"
+          cssClass="bg-primary"
+          icon="fas fa-tasks" />
+        <myIconCard :message="worksSentTodayCopy"
+          filter="receivedToday"
+          listHeading="Trabajos que salen hoy"
+          cssClass="bg-primary"
+          icon="fas fa-tasks" />
+      </div> <!-- row -->
+      <div class="row">
+        <div class="col-md-8 mt-2">
+          <h1>Trabajos a la espera de entrada de prueba</h1>
+          Trabajos
+        </div>
+      </div> <!-- row -->
+      <div class="row">
+        <div class="col-md-8 mt-2">
+          <h1>Trabajos para salir</h1>
+          Trabajos
+        </div>
+      </div> <!-- row -->
     </div>
   </div>
 </template>
@@ -28,9 +47,20 @@ export default {
       this.inboundWorksToday = count.Count
       })
   },
-  methods: {
+  computed: {
     worksReceivedTodayCopy: function() {
-      return this.inboundWorksToday + ' trabajos recibidos hoy'
+      if (this.inboundWorksToday > 1) {
+        return this.inboundWorksToday + ' trabajos nuevos hoy'
+      } else {
+        return this.inboundWorksToday + ' trabajo nuevo hoy'
+      }
+    },
+    worksSentTodayCopy : function() {
+      if (this.inboundWorksToday > 1) {
+        return this.inboundWorksToday + ' trabajos enviados hoy'
+      } else {
+        return this.inboundWorksToday + ' trabajo enviado hoy'
+      }
     }
   }
 }

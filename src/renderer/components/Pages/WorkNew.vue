@@ -206,14 +206,14 @@ export default {
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
     })
-    this.$root.$on('work:visibleWorkAdjuncts', () => {
-      if(this.adjuncts === null){
-        var ComponentClass = Vue.extend(workAdjuncts)
-        this.adjuncts = new ComponentClass()
-        this.adjuncts.$mount()
-        this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
-      }
-    })
+    // this.$root.$on('work:visibleWorkAdjuncts', () => {
+    //   if(this.adjuncts === null){
+    //     var ComponentClass = Vue.extend(workAdjuncts)
+    //     this.adjuncts = new ComponentClass()
+    //     this.adjuncts.$mount()
+    //     this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
+    //   }
+    // })
     this.$root.$on('work:dentistSelected', (id) => {
       this.data.idDentista = id
     })

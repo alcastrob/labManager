@@ -50,6 +50,7 @@ export function getWorksList (fileName, customFilters) {
   }
 
   console.log('query:' + query)
+  debugger
   return allAsync(db, query, []).then((row) => {
     // db.close()
     return row

@@ -2,7 +2,8 @@
   <div class="mt-1">
     {{description}}
     <template v-for="option in options">
-      <optionButton :text="option" :eventName="eventName" :key="option" class="mr-1"></optionButton>
+      <!-- :eventName="eventName" -->
+      <optionButton :text="option" :key="option" class="mr-1"></optionButton>
     </template>
   </div>
 </template>
@@ -53,15 +54,8 @@ export default {
       _.forEach(_.filter(this.$children, ['text', selectedOption]), function(button) {
         button.select()
       })
-    }
-  },
-  mounted () {
-    if (this.$attrs.id === undefined || this.$attrs.id === null)
-      throw 'Missing id in optionLine. This component requires an unique id.'
-    if (this.options === undefined || this.options === null)
-      throw 'Missing prop options in optionLine.vue'
-
-    this.$root.$on(this.eventName, data => {
+    },
+    processChange: function(data) {
       if (!this.isMultiple) {
         _.forEach(this.$children, function(child) {
           if (child.text !== data.text){
@@ -70,12 +64,13 @@ export default {
         })
       }
       this.$root.$emit('optionLine:' + this.$attrs.id + ':updatedFilter')
-    })
+    }
   },
-  computed: {
-    eventName: function() {
-      return 'optionLine:' + this.$attrs.id + ':click'
-    }    
+  mounted () {
+    if (this.$attrs.id === undefined || this.$attrs.id === null)
+      throw 'Missing id in optionLine. This component requires an unique id.'
+    if (this.options === undefined || this.options === null)
+      throw 'Missing prop options in optionLine.vue'
   }
 }
 </script>

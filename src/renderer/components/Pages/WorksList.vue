@@ -82,7 +82,6 @@ export default {
       filter: ''
     }
   },
-  props: { },
   methods: {
     updateDatasetWithFilters (eventData) {
       if (eventData === undefined) {

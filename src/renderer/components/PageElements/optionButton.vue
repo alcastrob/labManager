@@ -16,16 +16,12 @@ export default {
     text: {
       type: String,
       required: true
-    },
-    eventName: {
-      type: String,
-      required: true
     }
   },
   methods: {
     toggleState: function() {
       this.isSelected = !this.isSelected
-      this.$root.$emit(this.eventName, {text: this.text, isSelected: this.isSelected})
+      this.$parent.processChange({text: this.text, isSelected: this.isSelected})
     },
     select: function() {
       this.isSelected = true
@@ -39,8 +35,6 @@ export default {
   mounted() {
     // Check the required parameters (props)
     if (this.text === undefined || this.text === null)
-      throw 'Missing prop value workId in WorkDetail.vue'
-    if (this.eventName === undefined || this.eventName === null)
       throw 'Missing prop value workId in WorkDetail.vue'
   }
 }

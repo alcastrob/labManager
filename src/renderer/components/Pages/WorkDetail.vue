@@ -174,12 +174,12 @@ export default {
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
     })
-    this.$root.$on('work:DeviveryNote', () => {
-      console.log("DeliveryNote")
-    })
-    this.$root.$on('work:DeclarationOfConformity', () => {
-      console.log("DeclarationOfConformity")
-    })
+    // this.$root.$on('work:DeviveryNote', () => {
+    //   console.log("DeliveryNote")
+    // })
+    // this.$root.$on('work:DeclarationOfConformity', () => {
+    //   console.log("DeclarationOfConformity")
+    // })
   }
 }
 </script>
