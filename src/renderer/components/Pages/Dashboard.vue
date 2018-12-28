@@ -14,18 +14,44 @@
           icon="fas fa-tasks" />
       </div> <!-- row -->
       <div class="row">
-        <div class="col-md-8 mt-2">
-          <h1>Trabajos a la espera de entrada de prueba</h1>
-          Trabajos
-        </div>
+        <div class="col-md-4 mt-2">
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fas fa-sign-in-alt"></i>
+              Trabajos a la espera de entrada de prueba
+            </div>
+            <div class="card-body">
+              <canvas id="myAreaChart" width="100%" height="30"></canvas>
+            </div>
+            <div class="card-footer small text-muted">Poner algo aquí</div>
+          </div> <!-- card -->
+        </div> <!-- col-md-12 -->
+        <div class="col-md-4 mt-2">
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fas fa-sign-out-alt"></i>
+              Trabajos con pruebas que salen hoy
+            </div>
+            <div class="card-body">
+              <canvas id="myAreaChart" width="100%" height="30"></canvas>
+            </div>
+            <div class="card-footer small text-muted">Poner algo aquí</div>
+          </div> <!-- card -->
+        </div> <!-- col-md-12 -->
+        <div class="col-md-4 mt-2">
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fas fa-sign-out-alt"></i>
+              Trabajos a finalizar hoy
+            </div>
+            <div class="card-body">
+              <canvas id="myAreaChart" width="100%" height="30"></canvas>
+            </div>
+            <div class="card-footer small text-muted">Poner algo aquí</div>
+          </div> <!-- card -->
+        </div> <!-- col-md-12 -->
       </div> <!-- row -->
-      <div class="row">
-        <div class="col-md-8 mt-2">
-          <h1>Trabajos para salir</h1>
-          Trabajos
-        </div>
-      </div> <!-- row -->
-    </div>
+    </div> <!-- container -->
   </div>
 </template>
 
