@@ -1,38 +1,35 @@
-<template>
-  <div class="table-responsive">
-    <filter-bar></filter-bar>
-    <table class="table table-bordered" width="100%" cellspacing="0">
-      <tr>
-        <th v-for="header in headers" v-bind:key="header.dataField"
-          v-on:click="sortByExpression(header.dataField)" v-bind:class="header.titleClass">
-          {{header.title}}
-          <span v-if="currentSortCriteria === header.dataField" class="fas" :class="{'fa-sort-amount-down': currentSortCriteria === header.dataField && currentSortDesc === true,
-          'fa-sort-amount-up': currentSortCriteria === header.dataField && currentSortDesc === false}"></span>
-        </th>
-      </tr>
-      <tr v-for="row in getPaginatedData()" v-bind:key="row[0]" v-on:click="clickOn(row['Key'])">
-        <template v-for="column in headers">
-          <td v-bind:key="column.dataField" v-bind:class="column.rowClass">{{formatRow(row[column.dataField], column.formatter)}}</td>
-        </template>
-      </tr>
-    </table>
-    <pagination></pagination>
-  </div>
-</template>
-
 <script>
-import pagination from './pagination'
-import filterBar from './filterBar'
 import moment from 'moment'
 import _ from 'lodash'
 
 const pageSize = 10
 
 export default {
-  name: 'myTable',
-  components: {
-    pagination,
-    filterBar
+  props: {
+    headers: {
+      type: Array,
+      required: true
+    },
+    searchFields: {
+      type: Array,
+      required: true
+    },
+    // eventId: {
+    //   type: String,
+    //   required: true
+    // },
+    filterType: {
+      type: String,
+      required: false
+    },
+    filterName: {
+      type: String,
+      required: false
+    },
+    urlBase: {
+      type: String,
+      required: true
+    }
   },
   data () {
     return {
@@ -43,25 +40,10 @@ export default {
       currentSortCriteria: '',
       currentSortDesc: '',
       currentSeachCriteria: '',
-      state: null,
       moneyFormatter: new Intl.NumberFormat('es-ES', {
         style: 'currency',
         currency: 'EUR'
       })
-    }
-  },
-  props: {
-    headers: {
-      type: Array,
-      required: true
-    },
-    searchFields: {
-      type: Array,
-      required: true
-    },
-    eventId: {
-      type: String,
-      required: true
     }
   },
   methods: {
@@ -81,39 +63,33 @@ export default {
         throw 'Missing Key column in passed dataset in MyTable.vue'
       }
 
-      if (this.state !== null){
-        // TODO: set the values here (more or less)
-      }
-
-      this.applyFilter('') // Just to load all the data
+      this.applyTextFilter('') // Just to load all the data
     },
     clickOn: function(index) {
-      // This method must pass the state of the table to the destination component just for the "Back" functionality
-      var data = {
-        index: index,
-        filter: this.currentSeachCriteria,
-        sortCriteria: this.currentSortCriteria,
-        sortDirection: this.currentSortDesc,
-        currentPage: this.currentPage,
-        component: this.eventId}
-      this.$root.$emit('table:click:' + this.eventId, data)
+      this.$router.push({
+        path: this.urlBase + index
+      })
     },
     // Pagination
     loadPage: function (page) {
       this.currentPage = page
     },
     getPaginatedData: function () {
+      if (this.rawDataset.length === 0){
+        return []
+      }
       var arraySize = this.rawDataset.length - 1
       var left = (this.currentPage - 1) * this.pageSize
       var right = (this.currentPage * this.pageSize)
       if (right > arraySize) {
-        right = arraySize
+        right = arraySize + 1
       }
 
       if (left < 0 || left > arraySize)
         return []
-      else
+      else {
         return _.slice(this.filteredDataset, left, right)
+      }
     },
     // Sorting
     sortByExpression: function(expression) {
@@ -126,20 +102,18 @@ export default {
       this.sortBy()
     },
     sortBy: function() {
-      var x = this.currentSortCriteria
-      this.filteredDataset = _.sortBy(this.filteredDataset, function(row) {
-        return row[x]
-        })
+      this.filteredDataset = _.sortBy(this.filteredDataset, [this.currentSortCriteria, 'IdTrabajo'])
       if (!this.currentSortDesc) {
         this.filteredDataset = _.reverse(this.filteredDataset)
       }
     },
     // Filter
-    applyFilter: function (searchCriteria) {
+    applyTextFilter: function (searchCriteria) {
       if (searchCriteria !== '' && this.searchFields.length > 0) {
         this.currentSeachCriteria = searchCriteria
         var lowercaseFilter = searchCriteria.toString().toLowerCase()
         this.filteredDataset = []
+
         for (var i=0; i != this.searchFields.length; i++){
           var currentSearchField = this.searchFields[i]
           var subset = _.filter(this.rawDataset, function(row){
@@ -154,7 +128,7 @@ export default {
         this.filteredDataset = this.rawDataset
       }
       this.currentPage = 1
-    },
+    }
   },
   mounted () {
     // Check the required parameters (props)
@@ -162,27 +136,12 @@ export default {
       throw 'Missing prop headers in myTable.vue'
     if (this.searchFields === undefined || this.searchFields === null)
       throw 'Missing prop searchFields in myTable.vue'
-    if (this.eventId === undefined || this.eventId === null)
-      throw 'Missing prop eventId in myTable.vue'
+    // if (this.eventId === undefined || this.eventId === null)
+    //   throw 'Missing prop eventId in myTable.vue'
+    if (this.urlBase === undefined || this.urlBase === null)
+      throw 'Missing prop urlBase in myTable.vue'
 
-
-
-    this.currentSortCriteria = this.searchFields[0]
-    this.currentSortDesc = true
     moment.locale('es')
-    this.$root.$on('table:setState:' + this.eventId, (data) => {
-      this.state = data
-      // debugger
-      // this.currentSeachCriteria = data.filter
-      // this.currentSortCriteria = data.sortCriteria
-      // this.currentSortDesc = data.sortDirection
-      // this.currentPage = data.currentPage
-    })
   }
 }
 </script>
-<style>
-.invisible {
-  display: none;
-}
-</style>

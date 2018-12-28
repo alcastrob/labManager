@@ -1,25 +1,32 @@
 <template>
-  <nav class="float-right">
-    Mostrando registros de {{recordFrom}} a {{recordTo}} de un total de {{this.$parent.filteredDataset.length}}
-    <br>
-    <div class="float-right">
-    <ul class="pagination">
-      <li class="page-item" :class="{'disabled': isOnFirstPage}">
-        <a class="page-link" href="#" @click.prevent="loadPage('prev')">
-          <span>&laquo;</span>
-        </a>
-      </li>
-      <li class="page-item" v-for="n in pageSelectors" v-bind:key="n" :class="{'active': isCurrentPage(n)}">
-        <a class="page-link" href="#" @click.prevent="loadPage(n)">{{n}}</a>
-      </li>
-      <li class="page-item" :class="{'disabled': isOnLastPage}">
-        <a class="page-link" href="#" @click.prevent="loadPage('next')">
-          <span>&raquo;</span>
-        </a>
-      </li>
-    </ul>
-    </div>
-  </nav>
+<div>
+  <div v-if="this.totalRecords !==0">
+    <nav class="float-right" >
+      Mostrando registros de {{recordFrom}} a {{recordTo}} de un total de {{totalRecords}}
+      <br>
+      <div class="float-right">
+        <ul class="pagination">
+          <li class="page-item" :class="{'disabled': isOnFirstPage}">
+            <a class="page-link" href="#" @click.prevent="loadPage('prev')">
+              <span>&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item" v-for="n in pageSelectors" v-bind:key="n" :class="{'active': isCurrentPage(n)}">
+            <a class="page-link" href="#" @click.prevent="loadPage(n)">{{n}}</a>
+          </li>
+          <li class="page-item" :class="{'disabled': isOnLastPage}">
+            <a class="page-link" href="#" @click.prevent="loadPage('next')">
+              <span>&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div v-else class="text-center">
+    <b>No hay registros para mostrar con los criterios de búsqueda actuales</b>
+  </div>
+</div>
 </template>
 
 <script>
@@ -87,6 +94,9 @@ export default {
       } else {
         return to
       }
+    },
+    totalRecords() {
+      return this.$parent.filteredDataset.length
     }
   }
 }

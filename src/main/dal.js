@@ -3,6 +3,8 @@
 var sqlite3 = require('sqlite3').verbose()
 var db
 
+import _ from 'lodash'
+
 function createTable () {
   db.run('CREATE TABLE TipoTrabajos (' +
   '    IdTipoTrabajo INTEGER PRIMARY KEY AUTOINCREMENT,' +
@@ -29,18 +31,59 @@ export function createNewDatabase (fileName) {
 // Works ----------------------------------------------------------------------
 
 //Tested
-export function getWorksList (fileName) {
+export function getWorksList (fileName, customFilters) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-  't.PrecioFinal AS Precio ' +
-  'FROM Trabajos t ' +
-  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo'
+  var query = 'SELECT * FROM vTrabajos WHERE 1=1'
+  if (customFilters !== undefined){
+    if (customFilters.fEntrada !== undefined){
+      query += processDateQuery('FechaEntrada', customFilters.fEntrada)
+    }
+    if (customFilters.fPrevista !== undefined){
+      query += processDateQuery('FechaPrevista', customFilters.fPrevista)
+    }
+    if (customFilters.fSalida !== undefined){
+      query += processDateQuery('FechaTerminacion', customFilters.fSalida)
+    }
+    if (customFilters.tipo !== undefined && customFilters.tipo.length > 0){
+      query += processTypeQuery('TipoTrabajo', customFilters.tipo)
+    }
+  }
+
   return allAsync(db, query, []).then((row) => {
     // db.close()
     return row
   })
+}
+
+function processTypeQuery(field, values){
+  var returnedValue = ` AND ${field} IN (`
+  _.forEach(values, (value) => returnedValue += `"${value}",`)
+
+  return returnedValue.substring(0, returnedValue.length - 1) + ')'
+}
+
+function processDateQuery(field, value){
+  switch(value){
+    case 'Hoy':
+      return ` AND (${field} BETWEEN date("now","localtime") AND  date("now", "localtime", "+1 day"))`
+    case 'Esta semana':
+      return ` AND (${field} BETWEEN date('now', 'weekday 1', '-7 day') AND date('now', 'weekday 1', '-1 day'))`
+    case 'Últimos 7 días':
+      return ` AND (${field} BETWEEN date("now", "localtime", "-7 day") AND date("now", "localtime", "+1 day"))`
+    case 'Últimos 15 días':
+    return ` AND (${field} BETWEEN date("now", "localtime", "-15 day") AND date("now", "localtime", "+1 day"))`
+    case 'Últimos 30 días':
+    return ` AND (${field} BETWEEN date("now", "localtime", "-30 day") AND date("now", "localtime", "+1 day"))`
+    case 'Este mes':
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month")
+      AND date("now", "localtime", "start of month", "+1 month", "-1 day"))`
+    case 'Ninguna':
+      return ` AND (${field} is null)`
+    case 'Ninguna o en el futuro':
+      return ` AND (${field} is null OR ${field} > date("now", "localtime"))`
+    default:
+      throw 'Not recognized the WHERE parameter ' + value
+  }
 }
 
 //Tested
@@ -149,16 +192,22 @@ export function deleteWorkTest(workTestId, fileName){
 // Custom queries for Work (KPIs)----------------------------------------------
 
 //Tested
+export function getInboundWorksToday(fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT COUNT(1) AS Count FROM Trabajos ' +
+  'WHERE FechaEntrada >= date("now","localtime") AND FechaEntrada < date("now", "localtime", "+1 day")'
+  return getAsync(db, query, []).then((row) => {
+    return row
+  })
+}
+
+//Tested
 export function getWorkInExecution (fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-  't.PrecioFinal AS Precio ' +
-  'FROM Trabajos t ' +
-  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-  'WHERE FechaTerminacion is NULL'
-  return allAsync(db, query, []).then((row) => {
+  var query = 'SELECT COUNT(1) AS Count ' +
+  'FROM Trabajos ' +
+  'WHERE FechaTerminacion is NULL OR FechaTerminacion >= date("now", "localtime")'
+  return getAsync(db, query, []).then((row) => {
     // db.close()
     return row
   })
@@ -167,15 +216,11 @@ export function getWorkInExecution (fileName) {
 //Tested
 export function getWorksEndedThisMonth(fileName) {
 db = new sqlite3.Database(fileName)
-var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-'t.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-'t.PrecioFinal AS Precio ' +
+var query = 'SELECT COUNT(1) AS Count ' +
 'FROM Trabajos t ' +
-'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-'WHERE FechaTerminacion >= date("now","localtime", "start of month") ' +
-'AND FechaTerminacion <= date("now","localtime", "start of month","+1 month","-1 day")'
-return allAsync(db, query, []).then((row) => {
+'WHERE FechaTerminacion >= date("now", "localtime", "start of month") ' +
+'AND FechaTerminacion <= date("now", "localtime", "start of month", "+1 month", "-1 day")'
+return getAsync(db, query, []).then((row) => {
   // db.close()
   return row
 })
@@ -184,14 +229,10 @@ return allAsync(db, query, []).then((row) => {
 //Tested
 export function getWorksEndedLast30days(fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-  't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-  't.PrecioFinal AS Precio ' +
-  'FROM Trabajos t ' +
-  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-  'WHERE FechaTerminacion >= date("now","localtime", "-30 days")'
-  return allAsync(db, query, []).then((row) => {
+  var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
+  'FROM Trabajos ' +
+  'WHERE FechaTerminacion >= date("now", "localtime", "-30 days")'
+  return getAsync(db, query, []).then((row) => {
     // db.close()
     return row
   })
@@ -200,15 +241,11 @@ export function getWorksEndedLast30days(fileName) {
   //Tested
   export function getWorksEndedPrevious30days(fileName) {
     db = new sqlite3.Database(fileName)
-    var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo, d.NombreDentista, tt.Descripcion AS TipoTrabajo, ' +
-    't.Paciente, t.Color, t.FechaEntrada, t.FechaPrevista, t.FechaTerminacion, ' +
-    't.PrecioFinal AS Precio ' +
-    'FROM Trabajos t ' +
-    'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-    'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-    'WHERE FechaTerminacion >= date("now","localtime", "-60 days") '+
-    'AND FechaTerminacion <= date("now","localtime", "-30 days")'
-    return allAsync(db, query, []).then((row) => {
+    var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
+  'FROM Trabajos ' +
+    'WHERE FechaTerminacion >= date("now", "localtime", "-60 days") '+
+    'AND FechaTerminacion <= date("now", "localtime", "-30 days")'
+    return getAsync(db, query, []).then((row) => {
       // db.close()
       return row
     })
@@ -337,12 +374,14 @@ export function deleteDentist(dentistId, fileName){
   return run(db, query, [dentistId])
 }
 
+//Tested
 export function searchDentistsByName (dentistName, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = ''
-  return getAsync(db, query, [dentistName]).then((row) => {
-    db.close()
-    return row
+  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
+  'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
+  'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE NombreDentista LIKE ?'
+  return allAsync(db, query, ['%' + dentistName + '%']).then((rows) => {
+    return rows
   })
 }
 

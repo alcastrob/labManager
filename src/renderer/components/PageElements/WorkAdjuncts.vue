@@ -1,5 +1,6 @@
 <template>
 <div>
+  <hr>
   <h4>Aditamentos</h4>
 
   <!-- <div class="container" style="border: solid 1px #000; "> -->
@@ -21,8 +22,8 @@
         <textarea class="form-control" id="analogos" rows="2"></textarea>
         <label for="posteImpresion" class="pt-2">Poste Impresión</label>
         <textarea class="form-control" id="posteImpresion" rows="2"></textarea>
-        <label for="interface" class="pt-2">Interface</label>
-        <textarea class="form-control" id="interface" rows="2"></textarea>
+        <label for="interfase" class="pt-2">Interfase</label>
+        <textarea class="form-control" id="interfase" rows="2"></textarea>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
     <div class="row">

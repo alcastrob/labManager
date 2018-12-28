@@ -1,22 +1,25 @@
 <template>
-  <div>
-    <h1>Listado de Trabajos</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h1 v-if="showCustomHeader">{{listHeading}}</h1>
+        <h1 v-else>Listado de Trabajos</h1>
+      </div>
+    </div> <!-- row -->
     <div>
-      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" ref="table"/>
+      <workExtendedTable :headers="headers" :searchFields="searchFields" ref="table" urlBase="/works/details/"/>
     </div>
   </div>
 </template>
 
 <script>
-import myTable from '../PageElements/table/myTable'
+import workExtendedTable from '../PageElements/tables/workExtendedTable'
 import { getWorksList } from '../../../main/dal.js'
-
-const EVENTID = "WorksList"
 
 export default {
   name: 'workslist',
   components: {
-    myTable
+    workExtendedTable
   },
   data () {
     return {
@@ -65,26 +68,60 @@ export default {
           formatter: 'date'
         }, {
           title: 'Importe',
-          dataField: 'Precio',
+          dataField: 'PrecioFinal',
           titleClass: '',
           rowClass: 'text-right',
           formatter: 'money'
         } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
-      eventId: EVENTID
+      filterChanged: false,
+      listHeading: ''
     }
   },
-  methods: { },
-  mounted () {
-    getWorksList('labManager.sqlite').then((works) => {
-      this.$children[0].setDataset(works)
+  methods: {
+    translateFilter(filterName) {
+      switch(filterName) {
+        case 'receivedToday':
+          return {fEntrada: 'Hoy'}
+        case 'inProgress':
+          return {fSalida: 'Ninguna o en el futuro'}
+        case 'closedThisMonth':
+          return {fSalida: 'Este mes'}
+        case 'closedLast30days':
+          return {fSalida: 'Últimos 30 días'}
+      }
+    },
+    updateDatasetWithFilters (eventData) {
+      getWorksList('labManager.sqlite', eventData).then((works) => {
+        this.$children[0].setDataset(works)
       })
-    this.$root.$on('table:click:' + this.eventId, (eventData) => {
-      this.$root.$emit('navigation:navigateTo', {page: 'workDetail', eventData: eventData, comeBack: this.eventId})
+    },
+    processFilterChange(filterData){
+      this.updateDatasetWithFilters(filterData)
+      this.filterChanged = true
+    }
+  },
+  computed: {
+    showCustomHeader: function() {
+      return this.listHeading !== undefined && !this.filterChanged
+    }
+  },
+  created () {
+    this.listHeading = this.$route.query.title
+  },
+  mounted () {
+    console.log('mounted')
+    this.$refs.table.setFilters(this.$route.query.filter)
+    this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
+
+    this.$root.$on('workList:ReloadRequest', () => {
+      console.log('reloaded')
+      this.$refs.table.setFilters(this.$route.query.filter)
+      this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
+      this.filterChanged = false
+      this.listHeading = this.$route.query.title
     })
   }
 }
-</script>
 
-<style>
-</style>
+</script>

@@ -9,22 +9,6 @@
           <div class="float-right">
             <div>
               <collapsable-button iconCss="fas fa-map-pin" text="Aditamentos" eventName="work:visibleWorkAdjuncts"></collapsable-button>
-              <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
-                <i class="fas fa-tags pr-1"></i>
-                <span>Imprimir etiqueta</span>
-              </button>
-              <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Resina')">Resina</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Compostura')">Compostura</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')">Aditamentos</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Esqueléticos')">Esqueléticos</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Ortodoncia')">Ortodoncia</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Zirconio')">Zirconio</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Implantes')">Implantes</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('E-Max')">E-Max</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
-              </div> <!-- dropdown-menu -->
             </div>
           </div>
         </div>
@@ -32,18 +16,9 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <div class="input-group">
-            <input class="form-control" type="text" id="clinica" placeholder="Buscar por nombre...">
-            <div class="input-group-append">
-              <button class="btn btn-secondary btn-outline-secondary" type="button">Buscar</button>
-            </div>
-          </div> <!-- input-group -->
+          <dentist-search id="clinica"></dentist-search>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
-          <label for="nombre">Nombre</label>
-          <input type="text" class="form-control" v-model="data.Nombre">
-        </div> <!-- col-md-6 -->
-        <div class="col-md-5">
           <label for="paciente">Paciente</label>
           <input type="text" class="form-control" v-model="data.Paciente">
         </div> <!-- col-md-6 -->
@@ -66,7 +41,7 @@
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
-        <div class="col-md-6 mt-3">
+        <div class="col-md-4 mt-3">
           <label for="fEntrada">Fecha entrada</label>
           <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="data.FechaEntrada">
           <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
@@ -74,10 +49,14 @@
           Poner fecha de hoy
           </a>
         </div> <!-- col-md-4 -->
-        <div class="col-md-6 mt-3">
+        <div class="col-md-4 mt-3">
           <label for="fPrevista">Fecha prevista</label>
           <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="data.FechaPrevista">
         </div> <!-- col-md-4 -->
+        <div class="col-md-4 mt-3">
+          <label for="fSalida">Fecha terminación</label>
+          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="data.FechaTerminacion">
+        </div>
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-4">
@@ -86,7 +65,10 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <button class="btn btn-info btn-block" v-on:click="save()" v-bind:class="{disabled: !canBeSaved()}">Guardar</button>
+          <button class="btn btn-info btn-block" v-on:click="save()" v-bind:class="{disabled: !canBeSaved()}">
+            <i class="fas fa-save"></i>
+            Guardar
+          </button>
         </div>
       </div> <!-- row -->
     </div> <!-- container -->
@@ -109,6 +91,7 @@ import labelMetalCeramica from '../Labels/labelMetalCeramica'
 import labelZirconio from '../Labels/labelZirconio'
 import collapsableButton from '../PageElements/collapsableButton'
 import workAdjuncts from '../PageElements/WorkAdjuncts'
+import dentistSearch from '../PageElements/DentistSearch'
 
 import Vue from 'Vue'
 import { getWork, getWorkTypes, getWorkIndications, insertWork } from '../../../main/dal.js'
@@ -119,14 +102,15 @@ export default {
     workIndicationsTable,
     workTestsTable,
     collapsableButton,
-    workAdjuncts
+    workAdjuncts,
+    dentistSearch
   },
   data () {
     return {
       requiresValidation: false,
       data: {
         idTrabajo: 0,
-        NombreDentista: '',
+        idDentista: 0,
         idTipoTrabajo: 0,
         Paciente: '',
         Color: '',
@@ -222,17 +206,17 @@ export default {
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
     })
-    this.$root.$on('work:visibleWorkAdjuncts', () => {
-      if(this.adjuncts === null){
-        var ComponentClass = Vue.extend(workAdjuncts)
-        this.adjuncts = new ComponentClass()
-        this.adjuncts.$mount()
-        this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
-      }
+    // this.$root.$on('work:visibleWorkAdjuncts', () => {
+    //   if(this.adjuncts === null){
+    //     var ComponentClass = Vue.extend(workAdjuncts)
+    //     this.adjuncts = new ComponentClass()
+    //     this.adjuncts.$mount()
+    //     this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
+    //   }
+    // })
+    this.$root.$on('work:dentistSelected', (id) => {
+      this.data.idDentista = id
     })
   }
 }
 </script>
-
-<style>
-</style>

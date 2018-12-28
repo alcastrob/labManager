@@ -6,6 +6,8 @@ import {
   Menu
 } from 'electron'
 
+import VueRouter from 'vue-router'
+
 var path = require('path')
 
 /**
@@ -24,8 +26,8 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 1024,
     width: 1280,
+    height: 1024,
     icon: path.join(__static, 'tooth.ico')
   })
 
@@ -124,28 +126,6 @@ const menuTemplate = [{
       click () {}
     }
   ]
-}, {
-  label: 'Módulos',
-  submenu: [
-    {
-      label: 'Indicadores',
-      click () {
-        mainWindow.webContents.send('navigation:dashboard')
-      }
-    },
-    {
-      label: 'Trabajos',
-      click () {
-        mainWindow.webContents.send('navigation:worksList')
-      }
-    },
-    {
-      label: 'Nuevo Dentista',
-      click () {
-        mainWindow.webContents.send('navigation:dentistNew')
-      }
-    }
-  ]
 },
 {
   label: 'Ayuda',
@@ -153,7 +133,8 @@ const menuTemplate = [{
     {
       label: 'Acerca de',
       click () {
-        mainWindow.webContents.send('navigation:about')
+        mainWindow.webContents.send
+        ('navigation:navigateTo', {page: '/about'})
       }
     }
   ]

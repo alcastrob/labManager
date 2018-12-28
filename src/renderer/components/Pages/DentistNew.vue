@@ -9,13 +9,12 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica</label>
-          <input type="text" class="form-control" id="clinica" placeholder="Nombre de la clínica" v-model="data.NombreClinica" ref="inputClinica">
-        <small class="form-text text-danger" v-if="requiresValidation && data.NombreClinica === ''" ref="clinicaValidator">El nombre de la clínica no puede estar en blanco</small>
-
+          <input type="text" class="form-control" id="clinica" placeholder="Nombre de la clínica" v-model="data.NombreClinica" ref="elementToFocus">
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="dentista">Dentista</label>
           <input type="text" class="form-control" id="dentista" placeholder="Nombre de el/la dentista" v-model="data.NombreDentista">
+          <small class="form-text text-danger" v-if="initialValidation && (data.NombreDentista === '' || data.NombreDentista === null || data.NombreDentista === undefinded)">El nombre de el/la dentista no puede estar en blanco</small>
         </div> <!-- col-md-6 -->
       </div> <!-- row -->
       <div class="row">
@@ -93,7 +92,7 @@ export default {
   name: 'dentistDetail',
   data () {
     return {
-      requiresValidation: false,
+      initialValidation: false,
       data: {
         IdDentista: '',
         NombreDentista: '',
@@ -118,19 +117,23 @@ export default {
       //   text: 'Hello user! This is a notification!'
       // });
       // console.log('notify')
-      this.requiresValidation = true
-
-      if (this.canBeSaved) {
-        insertDentist(this.data, 'labManager.sqlite')
+      this.initialValidation = true
+      if (this.canBeSaved()) {
+        // insertDentist(this.data, 'labManager.sqlite')
+        console.log('saved')
       }
     },
     canBeSaved: function() {
-      return !this.requiresValidation
-       || this.data.NombreClinica !== ''
+      if (!this.initialValidation) {
+        return true
+      } else {
+        return !(this.data.NombreDentista === '' || this.data.NombreDentista === null || this.data.NombreDentista === undefined)
+      }
     }
   },
   mounted () {
-    this.$refs.inputClinica.focus()
+    this.$refs.elementToFocus.focus()
+    this.data.NombreDentista = this.$route.query.name
   }
 }
 </script>
