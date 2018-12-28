@@ -25,7 +25,6 @@
 <script>
 import optionButton from '../optionButton'
 import optionLine from '../optionLine'
-// import { throws } from 'assert';
 
 export default {
   name: 'workFilterBar',
@@ -33,16 +32,9 @@ export default {
     optionButton,
     optionLine
   },
-  // props: {
-  //   filterName: {
-  //     type: String,
-  //     required: false
-  //   }
-  // },
   data () {
     return {
-      filterText: ''//,
-      // filterName: ''
+      filterText: ''
     }
   },
   methods: {
@@ -57,7 +49,6 @@ export default {
         this.$refs.fPrevista.clear()
         this.$refs.fSalida.clear()
         this.$refs.tipo.clear()
-        // this.sendEventToWorksList()
         break
       case 'inProgress':
         this.$refs.fEntrada.clear()
@@ -65,7 +56,6 @@ export default {
         this.$refs.fSalida.clear()
         this.$refs.fSalida.select('Ninguna o en el futuro')
         this.$refs.tipo.clear()
-        // this.sendEventToWorksList()
         break
       case 'closedThisMonth':
         this.$refs.fEntrada.clear()
@@ -73,7 +63,6 @@ export default {
         this.$refs.fSalida.clear()
         this.$refs.fSalida.select('Este mes')
         this.$refs.tipo.clear()
-        // this.sendEventToWorksList()
         break
       case 'closedLast30days':
         this.$refs.fEntrada.clear()
@@ -81,7 +70,6 @@ export default {
         this.$refs.fSalida.clear()
         this.$refs.fSalida.select('Últimos 30 días')
         this.$refs.tipo.clear()
-        // this.sendEventToWorksList()
         break
       case null:
       case '':
@@ -102,7 +90,7 @@ export default {
       this.$refs.fSalida.clear()
       this.$refs.tipo.clear()
       this.$parent.applyTextFilter(this.filterText)
-      // this.sendEventToWorksList()
+      this.processFilterChange()
     },
     processFilterChange() {
       this.$parent.processFilterChange({
@@ -112,20 +100,6 @@ export default {
         tipo: this.$refs.tipo.getSelected()
       })
     }
-    // sendEventToWorksList() {
-    //   this.$root.$emit('worksFilter:updated', {
-    //     fEntrada: this.$refs.fEntrada.getSelected(),
-    //     fPrevista: this.$refs.fPrevista.getSelected(),
-    //     fSalida: this.$refs.fSalida.getSelected(),
-    //     tipo: this.$refs.tipo.getSelected()
-    //   })
-    // }
-  },
-  mounted () {
-    // this.$root.$on('optionLine:' + this.$refs.fEntrada.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-    // this.$root.$on('optionLine:' + this.$refs.fPrevista.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-    // this.$root.$on('optionLine:' + this.$refs.fSalida.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-    // this.$root.$on('optionLine:' + this.$refs.tipo.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
   }
 }
 </script>

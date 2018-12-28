@@ -102,10 +102,7 @@ export default {
       this.sortBy()
     },
     sortBy: function() {
-      var x = this.currentSortCriteria
-      this.filteredDataset = _.sortBy(this.filteredDataset, function(row) {
-        return row[x]
-        })
+      this.filteredDataset = _.sortBy(this.filteredDataset, [this.currentSortCriteria, 'IdTrabajo'])
       if (!this.currentSortDesc) {
         this.filteredDataset = _.reverse(this.filteredDataset)
       }

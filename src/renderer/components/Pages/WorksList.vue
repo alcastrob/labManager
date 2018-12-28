@@ -98,6 +98,7 @@ export default {
     },
     processFilterChange(filterData){
       this.updateDatasetWithFilters(filterData)
+      this.filterChanged = true
     }
   },
   computed: {
@@ -117,6 +118,7 @@ export default {
       console.log('reloaded')
       this.$refs.table.setFilters(this.$route.query.filter)
       this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
+      this.filterChanged = false
       this.listHeading = this.$route.query.title
     })
   }
