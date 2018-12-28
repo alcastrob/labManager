@@ -7,8 +7,9 @@
       <th style="width: 16%;" class="text-right">Precio</th>
     </tr>
     <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
-      <td class="pt-3"><i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i></td>
-
+      <td class="pt-3-half">
+        <i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i>
+      </td>
       <td class="noMargins" v-on:keyup="trackChanges($event, indication.IdTrabajoDetalle)">
         <input type="text" v-model="indication.Descripcion" class="inputInTd">
         <div class="typeahead-dropdown list-group myTypeahead" v-if="canDisplayDropdown()">
@@ -17,24 +18,22 @@
             Usar como texto libre</span>
         </div>
       </td>
-
-      <td class="pt-3-half text-right" v-on:blur="updatePrice($event, indication.IdTrabajoDetalle)" :class="{'bg-danger text-white shake': isPriceNotANumber(indication.Precio)}">{{indication.Precio}}</td>
+      <td class="noMargins">
+        <input type="text" class="inputInTd text-right" @blur="updatePrice($event, indication.IdTrabajoDetalle)" v-model="indication.Precio" :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}" v-on:keydown="filterJustNumberKeystrokes">
+      </td>
     </tr>
     <tr>
       <td class="pt-3-half"></td>
-
-      <!-- <td class="pt-3-half" contenteditable="true" ref="newDescripcion"></td> -->
       <td class="noMargins">
         <input type="text" class="inputInTd" ref="newDescripcion">
       </td>
-
       <td class="noMargins">
         <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
       </td>
     </tr>
     </table>
     <div>
-      <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger shake': sumError}">{{getSum()}}</p>
+      <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger animated shake': sumError}">{{getSum()}}</p>
     </div>
 </div>
 </template>

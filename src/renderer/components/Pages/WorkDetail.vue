@@ -124,7 +124,7 @@ export default {
     return {
       work: {},
       workTypes: {},
-      workIndications: {}
+      workIndications: []
     }
   },
   methods: {

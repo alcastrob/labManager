@@ -133,7 +133,7 @@ export default {
         Nombre: ''
       },
       workTypes: {},
-      workIndications: {},
+      workIndications: [],
       adjuncts: null
 
     }
