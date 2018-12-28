@@ -64,32 +64,17 @@ export default {
   name: 'topBar',
   methods: {
     goBack() {
-      console.log('route: ' + this.from.fullPath + ' > ' + this.to.fullPath)
-
       var condition1 = (this.from.fullPath === '/finances' && this.to.fullPath.indexOf('/works/list') !== -1)
       var condition2 = (this.from.fullPath.indexOf('/works/list') !== -1 && this.to.fullPath.indexOf('/works/details/') !== -1 && this.from.query.filter !== undefined)
       if (condition1 || condition2) {
-        console.log('double back')
         this.$router.go(-2)
       } else {
-        console.log('single back')
         this.$router.back()
       }
-
-      //  if (this.doubleBack && this.isFirstTimeUser) {
-      //   console.log('double back')
-      //   this.$router.go(-2)
-      //   this.isFirstTimeUser = false
-      // } else {
-      //   console.log('single back')
-      //   this.$router.back()
-      // }
     }
   },
   data() {
     return {
-      // doubleBack: false,
-      // isFirstTimeUser: true,
       to: '',
       from: ''
     }
@@ -98,19 +83,6 @@ export default {
     $route(to, from) {
       this.to = to
       this.from = from
-
-
-      // if (from.query.filter !== undefined && to.fullPath.indexOf('/works/details/') !== -1){
-      //   this.doubleBack = true
-      // } else {
-      //   this.doubleBack = false
-      // }
-      // if (from.fullPath === '/finances' && to.fullPath.indexOf('/works/list' !== -1)) {
-      //   this.isFirstTimeUser = true
-      // }
-      // if (from.fullPath === '/' && to.fullPath.indexOf('/works/list' !== -1)) {
-      //   this.isFirstTimeUser = true
-      // }
     }
   }
 }

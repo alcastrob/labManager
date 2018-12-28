@@ -16,8 +16,6 @@
 import workExtendedTable from '../PageElements/tables/workExtendedTable'
 import { getWorksList } from '../../../main/dal.js'
 
-// const EVENTID = "WorksList"
-
 export default {
   name: 'workslist',
   components: {
@@ -76,10 +74,8 @@ export default {
           formatter: 'money'
         } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
-      // eventId: EVENTID,
       filterChanged: false,
-      listHeading: ''//,
-      // filter: ''
+      listHeading: ''
     }
   },
   methods: {
@@ -95,13 +91,7 @@ export default {
           return {fSalida: 'Últimos 30 días'}
       }
     },
-    // setFilterState(){
-    //   this.$refs.table.setFilters(this.filter.fEntrada, this.filter.fPrevista, this.filter.fSalida, this.filter.tipo)
-    // },
     updateDatasetWithFilters (eventData) {
-      // if (eventData !== undefined) {
-      //   eventData = this.translateFilter(eventData)
-      // }
       getWorksList('labManager.sqlite', eventData).then((works) => {
         this.$children[0].setDataset(works)
       })
@@ -117,8 +107,6 @@ export default {
   },
   created () {
     this.listHeading = this.$route.query.title
-    // this.filter = this.$route.query.filter
-    // this.updateDatasetWithFilters()
   },
   mounted () {
     console.log('mounted')
@@ -131,11 +119,6 @@ export default {
       this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
       this.listHeading = this.$route.query.title
     })
-
-    // this.$root.$on('worksFilter:updated', (event) => {
-    //   this.updateDatasetWithFilters(event)
-    //   this.filterChanged = true
-    // })
   }
 }
 

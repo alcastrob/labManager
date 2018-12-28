@@ -2,7 +2,6 @@
   <div class="mt-1">
     {{description}}
     <template v-for="option in options">
-      <!-- :eventName="eventName" -->
       <optionButton :text="option" :key="option" class="mr-1"></optionButton>
     </template>
   </div>
@@ -63,7 +62,6 @@ export default {
           }
         })
       }
-      // this.$root.$emit('optionLine:' + this.$attrs.id + ':updatedFilter')
       this.$parent.processFilterChange()
     }
   },

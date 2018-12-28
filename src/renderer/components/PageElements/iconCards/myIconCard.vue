@@ -58,9 +58,6 @@ export default {
       })
       this.$root.$emit('workList:ReloadRequest')
     }
-  },
-  beforeRouteEnter(to, from, next){
-    debugger
   }
 }
 </script>
