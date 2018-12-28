@@ -267,15 +267,16 @@ export function getWorkTypes (fileName) {
 
 // Adjuncts -------------------------------------------------------------------
 
+//Tested
 export function getAdjuntsOfWork (workId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdAditamento, Caja, Cubeta, Articulador, ' +
   'Pletinas, Tornillos, Analogos, PosteImpresion, ' +
   'Interface, Otros ' +
-  'FROM Aditamentos' +
+  'FROM Aditamentos ' +
   'WHERE IdTrabajo = ?'
 
-  return allAsync(db, query, [workId]).then((row) => {
+  return getAsync(db, query, [workId]).then((row) => {
     // db.close()
     return row
   })

@@ -27,6 +27,8 @@
   @import url('~@/assets/css/sb-admin.css');
   @import url('~@/assets/css/nunito/nunito.css');
   @import url('~@/assets/css/animate/animate.min.css');
+  @import url('~@/assets/css/bootstrap-vue.min.css');
+
   body {
     background-color: #E4DFDA;
     color: #150626;

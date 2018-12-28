@@ -15,9 +15,17 @@ export default {
       type: Object,
       required: true
     },
-    workIndications: {
-      type: [Object, Array],
-      required: true
+    workIndicationsText: {
+      type: String,
+      required: false
+    },
+    // workIndications: {
+    //   type: [Object, Array],
+    //   required: true
+    // },
+    workAdjunts: {
+      type: Object,
+      required: false
     }
   },
   methods: {
@@ -44,8 +52,8 @@ export default {
     // Check the required parameters (props)
     if (this.workData === undefined || this.workData === null)
       throw 'Missing prop workData in PrintedLabel1.vue'
-    if (this.workIndications === undefined || this.workIndications === null)
-      throw 'Missing prop workindications in PrintedLabel1.vue'
+    // if (this.workIndications === undefined || this.workIndications === null)
+    //   throw 'Missing prop workindications in PrintedLabel1.vue'
   }
 }
 </script>

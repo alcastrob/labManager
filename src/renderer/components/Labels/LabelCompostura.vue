@@ -21,8 +21,12 @@
           <td class="noBorder pt-2 textSmall" valign="top">Trabajos a realizar:</td>
           <td class="noBorder pt-2 textSmall" valign="top">Color: {{workData.Color}}</td>
         </tr>
-        <tr v-for="detail in workIndications" :key="detail.IdTrabajoDetalle">
-          <td colspan="2" class="noBorder">&bull; {{detail.Descripcion}}</td>
+        <tr>
+          <td class="noBorder pt-2 textSmall" valign="top" colspan="2">
+            <template v-for="line in workIndicationsText.split('\n')">
+              <span>{{line}}</span><br>
+            </template>
+          </td>
         </tr>
       </table>
     </div>
@@ -32,10 +36,10 @@
 
     <table style="width: 340px;">
       <tr>
-        <th style="width: 25%;"></th>
-        <th style="width: 25%;">Entrada</th>
-        <th style="width: 25%;">Salida</th>
-        <th style="width: 25%;">Hora</th>
+        <th class="textSmall" style="width: 25%;"></th>
+        <th class="textSmall" style="width: 25%;">Entrada</th>
+        <th class="textSmall" style="width: 25%;">Salida</th>
+        <th class="textSmall" style="width: 25%;">Hora</th>
       </tr>
       <tr>
         <td class="noBorder"></td>

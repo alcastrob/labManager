@@ -19,39 +19,39 @@
         </tr>
         <tr>
           <td class="noBorder pt-2 textSmall" valign="top">Caja:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.Caja}}</td>
         </tr>
         <tr>
           <td class="noBorder pt-2 textSmall" valign="top">Cubeta:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.Cubeta}}</td>
         </tr>
         <tr>
           <td class="noBorder pt-2 textSmall" valign="top">Articulador:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.Articulador}}</td>
         </tr>
         <tr>
-          <td class="noBorder pt-2 textSmall" valign="top">Calcinable:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">Pletinas:</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.Pletinas}}</td>
         </tr>
         <tr>
           <td class="noBorder pt-2 textSmall" valign="top">Tornillos:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.Tornillos}}</td>
         </tr>
         <tr>
           <td class="noBorder pt-2 textSmall" valign="top">Análogos:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.Analogos}}</td>
         </tr>
         <tr>
           <td class="noBorder pt-2 textSmall" valign="top">Poste impresión:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.PosteImpresion}}</td>
         </tr>
         <tr>
           <td class="noBorder pt-2 textSmall" valign="top">Interface:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.Interface}}</td>
         </tr>
         <tr>
           <td class="noBorder pt-2 textSmall" valign="top">Otros:</td>
-          <td class="noBorder pt-2 textSmall" valign="top">{{workData.Color}}</td>
+          <td class="noBorder pt-2 textSmall" valign="top">{{workAdjunts.Otros}}</td>
         </tr>
       </table>
     </div>

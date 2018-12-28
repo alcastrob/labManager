@@ -6,6 +6,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 import moment from 'moment'
+import BootstrapVue from 'bootstrap-vue'
 
 Vue.filter('formatDateDMY', function (value) {
   if (value) {
@@ -14,6 +15,7 @@ Vue.filter('formatDateDMY', function (value) {
 })
 
 Vue.use(Notifications)
+Vue.use(BootstrapVue)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios

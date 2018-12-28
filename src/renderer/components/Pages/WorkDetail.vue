@@ -15,17 +15,17 @@
                 <span>Imprimir etiqueta</span>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Garantia')">Garantía</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Resina')">Resina</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Compostura')">Compostura</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')">Aditamentos</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Esqueléticos')">Esqueléticos</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Ortodoncia')">Ortodoncia</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Zirconio')">Zirconio</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Implantes')">Implantes</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('E-Max')">E-Max</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Composite')">Composite</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Metal-Cerámica')">Metal-Cerámica</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Garantia')">Garantía</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Resina')" >Resina</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Compostura')">Compostura</a>
+                <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')" v-if="workAdjunts !== undefined">Aditamentos</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Esqueléticos')">Esqueléticos</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Ortodoncia')">Ortodoncia</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Zirconio')">Zirconio</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Implantes')">Implantes</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('E-Max')">E-Max</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Composite')">Composite</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Metal-Cerámica')">Metal-Cerámica</a>
               </div> <!-- dropdown-menu -->
             </div>
           </div>
@@ -79,8 +79,19 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
+    <b-modal ref="modal" title="Imprimir etiqueta" hide-footer>
+      <div class="modal-body">
+        <label for="labelText">
+          Se va a imprimir una etiqueta de tipo {{printedLabel}}. Por favor, indique el texto que aparecerá en ella a continuación y pulse Imprimir.
+        </label>
+        <textarea class="form-control" id="labelText" rows="4" cols="60" v-model="workIndicationsText"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button @click="hideModal">Cancelar</button>
+        <button @click="printLabel">Imprimir</button>
+      </div>
+    </b-modal>
     <div ref="labelContainer"></div>
-    <!-- style="width: 350px; border: solid 1px #000" -->
   </div>
 </template>
 
@@ -95,10 +106,12 @@ import labelComposite from '../Labels/labelComposite'
 import labelEsqueleticos from '../Labels/LabelEsqueleticos'
 import labelCompostura from '../Labels/labelCompostura'
 import labelResina from '../Labels/LabelResina'
+import bModal from 'bootstrap-vue'
 
 
 import Vue from 'Vue'
-import { getWork, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
+import { getWork, getWorkTypes, getWorkIndications, getAdjuntsOfWork } from '../../../main/dal.js'
+import _ from 'lodash'
 
 export default {
   name: 'workDetail',
@@ -113,22 +126,43 @@ export default {
       workId: 0,
       work: {},
       workTypes: {},
-      workIndications: {}
+      workIndications: {},
+      workIndicationsText: '',
+      workAdjunts: {},
+      printedLabel: ''
     }
   },
   methods: {
+    showModal(labelType) {
+      this.printedLabel = labelType
+      if (this.workIndications !== undefined){
+        this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
+      } else {
+        this.workIndicationsText = ''
+      }
+      this.$refs.modal.show()
+    },
+    hideModal() {
+      this.$refs.modal.hide()
+    },
     printLabel: function(type) {
-      var ComponentClass = this.mapType(type)
+      if (type === undefined) {
+        this.hideModal()
+      } else {
+        this.printedLabel = type
+      }
+      var ComponentClass = this.mapType(this.printedLabel)
       var instance = new ComponentClass({
           propsData: {
             workData: this.work,
-            workIndications: this.workIndications
+            workIndicationsText: this.workIndicationsText,
+            workAdjunts: this.workAdjunts
             }
       })
       instance.$mount()
       this.$refs.labelContainer.appendChild(instance.$el)
-      instance.setName(type)
-      instance.print(type)
+      instance.setName(this.printedLabel)
+      instance.print(this.printedLabel)
       this.$refs.labelContainer.removeChild(instance.$el)
     },
     mapType(type) {
@@ -166,6 +200,9 @@ export default {
     })
     getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
+    })
+    getAdjuntsOfWork(this.workId, 'labManager.sqlite').then((workAdjunts) => {
+      this.workAdjunts = workAdjunts
     })
     // this.$root.$on('work:DeviveryNote', () => {
     //   console.log("DeliveryNote")
