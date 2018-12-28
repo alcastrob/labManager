@@ -5,7 +5,9 @@
       <div id="wrapper">
         <div id="content-wrapper">
           <div class="container-fluid">
-            <router-view></router-view>
+            <keep-alive exclude="workDetail">
+              <router-view></router-view>
+            </keep-alive>
           </div>
         </div>
       </div>

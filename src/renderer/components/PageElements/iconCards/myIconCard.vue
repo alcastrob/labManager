@@ -56,6 +56,7 @@ export default {
           filter: this.filter
         }
       })
+      this.$root.$emit('workList:ReloadRequest')
     }
   },
   beforeRouteEnter(to, from, next){

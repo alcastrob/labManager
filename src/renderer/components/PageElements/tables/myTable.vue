@@ -24,12 +24,12 @@
 import pagination from './pagination'
 import Vue from 'Vue'
 import filterBar from './filterBar'
-import workFilterBar from '../../PageElements/WorkFilterBar'
-import myTableMixin from './myTableMixin'
+import workFilterBar from '../../PageElements/tables/workFilterBar'
+import tableMixin from './tableMixin'
 
 export default {
   name: 'myTable',
-  mixins: [myTableMixin],
+  mixins: [tableMixin],
   components: {
     pagination,
     filterBar

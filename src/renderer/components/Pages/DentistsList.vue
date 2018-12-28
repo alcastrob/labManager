@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import myTable from '../PageElements/table/myTable'
+import myTable from '../PageElements/tables/myTable'
 import { getDentistList } from '../../../main/dal.js'
 import collapsableButton from '../PageElements/collapsableButton'
 

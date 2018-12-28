@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import optionButton from './optionButton'
-import optionLine from './optionLine'
+import optionButton from '../optionButton'
+import optionLine from '../optionLine'
 // import { throws } from 'assert';
 
 export default {
@@ -33,68 +33,55 @@ export default {
     optionButton,
     optionLine
   },
-  props: {
-    filterName: {
-      type: String,
-      required: false
-    }
-  },
+  // props: {
+  //   filterName: {
+  //     type: String,
+  //     required: false
+  //   }
+  // },
   data () {
     return {
-      filterText: ''
+      filterText: ''//,
+      // filterName: ''
     }
   },
   methods: {
     doFilter () {
       this.$parent.applyTextFilter(this.filterText)
     },
-    resetFilter () {
-      this.filterText = ''
-      this.$refs.fEntrada.clear()
-      this.$refs.fPrevista.clear()
-      this.$refs.fSalida.clear()
-      this.$refs.tipo.clear()
-      this.$parent.applyTextFilter(this.filterText)
-      this.sendEventToWorksList()
-    },
-    sendEventToWorksList() {
-      this.$root.$emit('worksFilter:updated', {
-        fEntrada: this.$refs.fEntrada.getSelected(),
-        fPrevista: this.$refs.fPrevista.getSelected(),
-        fSalida: this.$refs.fSalida.getSelected(),
-        tipo: this.$refs.tipo.getSelected()
-      })
-    }
-  },
-  mounted () {
-    switch (this.filterName){
+    setFilterName (name) {
+      switch (name){
       case 'receivedToday':
+        this.$refs.fEntrada.clear()
         this.$refs.fEntrada.select('Hoy')
         this.$refs.fPrevista.clear()
         this.$refs.fSalida.clear()
         this.$refs.tipo.clear()
-        this.sendEventToWorksList()
+        // this.sendEventToWorksList()
         break
       case 'inProgress':
         this.$refs.fEntrada.clear()
         this.$refs.fPrevista.clear()
+        this.$refs.fSalida.clear()
         this.$refs.fSalida.select('Ninguna o en el futuro')
         this.$refs.tipo.clear()
-        this.sendEventToWorksList()
+        // this.sendEventToWorksList()
         break
       case 'closedThisMonth':
         this.$refs.fEntrada.clear()
         this.$refs.fPrevista.clear()
+        this.$refs.fSalida.clear()
         this.$refs.fSalida.select('Este mes')
         this.$refs.tipo.clear()
-        this.sendEventToWorksList()
+        // this.sendEventToWorksList()
         break
       case 'closedLast30days':
         this.$refs.fEntrada.clear()
         this.$refs.fPrevista.clear()
+        this.$refs.fSalida.clear()
         this.$refs.fSalida.select('Últimos 30 días')
         this.$refs.tipo.clear()
-        this.sendEventToWorksList()
+        // this.sendEventToWorksList()
         break
       case null:
       case '':
@@ -107,10 +94,38 @@ export default {
       default:
         throw 'Not recognized filter name: ' + this.filterName
     }
-    this.$root.$on('optionLine:' + this.$refs.fEntrada.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-    this.$root.$on('optionLine:' + this.$refs.fPrevista.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-    this.$root.$on('optionLine:' + this.$refs.fSalida.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
-    this.$root.$on('optionLine:' + this.$refs.tipo.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
+    },
+    resetFilter () {
+      this.filterText = ''
+      this.$refs.fEntrada.clear()
+      this.$refs.fPrevista.clear()
+      this.$refs.fSalida.clear()
+      this.$refs.tipo.clear()
+      this.$parent.applyTextFilter(this.filterText)
+      // this.sendEventToWorksList()
+    },
+    processFilterChange() {
+      this.$parent.processFilterChange({
+        fEntrada: this.$refs.fEntrada.getSelected(),
+        fPrevista: this.$refs.fPrevista.getSelected(),
+        fSalida: this.$refs.fSalida.getSelected(),
+        tipo: this.$refs.tipo.getSelected()
+      })
+    }
+    // sendEventToWorksList() {
+    //   this.$root.$emit('worksFilter:updated', {
+    //     fEntrada: this.$refs.fEntrada.getSelected(),
+    //     fPrevista: this.$refs.fPrevista.getSelected(),
+    //     fSalida: this.$refs.fSalida.getSelected(),
+    //     tipo: this.$refs.tipo.getSelected()
+    //   })
+    // }
+  },
+  mounted () {
+    // this.$root.$on('optionLine:' + this.$refs.fEntrada.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
+    // this.$root.$on('optionLine:' + this.$refs.fPrevista.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
+    // this.$root.$on('optionLine:' + this.$refs.fSalida.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
+    // this.$root.$on('optionLine:' + this.$refs.tipo.$attrs.id + ':updatedFilter', this.sendEventToWorksList)
   }
 }
 </script>

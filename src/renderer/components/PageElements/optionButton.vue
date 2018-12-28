@@ -21,7 +21,7 @@ export default {
   methods: {
     toggleState: function() {
       this.isSelected = !this.isSelected
-      this.$parent.processChange({text: this.text, isSelected: this.isSelected})
+      this.$parent.processFilterChange({text: this.text, isSelected: this.isSelected})
     },
     select: function() {
       this.isSelected = true

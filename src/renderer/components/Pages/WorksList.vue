@@ -7,21 +7,21 @@
       </div>
     </div> <!-- row -->
     <div>
-      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" filterType="WorkFilterBar" :filterName="filter" ref="table" urlBase="/works/details/"/>
+      <workExtendedTable :headers="headers" :searchFields="searchFields" ref="table" urlBase="/works/details/"/>
     </div>
   </div>
 </template>
 
 <script>
-import myTable from '../PageElements/table/myTable'
+import workExtendedTable from '../PageElements/tables/workExtendedTable'
 import { getWorksList } from '../../../main/dal.js'
 
-const EVENTID = "WorksList"
+// const EVENTID = "WorksList"
 
 export default {
   name: 'workslist',
   components: {
-    myTable
+    workExtendedTable
   },
   data () {
     return {
@@ -76,34 +76,38 @@ export default {
           formatter: 'money'
         } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
-      eventId: EVENTID,
+      // eventId: EVENTID,
       filterChanged: false,
-      listHeading: '',
-      filter: ''
+      listHeading: ''//,
+      // filter: ''
     }
   },
   methods: {
-    updateDatasetWithFilters (eventData) {
-      if (eventData === undefined) {
-        switch(this.filter) {
-          case 'receivedToday':
-            eventData = {fEntrada: 'Hoy'}
-            break
-          case 'inProgress':
-            eventData = {fSalida: 'Ninguna o en el futuro'}
-            break;
-          case 'closedThisMonth':
-            eventData = {fSalida: 'Este mes'}
-            break
-          case 'closedLast30days':
-            eventData = {fSalida: 'Últimos 30 días'}
-            break
-        }
+    translateFilter(filterName) {
+      switch(filterName) {
+        case 'receivedToday':
+          return {fEntrada: 'Hoy'}
+        case 'inProgress':
+          return {fSalida: 'Ninguna o en el futuro'}
+        case 'closedThisMonth':
+          return {fSalida: 'Este mes'}
+        case 'closedLast30days':
+          return {fSalida: 'Últimos 30 días'}
       }
-
+    },
+    // setFilterState(){
+    //   this.$refs.table.setFilters(this.filter.fEntrada, this.filter.fPrevista, this.filter.fSalida, this.filter.tipo)
+    // },
+    updateDatasetWithFilters (eventData) {
+      // if (eventData !== undefined) {
+      //   eventData = this.translateFilter(eventData)
+      // }
       getWorksList('labManager.sqlite', eventData).then((works) => {
         this.$children[0].setDataset(works)
       })
+    },
+    processFilterChange(filterData){
+      this.updateDatasetWithFilters(filterData)
     }
   },
   computed: {
@@ -113,14 +117,26 @@ export default {
   },
   created () {
     this.listHeading = this.$route.query.title
-    this.filter = this.$route.query.filter
-    this.updateDatasetWithFilters()
+    // this.filter = this.$route.query.filter
+    // this.updateDatasetWithFilters()
   },
   mounted () {
-    this.$root.$on('worksFilter:updated', (event) => {
-      this.updateDatasetWithFilters(event)
-      this.filterChanged = true
+    console.log('mounted')
+    this.$refs.table.setFilters(this.$route.query.filter)
+    this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
+
+    this.$root.$on('workList:ReloadRequest', () => {
+      console.log('reloaded')
+      this.$refs.table.setFilters(this.$route.query.filter)
+      this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
+      this.listHeading = this.$route.query.title
     })
+
+    // this.$root.$on('worksFilter:updated', (event) => {
+    //   this.updateDatasetWithFilters(event)
+    //   this.filterChanged = true
+    // })
   }
 }
+
 </script>

@@ -2,7 +2,6 @@
 import moment from 'moment'
 import _ from 'lodash'
 
-
 const pageSize = 10
 
 export default {
@@ -15,10 +14,10 @@ export default {
       type: Array,
       required: true
     },
-    eventId: {
-      type: String,
-      required: true
-    },
+    // eventId: {
+    //   type: String,
+    //   required: true
+    // },
     filterType: {
       type: String,
       required: false
@@ -140,8 +139,8 @@ export default {
       throw 'Missing prop headers in myTable.vue'
     if (this.searchFields === undefined || this.searchFields === null)
       throw 'Missing prop searchFields in myTable.vue'
-    if (this.eventId === undefined || this.eventId === null)
-      throw 'Missing prop eventId in myTable.vue'
+    // if (this.eventId === undefined || this.eventId === null)
+    //   throw 'Missing prop eventId in myTable.vue'
     if (this.urlBase === undefined || this.urlBase === null)
       throw 'Missing prop urlBase in myTable.vue'
 

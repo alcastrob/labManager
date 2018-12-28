@@ -55,7 +55,7 @@ export default {
         button.select()
       })
     },
-    processChange: function(data) {
+    processFilterChange: function(data) {
       if (!this.isMultiple) {
         _.forEach(this.$children, function(child) {
           if (child.text !== data.text){
@@ -63,7 +63,8 @@ export default {
           }
         })
       }
-      this.$root.$emit('optionLine:' + this.$attrs.id + ':updatedFilter')
+      // this.$root.$emit('optionLine:' + this.$attrs.id + ':updatedFilter')
+      this.$parent.processFilterChange()
     }
   },
   mounted () {
