@@ -79,7 +79,7 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
-    <div ref="labelContainer" style="width: 430px; border: solid 1px #000"></div>
+    <div ref="labelContainer" style="width: 350px; border: solid 1px #000"></div>
   </div>
 </template>
 
@@ -130,7 +130,7 @@ export default {
       instance.$mount()
       this.$refs.labelContainer.appendChild(instance.$el)
       instance.print(type)
-      this.$refs.labelContainer.removeChild(instance.$el)
+      // this.$refs.labelContainer.removeChild(instance.$el)
     },
     mapType(type) {
       switch(type) {
