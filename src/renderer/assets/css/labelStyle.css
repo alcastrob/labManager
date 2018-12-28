@@ -17,6 +17,7 @@ body{
   line-height: 1.2;
   text-align: left;
   font-size: 14pt;
+  padding-left: 10px;
 }
 .labelSubtitle {
   font-size: 12pt;
@@ -51,6 +52,7 @@ tr>th {
 }
 .float-right {
   float: right!important;
+  padding-right: 10px;
 }
 .background-Aditamentos {
   background-color: #C892FB;
@@ -66,6 +68,7 @@ tr>th {
 }
 .background-Esqueléticos {
   background-color: #F70027;
+  color: white;
 }
 .background-Implantes {
   background-color: #ECD2D2;
@@ -78,6 +81,7 @@ tr>th {
 }
 .background-Resina {
   background-color: #3B5BF9;
+  color: white;
 }
 .background-Zirconio {
   background-color: #CA787A;

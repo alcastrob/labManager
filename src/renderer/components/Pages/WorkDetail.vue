@@ -79,25 +79,23 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
-    <div ref="labelContainer" style="width: 350px; border: solid 1px #000"></div>
+    <div ref="labelContainer"></div>
+    <!-- style="width: 350px; border: solid 1px #000" -->
   </div>
 </template>
 
 <script>
 import workIndicationsTable from '../PageElements/WorkIndicationsTable'
 import workTestsTable from '../PageElements/workTestsTable'
-import labelEsqueleticos from '../Labels/LabelEsqueleticos'
-import labelCompostura from '../Labels/labelCompostura'
-import labelOrtodoncia from '../Labels/labelOrtodoncia'
-import labelResina from '../Labels/LabelResina'
-import labelAditamentos from '../Labels/labelAditamentos'
-import labelComposite from '../Labels/labelComposite'
-import labelEmax from '../Labels/labelEmax'
-import labelImplantes from '../Labels/labelImplantes'
-import labelMetalCeramica from '../Labels/labelMetalCeramica'
-import labelZirconio from '../Labels/labelZirconio'
 import collapsableButton from '../PageElements/collapsableButton'
 import dentistSearch from '../PageElements/DentistSearch'
+
+import labelAditamentos from '../Labels/labelAditamentos'
+import labelComposite from '../Labels/labelComposite'
+import labelEsqueleticos from '../Labels/LabelEsqueleticos'
+import labelCompostura from '../Labels/labelCompostura'
+import labelResina from '../Labels/LabelResina'
+
 
 import Vue from 'Vue'
 import { getWork, getWorkTypes, getWorkIndications } from '../../../main/dal.js'
@@ -129,34 +127,29 @@ export default {
       })
       instance.$mount()
       this.$refs.labelContainer.appendChild(instance.$el)
+      instance.setName(type)
       instance.print(type)
-      // this.$refs.labelContainer.removeChild(instance.$el)
+      this.$refs.labelContainer.removeChild(instance.$el)
     },
     mapType(type) {
       switch(type) {
-        case 'Garantia':
-          //TO DO
-          return Vue.extend(labelGarantia)
+        case 'Aditamentos':
+          return Vue.extend(labelAditamentos)
         case 'Composite':
-          return Vue.extend(labelComposite)
         case 'E-Max':
-          return Vue.extend(labelEmax)
         case 'Implantes':
-          return Vue.extend(labelImplantes)
         case 'Metal-Cerámica':
-          return Vue.extend(labelMetalCeramica)
         case 'Zirconio':
-          return Vue.extend(labelZirconio)
+          return Vue.extend(labelComposite)
         case 'Esqueléticos':
           return Vue.extend(labelEsqueleticos)
         case 'Compostura':
-          return Vue.extend(labelCompostura)
         case 'Ortodoncia':
-          return Vue.extend(labelOrtodoncia)
+          return Vue.extend(labelCompostura)
         case 'Resina':
           return Vue.extend(labelResina)
-        case 'Aditamentos':
-          return Vue.extend(labelAditamentos)
+        case 'Garantia':
+          return Vue.extend(labelGarantia)
         default:
           throw 'Unexpected label type in WorkDetail.printLabel()'
       }
