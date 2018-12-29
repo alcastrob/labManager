@@ -49,20 +49,116 @@
         <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
       </ul>
     </div>
-
-
-  
 </div>
 </template>
 
 <script>
 
-import workIndicationsMixin from './WorkIndicationsTableMixin'
+import tableMixin from './table/TablesWithEmptyRowsMixin'
+import { insertWorkIndications, updateWorkIndications, deleteWorkIndications } from '../../../main/dal.js'
+import _ from 'lodash'
 
 export default {
   name: 'workIndicationsTable',
-  mixins: [workIndicationsMixin],
+  mixins: [tableMixin],
+  data () {
+    return {
+      sumError: false
+    }
+  },
   methods: {
+    // Related with the state and persistence----------------------------------
+    addLastRow(){
+      if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
+        var newRow = {
+          Descripcion: this.$refs.newDescripcion.value,
+          IdTrabajoDetalle: this.newIds++,
+          Precio: this.$refs.newPrecio.value
+          }
+        this.data.push(newRow)
+        this.insertedRows.push(newRow)
+        this.$refs.newDescripcion.value = ''
+        this.$refs.newPrecio.value = ''
+        this.$refs.newPrecio.parentElement.parentElement.children[1].focus()
+      }
+    },
+    deleteRow: function (rowId) {
+      this.data = _.remove(this.data, function (n) {
+        return n.IdTrabajoDetalle !== rowId
+      })
+      if (_.some(this.insertedRows, ['IdTrabajoDetalle', rowId])){
+        _.remove(this.insertedRows, ['IdTrabajoDetalle', rowId])
+      } else if (_.some(this.updatedRows, ['IdTrabajoDetalle', rowId])){
+        _.remove(this.updatedRows, ['IdTrabajoDetalle', rowId])
+        this.deletedRows.push({IdTrabajoDetalle: rowId})
+      } else {
+        this.deletedRows.push({IdTrabajoDetalle: rowId})
+      }
+    },
+    trackChanges(event, rowId, field) {
+      //Let's start looking if the changed row is already on the inserted list
+      var temp = _.find(this.insertedRows, ['IdTrabajoDetalle', rowId])
+      if (this.isNotEmpty(temp)){
+        //Just update the inssert with the new value. No more action required.
+        temp[field] = event.currentTarget.value
+      } else {
+        //OK, so we have to update. But maybe this field was already updated. Let's check.
+        temp = _.find(this.updatedRows, ['IdTrabajoDetalle', rowId])
+        if (this.isNotEmpty(temp)){
+          //The row was already updated. Make a cumulative update
+          var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+          temp.Precio = original.Precio
+          temp.Descripcion = original.Descripcion
+        } else {
+          //First time updated. So jot it down.
+          var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+          this.updatedRows.push(original)
+        }
+      }
+    },
+    save(masterId){
+      debugger
+      _.forEach(this.insertedRows, function(row){
+        row.IdTrabajo = masterId
+        insertWorkIndications(row, 'labManager.sqlite')
+      })
+      _.forEach(this.deletedRows, function(row){
+        deleteWorkIndications(row, 'labManager.sqlite')
+      })
+      _.forEach(this.updatedRows, function(row){
+        updateWorkIndications(row, 'labManager.sqlite')
+      })
+      this.insertedRows = []
+      this.deletedRows = []
+      this.updatedRows = []
+    },
+    // Other methods (specific)------------------------------------------------
+    getSum: function () {
+      try {
+        var sum = _.sumBy(this.data, function(n) {
+          var temp = parseFloat(n.Precio)
+          if (isNaN(temp)){
+            throw 'NaN'
+          } else {
+            return temp
+          }
+        })
+        this.sumError = false
+        return 'Total: ' + this.moneyFormatter.format(sum)
+      }
+      catch(err){
+        this.sumError = true
+        return 'Error en los datos a sumar'
+      }
+    },
+    updatePrice(event, id) {
+      var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
+      if (this.isEmpty(event.srcElement.value)) {
+        elementInArray.Precio = 0
+      } else {
+        elementInArray.Precio =  event.srcElement.value
+      }
+    },
     filterJustNumberKeystrokes(event){
       if (!(event.key === '0' || event.key === '1' || event.key === '2' ||
         event.key === '3' || event.key === '4' || event.key === '5' ||
@@ -74,35 +170,11 @@ export default {
         event.key === 'Backspace' || event.key === 'Tab' || event.key === 'Enter'
       ))
         event.preventDefault()
-    }
+    },
+    canDisplayDropdown: function() {
+      //TODO
+      return false
+    },
   }
 }
 </script>
-
-<style>
-.pt-3-half {
-    padding-top: 1.4rem;
-    height: 49px;
-}
-.noMargins {
-  padding: 0px 0px 0px 0px!important;
-  margin: 0px;
-  position:relative;
-}
-.inputInTd {
-    width: 100%;
-    height: 80px;
-    padding: 10px;
-    margin: 0px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-
-    position:absolute;
-    top:0px;
-    height:100%;
-
-    border: 0px;
-    background: transparent;
-}
-</style>

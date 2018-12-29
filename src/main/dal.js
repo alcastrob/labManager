@@ -62,7 +62,7 @@ export function getWork (workId, fileName) {
 export function insertWork(work, fileName) {
   db = new sqlite3.Database(fileName)
   var query = ''
-  // return run(db, query, [workIndication.IdTrabajo,
+  // return runAsync(db, query, [workIndication.IdTrabajo,
   //   workIndication.Descripcion , workIndication.Precio])
   }
 
@@ -79,27 +79,33 @@ export function getWorkIndications (workId, fileName) {
   })
 }
 
+//Tested
 export function insertWorkIndications(workIndication, fileName) {
+  debugger
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO TrabajosDetalle (IdTrabajo, ' +
   'Descripcion, Precio) ' +
   'VALUES (?, ?, ?)'
-  return run(db, query, [workIndication.IdTrabajo,
+  return runAsync(db, query, [workIndication.IdTrabajo,
     workIndication.Descripcion , workIndication.Precio])
   }
 
-  export function updateWorkIdications(workIndication, fileName) {
-    db = new sqlite3.Database(fileName)
-    var query = 'UPDATE TrabajosDetalle ' +
-    'SET IdTrabajo = ?, Descripcion = ?, Precio = ? ' +
-    'WHERE IdTrabajoDetalle = ?'
-    return run(db, query, [workIndication.IdTrabajo, workIndication.Descripcion, workIndication.Precio, workIndication.IdTrabajoDetalle])
-  }
+//Tested
+export function updateWorkIndications(workIndication, fileName) {
+  debugger
+  db = new sqlite3.Database(fileName)
+  var query = 'UPDATE TrabajosDetalle ' +
+  'SET Descripcion = ?, Precio = ? ' +
+  'WHERE IdTrabajoDetalle = ?'
+  return runAsync(db, query, [workIndication.Descripcion, workIndication.Precio, workIndication.IdTrabajoDetalle])
+}
 
-export function deleteWorkIndications(workIndicationId, fileName){
+//Tested
+export function deleteWorkIndications(workIndication, fileName){
+  debugger
   db = new sqlite3.Database(fileName)
   var query = 'DELETE FROM TrabajosDetalle WHERE IdTrabajoDetalle = ?'
-  return run(db, query, [workIndicationId])
+  return runAsync(db, query, [workIndication.IdTrabajoDetalle])
 }
 
 // Work Tests------------------------------------------------------------------
@@ -124,7 +130,7 @@ export function insertWorkTest(workTest, fileName) {
   var query = 'INSERT INTO Pruebas (IdTrabajo, Descripcion, FechaSalida, ' +
   'FechaEntrada, Comentario, IdTurnoFechaSalida, IdTurnoFechaEntrada) ' +
   'VALUES (?, ?, ?, ?, ?, ?, ?)'
-  return run(db, query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
+  return runAsync(db, query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
     workTest.FechaEntrada, workTest.Comentario, workTest.IdTurnoFechaSalida,
     workTest.IdTurnoFechaEntrada])
 }
@@ -135,7 +141,7 @@ export function updateWorkTest(workTest, fileName) {
     'FechaEntrada = ?, Comentario = ?, IdTurnoFechaSalida = ?, ' +
     'IdTurnoFechaEntrada = ? ' +
     'WHERE IdPrueba = ?'
-    return run(db, query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
+    return runAsync(db, query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
       workTest.FechaEntrada, workTest.Comentario, workTest.IdTurnoFechaSalida,
       workTest.IdTurnoFechaEntrada, workTest.IdPrueba])
 }
@@ -143,7 +149,7 @@ export function updateWorkTest(workTest, fileName) {
 export function deleteWorkTest(workTestId, fileName){
   db = new sqlite3.Database(fileName)
   var query = 'DELETE FROM Pruebas WHERE IdPrueba = ?'
-  return run(db, query, [workTestId])
+  return runAsync(db, query, [workTestId])
 }
 
 // Custom queries for Work (KPIs)----------------------------------------------
@@ -252,7 +258,7 @@ export function insertAdjuntsOfWork(adjunt, fileName) {
   'Interface, Otros) ' +
   'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 
-  return run(db, query, [adjunt.IdTrabajo, adjunt.Caja, adjunt.Cubeta, adjunt.Articulador,
+  return runAsync(db, query, [adjunt.IdTrabajo, adjunt.Caja, adjunt.Cubeta, adjunt.Articulador,
     adjunt.Pletinas, adjunt.Tornillos, adjunt.Analogos, adjunt.PosteImpresion,
     adjunt.Interface, adjunt.Otros])
 }
@@ -265,7 +271,7 @@ export function updateAdjuntsOfWork(adjunt, fileName) {
     'Analogos = ?, PosteImpresion = ?, Interface = ?,' +
     'Otros = ? ' +
     'WHERE IdAditamento = ?'
-  return run(db, query, [adjunt.IdTrabajo, adjunt.Caja, adjunt.Cubeta, adjunt.Articulador,
+  return runAsync(db, query, [adjunt.IdTrabajo, adjunt.Caja, adjunt.Cubeta, adjunt.Articulador,
       adjunt.Pletinas, adjunt.Tornillos, adjunt.Analogos, adjunt.PosteImpresion,
       adjunt.Interface, adjunt.Otros, adjunt.IdAditamento])
 }
@@ -273,7 +279,7 @@ export function updateAdjuntsOfWork(adjunt, fileName) {
 export function deleteAdjuntsOfWork(adjuntId, fileName){
   db = new sqlite3.Database(fileName)
   var query = 'DELETE FROM Aditamentos WHERE IdAditamento = ?'
-  return run(db, query, [adjuntId])
+  return runAsync(db, query, [adjuntId])
 }
 
 // Dentists -------------------------------------------------------------------
@@ -334,7 +340,7 @@ export function updateDentist(dentist, fileName) {
 export function deleteDentist(dentistId, fileName){
   db = new sqlite3.Database(fileName)
   var query = 'DELETE FROM Dentistas WHERE IdDentista = ?'
-  return run(db, query, [dentistId])
+  return runAsync(db, query, [dentistId])
 }
 
 //Tested
