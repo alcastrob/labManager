@@ -2,82 +2,140 @@
 <div id="table" class="table-editable">
     <table class="table table-bordered table-responsive-xs table-striped">
     <tr>
-      <th></th>
-      <th>Descripción</th>
-      <th class="text-right">Precio</th>
+      <th style="width: 4%;"></th>
+      <th style="width: 80%;">Descripción</th>
+      <th style="width: 16%;" class="text-right">Precio</th>
     </tr>
     <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
-      <td class="pt-3" style="width: 41px;"><i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i></td>
-
-      <td class="noMargins" v-on:keyup="trackChanges($event, indication.IdTrabajoDetalle)">
-        <input type="text" v-model="indication.Descripcion" class="inputInTd">
+      <td class="pt-3-half">
+        <i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i>
       </td>
-
-      <td class="pt-3-half text-right" contenteditable="true" v-on:blur="updatePrice($event, indication.IdTrabajoDetalle)" :class="{'bg-danger text-white shake': isPriceNotANumber(indication.Precio)}">{{indication.Precio}}</td>
+      <td class="noMargins">
+        <input type="text" v-model="indication.Descripcion" class="inputInTd" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')">
+        <div class="typeahead-dropdown list-group myTypeahead" v-if="canDisplayDropdown()">
+          <span class="list-group-item clickable">
+            <i class="fas fa-align-left mr-1"></i>
+            Usar como texto libre</span>
+        </div>
+      </td>
+      <td class="noMargins">
+        <input type="text" class="inputInTd text-right" @blur="updatePrice($event, indication.IdTrabajoDetalle)" v-model="indication.Precio" :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}" v-on:keydown="filterJustNumberKeystrokes" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')">
+      </td>
     </tr>
     <tr>
-      <td class="pt-3" style="width: 41px;">
+      <td class="pt-3-half"></td>
+      <td class="noMargins">
+        <input type="text" class="inputInTd" ref="newDescripcion">
       </td>
-      <td class="pt-3-half" contenteditable="true" ref="newDescripcion"></td>
-      <td class="pt-3-half text-right" contenteditable="true" ref="newPrecio" @blur="lostFocusOnLastRow()"></td>
+      <td class="noMargins">
+        <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
+      </td>
     </tr>
     </table>
     <div>
-      <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger shake': sumError}">{{getSum()}}</p>
+      <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger animated shake': sumError}">{{getSum()}}</p>
+    </div>
+    <div>
+      <h3>Inserted</h3>
+      <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
+        <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
+      </ul>
+      <h3>Updated</h3>
+      <ul v-for="updated in updatedRows" :key="updated.IdTrabajoDetalle">
+        <li>{{updated.IdTrabajoDetalle}}|{{updated.Descripcion}}|{{updated.Precio}}</li>
+      </ul>
+      <h3>Deleted</h3>
+      <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
+        <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
+      </ul>
     </div>
 </div>
 </template>
 
 <script>
+
+import tableMixin from './table/TablesWithEmptyRowsMixin'
+import { insertWorkIndications, updateWorkIndications, deleteWorkIndications } from '../../../main/dal.js'
 import _ from 'lodash'
 
-class changeLogItem {
-  constructor(changeType, id, value) {
-    this.changeType = changeType
-    this.id = id
-    this.value = value
-  }
-  get ChangeType () {
-    return this.changeType
-  }
-  get Id  () {
-    return this.id
-  }
-  get Value() {
-    return this.value
-  }
-}
-
-var newIds = 10000000
-
 export default {
-
   name: 'workIndicationsTable',
-  props: {
-    workIndications: {
-      type: [Object, Array],
-      required: true
-    }
-  },
+  mixins: [tableMixin],
   data () {
     return {
-      data: [],
-      changes: [],
-      dataLoaded: false,
-      sumError: false,
-       moneyFormatter: new Intl.NumberFormat('es-ES', {
-        style: 'currency',
-        currency: 'EUR'
-      })
-     }
+      sumError: false
+    }
   },
   methods: {
+    // Related with the state and persistence----------------------------------
+    addLastRow(){
+      if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
+        var newRow = {
+          Descripcion: this.$refs.newDescripcion.value,
+          IdTrabajoDetalle: this.newIds++,
+          Precio: this.$refs.newPrecio.value
+          }
+        this.data.push(newRow)
+        this.insertedRows.push(newRow)
+        this.$refs.newDescripcion.value = ''
+        this.$refs.newPrecio.value = ''
+        this.$refs.newPrecio.parentElement.parentElement.children[1].focus()
+      }
+    },
+    deleteRow: function (rowId) {
+      this.data = _.remove(this.data, function (n) {
+        return n.IdTrabajoDetalle !== rowId
+      })
+      if (_.some(this.insertedRows, ['IdTrabajoDetalle', rowId])){
+        _.remove(this.insertedRows, ['IdTrabajoDetalle', rowId])
+      } else if (_.some(this.updatedRows, ['IdTrabajoDetalle', rowId])){
+        _.remove(this.updatedRows, ['IdTrabajoDetalle', rowId])
+        this.deletedRows.push({IdTrabajoDetalle: rowId})
+      } else {
+        this.deletedRows.push({IdTrabajoDetalle: rowId})
+      }
+    },
+    trackChanges(event, rowId, field) {
+      //Let's start looking if the changed row is already on the inserted list
+      var temp = _.find(this.insertedRows, ['IdTrabajoDetalle', rowId])
+      if (this.isNotEmpty(temp)){
+        //Just update the inssert with the new value. No more action required.
+        temp[field] = event.currentTarget.value
+      } else {
+        //OK, so we have to update. But maybe this field was already updated. Let's check.
+        temp = _.find(this.updatedRows, ['IdTrabajoDetalle', rowId])
+        if (this.isNotEmpty(temp)){
+          //The row was already updated. Make a cumulative update
+          var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+          temp.Precio = original.Precio
+          temp.Descripcion = original.Descripcion
+        } else {
+          //First time updated. So jot it down.
+          var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+          this.updatedRows.push(original)
+        }
+      }
+    },
+    save(masterId){
+      debugger
+      _.forEach(this.insertedRows, function(row){
+        row.IdTrabajo = masterId
+        insertWorkIndications(row, 'labManager.sqlite')
+      })
+      _.forEach(this.deletedRows, function(row){
+        deleteWorkIndications(row, 'labManager.sqlite')
+      })
+      _.forEach(this.updatedRows, function(row){
+        updateWorkIndications(row, 'labManager.sqlite')
+      })
+      this.insertedRows = []
+      this.deletedRows = []
+      this.updatedRows = []
+    },
+    // Other methods (specific)------------------------------------------------
     getSum: function () {
       try {
         var sum = _.sumBy(this.data, function(n) {
-          if (n.Precio.indexOf(',') !== -1){
-            throw 'comma'
-          }
           var temp = parseFloat(n.Precio)
           if (isNaN(temp)){
             throw 'NaN'
@@ -95,94 +153,28 @@ export default {
     },
     updatePrice(event, id) {
       var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
-      if (this.isEmpty(event.srcElement.innerText)) {
+      if (this.isEmpty(event.srcElement.value)) {
         elementInArray.Precio = 0
       } else {
-        elementInArray.Precio =  event.srcElement.innerText
+        elementInArray.Precio =  event.srcElement.value
       }
     },
-    isPriceNotANumber(price){
-      if (price.indexOf(',') !== -1){
-        return true
-      }
-      return (isNaN(parseFloat(price)))
+    filterJustNumberKeystrokes(event){
+      if (!(event.key === '0' || event.key === '1' || event.key === '2' ||
+        event.key === '3' || event.key === '4' || event.key === '5' ||
+        event.key === '6' || event.key === '7' || event.key === '8' ||
+        event.key === '9' || event.key === '.' || event.key === 'ArrowLeft' ||
+        event.key === 'ArrowRight' || event.key === 'Home' || event.key === 'End' ||
+        event.key === '-' || (event.key === 'c' && event.ctrlKey === true) ||
+        event.key === 'Delete' || (event.key === 'v' && event.ctrlKey === true) ||
+        event.key === 'Backspace' || event.key === 'Tab' || event.key === 'Enter'
+      ))
+        event.preventDefault()
     },
-    deleteRow: function (rowId) {
-      this.data = _.remove(this.data, function (n) {
-        return n.IdTrabajoDetalle !== rowId
-      })
-      this.changes.push(new changeLogItem('delete', rowId, null))
+    canDisplayDropdown: function() {
+      //TODO
+      return false
     },
-    canBeDeleted(value){
-      return this.isNotEmpty(value.Descripcion) && this.isNotEmpty(value.Precio)
-    },
-    isEmpty(value){
-      return (value === null || value === undefined || value === '')
-    },
-    isNotEmpty(value){
-      return !this.isEmpty(value)
-    },
-    lostFocusOnLastRow(){
-      if (this.isNotEmpty(this.$refs.newDescripcion.innerText) || this.isNotEmpty(this.$refs.newPrecio.innerText)) {
-        this.data.push({
-          Descripcion: this.$refs.newDescripcion.innerText,
-          IdTrabajoDetalle: newIds++,
-          Precio: this.$refs.newPrecio.innerText})
-        this.$refs.newDescripcion.innerText = ''
-        this.$refs.newPrecio.innerText = ''
-        this.$refs.newPrecio.parentElement.children[1].focus()
-      }
-    },
-    trackChanges(event, id) {
-      // if (event.currentTarget.innerText !== _.find(data.currentId, value))
-        //Look for the last UPDATE on the stack, and rewrite it with the new value
-        //If doesn't exist, create an UPDATE
-    }
-  },
-  mounted () {
-    // Data is not loaded here because the container component (i.e. WorkDetail) would need also the dataset for this component and another child one (tha label ones). Therefore, for saving one call to the db, the dataset is loaded once there and propagated to the child components like this.
-
-    // Vue doesn't want to manipulate directly the dataset passed as prop. So we made a copy of it for safe inserting, editing and deleting.
-    // this.data = this.workIndications
-
-    // The dataset is loaded in the container component, so it could be not available during the mount because this load is async. This line will be invoked whenever the prop dataset is updated in the container component.
-    this.$watch('workIndications', function (newVal, oldVal) {
-      this.data = newVal.slice(0) // For cloning the array, not passing the reference. This way the watcher doesn't  went bananas.
-      // this.data.push({Descripcion: '', IdTrabajoDetalle: null, Precio: ''})
-    })
-
-    this.$watch('data', function(newVal, oldVal) {
-      if (!(_.some(this.data, {'Descripcion': '', 'Precio': ''}))) {
-        //this.data.push({Descripcion: '', IdTrabajoDetalle: null, Precio: ''})
-      }
-    }, { deep: true })
   }
 }
 </script>
-
-<style>
-.pt-3-half {
-    padding-top: 1.4rem;
-}
-.noMargins {
-  padding: 0px!important;
-  margin: 0px;
-  position:relative;
-}
-.inputInTd {
-    width: 100%;
-    height: 80px;
-    padding: 10px;
-    margin: 0px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-
-    position:absolute;
-    top:0px;
-    height:100%;
-
-    border: 0px;
-    background: transparent;
-}
-</style>

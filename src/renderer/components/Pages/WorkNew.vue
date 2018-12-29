@@ -37,7 +37,7 @@
       <div class="row">
         <div class="col-md-12 mt-3">
           <h4>Indicaciones</h4>
-          <workIndicationsTable :workIndications="workIndications"></workIndicationsTable>
+          <workIndicationsTable :records="workIndications"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
@@ -114,7 +114,7 @@ export default {
         Nombre: ''
       },
       workTypes: {},
-      workIndications: {},
+      workIndications: [],
       adjuncts: null
 
     }

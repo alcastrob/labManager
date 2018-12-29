@@ -59,7 +59,7 @@
       <div class="row">
         <div class="col-md-12 mt-3">
           <h4>Indicaciones</h4>
-          <workIndicationsTable :workIndications="workIndications"></workIndicationsTable>
+          <workIndicationsTable :records="workIndications" ref="workIndications"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
@@ -78,6 +78,16 @@
           <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
+      <div class="row">
+        <div class="col-md-12 mt-3">
+          <!-- v-on:click="save()" -->
+          <!-- v-bind:class="{disabled: !canBeSaved()}" -->
+          <button class="btn btn-info btn-block" type="button" @click="save">
+            <i class="fas fa-save"></i>
+            Guardar
+          </button>
+        </div>
+      </div>
     </div> <!-- container -->
     <b-modal ref="modal" title="Imprimir etiqueta" hide-footer>
       <div class="modal-body">
@@ -144,6 +154,12 @@ export default {
     },
     hideModal() {
       this.$refs.modal.hide()
+      workIndications: []
+    }
+  },
+  methods: {
+    save: function() {
+      this.$refs.workIndications.save(this.workId)
     },
     printLabel: function(type) {
       if (type === undefined) {
