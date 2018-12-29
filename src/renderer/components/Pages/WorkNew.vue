@@ -16,8 +16,8 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica" v-model="data.IdDentista" ></dentist-search>
-          <span>{{data.IdDentista}}</span>
+          <dentist-search id="clinica" v-model="data.IdDentista" ref="dentist"></dentist-search>
+          <!-- <span>{{data.IdDentista}}</span> -->
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="paciente">Paciente</label>
@@ -29,7 +29,7 @@
             <option disabled value="">Seleccione un opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
-          <span>{{data.IdTipoTrabajo}}</span>
+          <!-- <span>{{data.IdTipoTrabajo}}</span> -->
         </div> <!-- col-md-6 -->
         <div class="col-md-4">
           <label for="color">Color</label>
@@ -39,7 +39,7 @@
       <div class="row">
         <div class="col-md-12 mt-3">
           <h4>Indicaciones</h4>
-          <workIndicationsTable :records="workIndications" ref="workIndications"></workIndicationsTable>
+          <workIndicationsTable v-model="workIndications" ref="workIndications"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
@@ -79,70 +79,70 @@
         <div class="containter">
           <div class="row">
             <label for="labelText">
-              Al dar de alta un nuevo trabajo se pueden imprimir hasta tres etiquetas de una vez. Seleccione las que vaya a necesitar en la lista de la izquierda, edite (si lo cree necesario) el texto a la derecha y pulse el botón Imprimir.
+              Al dar de alta un nuevo trabajo se pueden imprimir múltiples etiquetas de una vez. Seleccione las que vaya a necesitar en la lista de la izquierda, edite (si lo cree necesario) el texto a la derecha y pulse el botón Imprimir.
             </label>
           </div>
           <div class="row pt-4">
             <div class="col-md-3">
               <div class="form-check">
-                <input class="cbResina" type="checkbox">
+                <input class="form-check-input" id="cbResina" type="checkbox" ref="cbResina">
                 <label class="form-check-label" for="cbResina">
                   Resina
                 </label>
               </div>
               <div class="form-check">
-                <input class="cbCompostura" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbCompostura" type="checkbox" ref="cbCompostura">
+                <label class="form-check-label" for="cbCompostura">
                   Compostura
                 </label>
               </div>
               <div class="form-check" v-if="adjuncts !== null">
-                <input class="cbResina" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbAditamentos" type="checkbox" ref="cbAditamentos">
+                <label class="form-check-label" for="cbAditamentos">
                   Aditamentos
                 </label>
               </div>
               <div class="form-check">
-                <input class="cbResina" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbEsqueletico" type="checkbox" ref="cbEsqueletico">
+                <label class="form-check-label" for="cbEsqueleticos">
                   Esqueléticos
                 </label>
               </div>
               <div class="form-check">
-                <input class="cbResina" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbOrtodoncia" type="checkbox" ref="cbOrtodoncia">
+                <label class="form-check-label" for="cbOrtodoncia">
                   Ortodoncia
                 </label>
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-check">
-                <input class="cbResina" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbZirconio" type="checkbox" ref="cbZirconio">
+                <label class="form-check-label" for="cbZirconio">
                   Zirconio
                 </label>
               </div>
               <div class="form-check">
-                <input class="cbResina" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbImplantes" type="checkbox" ref="cbImplantes">
+                <label class="form-check-label" for="cbImplantes">
                   Implantes
                 </label>
               </div>
               <div class="form-check">
-                <input class="cbResina" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbEmax" type="checkbox" ref="cbEmax">
+                <label class="form-check-label" for="cbEmax">
                   E-Max
                 </label>
               </div>
               <div class="form-check">
-                <input class="cbResina" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbComposite" type="checkbox" ref="cbComposite">
+                <label class="form-check-label" for="cbComposite">
                   Composite
                 </label>
               </div>
               <div class="form-check">
-                <input class="cbResina" type="checkbox">
-                <label class="form-check-label" for="cbResina">
+                <input class="form-check-input" id="cbMetalCeramica" type="checkbox" ref="cbMetalCeramica">
+                <label class="form-check-label" for="cbMetalCeramica">
                   Metal-Cerámica
                 </label>
               </div>
@@ -156,7 +156,7 @@
       </div>
       <div class="modal-footer">
         <button @click="hideModal">Cancelar</button>
-        <button @click="printLabel">Imprimir</button>
+        <button @click="printLabels">Imprimir</button>
       </div>
     </b-modal>
     <div ref="labelContainer"></div>
@@ -195,6 +195,7 @@ export default {
       data: {
         IdTrabajo: 0,
         IdDentista: 0,
+        NombreDentista: '',
         IdTipoTrabajo: 0,
         Paciente: '',
         Color: '',
@@ -209,52 +210,78 @@ export default {
     }
   },
   methods: {
+    save: function() {
+      this.requiresValidation = true
+      if (this.canBeSaved) {
+        insertWork(this.data, 'labManager.sqlite').then(() => {
+          this.data.IdTrabajo = getLastId()
+          this.$refs.workIndications.save(this.data.IdTrabajo)
+        })
+        this.showModal()
+      }
+    },
+    canBeSaved: function() {
+      return true
+      // return !this.requiresValidation
+      //  || this.data.NombreClinica !== ''
+    },
     showModal() {
-      debugger
       this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
+      this.data.NombreDentista = this.$refs.dentist.query
       this.$refs.modal.show()
     },
     hideModal() {
       this.$refs.modal.hide()
     },
+    printLabels: function() {
+      if (this.$refs.cbResina.checked) this.printLabel('Resina')
+      if (this.$refs.cbCompostura.checked) this.printLabel('Compostura')
+      if (this.adjuncts !== null && this.$refs.cbAditamentos.checked) this.printLabel('Aditamentos')
+      if (this.$refs.cbEsqueletico.checked) this.printLabel('Esqueléticos')
+      if (this.$refs.cbOrtodoncia.checked) this.printLabel('Ortodoncia')
+      if (this.$refs.cbZirconio.checked) this.printLabel('Zirconio')
+      if (this.$refs.cbImplantes.checked) this.printLabel('Implantes')
+      if (this.$refs.cbEmax.checked) this.printLabel('E-Max')
+      if (this.$refs.cbComposite.checked) this.printLabel('Composite')
+      if (this.$refs.cbMetalCeramica.checked) this.printLabel('Metal-Cerámica')
+
+      this.hideModal()
+      this.$router.go(-2)
+    },
     printLabel: function(type) {
       var ComponentClass = this.mapType(type)
       var instance = new ComponentClass({
           propsData: {
-            workData: this.work,
-            workIndications: this.workIndications
+            workData: this.data,
+            workIndicationsText: this.workIndicationsText,
+            workAdjunts: this.adjuncts
             }
       })
       instance.$mount()
       this.$refs.labelContainer.appendChild(instance.$el)
+      instance.setName(type)
       instance.print(type)
       this.$refs.labelContainer.removeChild(instance.$el)
     },
     mapType(type) {
       switch(type) {
-        case 'Garantia':
-          //TO DO
-          return Vue.extend(labelGarantia)
+        case 'Aditamentos':
+          return Vue.extend(labelAditamentos)
         case 'Composite':
-          return Vue.extend(labelComposite)
         case 'E-Max':
-          return Vue.extend(labelEmax)
         case 'Implantes':
-          return Vue.extend(labelImplantes)
         case 'Metal-Cerámica':
-          return Vue.extend(labelMetalCeramica)
         case 'Zirconio':
-          return Vue.extend(labelZirconio)
+          return Vue.extend(labelComposite)
         case 'Esqueléticos':
           return Vue.extend(labelEsqueleticos)
         case 'Compostura':
-          return Vue.extend(labelCompostura)
         case 'Ortodoncia':
-          return Vue.extend(labelOrtodoncia)
+          return Vue.extend(labelCompostura)
         case 'Resina':
           return Vue.extend(labelResina)
-        case 'Aditamentos':
-          return Vue.extend(labelAditamentos)
+        case 'Garantia':
+          return Vue.extend(labelGarantia)
         default:
           throw 'Unexpected label type in WorkDetail.printLabel()'
       }
@@ -266,21 +293,6 @@ export default {
         this.adjuncts.$mount()
         this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
       }
-    },
-    save: function() {
-      this.showModal()
-      // this.requiresValidation = true
-      // if (this.canBeSaved) {
-      //   insertWork(this.data, 'labManager.sqlite').then(() => {
-      //     this.data.IdTrabajo = getLastId()
-      //     this.$refs.workIndications.save(this.data.IdTrabajo)
-      //   })
-      // }
-    },
-    canBeSaved: function() {
-      return true
-      // return !this.requiresValidation
-      //  || this.data.NombreClinica !== ''
     },
     setStartDateToToday: function() {
       var today = new Date()

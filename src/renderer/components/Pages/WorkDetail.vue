@@ -18,7 +18,7 @@
                 <a href="#" class="dropdown-item" v-on:click="showModal('Garantia')">Garantía</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Resina')" >Resina</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Compostura')">Compostura</a>
-                <a href="#" class="dropdown-item" v-on:click="printLabel('Aditamentos')" v-if="workAdjunts !== undefined">Aditamentos</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Aditamentos')" v-if="workAdjunts !== undefined">Aditamentos</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Esqueléticos')">Esqueléticos</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Ortodoncia')">Ortodoncia</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Zirconio')">Zirconio</a>
@@ -59,7 +59,7 @@
       <div class="row">
         <div class="col-md-12 mt-3">
           <h4>Indicaciones</h4>
-          <workIndicationsTable :records="workIndications" ref="workIndications"></workIndicationsTable>
+          <workIndicationsTable v-model="workIndications" ref="workIndications"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
@@ -157,12 +157,7 @@ export default {
     save: function() {
       this.$refs.workIndications.save(this.workId)
     },
-    printLabel: function(type) {
-      if (type === undefined) {
-        this.hideModal()
-      } else {
-        this.printedLabel = type
-      }
+    printLabel: function() {
       var ComponentClass = this.mapType(this.printedLabel)
       var instance = new ComponentClass({
           propsData: {
@@ -176,6 +171,7 @@ export default {
       instance.setName(this.printedLabel)
       instance.print(this.printedLabel)
       this.$refs.labelContainer.removeChild(instance.$el)
+      this.hideModal()
     },
     mapType(type) {
       switch(type) {

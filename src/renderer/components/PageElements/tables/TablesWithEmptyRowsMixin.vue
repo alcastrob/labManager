@@ -2,7 +2,7 @@
 
 export default {
   props: {
-    records: {
+    value: {
       type: Array,
       required: true
     }
@@ -37,7 +37,7 @@ export default {
     // Data is not loaded here because the container component (i.e. WorkDetail) would need also the dataset for this component and another child one (tha label ones). Therefore, for saving one call to the db, the dataset is loaded once there and propagated to the child components like this.
 
     // The dataset is loaded in the container component, so it could be not available during the mount because this load is async. This line will be invoked whenever the prop dataset is updated in the container component.
-    this.$watch('records', function (newVal, oldVal) {
+    this.$watch('value', function (newVal, oldVal) {
       this.data = newVal.slice(0) // For cloning the array, not passing the reference. This way the watcher doesn't go bananas.
     })
   }

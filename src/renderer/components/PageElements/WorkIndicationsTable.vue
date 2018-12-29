@@ -66,7 +66,6 @@ export default {
       sumError: false
     }
   },
-  props: ['value'],
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
@@ -80,6 +79,7 @@ export default {
         this.insertedRows.push(newRow)
         this.$refs.newDescripcion.value = ''
         this.$refs.newPrecio.value = ''
+        this.$emit('input', this.data)
         this.$refs.newDescripcion.focus()
       }
     },
@@ -87,6 +87,7 @@ export default {
       this.data = _.remove(this.data, function (n) {
         return n.IdTrabajoDetalle !== rowId
       })
+      this.$emit('input', this.data)
       if (_.some(this.insertedRows, ['IdTrabajoDetalle', rowId])){
         _.remove(this.insertedRows, ['IdTrabajoDetalle', rowId])
       } else if (_.some(this.updatedRows, ['IdTrabajoDetalle', rowId])){
@@ -116,6 +117,7 @@ export default {
           this.updatedRows.push(original)
         }
       }
+      this.$emit('input', this.data)
     },
     save(masterId){
       _.forEach(this.insertedRows, function(row){
@@ -158,6 +160,7 @@ export default {
       } else {
         elementInArray.Precio =  event.srcElement.value
       }
+      this.$emit('input', this.data)
     },
     filterJustNumberKeystrokes(event){
       if (!(event.key === '0' || event.key === '1' || event.key === '2' ||
