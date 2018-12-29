@@ -14,10 +14,6 @@ export default {
       type: Array,
       required: true
     },
-    // eventId: {
-    //   type: String,
-    //   required: true
-    // },
     filterType: {
       type: String,
       required: false

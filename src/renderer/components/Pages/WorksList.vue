@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-6">
         <h1 v-if="showCustomHeader">{{listHeading}}</h1>
@@ -26,50 +26,50 @@ export default {
       headers: [ {
           title: 'Nº',
           dataField: 'IdTrabajo',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Dentista',
           dataField: 'NombreDentista',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Paciente',
           dataField: 'Paciente',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Tipo',
           dataField: 'TipoTrabajo',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Color',
           dataField: 'Color',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'F. Entrada',
           dataField: 'FechaEntrada',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: '',
           formatter: 'date'
         }, {
           title: 'F. Prevista',
           dataField: 'FechaPrevista',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: '',
           formatter: 'date'
         }, {
           title: 'F. Terminación',
           dataField: 'FechaTerminacion',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: '',
           formatter: 'date'
         }, {
           title: 'Importe',
           dataField: 'PrecioFinal',
-          titleClass: '',
+          titleClass: 'text-right mr-2',
           rowClass: 'text-right',
           formatter: 'money'
         } ],
@@ -110,7 +110,6 @@ export default {
     this.listHeading = this.$route.query.title
   },
   mounted () {
-    console.log('mounted')
     this.$refs.table.setFilters(this.$route.query.filter)
     this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
         <myIconCard :message="worksReceivedTodayCopy"
           filter="receivedToday"

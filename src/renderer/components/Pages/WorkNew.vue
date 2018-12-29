@@ -16,8 +16,8 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica" v-model="data.idDentista" ></dentist-search>
-          <span>{{data.idDentista}}</span>
+          <dentist-search id="clinica" v-model="data.IdDentista" ></dentist-search>
+          <span>{{data.IdDentista}}</span>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="paciente">Paciente</label>
@@ -29,6 +29,7 @@
             <option disabled value="">Seleccione un opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
+          <span>{{data.IdTipoTrabajo}}</span>
         </div> <!-- col-md-6 -->
         <div class="col-md-4">
           <label for="color">Color</label>
@@ -38,7 +39,7 @@
       <div class="row">
         <div class="col-md-12 mt-3">
           <h4>Indicaciones</h4>
-          <workIndicationsTable :records="workIndications"></workIndicationsTable>
+          <workIndicationsTable :records="workIndications" ref="workIndications"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
@@ -73,6 +74,91 @@
         </div>
       </div> <!-- row -->
     </div> <!-- container -->
+    <b-modal ref="modal" size="lg" title="Imprimir etiquetas" hide-footer>
+      <div class="modal-body">
+        <div class="containter">
+          <div class="row">
+            <label for="labelText">
+              Al dar de alta un nuevo trabajo se pueden imprimir hasta tres etiquetas de una vez. Seleccione las que vaya a necesitar en la lista de la izquierda, edite (si lo cree necesario) el texto a la derecha y pulse el botón Imprimir.
+            </label>
+          </div>
+          <div class="row pt-4">
+            <div class="col-md-3">
+              <div class="form-check">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Resina
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="cbCompostura" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Compostura
+                </label>
+              </div>
+              <div class="form-check" v-if="adjuncts !== null">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Aditamentos
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Esqueléticos
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Ortodoncia
+                </label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-check">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Zirconio
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Implantes
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  E-Max
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Composite
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="cbResina" type="checkbox">
+                <label class="form-check-label" for="cbResina">
+                  Metal-Cerámica
+                </label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <textarea class="form-control" id="labelText" rows="5" cols="50" v-model="workIndicationsText"></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button @click="hideModal">Cancelar</button>
+        <button @click="printLabel">Imprimir</button>
+      </div>
+    </b-modal>
     <div ref="labelContainer"></div>
   </div>
 </template>
@@ -88,9 +174,11 @@ import labelComposite from '../Labels/labelComposite'
 import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
 import workAdjuncts from '../PageElements/WorkAdjuncts'
 import dentistSearch from '../PageElements/DentistSearch'
+import bModal from 'bootstrap-vue'
 
 import Vue from 'Vue'
-import { getWork, getWorkTypes, getWorkIndications, insertWork } from '../../../main/dal.js'
+import { getWork, getWorkTypes, getWorkIndications, insertWork, getLastId } from '../../../main/dal.js'
+import _ from 'lodash'
 
 export default {
   name: 'WorkNew',
@@ -105,9 +193,9 @@ export default {
     return {
       requiresValidation: false,
       data: {
-        idTrabajo: 0,
-        idDentista: 0,
-        idTipoTrabajo: 0,
+        IdTrabajo: 0,
+        IdDentista: 0,
+        IdTipoTrabajo: 0,
         Paciente: '',
         Color: '',
         FechaEntrada: '',
@@ -116,11 +204,19 @@ export default {
       },
       workTypes: {},
       workIndications: [],
-      adjuncts: null
-
+      adjuncts: null,
+      workIndicationsText: ''
     }
   },
   methods: {
+    showModal() {
+      debugger
+      this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
+      this.$refs.modal.show()
+    },
+    hideModal() {
+      this.$refs.modal.hide()
+    },
     printLabel: function(type) {
       var ComponentClass = this.mapType(type)
       var instance = new ComponentClass({
@@ -172,12 +268,14 @@ export default {
       }
     },
     save: function() {
-      debugger
-      this.requiresValidation = true
-
-      if (this.canBeSaved) {
-        insertWork(this.data, 'labManager.sqlite')
-      }
+      this.showModal()
+      // this.requiresValidation = true
+      // if (this.canBeSaved) {
+      //   insertWork(this.data, 'labManager.sqlite').then(() => {
+      //     this.data.IdTrabajo = getLastId()
+      //     this.$refs.workIndications.save(this.data.IdTrabajo)
+      //   })
+      // }
     },
     canBeSaved: function() {
       return true
@@ -208,9 +306,6 @@ export default {
     getWork(this.workId, 'labManager.sqlite').then((workDetails) => {
       this.work = workDetails
     })
-    // this.$root.$on('work:dentistSelected', (id) => {
-    //   this.data.idDentista = id
-    // })
   }
 }
 </script>

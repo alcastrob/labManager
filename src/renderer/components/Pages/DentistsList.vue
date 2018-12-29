@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-6">
         <h1>Listado de dentistas</h1>
@@ -40,42 +40,42 @@ export default {
         }, {
           title: 'Nombre',
           dataField: 'NombreDentista',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Clínica',
           dataField: 'NombreClinica',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Datos Fiscales',
           dataField: 'DatosFiscales',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Dirección',
           dataField: 'Direccion',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Poblacion',
           dataField: 'Poblacion',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Email',
           dataField: 'CorreoElectronico',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: 'emailColumn'
         }, {
           title: 'Tlf.',
           dataField: 'Telefono',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         }, {
           title: 'Tlf. 2',
           dataField: 'Telefono2',
-          titleClass: '',
+          titleClass: 'text-left',
           rowClass: ''
         } ],
       searchFields: ['NombreDentista', 'NombreClinica', 'DatosFiscales', 'Direccion', 'Poblacion', 'CorreoElectronico', 'Telefono', 'Telefono2'],

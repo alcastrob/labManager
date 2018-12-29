@@ -66,6 +66,7 @@ export default {
       sumError: false
     }
   },
+  props: ['value'],
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){

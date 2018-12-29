@@ -70,8 +70,9 @@ export default {
       getDentist(newVal, 'labManager.sqlite').then((dentistDetail) => {
         if (dentistDetail !== undefined) {
           this.query = dentistDetail.NombreDentista
+          this.hidePopup()
         }
-      })      
+      })
     })
   }
 }

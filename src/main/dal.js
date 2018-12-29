@@ -404,14 +404,22 @@ function allAsync (db, sql, params) {
   })
 }
 
+var id
+
 function runAsync (db, sql, params) {
   return new Promise(function (resolve, reject) {
-    db.run(sql, params, function (err, row) {
+    db.run(sql, params, function (err, row){
       if (err) {
         reject(err)
       } else {
         resolve(row)
+        id = this.lastID
       }
     })
   })
 }
+
+export function getLastId(){
+  return id
+}
+
