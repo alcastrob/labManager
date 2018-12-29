@@ -10,8 +10,8 @@
       <td class="pt-3-half">
         <i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i>
       </td>
-      <td class="noMargins" v-on:keyup="trackChanges($event, indication.IdTrabajoDetalle)">
-        <input type="text" v-model="indication.Descripcion" class="inputInTd">
+      <td class="noMargins">
+        <input type="text" v-model="indication.Descripcion" class="inputInTd" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')">
         <div class="typeahead-dropdown list-group myTypeahead" v-if="canDisplayDropdown()">
           <span class="list-group-item clickable">
             <i class="fas fa-align-left mr-1"></i>
@@ -19,7 +19,7 @@
         </div>
       </td>
       <td class="noMargins">
-        <input type="text" class="inputInTd text-right" @blur="updatePrice($event, indication.IdTrabajoDetalle)" v-model="indication.Precio" :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}" v-on:keydown="filterJustNumberKeystrokes">
+        <input type="text" class="inputInTd text-right" @blur="updatePrice($event, indication.IdTrabajoDetalle)" v-model="indication.Precio" :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}" v-on:keydown="filterJustNumberKeystrokes" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')">
       </td>
     </tr>
     <tr>
@@ -35,6 +35,23 @@
     <div>
       <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger animated shake': sumError}">{{getSum()}}</p>
     </div>
+    <div>
+      <h3>Inserted</h3>
+      <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
+        <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
+      </ul>
+      <h3>Updated</h3>
+      <ul v-for="updated in updatedRows" :key="updated.IdTrabajoDetalle">
+        <li>{{updated.IdTrabajoDetalle}}|{{updated.Descripcion}}|{{updated.Precio}}</li>
+      </ul>
+      <h3>Deleted</h3>
+      <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
+        <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
+      </ul>
+    </div>
+
+
+  
 </div>
 </template>
 
@@ -45,7 +62,7 @@ import workIndicationsMixin from './WorkIndicationsTableMixin'
 export default {
   name: 'workIndicationsTable',
   mixins: [workIndicationsMixin],
-  methods: { 
+  methods: {
     filterJustNumberKeystrokes(event){
       if (!(event.key === '0' || event.key === '1' || event.key === '2' ||
         event.key === '3' || event.key === '4' || event.key === '5' ||

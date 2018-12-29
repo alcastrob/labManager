@@ -30,8 +30,9 @@ export default {
   data () {
     return {
       data: [],
-      changes: [],
-      dataLoaded: false,
+      insertedRows: [],
+      updatedRows: [],
+      deletedRows: [],
       sumError: false,
       moneyFormatter: new Intl.NumberFormat('es-ES', {
         style: 'currency',
@@ -40,13 +41,15 @@ export default {
      }
   },
   methods: {
-    // Checked -------------------------------------------------
     addLastRow(){
       if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
-        this.data.push({
+        var newRow = {
           Descripcion: this.$refs.newDescripcion.value,
           IdTrabajoDetalle: newIds++,
-          Precio: this.$refs.newPrecio.value})
+          Precio: this.$refs.newPrecio.value
+          }
+        this.data.push(newRow)
+        this.insertedRows.push(newRow)
         this.$refs.newDescripcion.value = ''
         this.$refs.newPrecio.value = ''
         this.$refs.newPrecio.parentElement.parentElement.children[1].focus()
@@ -56,9 +59,15 @@ export default {
       this.data = _.remove(this.data, function (n) {
         return n.IdTrabajoDetalle !== rowId
       })
-      this.changes.push(new changeLogItem('delete', rowId, null))
+      if (_.some(this.insertedRows, ['IdTrabajoDetalle', rowId])){
+        _.remove(this.insertedRows, ['IdTrabajoDetalle', rowId])
+      } else if (_.some(this.updatedRows, ['IdTrabajoDetalle', rowId])){
+        _.remove(this.updatedRows, ['IdTrabajoDetalle', rowId])
+        this.deletedRows.push({IdTrabajoDetalle: rowId})
+      } else {
+        this.deletedRows.push({IdTrabajoDetalle: rowId})
+      }
     },
-
     getSum: function () {
       try {
         var sum = _.sumBy(this.data, function(n) {
@@ -96,19 +105,25 @@ export default {
     isNotEmpty(value){
       return !this.isEmpty(value)
     },
-
-    // Not checked ---------------------------------------------
-
-    
-    
-    // canBeDeleted(value){
-    //   return this.isNotEmpty(value.Descripcion) && this.isNotEmpty(value.Precio)
-    // },
-    
-    trackChanges(event, id) {
-      // if (event.currentTarget.innerText !== _.find(data.currentId, value))
-        //Look for the last UPDATE on the stack, and rewrite it with the new value
-        //If doesn't exist, create an UPDATE
+    trackChanges(event, rowId, field) {      
+      //Let's start looking if the changed row is already on the inserted list
+      var temp = _.find(this.insertedRows, ['IdTrabajoDetalle', rowId])
+      if (this.isNotEmpty(temp)){
+        //Just update the inssert with the new value. No more action required.
+        temp[field] = event.currentTarget.value
+      } else {
+        //OK, so we have to update. But maybe this field was already updated. Let's check.
+        temp = _.find(this.updatedRows, ['IdTrabajoDetalle', rowId])
+        if (this.isNotEmpty(temp)){
+          //The row was already updated. Make a cumulative update
+          var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+          temp.Precio = original.Precio
+          temp.Descripcion = original.Descripcion
+        } else {
+          //First time updated. So jot it down.
+          this.updatedRows.push(original)
+        }
+      }
     },
     canDisplayDropdown: function() {
       return false
@@ -119,15 +134,8 @@ export default {
 
     // The dataset is loaded in the container component, so it could be not available during the mount because this load is async. This line will be invoked whenever the prop dataset is updated in the container component.
     this.$watch('workIndications', function (newVal, oldVal) {
-      this.data = newVal.slice(0) // For cloning the array, not passing the reference. This way the watcher doesn't  went bananas.
-      // this.data.push({Descripcion: '', IdTrabajoDetalle: null, Precio: ''})
+      this.data = newVal.slice(0) // For cloning the array, not passing the reference. This way the watcher doesn't go bananas.
     })
-
-    this.$watch('data', function(newVal, oldVal) {
-      if (!(_.some(this.data, {'Descripcion': '', 'Precio': ''}))) {
-        //this.data.push({Descripcion: '', IdTrabajoDetalle: null, Precio: ''})
-      }
-    }, { deep: true })
   }
 }
 </script>
