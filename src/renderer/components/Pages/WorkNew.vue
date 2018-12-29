@@ -8,7 +8,7 @@
         <div class="col-md-6 mt-2">
           <div class="float-right">
             <div>
-              <collapsable-button iconCss="fas fa-map-pin" text="Aditamentos" eventName="work:visibleWorkAdjuncts"></collapsable-button>
+              <collapsable-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts"></collapsable-action-button>
             </div>
           </div>
         </div>
@@ -28,7 +28,7 @@
             <option disabled value="">Seleccione un opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
-        </div> <!-- col-md-6 -->
+        </div> <!-- col-md-3 -->
         <div class="col-md-4">
           <label for="color">Color</label>
           <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="data.Color">
@@ -84,7 +84,7 @@ import labelCompostura from '../Labels/labelCompostura'
 import labelResina from '../Labels/LabelResina'
 import labelAditamentos from '../Labels/labelAditamentos'
 import labelComposite from '../Labels/labelComposite'
-import collapsableButton from '../PageElements/collapsableButton'
+import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
 import workAdjuncts from '../PageElements/WorkAdjuncts'
 import dentistSearch from '../PageElements/DentistSearch'
 
@@ -96,7 +96,7 @@ export default {
   components: {
     workIndicationsTable,
     workTestsTable,
-    collapsableButton,
+    collapsableActionButton,
     workAdjuncts,
     dentistSearch
   },
@@ -162,6 +162,14 @@ export default {
           throw 'Unexpected label type in WorkDetail.printLabel()'
       }
     },
+    showAdjunts: function() {
+      if(this.adjuncts === null){
+        var ComponentClass = Vue.extend(workAdjuncts)
+        this.adjuncts = new ComponentClass()
+        this.adjuncts.$mount()
+        this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
+      }
+    },
     save: function() {
       this.requiresValidation = true
 
@@ -198,17 +206,6 @@ export default {
     getWork(this.workId, 'labManager.sqlite').then((workDetails) => {
       this.work = workDetails
     })
-    getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
-      this.workIndications = workIndicat
-    })
-    // this.$root.$on('work:visibleWorkAdjuncts', () => {
-    //   if(this.adjuncts === null){
-    //     var ComponentClass = Vue.extend(workAdjuncts)
-    //     this.adjuncts = new ComponentClass()
-    //     this.adjuncts.$mount()
-    //     this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
-    //   }
-    // })
     this.$root.$on('work:dentistSelected', (id) => {
       this.data.idDentista = id
     })

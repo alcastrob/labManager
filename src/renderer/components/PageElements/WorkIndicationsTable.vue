@@ -54,7 +54,7 @@
 
 <script>
 
-import tableMixin from './table/TablesWithEmptyRowsMixin'
+import tableMixin from './tables/TablesWithEmptyRowsMixin'
 import { insertWorkIndications, updateWorkIndications, deleteWorkIndications } from '../../../main/dal.js'
 import _ from 'lodash'
 

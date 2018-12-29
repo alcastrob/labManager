@@ -8,8 +8,8 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <collapsable-button iconCss="fas fa-certificate" text="Declaración de Conformidad" pathTo="/"></collapsable-button>
-              <collapsable-button iconCss="fas fa-dolly" text="Nota de entrega" pathTo="/"></collapsable-button>
+              <collapsable-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="getDeliveryNote"></collapsable-action-button>
+              <collapsable-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeclarationOfConformity"></collapsable-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
@@ -108,7 +108,7 @@
 <script>
 import workIndicationsTable from '../PageElements/WorkIndicationsTable'
 import workTestsTable from '../PageElements/workTestsTable'
-import collapsableButton from '../PageElements/collapsableButton'
+import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
 import dentistSearch from '../PageElements/DentistSearch'
 
 import labelAditamentos from '../Labels/labelAditamentos'
@@ -117,7 +117,6 @@ import labelEsqueleticos from '../Labels/LabelEsqueleticos'
 import labelCompostura from '../Labels/labelCompostura'
 import labelResina from '../Labels/LabelResina'
 import bModal from 'bootstrap-vue'
-
 
 import Vue from 'Vue'
 import { getWork, getWorkTypes, getWorkIndications, getAdjuntsOfWork } from '../../../main/dal.js'
@@ -128,7 +127,7 @@ export default {
   components: {
     workIndicationsTable,
     workTestsTable,
-    collapsableButton,
+    collapsableActionButton,
     dentistSearch
   },
   data () {
@@ -136,7 +135,7 @@ export default {
       workId: 0,
       work: {},
       workTypes: {},
-      workIndications: {},
+      workIndications: [],
       workIndicationsText: '',
       workAdjunts: {},
       printedLabel: ''
@@ -154,10 +153,7 @@ export default {
     },
     hideModal() {
       this.$refs.modal.hide()
-      workIndications: []
-    }
-  },
-  methods: {
+    },
     save: function() {
       this.$refs.workIndications.save(this.workId)
     },
@@ -203,6 +199,12 @@ export default {
         default:
           throw 'Unexpected label type in WorkDetail.printLabel()'
       }
+    },
+    getDeliveryNote: function() {
+      console.log("DeliveryNote")
+    },
+    getDeclarationOfConformity() {
+      console.log("DeclarationOfConformity")
     }
   },
   mounted () {
@@ -220,12 +222,6 @@ export default {
     getAdjuntsOfWork(this.workId, 'labManager.sqlite').then((workAdjunts) => {
       this.workAdjunts = workAdjunts
     })
-    // this.$root.$on('work:DeviveryNote', () => {
-    //   console.log("DeliveryNote")
-    // })
-    // this.$root.$on('work:DeclarationOfConformity', () => {
-    //   console.log("DeclarationOfConformity")
-    // })
   }
 }
 </script>

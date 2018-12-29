@@ -6,7 +6,7 @@
       </div>
       <div class="col-md-6 mt-2">
         <div class="float-right">
-          <collapsable-button iconCss="fas fa-plus-circle" text="Nuevo dentista" pathTo="/dentists/new"></collapsable-button>
+          <collapsable-link-button iconCss="fas fa-plus-circle" text="Nuevo dentista" pathTo="/dentists/new"></collapsable-link-button>
         </div>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
@@ -20,7 +20,7 @@
 <script>
 import myTable from '../PageElements/tables/myTable'
 import { getDentistList } from '../../../main/dal.js'
-import collapsableButton from '../PageElements/collapsableButton'
+import collapsableLinkButton from '../PageElements/CollapsableButtons/collapsableLinkButton'
 
 const EVENTID = 'DentistsList'
 
@@ -28,7 +28,7 @@ export default {
   name: 'dentistslist',
   components: {
     myTable,
-    collapsableButton
+    collapsableLinkButton
   },
   data () {
     return {
