@@ -16,7 +16,8 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica"></dentist-search>
+          <dentist-search id="clinica" v-model="data.idDentista" ></dentist-search>
+          <span>{{data.idDentista}}</span>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="paciente">Paciente</label>
@@ -171,6 +172,7 @@ export default {
       }
     },
     save: function() {
+      debugger
       this.requiresValidation = true
 
       if (this.canBeSaved) {
@@ -206,9 +208,9 @@ export default {
     getWork(this.workId, 'labManager.sqlite').then((workDetails) => {
       this.work = workDetails
     })
-    this.$root.$on('work:dentistSelected', (id) => {
-      this.data.idDentista = id
-    })
+    // this.$root.$on('work:dentistSelected', (id) => {
+    //   this.data.idDentista = id
+    // })
   }
 }
 </script>

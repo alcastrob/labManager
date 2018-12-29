@@ -34,7 +34,7 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica"></dentist-search>
+          <dentist-search id="clinica" v-model="work.IdDentista"></dentist-search>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="paciente">Paciente</label>

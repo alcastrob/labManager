@@ -88,13 +88,8 @@ function processDateQuery(field, value){
 //Tested
 export function getWork (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo, tt.Descripcion AS TipoTrabajo, t.IdDentista, d.NombreClinica, d.NombreDentista, ' +
-  't.IdTipoTrabajo, t.Paciente, t.Color, date(t.FechaTerminacion) AS FechaTerminacion, date(t.FechaEntrada) as FechaEntrada, date(t.FechaPrevista) as FechaPrevista, ' +
-  't.PrecioFinal, t.PrecioMetal, t.Nombre ' +
-  'FROM Trabajos t ' +
-  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-  'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
-  'WHERE t.IdTrabajo = ?'
+  var query = 'SELECT * FROM vTrabajos ' +
+  'WHERE IdTrabajo = ?'
   return getAsync(db, query, [workId]).then((row) => {
     return row
   })
@@ -102,9 +97,13 @@ export function getWork (workId, fileName) {
 
 export function insertWork(work, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = ''
-  // return runAsync(db, query, [workIndication.IdTrabajo,
-  //   workIndication.Descripcion , workIndication.Precio])
+  var query = 'INSERT INTO Trabajos (IdDentista, IdTipoTrabajo, ' +
+    'Paciente, Color, FechaTerminacion, FechaEntrada, ' +
+    'FechaPrevista, PrecioFinal, PrecioMetal) ' +
+    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+  return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
+    work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista,
+    work.PrecioFinal, work.PrecioMetal])
   }
 
 // Work Indications------------------------------------------------------------
@@ -122,7 +121,6 @@ export function getWorkIndications (workId, fileName) {
 
 //Tested
 export function insertWorkIndications(workIndication, fileName) {
-  debugger
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO TrabajosDetalle (IdTrabajo, ' +
   'Descripcion, Precio) ' +
@@ -133,7 +131,6 @@ export function insertWorkIndications(workIndication, fileName) {
 
 //Tested
 export function updateWorkIndications(workIndication, fileName) {
-  debugger
   db = new sqlite3.Database(fileName)
   var query = 'UPDATE TrabajosDetalle ' +
   'SET Descripcion = ?, Precio = ? ' +
@@ -143,7 +140,6 @@ export function updateWorkIndications(workIndication, fileName) {
 
 //Tested
 export function deleteWorkIndications(workIndication, fileName){
-  debugger
   db = new sqlite3.Database(fileName)
   var query = 'DELETE FROM TrabajosDetalle WHERE IdTrabajoDetalle = ?'
   return runAsync(db, query, [workIndication.IdTrabajoDetalle])

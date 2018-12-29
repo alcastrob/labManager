@@ -3,7 +3,7 @@
     <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica">
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
       <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</span>
-      <div v-for="dentist in data" :key='dentist.IdDentista'>
+      <div v-for="dentist in candidateDentistsFromQuery" :key='dentist.IdDentista'>
         <span class="list-group-item clickable" v-on:click="selectDentist(dentist.NombreDentista, dentist.IdDentista)">{{dentist.NombreDentista}}</span>
       </div>
     </div>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { searchDentistsByName } from '../../../main/dal.js'
+import { searchDentistsByName, getDentist } from '../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway';
 import _ from 'lodash'
 
@@ -22,29 +22,28 @@ export default {
     return {
       resultsVisible: false,
       query: '',
-      data: [],
-      selectedId: -1,
+      candidateDentistsFromQuery: [],
       focus: false
     }
   },
+  props: ['value'],
   methods: {
     search: function() {
       this.resultsVisible = true
       this.focus = true
       if (this.query.length > 3) {
         searchDentistsByName(this.query, 'labManager.sqlite').then((dentistDetails) => {
-          this.data = dentistDetails
+          this.candidateDentistsFromQuery = dentistDetails
         })
       } else {
-        this.data = []
-        this.selectedId = -1
+        this.candidateDentistsFromQuery = []
+        this.$emit('input', -1)
       }
     },
     selectDentist: function(name, id) {
       this.query = name
-      this.selectedId = id
       this.resultsVisible = false
-      this.$root.$emit('work:dentistSelected', this.selectedId)
+      this.$emit('input', id)
     },
     createNew: function(name) {
       this.$router.push({
@@ -55,7 +54,7 @@ export default {
       })
     },
     canCreate: function(name) {
-      return !(_.some(this.data, {'NombreDentista': name}))
+      return !(_.some(this.candidateDentistsFromQuery, {'NombreDentista': name}))
     },
     canDisplayDropdown: function() {
       this.resultVisible =  (this.query !== '' && this.canCreate(this.query) && this.focus)
@@ -67,6 +66,13 @@ export default {
   },
   mounted () {
     this.$refs.clinica.focus()
+    this.$watch('value', function (newVal, oldVal) {
+      getDentist(newVal, 'labManager.sqlite').then((dentistDetail) => {
+        if (dentistDetail !== undefined) {
+          this.query = dentistDetail.NombreDentista
+        }
+      })      
+    })
   }
 }
 </script>
