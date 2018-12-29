@@ -35,7 +35,7 @@
     <div>
       <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger animated shake': sumError}">{{getSum()}}</p>
     </div>
-    <div>
+    <!-- <div>
       <h3>Inserted</h3>
       <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
         <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
@@ -48,7 +48,7 @@
       <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
         <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
       </ul>
-    </div>
+    </div> -->
 </div>
 </template>
 
@@ -79,7 +79,8 @@ export default {
         this.insertedRows.push(newRow)
         this.$refs.newDescripcion.value = ''
         this.$refs.newPrecio.value = ''
-        this.$refs.newPrecio.parentElement.parentElement.children[1].focus()
+        this.$refs.newDescripcion.focus()
+        
       }
     },
     deleteRow: function (rowId) {

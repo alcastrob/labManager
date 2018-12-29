@@ -28,7 +28,7 @@
             <option disabled value="">Seleccione un opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
-        </div> <!-- col-md-3 -->
+        </div> <!-- col-md-6 -->
         <div class="col-md-4">
           <label for="color">Color</label>
           <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="data.Color">
