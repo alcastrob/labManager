@@ -50,7 +50,6 @@ export function getWorksList (fileName, customFilters) {
   }
 
   return allAsync(db, query, []).then((row) => {
-    // db.close()
     return row
   })
 }
@@ -97,7 +96,6 @@ export function getWork (workId, fileName) {
   'INNER JOIN TipoTrabajos tt ON tt.IdTipoTrabajo = t.IdTipoTrabajo ' +
   'WHERE t.IdTrabajo = ?'
   return getAsync(db, query, [workId]).then((row) => {
-    // db.close()
     return row
   })
 }
@@ -214,7 +212,6 @@ export function getWorkInExecution (fileName) {
   'FROM Trabajos ' +
   'WHERE FechaTerminacion is NULL OR FechaTerminacion >= date("now", "localtime")'
   return getAsync(db, query, []).then((row) => {
-    // db.close()
     return row
   })
 }
@@ -227,7 +224,6 @@ var query = 'SELECT COUNT(1) AS Count ' +
 'WHERE FechaTerminacion >= date("now", "localtime", "start of month") ' +
 'AND FechaTerminacion <= date("now", "localtime", "start of month", "+1 month", "-1 day")'
 return getAsync(db, query, []).then((row) => {
-  // db.close()
   return row
 })
 }
@@ -239,7 +235,6 @@ export function getWorksEndedLast30days(fileName) {
   'FROM Trabajos ' +
   'WHERE FechaTerminacion >= date("now", "localtime", "-30 days")'
   return getAsync(db, query, []).then((row) => {
-    // db.close()
     return row
   })
   }
@@ -252,7 +247,6 @@ export function getWorksEndedLast30days(fileName) {
     'WHERE FechaTerminacion >= date("now", "localtime", "-60 days") '+
     'AND FechaTerminacion <= date("now", "localtime", "-30 days")'
     return getAsync(db, query, []).then((row) => {
-      // db.close()
       return row
     })
     }
@@ -266,7 +260,6 @@ export function getWorkTypes (fileName) {
   var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
 
   return allAsync(db, query, []).then((row) => {
-    // db.close()
     return row
   })
 }
@@ -283,7 +276,6 @@ export function getAdjuntsOfWork (workId, fileName) {
   'WHERE IdTrabajo = ?'
 
   return getAsync(db, query, [workId]).then((row) => {
-    // db.close()
     return row
   })
 }
@@ -331,7 +323,6 @@ export function getDentistList (fileName) {
   'Telefono, Telefono2 ' +
   'FROM Dentistas'
   return allAsync(db, query, []).then((row) => {
-    db.close()
     return row
   })
 }
@@ -343,7 +334,6 @@ export function getDentist (dentistId, fileName) {
   'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
   'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE IdDentista = ?'
   return getAsync(db, query, [dentistId]).then((row) => {
-    db.close()
     return row
   })
 }

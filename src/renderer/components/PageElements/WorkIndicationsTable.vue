@@ -80,7 +80,6 @@ export default {
         this.$refs.newDescripcion.value = ''
         this.$refs.newPrecio.value = ''
         this.$refs.newDescripcion.focus()
-        
       }
     },
     deleteRow: function (rowId) {
@@ -118,7 +117,6 @@ export default {
       }
     },
     save(masterId){
-      debugger
       _.forEach(this.insertedRows, function(row){
         row.IdTrabajo = masterId
         insertWorkIndications(row, 'labManager.sqlite')

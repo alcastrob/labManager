@@ -207,8 +207,10 @@ export default {
       console.log("DeclarationOfConformity")
     }
   },
+  created () {
+    this.workId = parseInt(this.$route.params.id)
+  },
   mounted () {
-    this.workId = this.$route.params.id
 
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types
