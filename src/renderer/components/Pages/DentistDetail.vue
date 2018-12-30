@@ -1,9 +1,20 @@
 <template>
-  <div @change="setDirty()">
+  <div>
     <div class="container">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
           <h1>Dentista</h1>
+        </div> <!-- col-md-6 -->
+        <div class="col-md-6 mt-2">
+          <div class="float-right">
+            <div>
+              <collapsable-link-button iconCss="fa fa-fw fa-list" text="Ver sus trabajos" :pathTo="getWorkListUrl()"></collapsable-link-button>
+            </div>
+          </div>
+        </div> <!-- col-md-6 -->
+      </div><!-- row -->
+      <div class="row">
+        <div class="col-md-8">
           <div class="row">
             <div class="col-md-6 mt-3">
               <label for="dentista">Dentista</label>
@@ -79,7 +90,7 @@
               btn-block" v-on:click="save()" v-bind:class="{disabled: !canBeSaved()}">Guardar</button>
             </div>
           </div> <!-- row -->
-        </div> <!-- Columna 1 -->
+        </div>
         <div class="col-md-4 separated-column text-left"> <!-- Columna 2 -->
           <h4 class="pt-2">Datos y estadísticas</h4>
           <p class="text-left">Aquí irá toda la información de las estadísticas del dentista.</p>
@@ -95,8 +106,12 @@
 
 <script>
 import { getDentist, updateDentist } from '../../../main/dal.js'
+import collapsableLinkButton from '../PageElements/CollapsableButtons/collapsableLinkButton'
 export default {
   name: 'dentistDetail',
+  components: {
+    collapsableLinkButton
+  },
   data () {
     return {
       dentistId: 0,
@@ -106,6 +121,9 @@ export default {
     }
   },
   methods: {
+    getWorkListUrl : function() {
+      return `/works/list/dentist/${this.dentistId}?title=Lista de Trabajos de ${this.data.NombreDentista}`
+    },
     save: function() {
       this.requiresValidation = true
 
@@ -115,9 +133,6 @@ export default {
     },
     canBeSaved: function() {
       return this.isDirty && this.data.NombreClinica !== ''
-    },
-    setDirty: function() {
-      this.isDirty = true
     }
   },
   mounted () {

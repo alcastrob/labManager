@@ -5,6 +5,7 @@ import about from '../components/Pages/About.vue'
 import mainPage from '../components/Pages/MainPage.vue'
 import worksNew from '../components/Pages/WorkNew.vue'
 import worksList from '../components/Pages/WorksList.vue'
+import worksListUncached from '../components/Pages/WorksListUncached.vue'
 import workDetail from '../components/Pages/WorkDetail.vue'
 import dentistsList from '../components/Pages/DentistsList.vue'
 import dentistDetails from '../components/Pages/DentistDetail.vue'
@@ -36,6 +37,10 @@ export default new Router({
         {
           path: 'works/list',
           component: worksList
+        },
+        {
+          path: 'works/list/dentist/:id',
+          component: worksListUncached
         },
         {
           path: 'works/details/:id',

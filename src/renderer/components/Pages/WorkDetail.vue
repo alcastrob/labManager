@@ -97,8 +97,8 @@
         <textarea class="form-control" id="labelText" rows="4" cols="60" v-model="workIndicationsText"></textarea>
       </div>
       <div class="modal-footer">
-        <button @click="hideModal">Cancelar</button>
-        <button @click="printLabel">Imprimir</button>
+        <button class="btn btn-secondary" @click="hideModal">Cancelar</button>
+        <button class="btn btn-secondary" @click="printLabel">Imprimir</button>
       </div>
     </b-modal>
     <div ref="labelContainer"></div>

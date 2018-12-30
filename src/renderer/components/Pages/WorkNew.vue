@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col-md-6">
         <h1>Nuevo Trabajo</h1>
-      </div>
+      </div> <!-- col-md-6 -->
       <div class="col-md-6 mt-2">
         <div class="float-right">
           <div>
@@ -320,7 +320,6 @@ export default {
       this.data.IdDentista = -1
       this.$refs.dentist.query = ''
       this.data.IdTipoTrabajo = -1
-      debugger
       this.$refs.cbResina.checked = false
       this.$refs.cbCompostura.checked = false
       if (this.adjunctsVisible) this.$refs.cbAditamentos.checked = false

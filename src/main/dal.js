@@ -47,6 +47,9 @@ export function getWorksList (fileName, customFilters) {
     if (customFilters.tipo !== undefined && customFilters.tipo.length > 0){
       query += processTypeQuery('TipoTrabajo', customFilters.tipo)
     }
+    if (customFilters.IdDentista !== undefined){
+      query += ` AND IdDentista = ${customFilters.IdDentista}`
+    }
   }
 
   return allAsync(db, query, []).then((row) => {
@@ -321,6 +324,7 @@ export function getDentistList (fileName) {
   })
 }
 
+//Tested
 export function getDentist (dentistId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT * FROM vDentistas WHERE IdDentista = ?'
