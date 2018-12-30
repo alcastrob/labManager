@@ -21,7 +21,9 @@
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="paciente">Paciente</label>
-          <input type="text" class="form-control" v-model="data.Paciente">
+          <input type="text" class="form-control" v-model="$v.pepe.$model">
+          <!-- <input type="text" class="form-control" v-model="data.Paciente"> -->
+          <p v-if="!$v.pepe.required">Es necesario especificar un dentista</p>
         </div> <!-- col-md-6 -->
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
@@ -180,6 +182,7 @@ import bModal from 'bootstrap-vue'
 import Vue from 'Vue'
 import { getWork, getWorkTypes, getWorkIndications, insertWork, getLastId, insertAdjuntsOfWork } from '../../../main/dal.js'
 import _ from 'lodash'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   name: 'WorkNew',
@@ -193,6 +196,7 @@ export default {
   data () {
     return {
       requiresValidation: false,
+      pepe: '',
       data: {
         IdTrabajo: 0,
         IdDentista: 0,
@@ -220,6 +224,11 @@ export default {
         Otros: ''
       },
       adjunctsVisible: false
+    }
+  },
+  validations: {
+    pepe: {
+      required
     }
   },
   methods: {
@@ -305,12 +314,6 @@ export default {
     },
      showAdjunts: function() {
        this.adjunctsVisible = true
-      // if(this.adjuncts === null){
-      //   var ComponentClass = Vue.extend(workAdjuncts)
-      //   this.adjuncts = new ComponentClass()
-      //   this.adjuncts.$mount()
-      //   this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
-      // }
     },
     setStartDateToToday: function() {
       var today = new Date()
