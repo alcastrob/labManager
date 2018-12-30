@@ -6,7 +6,7 @@
         <input type="text" v-model="filterText" @keyup.enter="doFilter">
         <button class="ml-1 btn btn-secondary" @click="doFilter">Filtrar</button>
         <button class="ml-1 btn btn-outline-secondary" @click="resetFilter">Cancelar filtrado</button>
-        <a href="#" data-toggle="collapse" data-target="#filter-options" class="pl-4"><i class="fas fa-filter"></i> Otras opciones de filtrado</a>
+        <a href="#" data-toggle="collapse" data-target="#filter-options" class="pl-4 text-info"><i class="fas fa-filter"></i> Otras opciones de filtrado</a>
       </div>
       <div id="filter-options" class="collapse">
         <option-line id="fEntrada" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes']" description="Fecha entrada: " ref="fEntrada">

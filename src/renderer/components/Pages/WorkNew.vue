@@ -26,10 +26,11 @@
       </div> <!-- col-md-6 -->
       <div class="col-md-3">
         <label for="tipoTrabajo">Tipo trabajo</label>
-        <select class="form-control" id="tipoTrabajo" v-model="data.IdTipoTrabajo">
+        <select class="form-control" id="tipoTrabajo" v-model="$v.data.IdTipoTrabajo.$model">
           <option disabled value="">Seleccione un opción</option>
           <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
         </select>
+        <small class="text-danger" v-if="$v.data.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         <!-- <span>{{data.IdTipoTrabajo}}</span> -->
       </div> <!-- col-md-6 -->
       <div class="col-md-4">
@@ -107,7 +108,7 @@
             </div>
             <div class="form-check">
               <input class="form-check-input" id="cbEsqueletico" type="checkbox" ref="cbEsqueletico" @change="setBtnPrintEnabled">
-              <label class="form-check-label" for="cbEsqueleticos">
+              <label class="form-check-label" for="cbEsqueletico">
                 Esqueléticos
               </label>
             </div>
@@ -231,7 +232,7 @@ export default {
       IdTrabajo: { },
       IdDentista: { validId },
       NombreDentista: { },
-      IdTipoTrabajo: { },
+      IdTipoTrabajo: { validId },
       Paciente: { },
       Color: { },
       FechaEntrada: { },
@@ -319,9 +320,10 @@ export default {
       this.data.IdDentista = -1
       this.$refs.dentist.query = ''
       this.data.IdTipoTrabajo = -1
+      debugger
       this.$refs.cbResina.checked = false
       this.$refs.cbCompostura.checked = false
-      this.$refs.cbAditamentos.checked = false
+      if (this.adjunctsVisible) this.$refs.cbAditamentos.checked = false
       this.$refs.cbEsqueletico.checked = false
       this.$refs.cbOrtodoncia.checked = false
       this.$refs.cbZirconio.checked = false
