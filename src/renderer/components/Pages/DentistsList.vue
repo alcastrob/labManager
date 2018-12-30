@@ -11,7 +11,7 @@
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
     <div>
-      <myTable :headers="headers" :searchFields="searchFields" :eventId="eventId" ref="dentistTable" urlBase="/dentists/details/"/>
+      <myTable :headers="headers" :searchFields="searchFields" masterKey="IdDentista" ref="dentistTable" urlBase="/dentists/details/"/>
     </div>
   </div>
 
@@ -21,8 +21,6 @@
 import myTable from '../PageElements/tables/myTable'
 import { getDentistList } from '../../../main/dal.js'
 import collapsableLinkButton from '../PageElements/CollapsableButtons/collapsableLinkButton'
-
-const EVENTID = 'DentistsList'
 
 export default {
   name: 'dentistslist',
@@ -45,11 +43,6 @@ export default {
         }, {
           title: 'Clínica',
           dataField: 'NombreClinica',
-          titleClass: 'text-left',
-          rowClass: ''
-        }, {
-          title: 'Datos Fiscales',
-          dataField: 'DatosFiscales',
           titleClass: 'text-left',
           rowClass: ''
         }, {
@@ -77,9 +70,20 @@ export default {
           dataField: 'Telefono2',
           titleClass: 'text-left',
           rowClass: ''
-        } ],
-      searchFields: ['NombreDentista', 'NombreClinica', 'DatosFiscales', 'Direccion', 'Poblacion', 'CorreoElectronico', 'Telefono', 'Telefono2'],
-      eventId: EVENTID
+        }, {
+          title: 'Primer trabajo',
+          dataField: 'FechaPrimerTrabajo',
+          titleClass: 'text-left',
+          rowClass: '',
+          formatter: 'date'
+        },{
+          title: 'Último trabajo',
+          dataField: 'FechaUltimoTrabajo',
+          titleClass: 'text-left',
+          rowClass: '',
+          formatter: 'date'
+        }],
+      searchFields: ['NombreDentista', 'NombreClinica', 'Direccion', 'Poblacion', 'CorreoElectronico', 'Telefono', 'Telefono2']
     }
   },
   methods: {},

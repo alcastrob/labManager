@@ -25,6 +25,10 @@ export default {
     urlBase: {
       type: String,
       required: true
+    },
+    masterKey: {
+      type: String,
+      required: true
     }
   },
   data () {
@@ -98,7 +102,7 @@ export default {
       this.sortBy()
     },
     sortBy: function() {
-      this.filteredDataset = _.sortBy(this.filteredDataset, [this.currentSortCriteria, 'IdTrabajo'])
+      this.filteredDataset = _.sortBy(this.filteredDataset, [this.currentSortCriteria, this.masterKey])
       if (!this.currentSortDesc) {
         this.filteredDataset = _.reverse(this.filteredDataset)
       }
@@ -132,10 +136,10 @@ export default {
       throw 'Missing prop headers in myTable.vue'
     if (this.searchFields === undefined || this.searchFields === null)
       throw 'Missing prop searchFields in myTable.vue'
-    // if (this.eventId === undefined || this.eventId === null)
-    //   throw 'Missing prop eventId in myTable.vue'
     if (this.urlBase === undefined || this.urlBase === null)
       throw 'Missing prop urlBase in myTable.vue'
+    if (this.masterKey === undefined || this.masterKey === null)
+      throw 'Missing prop masterKey in myTable.vue'
 
     moment.locale('es')
   }

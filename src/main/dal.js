@@ -314,22 +314,16 @@ export function deleteAdjuntsOfWork(adjuntId, fileName){
 //Tested
 export function getDentistList (fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdDentista AS Key, IdDentista, NombreDentista, NombreClinica, ' +
-  'DatosFiscales, DatosBancarios, DatosInteres, ' +
-  'Direccion, CP, Poblacion, CorreoElectronico, ' +
-  'Telefono, Telefono2 ' +
-  'FROM Dentistas'
+  var query = 'SELECT * ' +
+  'FROM vDentistas'
   return allAsync(db, query, []).then((row) => {
     return row
   })
 }
 
-//Tested
 export function getDentist (dentistId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
-  'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
-  'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE IdDentista = ?'
+  var query = 'SELECT * FROM vDentistas WHERE IdDentista = ?'
   return getAsync(db, query, [dentistId]).then((row) => {
     return row
   })

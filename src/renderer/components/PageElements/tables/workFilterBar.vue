@@ -43,45 +43,45 @@ export default {
     },
     setFilterName (name) {
       switch (name){
-      case 'receivedToday':
-        this.$refs.fEntrada.clear()
-        this.$refs.fEntrada.select('Hoy')
-        this.$refs.fPrevista.clear()
-        this.$refs.fSalida.clear()
-        this.$refs.tipo.clear()
-        break
-      case 'inProgress':
-        this.$refs.fEntrada.clear()
-        this.$refs.fPrevista.clear()
-        this.$refs.fSalida.clear()
-        this.$refs.fSalida.select('Ninguna o en el futuro')
-        this.$refs.tipo.clear()
-        break
-      case 'closedThisMonth':
-        this.$refs.fEntrada.clear()
-        this.$refs.fPrevista.clear()
-        this.$refs.fSalida.clear()
-        this.$refs.fSalida.select('Este mes')
-        this.$refs.tipo.clear()
-        break
-      case 'closedLast30days':
-        this.$refs.fEntrada.clear()
-        this.$refs.fPrevista.clear()
-        this.$refs.fSalida.clear()
-        this.$refs.fSalida.select('Últimos 30 días')
-        this.$refs.tipo.clear()
-        break
-      case null:
-      case '':
-      case undefined:
-        this.$refs.fEntrada.clear()
-        this.$refs.fPrevista.clear()
-        this.$refs.fSalida.clear()
-        this.$refs.tipo.clear()
-        break
-      default:
-        throw 'Not recognized filter name: ' + this.filterName
-    }
+        case 'receivedToday':
+          this.$refs.fEntrada.clear()
+          this.$refs.fEntrada.select('Hoy')
+          this.$refs.fPrevista.clear()
+          this.$refs.fSalida.clear()
+          this.$refs.tipo.clear()
+          break
+        case 'inProgress':
+          this.$refs.fEntrada.clear()
+          this.$refs.fPrevista.clear()
+          this.$refs.fSalida.clear()
+          this.$refs.fSalida.select('Ninguna o en el futuro')
+          this.$refs.tipo.clear()
+          break
+        case 'closedThisMonth':
+          this.$refs.fEntrada.clear()
+          this.$refs.fPrevista.clear()
+          this.$refs.fSalida.clear()
+          this.$refs.fSalida.select('Este mes')
+          this.$refs.tipo.clear()
+          break
+        case 'closedLast30days':
+          this.$refs.fEntrada.clear()
+          this.$refs.fPrevista.clear()
+          this.$refs.fSalida.clear()
+          this.$refs.fSalida.select('Últimos 30 días')
+          this.$refs.tipo.clear()
+          break
+        case null:
+        case '':
+        case undefined:
+          this.$refs.fEntrada.clear()
+          this.$refs.fPrevista.clear()
+          this.$refs.fSalida.clear()
+          this.$refs.tipo.clear()
+          break
+        default:
+          throw 'Not recognized filter name: ' + this.filterName
+      }
     },
     resetFilter () {
       this.filterText = ''

@@ -7,7 +7,7 @@
       </div>
     </div> <!-- row -->
     <div>
-      <workExtendedTable :headers="headers" :searchFields="searchFields" ref="table" urlBase="/works/details/"/>
+      <workExtendedTable :headers="headers" :searchFields="searchFields" ref="table" urlBase="/works/details/" masterKey="IdTrabajo" />
     </div>
   </div>
 </template>
