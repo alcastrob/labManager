@@ -11,7 +11,7 @@
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
     <div>
-      <myTable :headers="headers" :searchFields="searchFields" masterKey="IdDentista" ref="dentistTable" urlBase="/dentists/details/"/>
+      <myTable :headers="headers" :searchFields="searchFields" ref="dentistTable"  urlBase="/dentists/details/" masterKey="IdDentista"/>
     </div>
   </div>
 

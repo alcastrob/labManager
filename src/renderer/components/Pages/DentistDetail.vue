@@ -80,13 +80,13 @@
             </div>
           </div> <!-- row -->
         </div> <!-- Columna 1 -->
-        <div class="col-md-4 separated-column"> <!-- Columna 2 -->
+        <div class="col-md-4 separated-column text-left"> <!-- Columna 2 -->
           <h4 class="pt-2">Datos y estadísticas</h4>
-          <p>Aquí irá toda la información de las estadísticas del dentista.</p>
-          <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero blanditiis impedit itaque perferendis magnam nesciunt iure deserunt? Perspiciatis nemo fugiat cum officiis et ratione in vel maxime. Ratione, hic consequuntur.</p>
-          <p>Illo veritatis, eveniet laudantium expedita repudiandae error, pariatur et nobis laboriosam itaque neque ipsam iusto labore, dolorem suscipit provident tenetur! Ab accusantium totam autem cupiditate eveniet. Laboriosam consectetur repellendus debitis!</p>
-          <p>Cumque nisi eum nam doloribus ea officia mollitia magni beatae adipisci non recusandae id consequuntur ullam sequi minima optio nesciunt omnis praesentium, soluta voluptatum, laborum enim, delectus quisquam. Soluta, laborum.</p>
-          <p>Ullam, rerum in exercitationem, repudiandae sunt eligendi ab laboriosam ea facere, suscipit dolores voluptate nisi. Eos iure placeat dolores, cupiditate optio ex impedit explicabo accusantium doloribus iste nostrum neque! Quia.</p>
+          <p class="text-left">Aquí irá toda la información de las estadísticas del dentista.</p>
+          <p class="text-justify">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero blanditiis impedit itaque perferendis magnam nesciunt iure deserunt? Perspiciatis nemo fugiat cum officiis et ratione in vel maxime. Ratione, hic consequuntur.</p>
+          <p class="text-justify">Illo veritatis, eveniet laudantium expedita repudiandae error, pariatur et nobis laboriosam itaque neque ipsam iusto labore, dolorem suscipit provident tenetur! Ab accusantium totam autem cupiditate eveniet. Laboriosam consectetur repellendus debitis!</p>
+          <p class="text-justify">Cumque nisi eum nam doloribus ea officia mollitia magni beatae adipisci non recusandae id consequuntur ullam sequi minima optio nesciunt omnis praesentium, soluta voluptatum, laborum enim, delectus quisquam. Soluta, laborum.</p>
+          <p class="text-justify">Ullam, rerum in exercitationem, repudiandae sunt eligendi ab laboriosam ea facere, suscipit dolores voluptate nisi. Eos iure placeat dolores, cupiditate optio ex impedit explicabo accusantium doloribus iste nostrum neque! Quia.</p>
           </div>
       </div> <!-- row -->
     </div> <!-- container -->
@@ -122,7 +122,7 @@ export default {
   },
   mounted () {
     this.dentistId = this.$route.params.id
-    
+
     getDentist(this.dentistId, 'labManager.sqlite').then((dentistDetail) => {
       this.data = dentistDetail
     })
