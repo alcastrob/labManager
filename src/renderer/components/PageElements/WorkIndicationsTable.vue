@@ -3,7 +3,7 @@
     <table class="table table-bordered table-responsive-xs table-striped">
     <tr>
       <th style="width: 4%;"></th>
-      <th style="width: 80%;">Descripción</th>
+      <th class="text-left" style="width: 80%;">Descripción</th>
       <th style="width: 16%;" class="text-right">Precio</th>
     </tr>
     <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
