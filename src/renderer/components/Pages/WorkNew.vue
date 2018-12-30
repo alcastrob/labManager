@@ -62,7 +62,8 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-4">
-          <div ref="workAdjunctsContainer"></div>
+          <work-adjuncts v-model="adjuncts" v-if="adjunctsVisible"></work-adjuncts>
+          <!-- <div ref="workAdjunctsContainer"></div> -->
         </div> <!-- col-md-8 -->
       </div> <!-- row -->
       <div class="row">
@@ -177,7 +178,7 @@ import dentistSearch from '../PageElements/DentistSearch'
 import bModal from 'bootstrap-vue'
 
 import Vue from 'Vue'
-import { getWork, getWorkTypes, getWorkIndications, insertWork, getLastId } from '../../../main/dal.js'
+import { getWork, getWorkTypes, getWorkIndications, insertWork, getLastId, insertAdjuntsOfWork } from '../../../main/dal.js'
 import _ from 'lodash'
 
 export default {
@@ -205,8 +206,20 @@ export default {
       },
       workTypes: {},
       workIndications: [],
-      adjuncts: null,
-      workIndicationsText: ''
+      workIndicationsText: '',
+      adjuncts: {
+        IdTrabajo: 0,
+        Caja: '',
+        Cubeta: '',
+        Articulador: '',
+        Pletinas: '',
+        Tornillos: '',
+        Analogos: '',
+        PosteImpresion: '',
+        Interface: '',
+        Otros: ''
+      },
+      adjunctsVisible: false
     }
   },
   methods: {
@@ -217,6 +230,10 @@ export default {
           this.data.IdTrabajo = getLastId()
           this.$refs.workIndications.save(this.data.IdTrabajo)
         })
+        if(this.adjunctsVisible){
+          this.adjuncts.IdTrabajo = this.data.IdTrabajo
+          insertAdjuntsOfWork(this.adjuncts, 'labManager.sqlite')
+        }
         this.showModal()
       }
     },
@@ -286,13 +303,14 @@ export default {
           throw 'Unexpected label type in WorkDetail.printLabel()'
       }
     },
-    showAdjunts: function() {
-      if(this.adjuncts === null){
-        var ComponentClass = Vue.extend(workAdjuncts)
-        this.adjuncts = new ComponentClass()
-        this.adjuncts.$mount()
-        this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
-      }
+     showAdjunts: function() {
+       this.adjunctsVisible = true
+      // if(this.adjuncts === null){
+      //   var ComponentClass = Vue.extend(workAdjuncts)
+      //   this.adjuncts = new ComponentClass()
+      //   this.adjuncts.$mount()
+      //   this.$refs.workAdjunctsContainer.appendChild(this.adjuncts.$el)
+      // }
     },
     setStartDateToToday: function() {
       var today = new Date()

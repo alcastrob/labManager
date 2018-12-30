@@ -276,6 +276,7 @@ export function getAdjuntsOfWork (workId, fileName) {
   })
 }
 
+//Tested
 export function insertAdjuntsOfWork(adjunt, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO Aditamentos ( ' +
