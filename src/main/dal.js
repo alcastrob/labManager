@@ -98,6 +98,7 @@ export function getWork (workId, fileName) {
   })
 }
 
+//Tested
 export function insertWork(work, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO Trabajos (IdDentista, IdTipoTrabajo, ' +
@@ -108,6 +109,16 @@ export function insertWork(work, fileName) {
     work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista,
     work.PrecioFinal, work.PrecioMetal])
   }
+
+export function updateWork(work, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'UPDATE Trabajos SET IdDentista = ?, IdTipoTrabajo = ?, ' +
+  'Paciente = ?, Color = ?, FechaTerminacion = ?, ' +
+  'FechaEntrada = ?, FechaPrevista = ?, PrecioFinal = ?, ' +
+  'PrecioMetal = ?, Nombre = ? ' +
+  'WHERE IdTrabajo = ?'
+  return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente, work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.PrecioFinal, work.PrecioMetal, work.Nombre, work.IdTrabajo])
+}
 
 // Work Indications------------------------------------------------------------
 
@@ -153,14 +164,18 @@ export function deleteWorkIndications(workIndication, fileName){
 //Tested
 export function getWorkTestsList (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT p.IdPrueba, p.Descripcion, p.FechaSalida, ' +
-  'p.FechaEntrada, p.Comentario, t1.Descripcion As TurnoEntrada, ' +
-  't2.Descripcion AS TurnoSalida ' +
-  'FROM Pruebas p ' +
-  'LEFT JOIN Turnos t1 ON p.IdTurnoFechaEntrada = t1.IdTurno ' +
-  'LEFT JOIN Turnos t2 ON p.IdTurnoFechaSalida = t2.IdTurno ' +
+  var query = 'SELECT * FROM vPruebas ' +
   'WHERE IdTrabajo = ?'
   return allAsync(db, query, [workId]).then((rows) => {
+    return rows
+  })
+}
+
+//Tested
+export function getDeliveryShifts(fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdTurno, Descripcion FROM Turnos'
+  return allAsync(db, query, []).then((rows) => {
     return rows
   })
 }

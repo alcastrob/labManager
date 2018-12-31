@@ -27,7 +27,7 @@
       <div class="col-md-3">
         <label for="tipoTrabajo">Tipo trabajo</label>
         <select class="form-control" id="tipoTrabajo" v-model="$v.data.IdTipoTrabajo.$model" :class="{'is-invalid': $v.data.IdTipoTrabajo.$error}">
-          <option disabled value="">Seleccione un opción</option>
+          <option disabled value="">Seleccione una opción</option>
           <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
         </select>
         <small class="text-danger" v-if="$v.data.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
@@ -195,7 +195,7 @@ export default {
   },
   data () {
     return {
-      //It's necessary to use a boolean var instear of the isDirty bacause the form has a field with the focus that automatically touches the validator.
+      //It's necessary to use a boolean var instead of the isDirty bacause the form has a field with the focus that automatically touches the validator.
       saveButtonPressed: false,
       data: {
         IdTrabajo: 0,

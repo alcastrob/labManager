@@ -12,11 +12,11 @@
       </td>
       <td class="noMargins">
         <input type="text" v-model="indication.Descripcion" class="inputInTd" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')">
-        <div class="typeahead-dropdown list-group myTypeahead" v-if="canDisplayDropdown()">
+        <!-- <div class="typeahead-dropdown list-group myTypeahead" v-if="canDisplayDropdown()">
           <span class="list-group-item clickable">
             <i class="fas fa-align-left mr-1"></i>
             Usar como texto libre</span>
-        </div>
+        </div> -->
       </td>
       <td class="noMargins">
         <input type="text" class="inputInTd text-right" @blur="updatePrice($event, indication.IdTrabajoDetalle)" v-model="indication.Precio" :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}" v-on:keydown="filterJustNumberKeystrokes" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')">

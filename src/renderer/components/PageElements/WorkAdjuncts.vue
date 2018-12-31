@@ -2,8 +2,6 @@
 <div>
   <hr>
   <h4>Aditamentos</h4>
-
-  <!-- <div class="container" style="border: solid 1px #000; "> -->
     <div class="row">
       <div class="col-md-6">
         <label for="caja" class="pt-2">Caja</label>
@@ -40,11 +38,9 @@
 export default {
   name: 'workAdjuncts',
   props: ['value'],
-  data () {
-    return {}
-  },
   methods: {
     updateData: function() {
+      debugger
       this.$emit('input', {
         Caja: this.$refs.caja.value,
         Cubeta: this.$refs.cubeta.value,
@@ -57,9 +53,6 @@ export default {
         Otros: this.$refs.otros.value
       })
     }
-  },
-  mounted () {
-    
   }
 }
 </script>

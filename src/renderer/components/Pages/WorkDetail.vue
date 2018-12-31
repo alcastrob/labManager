@@ -45,7 +45,7 @@
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
           <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model">
-            <option disabled value="">Seleccione un opción</option>
+            <option disabled value="">Seleccione una opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
           <small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
@@ -61,27 +61,39 @@
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
-        <div class="col-md-12 mt-3">
+        <div class="col-md-12 mt-4">
           <h4>Indicaciones</h4>
           <workIndicationsTable v-model="workIndications" ref="workIndications"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
-        <div class="col-md-8 mt-3">
-          <h4>Pruebas</h4>
-          <workTestsTable :workId="workId"></workTestsTable>
-        </div> <!-- col-md-8 -->
-        <div class="col-md-4 mt-3">
+        <div class="col-md-4">
           <label for="fEntrada">Fecha entrada</label>
           <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada">
-          <br>
+          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
+          <i class="far fa-calendar-alt"></i>
+          Poner fecha de hoy
+          </a>
+        </div> <!-- col-md-4 -->
+        <div class="col-md-4">
           <label for="fPrevista">Fecha prevista</label>
           <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
-          <br>
+        </div> <!-- col-md-4 -->
+        <div class="col-md-4">
           <label for="fSalida">Fecha terminación</label>
           <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
-        </div> <!-- col-md-4 -->
+        </div>
       </div> <!-- row -->
+
+      <div class="row">
+        <div class="col-md-12 mt-4">
+          <h4>Pruebas</h4>
+          <workTestsTable v-model="workTests" :workId="workId" ref="workTests"></workTestsTable>
+        </div> <!-- col-md-12 -->
+      </div> <!-- row -->
+
+
+
       <div class="row">
       <div class="col-md-12 mt-4">
         <work-adjuncts v-model="adjuncts" v-if="adjunctsVisible"></work-adjuncts>
@@ -128,7 +140,7 @@ import labelResina from '../Labels/LabelResina'
 import bModal from 'bootstrap-vue'
 
 import Vue from 'Vue'
-import { getWork, getWorkTypes, getWorkIndications, getAdjuntsOfWork } from '../../../main/dal.js'
+import { getWork, getWorkTypes, getWorkIndications, getAdjuntsOfWork, getWorkTestsList, updateWork } from '../../../main/dal.js'
 import _ from 'lodash'
 import { decimal } from 'vuelidate/lib/validators'
 import { validId } from '../Validators/validId.js'
@@ -144,6 +156,8 @@ export default {
   },
   data () {
     return {
+      //It's necessary to use a boolean var instead of the isDirty bacause the form has a field with the focus that automatically touches the validator.
+      saveButtonPressed: false,
       workId: 0,
       work: {
         IdTrabajo: 0,
@@ -163,7 +177,8 @@ export default {
       workAdjunts: {},
       printedLabel: '',
       adjuncts: {},
-      adjunctsVisible: false
+      adjunctsVisible: false,
+      workTests: []
     }
   },
   validations: {
@@ -194,10 +209,18 @@ export default {
       this.$refs.modal.hide()
     },
     save: function() {
+      debugger
       this.saveButtonPressed = true
       this.$v.$touch()
       if (!this.$v.$invalid){
-        // this.$refs.workIndications.save(this.workId)
+        updateWork(this.work, 'labManager.sqlite').then(() => {
+          this.$refs.workIndications.save(this.data.IdTrabajo)
+          this.$refs.workTests.save(this.data.IdTrabajo)
+        })
+        if(this.adjunctsVisible){
+          this.adjuncts.IdTrabajo = this.data.IdTrabajo
+          insertAdjuntsOfWork(this.adjuncts, 'labManager.sqlite')
+        }
       }
     },
     printLabel: function() {
@@ -264,10 +287,14 @@ export default {
       this.workIndications = workIndicat
     })
     getAdjuntsOfWork(this.workId, 'labManager.sqlite').then((workAdjunts) => {
+      debugger
       this.workAdjunts = workAdjunts
       if (this.workAdjunts.length !== 0){
         this.showAdjunts()
       }
+    })
+    getWorkTestsList(this.workId, 'labManager.sqlite').then((workTests) => {
+      this.workTests = workTests
     })
   }
 }

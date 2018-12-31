@@ -1,57 +1,197 @@
 <template>
 <div id="table" class="table-editable">
-  <table class="table table-bordered table-responsive-md table-striped">
+  <table class="table table-bordered table-responsive-xs table-striped">
     <tr>
-      <th></th>
-      <th class="">Prueba</th>
-      <th class="">Fecha salida</th>
-      <th class="">Reparto salida</th>
-      <th class="">Fecha entrada</th>
-      <th class="">Reparto entrada</th>
-      <th class="">Comentario</th>
+      <th style="width: 4%"></th>
+      <th class="text-left" style="width: 13%;">Prueba</th>
+      <th class="text-left" style="width: 14%;">F. salida</th>
+      <th class="text-left" style="width: 13%;">Reparto salida</th>
+      <th class="text-left" style="width: 14%;">F. entrada</th>
+      <th class="text-left" style="width: 13%;">Reparto entrada</th>
+      <th class="text-left" style="width: 29%;">Comentario</th>
     </tr>
-    <tr v-for="test in tests" v-bind:key="test.IdPrueba">
-      <td class="pt-3" style="width: 41px;">
+    <tr v-for="test in data" v-bind:key="test.IdPrueba">
+      <td class="pt-3-half">
         <i class="fa fa-times-circle" v-on:click="deleteRow(test.IdPrueba)"></i>
       </td>
-      <td class="pt-3-half" contenteditable="true">{{test.Descripcion}}</td>
-      <td class="pt-3-half text-right" contenteditable="true">{{test.FechaSalida | formatDateDMY}}</td>
-      <td class="pt-3-half" contenteditable="true">{{test.TurnoEntrada}}</td>
-      <td class="pt-3-half text-right" contenteditable="true">{{test.FechaEntrada | formatDateDMY}}</td>
-      <td class="pt-3-half" contenteditable="true">{{test.TurnoSalida}}
-      <td class="pt-3-half" contenteditable="true">{{test.Comentario}}</td>
+      <td class="noMargins">
+        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')">
+      </td>
+      <td class="noMargins">
+        <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')">
+      </td>
+      <td class="noMargins">
+        <select class="inputInTd" v-model="test.TurnoSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')">
+          <option value=""></option>
+          <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
+        </select>
+      </td>
+      <td class="noMargins">
+        <input type="date" class="inputInTd" v-model="test.FechaEntrada" @change="trackChanges($event, test.IdPrueba, 'FechaEntrada')">
+      </td>
+      <td class="noMargins">
+        <select class="inputInTd" v-model="test.TurnoEntrada" @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaEntrada')">
+          <option value=""></option>
+          <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
+        </select>
+      </td>
+      <td class="noMargins">
+        <input type="text" v-model="test.Comentario" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Comentario')">
+      </td>
+    </tr>
+    <tr>
+      <td class="pt-3-half"></td>
+      <td class="noMargins">
+        <input type="text" class="inputInTd" ref="newDescripcion">
+      </td>
+      <td class="noMargins">
+        <input type="date" class="inputInTd" ref="newFechaSalida">
+      </td>
+      <td class="noMargins">
+        <select class="inputInTd" ref="newTurnoSalida">
+          <option selected="selected"></option>
+          <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
+        </select>
+      </td>
+      <td class="noMargins">
+        <input type="date" class="inputInTd" ref="newFechaEntrada">
+      </td>
+      <td class="noMargins">
+        <select class="inputInTd" ref="newTurnoEntrada">
+          <option selected="selected"></option>
+          <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
+        </select>
+      </td>
+      <td class="noMargins">
+        <input type="text" class="inputInTd" ref="newComentario" @blur="addLastRow()">
+      </td>
     </tr>
   </table>
+  <div>
+      <h3>Inserted</h3>
+      <ul v-for="inserted in insertedRows" :key="inserted.IdPrueba">
+        <li>{{inserted.IdPrueba}}|{{inserted.Descripcion}}</li>
+      </ul>
+      <h3>Updated</h3>
+      <ul v-for="updated in updatedRows" :key="updated.IdPrueba">
+        <li>{{updated.IdPrueba}}|{{updated.Descripcion}}</li>
+      </ul>
+      <h3>Deleted</h3>
+      <ul v-for="deleted in deletedRows" :key="deleted.IdPrueba">
+        <li>{{deleted.IdPrueba}}|{{deleted.Descripcion}}</li>
+      </ul>
+    </div>
 </div>
 </template>
 
 <script>
-import { getWorkTestsList } from '../../../main/dal.js'
+import tableMixin from './tables/TablesWithEmptyRowsMixin'
+import { getDeliveryShifts } from '../../../main/dal.js'
 import _ from 'lodash'
 
 export default {
   name: 'workTestsTable',
+  mixins: [tableMixin],
   props: {
     workId: Number
   },
   data () {
     return {
-      tests: []
+      deliveryShifts: []
     }
   },
   methods: {
+    // Related with the state and persistence----------------------------------
+    addLastRow(){
+      if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newComentario.value) || this.isNotEmpty(this.$refs.newFechaSalida.value) || this.isNotEmpty(this.$refs.newFechaEntrada.value) || this.isNotEmpty(this.$refs.newTurnoSalida.value)|| this.isNotEmpty(this.$refs.newTurnoEntrada.value)) {
+        var newRow = {
+          IdPrueba: this.newIds++,
+          IdTrabajo: this.workId,
+          Descripcion: this.$refs.newDescripcion.value,
+          FechaSalida: this.$refs.newFechaSalida.value,
+          IdTurnoFechaSalida: this.$refs.newTurnoSalida.value,
+          FechaEntrada: this.$refs.newFechaEntrada.value,
+          IdTurnoFechaEntrada: this.$refs.newTurnoEntrada.value,
+          Comentario: this.$refs.newComentario.value
+        }
+        this.data.push(newRow)
+        this.insertedRows.push(newRow)
+        this.$refs.newDescripcion.value = ''
+        this.$refs.newFechaSalida.value = ''
+        this.$refs.newTurnoSalida.value = ''
+        this.$refs.newFechaEntrada.value = ''
+        this.$refs.newTurnoEntrada.value = ''
+        this.$refs.newComentario.value = ''
+        this.$emit('input', this.tests)
+        this.$refs.newDescripcion.focus()
+      }
+    },
     deleteRow: function (rowId) {
-      this.tests = _.remove(this.tests, function (n) {
+      // this.tests = _.remove(this.tests, function (n) {
+      //   return n.IdPrueba !== rowId
+      // })
+
+      this.data = _.remove(this.data, function (n) {
         return n.IdPrueba !== rowId
       })
+      this.$emit('input', this.data)
+      if (_.some(this.insertedRows, ['IdPrueba', rowId])){
+        _.remove(this.insertedRows, ['IdPrueba', rowId])
+      } else if (_.some(this.updatedRows, ['IdPrueba', rowId])){
+        _.remove(this.updatedRows, ['IdPrueba', rowId])
+        this.deletedRows.push({IdPrueba: rowId})
+      } else {
+        this.deletedRows.push({IdPrueba: rowId})
+      }
+    },
+    trackChanges(event, rowId, field) {
+      //Let's start looking if the changed row is already on the inserted list
+      var temp = _.find(this.insertedRows, ['IdPrueba', rowId])
+      if (this.isNotEmpty(temp)){
+        //Just update the inssert with the new value. No more action required.
+        temp[field] = event.currentTarget.value
+      } else {
+        //OK, so we have to update. But maybe this field was already updated. Let's check.
+        temp = _.find(this.updatedRows, ['IdPrueba', rowId])
+        if (this.isNotEmpty(temp)){
+          //The row was already updated. Make a cumulative update
+          var original = _.find(this.data, ['IdPrueba', rowId])
+          temp.IdTrabajo = original.IdTrabajo
+          temp.Descripcion = original.Descripcion
+          temp.FechaSalida = original.FechaSalida
+          temp.IdTurnoFechaSalida = original.IdTurnoFechaSalida
+          temp.FechaEntrada = original.FechaEntrada
+          temp.IdTurnoFechaEntrada = original.IdTurnoFechaEntrada
+        } else {
+          //First time updated. So jot it down.
+          var original = _.find(this.data, ['IdPrueba', rowId])
+          this.updatedRows.push(original)
+        }
+      }
+      this.$emit('input', this.data)
+    },
+    save(masterId){
+      _.forEach(this.insertedRows, function(row){
+        row.IdTrabajo = masterId
+        insertWorkTest(row, 'labManager.sqlite')
+      })
+      _.forEach(this.deletedRows, function(row){
+        deleteWorkTest(row, 'labManager.sqlite')
+      })
+      _.forEach(this.updatedRows, function(row){
+        updateWorkTest(row, 'labManager.sqlite')
+      })
+      this.insertedRows = []
+      this.deletedRows = []
+      this.updatedRows = []
     }
   },
   mounted () {
     // Check the required parameters (props)
     if (this.workId === undefined || this.workId === null)
       throw 'Missing prop workId in WorkTestTable.vue'
-    getWorkTestsList(this.workId, 'labManager.sqlite').then((workTests) => {
-      this.tests = workTests
+    getDeliveryShifts('labManager.sqlite').then((shifts) => {
+      this.deliveryShifts = shifts
     })
   }
 }
@@ -61,4 +201,40 @@ export default {
 .pt-3-half {
     padding-top: 1.4rem;
 }
+input[type="date"]::-webkit-inner-spin-button{
+    display: none;
+}
+
+/* The down arrow */
+/* input[type="date"]::-webkit-calendar-picker-indicator{
+    display: none;
+} */
+
+/* select{
+  -webkit-appearance: none;
+}
+select:hover{
+  -webkit-appearance: select;
+} */
+/* table.table-bordered tr:hover select {
+  -webkit-appearance: select;
+} */
+
+/* select::-webkit-inner-spin-button{
+  display: none;
+  background-color: blue;
+} */
+
+
+
+/* input[type="date"]::-webkit-datetime-edit-text{
+  color: transparent;
+} */
+/* input[type="date"]::-webkit-datetime-edit-text:hover{
+  color: black;
+} */
+/* input[type="date"]:hover -webkit-datetime-edit-text{
+  color: green;
+} */
+
 </style>
