@@ -1,6 +1,6 @@
 <template>
   <div class="input-group">
-    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica">
+    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica" :class="{'is-invalid': isInvalid}">
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
       <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</span>
       <div v-for="dentist in candidateDentistsFromQuery" :key='dentist.IdDentista'>
@@ -26,7 +26,7 @@ export default {
       focus: false
     }
   },
-  props: ['value'],
+  props: ['value', 'isInvalid'],
   methods: {
     search: function() {
       this.resultsVisible = true
@@ -64,6 +64,17 @@ export default {
       this.focus = false
     }
   },
+  computed: {
+    getCssClass: function() {
+      if (this.$el !== undefined){
+        console.log(this.$el.className)
+        return this.$el.className
+      } else {
+        console.log('empty')
+        return ''
+      }
+    }
+  },
   mounted () {
     this.$refs.clinica.focus()
     this.$watch('value', function (newVal, oldVal) {
@@ -73,6 +84,9 @@ export default {
           this.hidePopup()
         }
       })
+    })
+    this.$watch('this.$el.className', function(newVal, oldVal){
+      debugger
     })
   }
 }

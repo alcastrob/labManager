@@ -16,7 +16,7 @@
     <div class="row">
       <div class="col-md-6 mb-3 mt-3">
         <label for="clinica">Clínica o Dr/a</label>
-        <dentist-search class="is-invalid" id="clinica" v-model="$v.data.IdDentista.$model" ref="dentist"></dentist-search>
+        <dentist-search id="clinica" v-model="$v.data.IdDentista.$model" ref="dentist" :isInvalid="$v.data.IdDentista.$error && saveButtonPressed"></dentist-search>
         <small class="text-danger" v-if="$v.data.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         <!-- <span>{{data.IdDentista}}</span> -->
       </div> <!-- col-md-6 -->
@@ -26,7 +26,7 @@
       </div> <!-- col-md-6 -->
       <div class="col-md-3">
         <label for="tipoTrabajo">Tipo trabajo</label>
-        <select class="form-control" id="tipoTrabajo" v-model="$v.data.IdTipoTrabajo.$model">
+        <select class="form-control" id="tipoTrabajo" v-model="$v.data.IdTipoTrabajo.$model" :class="{'is-invalid': $v.data.IdTipoTrabajo.$error}">
           <option disabled value="">Seleccione un opción</option>
           <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
         </select>
@@ -183,7 +183,6 @@ import bModal from 'bootstrap-vue'
 import Vue from 'Vue'
 import { getWork, getWorkTypes, getWorkIndications, insertWork, getLastId, insertAdjuntsOfWork } from '../../../main/dal.js'
 import _ from 'lodash'
-import { required } from 'vuelidate/lib/validators'
 import { validId } from '../Validators/validId.js'
 
 export default {
