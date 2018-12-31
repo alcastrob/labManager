@@ -8,7 +8,7 @@
       <div class="col-md-6 mt-2">
         <div class="float-right">
           <div>
-            <collapsable-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts"></collapsable-action-button>
+            <collapsable-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible"></collapsable-action-button>
           </div>
         </div>
       </div>
@@ -30,7 +30,7 @@
           <option disabled value="">Seleccione un opción</option>
           <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
         </select>
-        <small class="text-danger" v-if="$v.data.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
+        <small class="text-danger" v-if="$v.data.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
         <!-- <span>{{data.IdTipoTrabajo}}</span> -->
       </div> <!-- col-md-6 -->
       <div class="col-md-4">
@@ -65,7 +65,6 @@
     <div class="row">
       <div class="col-md-12 mt-4">
         <work-adjuncts v-model="adjuncts" v-if="adjunctsVisible"></work-adjuncts>
-        <!-- <div ref="workAdjunctsContainer"></div> -->
       </div> <!-- col-md-8 -->
     </div> <!-- row -->
     <div class="row">

@@ -64,17 +64,6 @@ export default {
       this.focus = false
     }
   },
-  computed: {
-    getCssClass: function() {
-      if (this.$el !== undefined){
-        console.log(this.$el.className)
-        return this.$el.className
-      } else {
-        console.log('empty')
-        return ''
-      }
-    }
-  },
   mounted () {
     this.$refs.clinica.focus()
     this.$watch('value', function (newVal, oldVal) {
@@ -84,9 +73,6 @@ export default {
           this.hidePopup()
         }
       })
-    })
-    this.$watch('this.$el.className', function(newVal, oldVal){
-      debugger
     })
   }
 }

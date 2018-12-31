@@ -8,6 +8,7 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
+              <collapsable-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible"></collapsable-action-button>
               <collapsable-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="getDeliveryNote"></collapsable-action-button>
               <collapsable-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeclarationOfConformity"></collapsable-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
@@ -34,26 +35,29 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica" v-model="work.IdDentista"></dentist-search>
+          <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed"></dentist-search>
+          <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="paciente">Paciente</label>
-          <input type="text" class="form-control" v-model="work.Paciente">
+          <input type="text" class="form-control" v-model="$v.work.Paciente.$model">
         </div> <!-- col-md-6 -->
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
-          <select class="form-control" id="tipoTrabajo" v-model="work.IdTipoTrabajo">
+          <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model">
             <option disabled value="">Seleccione un opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
+          <small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
         </div> <!-- col-md-6 -->
         <div class="col-md-2">
           <label for="precioMetal">Precio metal</label>
-          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="work.PrecioMetal">
+          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}">
+          <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
         </div> <!-- col-md-2 -->
         <div class="col-md-4">
           <label for="color">Color</label>
-          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="work.Color">
+          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model">
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
@@ -78,6 +82,11 @@
           <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
+      <div class="row">
+      <div class="col-md-12 mt-4">
+        <work-adjuncts v-model="adjuncts" v-if="adjunctsVisible"></work-adjuncts>
+      </div> <!-- col-md-8 -->
+    </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
           <!-- v-on:click="save()" -->
@@ -110,7 +119,7 @@ import workIndicationsTable from '../PageElements/WorkIndicationsTable'
 import workTestsTable from '../PageElements/workTestsTable'
 import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
 import dentistSearch from '../PageElements/DentistSearch'
-
+import workAdjuncts from '../PageElements/WorkAdjuncts'
 import labelAditamentos from '../Labels/labelAditamentos'
 import labelComposite from '../Labels/labelComposite'
 import labelEsqueleticos from '../Labels/LabelEsqueleticos'
@@ -121,6 +130,8 @@ import bModal from 'bootstrap-vue'
 import Vue from 'Vue'
 import { getWork, getWorkTypes, getWorkIndications, getAdjuntsOfWork } from '../../../main/dal.js'
 import _ from 'lodash'
+import { decimal } from 'vuelidate/lib/validators'
+import { validId } from '../Validators/validId.js'
 
 export default {
   name: 'workDetail',
@@ -128,17 +139,45 @@ export default {
     workIndicationsTable,
     workTestsTable,
     collapsableActionButton,
-    dentistSearch
+    dentistSearch,
+    workAdjuncts,
   },
   data () {
     return {
       workId: 0,
-      work: {},
+      work: {
+        IdTrabajo: 0,
+        IdDentista: 0,
+        NombreDentista: '',
+        IdTipoTrabajo: 0,
+        Paciente: '',
+        Color: '',
+        PrecioMetal: 0,
+        FechaEntrada: '',
+        FechaPrevista: '',
+        FechaTerminacion: ''
+      },
       workTypes: {},
       workIndications: [],
       workIndicationsText: '',
       workAdjunts: {},
-      printedLabel: ''
+      printedLabel: '',
+      adjuncts: {},
+      adjunctsVisible: false
+    }
+  },
+  validations: {
+    work: {
+      IdTrabajo: { },
+      IdDentista: { validId },
+      NombreDentista: { },
+      IdTipoTrabajo: { validId },
+      Paciente: { },
+      Color: { },
+      PrecioMetal: { decimal },
+      FechaEntrada: { },
+      FechaPrevista: { },
+      FechaTerminacion: { }
     }
   },
   methods: {
@@ -155,7 +194,11 @@ export default {
       this.$refs.modal.hide()
     },
     save: function() {
-      this.$refs.workIndications.save(this.workId)
+      this.saveButtonPressed = true
+      this.$v.$touch()
+      if (!this.$v.$invalid){
+        // this.$refs.workIndications.save(this.workId)
+      }
     },
     printLabel: function() {
       var ComponentClass = this.mapType(this.printedLabel)
@@ -196,6 +239,9 @@ export default {
           throw 'Unexpected label type in WorkDetail.printLabel()'
       }
     },
+    showAdjunts: function() {
+       this.adjunctsVisible = true
+    },
     getDeliveryNote: function() {
       console.log("DeliveryNote")
     },
@@ -219,6 +265,9 @@ export default {
     })
     getAdjuntsOfWork(this.workId, 'labManager.sqlite').then((workAdjunts) => {
       this.workAdjunts = workAdjunts
+      if (this.workAdjunts.length !== 0){
+        this.showAdjunts()
+      }
     })
   }
 }
