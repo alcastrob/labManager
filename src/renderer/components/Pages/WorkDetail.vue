@@ -19,7 +19,7 @@
                 <a href="#" class="dropdown-item" v-on:click="showModal('Garantia')">Garantía</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Resina')" >Resina</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Compostura')">Compostura</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Aditamentos')" v-if="workAdjunts !== undefined">Aditamentos</a>
+                <a href="#" class="dropdown-item" v-on:click="showModal('Aditamentos')" v-if="workAdjuncts !== undefined">Aditamentos</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Esqueléticos')">Esqueléticos</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Ortodoncia')">Ortodoncia</a>
                 <a href="#" class="dropdown-item" v-on:click="showModal('Zirconio')">Zirconio</a>
@@ -88,17 +88,15 @@
       <div class="row">
         <div class="col-md-12 mt-4">
           <h4>Pruebas</h4>
-          <workTestsTable v-model="workTests" :workId="workId" ref="workTests"></workTestsTable>
+          <workTestsTable v-model="workTests" :workId="work.IdTrabajo" ref="workTests"></workTestsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
 
-
-
       <div class="row">
-      <div class="col-md-12 mt-4">
-        <work-adjuncts v-model="workAdjunts" v-if="adjunctsVisible"></work-adjuncts>
-      </div> <!-- col-md-8 -->
-    </div> <!-- row -->
+        <div class="col-md-12 mt-4">
+          <workAdjuncts v-model="workAdjuncts" v-if="adjunctsVisible"></workAdjuncts>
+        </div> <!-- col-md-8 -->
+      </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
           <!-- v-on:click="save()" -->
@@ -119,7 +117,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" @click="hideModal">Cancelar</button>
-        <button class="btn btn-secondary" @click="printLabel">Imprimir</button>
+        <button class="btn btn-secondary" @click="printLabelAndHide">Imprimir</button>
       </div>
     </b-modal>
     <div ref="labelContainer"></div>
@@ -127,57 +125,18 @@
 </template>
 
 <script>
-import workIndicationsTable from '../PageElements/WorkIndicationsTable'
-import workTestsTable from '../PageElements/workTestsTable'
-import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
-import dentistSearch from '../PageElements/DentistSearch'
-import workAdjuncts from '../PageElements/WorkAdjuncts'
-import labelAditamentos from '../Labels/labelAditamentos'
-import labelComposite from '../Labels/labelComposite'
-import labelEsqueleticos from '../Labels/LabelEsqueleticos'
-import labelCompostura from '../Labels/labelCompostura'
-import labelResina from '../Labels/LabelResina'
-import bModal from 'bootstrap-vue'
 
-import Vue from 'Vue'
-import { getWork, getWorkTypes, getWorkIndications, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork } from '../../../main/dal.js'
-import _ from 'lodash'
-import { decimal } from 'vuelidate/lib/validators'
+import { getWork, getWorkIndications, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
+import { decimal } from 'vuelidate/lib/validators'
+import workMixin from './WorkMixin'
 
 export default {
   name: 'workDetail',
-  components: {
-    workIndicationsTable,
-    workTestsTable,
-    collapsableActionButton,
-    dentistSearch,
-    workAdjuncts,
-  },
+  mixins: [workMixin],
   data () {
     return {
-      //It's necessary to use a boolean var instead of the isDirty bacause the form has a field with the focus that automatically touches the validator.
-      saveButtonPressed: false,
-      workId: 0,
-      work: {
-        IdTrabajo: 0,
-        IdDentista: 0,
-        NombreDentista: '',
-        IdTipoTrabajo: 0,
-        Paciente: '',
-        Color: '',
-        PrecioMetal: 0,
-        FechaEntrada: '',
-        FechaPrevista: '',
-        FechaTerminacion: ''
-      },
-      workTypes: {},
-      workIndications: [],
-      workIndicationsText: '',
-      workAdjunts: {},
-      workAdjuntsJustAdded: false,
       printedLabel: '',
-      adjunctsVisible: false,
       workTests: []
     }
   },
@@ -196,18 +155,6 @@ export default {
     }
   },
   methods: {
-    showModal(labelType) {
-      this.printedLabel = labelType
-      if (this.workIndications !== undefined){
-        this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
-      } else {
-        this.workIndicationsText = ''
-      }
-      this.$refs.modal.show()
-    },
-    hideModal() {
-      this.$refs.modal.hide()
-    },
     save: function() {
       this.saveButtonPressed = true
       this.$v.$touch()
@@ -218,106 +165,48 @@ export default {
         })
         this.$refs.workTests.save(this.work.IdTrabajo)
         if(this.adjunctsVisible){
-          this.workAdjunts.IdTrabajo = this.work.IdTrabajo
-          if(this.workAdjuntsJustAdded){
-            insertAdjuntsOfWork(this.workAdjunts, 'labManager.sqlite')
+          this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
+          if(this.workAdjunctsJustAdded){
+            insertAdjuntsOfWork(this.workAdjuncts, 'labManager.sqlite')
           } else {
-            updateAdjuntsOfWork(this.workAdjunts, 'labManager.sqlite')
+            updateAdjuntsOfWork(this.workAdjuncts, 'labManager.sqlite')
           }
         }
       }
     },
-    printLabel: function() {
-      var ComponentClass = this.mapType(this.printedLabel)
-      var instance = new ComponentClass({
-          propsData: {
-            workData: this.work,
-            workIndicationsText: this.workIndicationsText,
-            workAdjunts: this.workAdjunts
-            }
-      })
-      instance.$mount()
-      this.$refs.labelContainer.appendChild(instance.$el)
-      instance.setName(this.printedLabel)
-      instance.print(this.printedLabel)
-      this.$refs.labelContainer.removeChild(instance.$el)
+    showModal(labelType) {
+      this.printedLabel = labelType
+      if (this.workIndications !== undefined){
+        this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
+      } else {
+        this.workIndicationsText = ''
+      }
+      this.$refs.modal.show()
+    },
+    printLabelAndHide: function() {
+      printLabel()
       this.hideModal()
     },
-    mapType(type) {
-      switch(type) {
-        case 'Aditamentos':
-          return Vue.extend(labelAditamentos)
-        case 'Composite':
-        case 'E-Max':
-        case 'Implantes':
-        case 'Metal-Cerámica':
-        case 'Zirconio':
-          return Vue.extend(labelComposite)
-        case 'Esqueléticos':
-          return Vue.extend(labelEsqueleticos)
-        case 'Compostura':
-        case 'Ortodoncia':
-          return Vue.extend(labelCompostura)
-        case 'Resina':
-          return Vue.extend(labelResina)
-        case 'Garantia':
-          return Vue.extend(labelGarantia)
-        default:
-          throw 'Unexpected label type in WorkDetail.printLabel()'
-      }
-    },
-    showAdjunts: function(justAdded) {
-      this.adjunctsVisible = true
-      if (justAdded === undefined) {
-        this.workAdjuntsJustAdded = true
-      } else {
-        this.workAdjuntsJustAdded = justAdded
-      }
-    },
-    setStartDateToToday: function() {
-      var today = new Date()
-      var dd = today.getDate()
-
-      var mm = today.getMonth()+1
-      var yyyy = today.getFullYear()
-      if(dd<10) {
-          dd='0'+dd;
-      }
-
-      if(mm<10) {
-          mm='0'+mm;
-      }
-
-      this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
-    },
-    getDeliveryNote: function() {
-      console.log("DeliveryNote")
-    },
-    getDeclarationOfConformity() {
-      console.log("DeclarationOfConformity")
-    }
+    getDeliveryNote: function () { },
+    getDeclarationOfConformity: function () { }
   },
   created () {
-    this.workId = parseInt(this.$route.params.id)
+    this.work.IdTrabajo = parseInt(this.$route.params.id)
   },
   mounted () {
-
-    getWorkTypes('labManager.sqlite').then((types) => {
-      this.workTypes = types
-    })
-    getWork(this.workId, 'labManager.sqlite').then((workDetails) => {
+    getWork(this.work.IdTrabajo, 'labManager.sqlite').then((workDetails) => {
       this.work = workDetails
     })
-    getWorkIndications(this.workId, 'labManager.sqlite').then((workIndicat) => {
+    getWorkIndications(this.work.IdTrabajo, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
     })
-    getAdjuntsOfWork(this.workId, 'labManager.sqlite').then((workAdjunts) => {
-      this.workAdjunts = workAdjunts
-      if (this.workAdjunts !== undefined){
+    getAdjuntsOfWork(this.work.IdTrabajo, 'labManager.sqlite').then((workAdjuncts) => {
+      this.workAdjuncts = workAdjuncts
+      if (this.workAdjuncts !== undefined){
         this.showAdjunts(false)
       }
     })
-    getWorkTestsList(this.workId, 'labManager.sqlite').then((workTests) => {
+    getWorkTestsList(this.work.IdTrabajo, 'labManager.sqlite').then((workTests) => {
       this.workTests = workTests
     })
   }

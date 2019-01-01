@@ -16,26 +16,26 @@
     <div class="row">
       <div class="col-md-6 mb-3 mt-3">
         <label for="clinica">Clínica o Dr/a</label>
-        <dentist-search id="clinica" v-model="$v.data.IdDentista.$model" ref="dentist" :isInvalid="$v.data.IdDentista.$error && saveButtonPressed"></dentist-search>
-        <small class="text-danger" v-if="$v.data.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
-        <!-- <span>{{data.IdDentista}}</span> -->
+        <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" ref="dentist" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed"></dentist-search>
+        <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
+        <!-- <span>{{work.IdDentista}}</span> -->
       </div> <!-- col-md-6 -->
       <div class="col-md-6 mt-3">
         <label for="paciente">Paciente</label>
-        <input type="text" class="form-control" v-model="$v.data.Paciente.$model">
+        <input type="text" class="form-control" v-model="$v.work.Paciente.$model">
       </div> <!-- col-md-6 -->
       <div class="col-md-3">
         <label for="tipoTrabajo">Tipo trabajo</label>
-        <select class="form-control" id="tipoTrabajo" v-model="$v.data.IdTipoTrabajo.$model" :class="{'is-invalid': $v.data.IdTipoTrabajo.$error}">
+        <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
           <option disabled value="">Seleccione una opción</option>
           <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
         </select>
-        <small class="text-danger" v-if="$v.data.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
-        <!-- <span>{{data.IdTipoTrabajo}}</span> -->
+        <small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
+        <!-- <span>{{work.IdTipoTrabajo}}</span> -->
       </div> <!-- col-md-6 -->
       <div class="col-md-4">
         <label for="color">Color</label>
-        <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="data.Color">
+        <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="work.Color">
       </div> <!-- col-md-4 -->
     </div> <!-- row -->
     <div class="row">
@@ -47,7 +47,7 @@
     <div class="row">
       <div class="col-md-4 mt-3">
         <label for="fEntrada">Fecha entrada</label>
-        <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="data.FechaEntrada">
+        <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada">
         <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
         <i class="far fa-calendar-alt"></i>
         Poner fecha de hoy
@@ -55,16 +55,16 @@
       </div> <!-- col-md-4 -->
       <div class="col-md-4 mt-3">
         <label for="fPrevista">Fecha prevista</label>
-        <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="data.FechaPrevista">
+        <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
       </div> <!-- col-md-4 -->
       <div class="col-md-4 mt-3">
         <label for="fSalida">Fecha terminación</label>
-        <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="data.FechaTerminacion">
+        <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
       </div>
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-4">
-        <work-adjuncts v-model="adjuncts" v-if="adjunctsVisible"></work-adjuncts>
+        <workAdjuncts v-model="workAdjuncts" v-if="adjunctsVisible"></workAdjuncts>
       </div> <!-- col-md-8 -->
     </div> <!-- row -->
     <div class="row">
@@ -97,7 +97,6 @@
               <label class="form-check-label" for="cbCompostura">
                 Compostura
               </label>
-              <!-- <span>{{this.$refs.cbCompostura}}</span> -->
             </div>
             <div class="form-check" v-if="adjunctsVisible">
               <input class="form-check-input" id="cbAditamentos" type="checkbox" ref="cbAditamentos" @change="setBtnPrintEnabled">
@@ -167,66 +166,16 @@
 </template>
 
 <script>
-import workIndicationsTable from '../PageElements/WorkIndicationsTable'
-import workTestsTable from '../PageElements/workTestsTable'
-import labelEsqueleticos from '../Labels/LabelEsqueleticos'
-import labelCompostura from '../Labels/labelCompostura'
-import labelResina from '../Labels/LabelResina'
-import labelAditamentos from '../Labels/labelAditamentos'
-import labelComposite from '../Labels/labelComposite'
-import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
-import workAdjuncts from '../PageElements/WorkAdjuncts'
-import dentistSearch from '../PageElements/DentistSearch'
-import bModal from 'bootstrap-vue'
 
-import Vue from 'Vue'
-import { getWork, getWorkTypes, getWorkIndications, insertWork, getLastId, insertAdjuntsOfWork } from '../../../main/dal.js'
-import _ from 'lodash'
+import { insertWork, getLastId, insertAdjuntsOfWork } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
+import workMixin from './WorkMixin'
 
 export default {
   name: 'WorkNew',
-  components: {
-    workIndicationsTable,
-    workTestsTable,
-    collapsableActionButton,
-    workAdjuncts,
-    dentistSearch
-  },
-  data () {
-    return {
-      //It's necessary to use a boolean var instead of the isDirty bacause the form has a field with the focus that automatically touches the validator.
-      saveButtonPressed: false,
-      data: {
-        IdTrabajo: 0,
-        IdDentista: 0,
-        NombreDentista: '',
-        IdTipoTrabajo: 0,
-        Paciente: '',
-        Color: '',
-        FechaEntrada: '',
-        FechaPrevista: '',
-      },
-      workTypes: {},
-      workIndications: [],
-      workIndicationsText: '',
-      adjuncts: {
-        IdTrabajo: 0,
-        Caja: '',
-        Cubeta: '',
-        Articulador: '',
-        Pletinas: '',
-        Tornillos: '',
-        Analogos: '',
-        PosteImpresion: '',
-        Interface: '',
-        Otros: ''
-      },
-      adjunctsVisible: false
-    }
-  },
+  mixins: [workMixin],
   validations: {
-    data: {
+    work: {
       IdTrabajo: { },
       IdDentista: { validId },
       NombreDentista: { },
@@ -242,29 +191,26 @@ export default {
       this.saveButtonPressed = true
       this.$v.$touch()
       if (!this.$v.$invalid){
-        insertWork(this.data, 'labManager.sqlite').then(() => {
-          this.data.IdTrabajo = getLastId()
-          this.$refs.workIndications.save(this.data.IdTrabajo)
+        insertWork(this.work, 'labManager.sqlite').then(() => {
+          this.work.IdTrabajo = getLastId()
+          this.$refs.workIndications.save(this.work.IdTrabajo)
         })
         if(this.adjunctsVisible){
-          this.adjuncts.IdTrabajo = this.data.IdTrabajo
-          insertAdjuntsOfWork(this.adjuncts, 'labManager.sqlite')
+          this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
+          insertAdjuntsOfWork(this.workAdjuncts, 'labManager.sqlite')
         }
         this.showModal()
       }
     },
     showModal() {
       this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
-      this.data.NombreDentista = this.$refs.dentist.query
+      this.work.NombreDentista = this.$refs.dentist.query
       this.$refs.modal.show()
-    },
-    hideModal() {
-      this.$refs.modal.hide()
     },
     printLabels: function() {
       if (this.$refs.cbResina.checked) this.printLabel('Resina')
       if (this.$refs.cbCompostura.checked) this.printLabel('Compostura')
-      if (this.adjuncts !== null && this.$refs.cbAditamentos.checked) this.printLabel('Aditamentos')
+      if (this.workAdjuncts !== null && this.$refs.cbAditamentos.checked) this.printLabel('Aditamentos')
       if (this.$refs.cbEsqueletico.checked) this.printLabel('Esqueléticos')
       if (this.$refs.cbOrtodoncia.checked) this.printLabel('Ortodoncia')
       if (this.$refs.cbZirconio.checked) this.printLabel('Zirconio')
@@ -275,49 +221,11 @@ export default {
 
       this.hideModal()
     },
-    printLabel: function(type) {
-      var ComponentClass = this.mapType(type)
-      var instance = new ComponentClass({
-          propsData: {
-            workData: this.data,
-            workIndicationsText: this.workIndicationsText,
-            workAdjunts: this.adjuncts
-            }
-      })
-      instance.$mount()
-      this.$refs.labelContainer.appendChild(instance.$el)
-      instance.setName(type)
-      instance.print(type)
-      this.$refs.labelContainer.removeChild(instance.$el)
-    },
-    mapType(type) {
-      switch(type) {
-        case 'Aditamentos':
-          return Vue.extend(labelAditamentos)
-        case 'Composite':
-        case 'E-Max':
-        case 'Implantes':
-        case 'Metal-Cerámica':
-        case 'Zirconio':
-          return Vue.extend(labelComposite)
-        case 'Esqueléticos':
-          return Vue.extend(labelEsqueleticos)
-        case 'Compostura':
-        case 'Ortodoncia':
-          return Vue.extend(labelCompostura)
-        case 'Resina':
-          return Vue.extend(labelResina)
-        case 'Garantia':
-          return Vue.extend(labelGarantia)
-        default:
-          throw 'Unexpected label type in WorkDetail.printLabel()'
-      }
-    },
     goBack() {
       this.saveButtonPressed = false
-      this.data.IdDentista = -1
+      this.work.IdDentista = -1
       this.$refs.dentist.query = ''
-      this.data.IdTipoTrabajo = -1
+      this.work.IdTipoTrabajo = -1
       this.$refs.cbResina.checked = false
       this.$refs.cbCompostura.checked = false
       if (this.adjunctsVisible) this.$refs.cbAditamentos.checked = false
@@ -339,31 +247,7 @@ export default {
         this.$refs.cbEmax.checked || this.$refs.cbComposite.checked ||
         this.$refs.cbMetalCeramica.checked
       )
-    },
-    showAdjunts: function() {
-       this.adjunctsVisible = true
-    },
-    setStartDateToToday: function() {
-      var today = new Date()
-      var dd = today.getDate()
-
-      var mm = today.getMonth()+1
-      var yyyy = today.getFullYear()
-      if(dd<10) {
-          dd='0'+dd;
-      }
-
-      if(mm<10) {
-          mm='0'+mm;
-      }
-
-      this.data.FechaEntrada = yyyy + '-' + mm + '-' + dd
     }
-  },
-  mounted () {
-    getWorkTypes('labManager.sqlite').then((types) => {
-      this.workTypes = types
-    })
   }
 }
 </script>

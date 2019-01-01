@@ -67,7 +67,7 @@
       </td>
     </tr>
   </table>
-  <div>
+  <!-- <div>
       <h3>Inserted</h3>
       <ul v-for="inserted in insertedRows" :key="inserted.IdPrueba">
         <li>{{inserted.IdPrueba}}|{{inserted.Descripcion}}</li>
@@ -80,7 +80,7 @@
       <ul v-for="deleted in deletedRows" :key="deleted.IdPrueba">
         <li>{{deleted.IdPrueba}}|{{deleted.Descripcion}}</li>
       </ul>
-    </div>
+    </div> -->
 </div>
 </template>
 
