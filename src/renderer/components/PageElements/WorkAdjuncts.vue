@@ -40,7 +40,6 @@ export default {
   props: ['value'],
   methods: {
     updateData: function() {
-      debugger
       this.$emit('input', {
         Caja: this.$refs.caja.value,
         Cubeta: this.$refs.cubeta.value,

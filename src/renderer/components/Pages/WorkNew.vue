@@ -364,9 +364,6 @@ export default {
     getWorkTypes('labManager.sqlite').then((types) => {
       this.workTypes = types
     })
-    getWork(this.workId, 'labManager.sqlite').then((workDetails) => {
-      this.work = workDetails
-    })
   }
 }
 </script>

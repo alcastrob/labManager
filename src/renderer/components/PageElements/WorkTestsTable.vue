@@ -21,7 +21,7 @@
         <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')">
       </td>
       <td class="noMargins">
-        <select class="inputInTd" v-model="test.TurnoSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')">
+        <select class="inputInTd" v-model="test.IdTurnoFechaSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')">
           <option value=""></option>
           <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
         </select>
@@ -30,7 +30,7 @@
         <input type="date" class="inputInTd" v-model="test.FechaEntrada" @change="trackChanges($event, test.IdPrueba, 'FechaEntrada')">
       </td>
       <td class="noMargins">
-        <select class="inputInTd" v-model="test.TurnoEntrada" @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaEntrada')">
+        <select class="inputInTd" v-model="test.IdTurnoFechaEntrada" @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaEntrada')">
           <option value=""></option>
           <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
         </select>
@@ -86,7 +86,7 @@
 
 <script>
 import tableMixin from './tables/TablesWithEmptyRowsMixin'
-import { getDeliveryShifts } from '../../../main/dal.js'
+import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../main/dal.js'
 import _ from 'lodash'
 
 export default {
@@ -176,7 +176,7 @@ export default {
         insertWorkTest(row, 'labManager.sqlite')
       })
       _.forEach(this.deletedRows, function(row){
-        deleteWorkTest(row, 'labManager.sqlite')
+        deleteWorkTest(row.IdPrueba, 'labManager.sqlite')
       })
       _.forEach(this.updatedRows, function(row){
         updateWorkTest(row, 'labManager.sqlite')

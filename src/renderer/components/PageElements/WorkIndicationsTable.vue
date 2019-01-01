@@ -55,7 +55,7 @@
 <script>
 
 import tableMixin from './tables/TablesWithEmptyRowsMixin'
-import { insertWorkIndications, updateWorkIndications, deleteWorkIndications } from '../../../main/dal.js'
+import { insertWorkIndications, updateWorkIndications, deleteWorkIndications, updatePriceSum } from '../../../main/dal.js'
 import _ from 'lodash'
 
 export default {
@@ -130,6 +130,7 @@ export default {
       _.forEach(this.updatedRows, function(row){
         updateWorkIndications(row, 'labManager.sqlite')
       })
+      updatePriceSum(masterId, 'labManager.sqlite')
       this.insertedRows = []
       this.deletedRows = []
       this.updatedRows = []

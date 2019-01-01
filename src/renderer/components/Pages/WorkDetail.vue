@@ -96,7 +96,7 @@
 
       <div class="row">
       <div class="col-md-12 mt-4">
-        <work-adjuncts v-model="adjuncts" v-if="adjunctsVisible"></work-adjuncts>
+        <work-adjuncts v-model="workAdjunts" v-if="adjunctsVisible"></work-adjuncts>
       </div> <!-- col-md-8 -->
     </div> <!-- row -->
       <div class="row">
@@ -140,7 +140,7 @@ import labelResina from '../Labels/LabelResina'
 import bModal from 'bootstrap-vue'
 
 import Vue from 'Vue'
-import { getWork, getWorkTypes, getWorkIndications, getAdjuntsOfWork, getWorkTestsList, updateWork } from '../../../main/dal.js'
+import { getWork, getWorkTypes, getWorkIndications, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork } from '../../../main/dal.js'
 import _ from 'lodash'
 import { decimal } from 'vuelidate/lib/validators'
 import { validId } from '../Validators/validId.js'
@@ -175,8 +175,8 @@ export default {
       workIndications: [],
       workIndicationsText: '',
       workAdjunts: {},
+      workAdjuntsJustAdded: false,
       printedLabel: '',
-      adjuncts: {},
       adjunctsVisible: false,
       workTests: []
     }
@@ -209,17 +209,21 @@ export default {
       this.$refs.modal.hide()
     },
     save: function() {
-      debugger
       this.saveButtonPressed = true
       this.$v.$touch()
       if (!this.$v.$invalid){
         updateWork(this.work, 'labManager.sqlite').then(() => {
-          this.$refs.workIndications.save(this.data.IdTrabajo)
-          this.$refs.workTests.save(this.data.IdTrabajo)
+          this.$refs.workIndications.save(this.work.IdTrabajo)
+          this.$refs.workTests.save(this.work.IdTrabajo)
         })
+        this.$refs.workTests.save(this.work.IdTrabajo)
         if(this.adjunctsVisible){
-          this.adjuncts.IdTrabajo = this.data.IdTrabajo
-          insertAdjuntsOfWork(this.adjuncts, 'labManager.sqlite')
+          this.workAdjunts.IdTrabajo = this.work.IdTrabajo
+          if(this.workAdjuntsJustAdded){
+            insertAdjuntsOfWork(this.workAdjunts, 'labManager.sqlite')
+          } else {
+            updateAdjuntsOfWork(this.workAdjunts, 'labManager.sqlite')
+          }
         }
       }
     },
@@ -262,8 +266,29 @@ export default {
           throw 'Unexpected label type in WorkDetail.printLabel()'
       }
     },
-    showAdjunts: function() {
-       this.adjunctsVisible = true
+    showAdjunts: function(justAdded) {
+      this.adjunctsVisible = true
+      if (justAdded === undefined) {
+        this.workAdjuntsJustAdded = true
+      } else {
+        this.workAdjuntsJustAdded = justAdded
+      }
+    },
+    setStartDateToToday: function() {
+      var today = new Date()
+      var dd = today.getDate()
+
+      var mm = today.getMonth()+1
+      var yyyy = today.getFullYear()
+      if(dd<10) {
+          dd='0'+dd;
+      }
+
+      if(mm<10) {
+          mm='0'+mm;
+      }
+
+      this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
     },
     getDeliveryNote: function() {
       console.log("DeliveryNote")
@@ -287,10 +312,9 @@ export default {
       this.workIndications = workIndicat
     })
     getAdjuntsOfWork(this.workId, 'labManager.sqlite').then((workAdjunts) => {
-      debugger
       this.workAdjunts = workAdjunts
-      if (this.workAdjunts.length !== 0){
-        this.showAdjunts()
+      if (this.workAdjunts !== undefined){
+        this.showAdjunts(false)
       }
     })
     getWorkTestsList(this.workId, 'labManager.sqlite').then((workTests) => {
