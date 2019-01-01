@@ -1,6 +1,6 @@
 <template>
 <div id="table" class="table-editable">
-  <table class="table table-bordered table-responsive-xs table-striped">
+  <table class="table table-bordered table-responsive-xs table-striped" v-on-clickaway="hidePanel">
     <tr>
       <th style="width: 4%"></th>
       <th class="text-left" style="width: 13%;">Prueba</th>
@@ -11,34 +11,35 @@
       <th class="text-left" style="width: 29%;">Comentario</th>
     </tr>
     <tr v-for="test in data" v-bind:key="test.IdPrueba">
-      <td class="pt-3-half">
+      <td class="pt-3-half" @focus="hidePanel">
         <i class="fa fa-times-circle" v-on:click="deleteRow(test.IdPrueba)"></i>
       </td>
+      <!-- v-on-clickaway="hidePanel(test.IdPrueba)" -->
       <td class="noMargins">
-        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" >
-        <!-- <div v-if="canShow(test.IdPrueba)" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
+        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" :id="test.IdPrueba" v-on:focus="showPanel($event)">
+        <div v-if="canShow(test.IdPrueba)" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
           <span class="list-group-item clickable" @click="click">Truwa</span>
           <span class="list-group-item clickable" @click="click">Fri</span>
           <span class="list-group-item clickable" @click="click">Cubeta</span>
           <span class="list-group-item clickable" @click="click">Prueba de cliente</span>
           <span class="list-group-item clickable" @click="click">Prueba de estructura</span>
           <span class="list-group-item clickable" @click="click">Prueba de plástico</span>
-        </div> -->
+        </div>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')">
+        <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')" @focus="hidePanel">
       </td>
       <td class="noMargins">
-        <select class="inputInTd" v-model="test.IdTurnoFechaSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')">
+        <select class="inputInTd" v-model="test.IdTurnoFechaSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')" @focus="hidePanel">
           <option value=""></option>
           <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
         </select>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" v-model="test.FechaEntrada" @change="trackChanges($event, test.IdPrueba, 'FechaEntrada')">
+        <input type="date" class="inputInTd" v-model="test.FechaEntrada" @change="trackChanges($event, test.IdPrueba, 'FechaEntrada')" @focus="hidePanel">
       </td>
       <td class="noMargins">
-        <select class="inputInTd" v-model="test.IdTurnoFechaEntrada" @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaEntrada')">
+        <select class="inputInTd" v-model="test.IdTurnoFechaEntrada" @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaEntrada')" @focus="hidePanel">
           <option value=""></option>
           <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
         </select>
@@ -49,9 +50,9 @@
     </tr>
     <tr>
       <td class="pt-3-half"></td>
-      <td class="noMargins" v-on-clickaway="hidePanel">
-        <input type="text" class="inputInTd" ref="newDescripcion" id="newDescripcion" v-on:focus="showPanel">
-        <div v-if="focusNew" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
+      <td class="noMargins">
+        <input type="text" class="inputInTd" ref="newDescripcion" id="newDescripcion" v-on:focus="showPanel($event)">
+        <div v-if="canShow('newDescripcion')" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
           <span class="list-group-item clickable" @click="click">Truwa</span>
           <span class="list-group-item clickable" @click="click">Fri</span>
           <span class="list-group-item clickable" @click="click">Cubeta</span>
@@ -97,7 +98,7 @@
         <li>{{deleted.IdPrueba}}|{{deleted.Descripcion}}</li>
       </ul>
     </div> -->
-</div>
+</div> 
 </template>
 
 <script>
@@ -115,9 +116,7 @@ export default {
   data () {
     return {
       deliveryShifts: [],
-      focusNew: false,
-      focusMap: new Map(),
-      array: []
+      panels: {}
     }
   },
   methods: {
@@ -201,26 +200,39 @@ export default {
       this.deletedRows = []
       this.updatedRows = []
     },
-    showPanel: function() {
-      this.focusNew = true
+    showPanel: function(event) {
+      _.forEach(Object.keys(this.panels), (panelId) => {
+        this.panels[panelId] = false
+      })
+      this.panels[event.currentTarget.id] = true
+      this.$forceUpdate()
     },
-    hidePanel: function() {
-      this.focusNew = false      
-    },
-    // canShow: function(id) {
-    //   debugger
-    //   var candidate = this.focusMap.get(id)
-    //   if (candidate === undefined){
-    //     this.focusMap.set(id, false)
-    //     return false
-    //   } else {
-    //     return candidate
-    //   }
-    // },
+    hidePanel: function(id) {
+      if (id === undefined || id.type === undefined) {
+        this.panels[id] = false
+      } else {
+      _.forEach(Object.keys(this.panels), (panelId) => {
+        this.panels[panelId] = false
+      })
+      }
+      this.$forceUpdate()
+    },    
+    canShow: function(id) {
+      return this.panels[id]
+     },
     click: function(event) {
-      this.$refs.newDescripcion.value = event.currentTarget.innerText
+      var id = event.currentTarget.parentElement.previousElementSibling.id
+      if (id === 'newDescripcion'){
+        this.$refs.newDescripcion.value = event.currentTarget.innerText
+        this.$refs.newFechaSalida.focus()
+      } else {
+        id = parseInt(id)
+        var element = _.find(this.data, ['IdPrueba', id])
+        element.Descripcion = event.currentTarget.innerText
+        this.trackChanges({currentTarget: { value: element.Descripcion}}, id, 'Descripcion')
+        event.currentTarget.parentElement.parentElement.nextElementSibling.children[0].focus()
+      }
       this.hidePanel()
-      this.$refs.newFechaSalida.focus()
     }
   },
   mounted () {
