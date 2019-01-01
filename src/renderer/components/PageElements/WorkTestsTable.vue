@@ -15,7 +15,15 @@
         <i class="fa fa-times-circle" v-on:click="deleteRow(test.IdPrueba)"></i>
       </td>
       <td class="noMargins">
-        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')">
+        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" >
+        <!-- <div v-if="canShow(test.IdPrueba)" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
+          <span class="list-group-item clickable" @click="click">Truwa</span>
+          <span class="list-group-item clickable" @click="click">Fri</span>
+          <span class="list-group-item clickable" @click="click">Cubeta</span>
+          <span class="list-group-item clickable" @click="click">Prueba de cliente</span>
+          <span class="list-group-item clickable" @click="click">Prueba de estructura</span>
+          <span class="list-group-item clickable" @click="click">Prueba de plástico</span>
+        </div> -->
       </td>
       <td class="noMargins">
         <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')">
@@ -36,16 +44,24 @@
         </select>
       </td>
       <td class="noMargins">
-        <input type="text" v-model="test.Comentario" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Comentario')">
+        <input type="text" v-model="test.Comentario" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Comentario')" @focus="hidePanel">
       </td>
     </tr>
     <tr>
       <td class="pt-3-half"></td>
-      <td class="noMargins">
-        <input type="text" class="inputInTd" ref="newDescripcion">
+      <td class="noMargins" v-on-clickaway="hidePanel">
+        <input type="text" class="inputInTd" ref="newDescripcion" id="newDescripcion" v-on:focus="showPanel">
+        <div v-if="focusNew" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
+          <span class="list-group-item clickable" @click="click">Truwa</span>
+          <span class="list-group-item clickable" @click="click">Fri</span>
+          <span class="list-group-item clickable" @click="click">Cubeta</span>
+          <span class="list-group-item clickable" @click="click">Prueba de cliente</span>
+          <span class="list-group-item clickable" @click="click">Prueba de estructura</span>
+          <span class="list-group-item clickable" @click="click">Prueba de plástico</span>
+        </div>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" ref="newFechaSalida">
+        <input type="date" class="inputInTd" ref="newFechaSalida" @focus="hidePanel">
       </td>
       <td class="noMargins">
         <select class="inputInTd" ref="newTurnoSalida">
@@ -87,17 +103,21 @@
 <script>
 import tableMixin from './tables/TablesWithEmptyRowsMixin'
 import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../main/dal.js'
+import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 
 export default {
   name: 'workTestsTable',
-  mixins: [tableMixin],
+  mixins: [ clickaway, tableMixin ],
   props: {
     workId: Number
   },
   data () {
     return {
-      deliveryShifts: []
+      deliveryShifts: [],
+      focusNew: false,
+      focusMap: new Map(),
+      array: []
     }
   },
   methods: {
@@ -127,10 +147,6 @@ export default {
       }
     },
     deleteRow: function (rowId) {
-      // this.tests = _.remove(this.tests, function (n) {
-      //   return n.IdPrueba !== rowId
-      // })
-
       this.data = _.remove(this.data, function (n) {
         return n.IdPrueba !== rowId
       })
@@ -184,6 +200,27 @@ export default {
       this.insertedRows = []
       this.deletedRows = []
       this.updatedRows = []
+    },
+    showPanel: function() {
+      this.focusNew = true
+    },
+    hidePanel: function() {
+      this.focusNew = false      
+    },
+    // canShow: function(id) {
+    //   debugger
+    //   var candidate = this.focusMap.get(id)
+    //   if (candidate === undefined){
+    //     this.focusMap.set(id, false)
+    //     return false
+    //   } else {
+    //     return candidate
+    //   }
+    // },
+    click: function(event) {
+      this.$refs.newDescripcion.value = event.currentTarget.innerText
+      this.hidePanel()
+      this.$refs.newFechaSalida.focus()
     }
   },
   mounted () {

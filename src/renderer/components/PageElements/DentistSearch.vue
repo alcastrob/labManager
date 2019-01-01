@@ -12,12 +12,12 @@
 
 <script>
 import { searchDentistsByName, getDentist } from '../../../main/dal.js'
-import { mixin as clickaway } from 'vue-clickaway';
+import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 
 export default {
-  mixins: [ clickaway ],
   name: 'dentistSearch',
+  mixins: [ clickaway ],
   data () {
     return {
       resultsVisible: false,
