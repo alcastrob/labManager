@@ -120,12 +120,24 @@ export default {
       this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
     },
     showAdjunts: function(justAdded) {
-      this.adjunctsVisible = true
+      debugger
       if (justAdded === undefined) {
         this.workAdjunctsJustAdded = true
+        this.workAdjuncts = {
+          Caja: '',
+          Cubeta: '',
+          Articulador: '',
+          Pletinas: '',
+          Tornillos: '',
+          Analogos: '',
+          PosteImpresion: '',
+          Interface: '',
+          Otros: ''
+        }
       } else {
         this.workAdjunctsJustAdded = justAdded
       }
+      this.adjunctsVisible = true
     }
   },
   mounted () {
