@@ -180,7 +180,11 @@ namespace dataMigration
 
             foreach (PruebaAccess prueba in pruebas)
             {
-                returnedValue.Add(MapPruebaAccess(prueba));
+                if (string.IsNullOrEmpty(prueba.Prueba) && string.IsNullOrEmpty(prueba.Comentario)) { }
+                else
+                {
+                    returnedValue.Add(MapPruebaAccess(prueba));
+                }
             }
 
             return returnedValue;
