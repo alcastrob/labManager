@@ -167,7 +167,7 @@ namespace dataMigration
                             p.CP = CleanUpString(reader, "CP");
                             p.Poblacion = CleanUpString(reader, "Población");
                             p.Tlf = CleanUpString(reader, "Tlf");
-                            p.OtroTlf = CleanUpString(reader, "Otro tlf");                            
+                            p.OtroTlf = CleanUpString(reader, "Otro tlf");
 
                             dentistas.Add(p);
                         }
@@ -236,6 +236,7 @@ namespace dataMigration
                             facturas.Add(f);
                         }
                     }
+                    reader.Close();
                 }
             }
             catch (Exception ex)
@@ -249,8 +250,73 @@ namespace dataMigration
             return facturas;
         }
 
+        public List<DeclaracionConformidadAccess> GetDeclaracionConformidad()
+        {
+            List<DeclaracionConformidadAccess> declaraciones = new List<DeclaracionConformidadAccess>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM [DECLARACION DE CONFORMIDAD]";
+                OleDbCommand command = new OleDbCommand(query, conn);
+                reader = command.ExecuteReader();
 
-                            protected static int? CleanUpInt(OleDbDataReader reader, string columnName)
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        DeclaracionConformidadAccess d = new DeclaracionConformidadAccess();
+                        d.NumeroDeclaracion = Convert.ToInt32(reader["Nº declaracion"]);
+                        d.Prescriptor = CleanUpString(reader, "PRESCRIPTOR");
+                        d.Paciente = CleanUpString(reader, "Paciente");
+                        d.Albaran = Convert.ToInt32(reader["Nº de Albarán"]);
+                        d.Fecha = CleanUpDateTime(reader, "Fecha");
+                        d.Meses = CleanUpInt(reader, "meses");
+                        d.ProductoLote = CleanUpString(reader, "PRODUCTO Y LOTE");
+                        d.ProductoLote2 = CleanUpString(reader, "PRODUCTO Y LOTE2");
+                        d.ProductoLote3 = CleanUpString(reader, "PRODUCTO Y LOTE3");
+                        d.ProductoLote4 = CleanUpString(reader, "PRODUCTO Y LOTE4");
+                        declaraciones.Add(d);
+                    }
+                }
+                reader.Close();
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return declaraciones;
+        }
+
+        public List<ProductosLotesAccess> GetProductosLotes()
+        {
+            List<ProductosLotesAccess> productos = new List<ProductosLotesAccess>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM [PRODUCTOS Y LOTES]";
+                OleDbCommand command = new OleDbCommand(query, conn);
+                reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        ProductosLotesAccess p = new ProductosLotesAccess();
+                        p.id = Convert.ToInt32(reader["id"]);
+                        p.Campo1 = CleanUpString(reader, "campo1");
+                        productos.Add(p);
+                    }
+                }
+                reader.Close();
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return productos;
+        }
+
+        protected static int? CleanUpInt(OleDbDataReader reader, string columnName)
         {
             if (reader[columnName].GetType().Name == "DBNull")
                 return null;

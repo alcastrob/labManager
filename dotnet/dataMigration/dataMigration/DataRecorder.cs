@@ -201,17 +201,17 @@ namespace dataMigration
                 {
                     var query = new System.Text.StringBuilder();
                     query.AppendLine(@"INSERT INTO Facturas (");
-                    query.AppendLine(@"IdFactura, IdColegiado, Fecha, Total, ");
+                    query.AppendLine(@"IdFactura, IdDentista, Fecha, Total, ");
                     query.AppendLine(@"Descuento, Banco, Efectivo)");
                     query.AppendLine(@"VALUES (");
-                    query.AppendLine(@"@IdFactura, @IdColegiado, @Fecha, @Total,");
+                    query.AppendLine(@"@IdFactura, @IdDentista, @Fecha, @Total,");
                     query.AppendLine(@"@Descuento, @Banco, @Efectivo");
                     query.AppendLine(@");");
 
                     SQLiteCommand command = new SQLiteCommand(query.ToString(), connection);
                     command.CommandType = CommandType.Text;
                     command.Parameters.Add(new SQLiteParameter("@IdFactura", factura.IdFactura));
-                    command.Parameters.Add(new SQLiteParameter("@IdColegiado", factura.IdColegiado));
+                    command.Parameters.Add(new SQLiteParameter("@IdDentista", factura.IdDentista));
                     command.Parameters.Add(new SQLiteParameter("@Fecha", factura.Fecha));
                     command.Parameters.Add(new SQLiteParameter("@Total", factura.Total));
                     command.Parameters.Add(new SQLiteParameter("@Descuento", factura.Descuento));
@@ -251,6 +251,101 @@ namespace dataMigration
                     command.Parameters.Add(new SQLiteParameter("@IdFactura", factura.IdFactura));
                     command.Parameters.Add(new SQLiteParameter("@Descripcion", factura.Descripcion));
                     command.Parameters.Add(new SQLiteParameter("@Precio", factura.Precio));
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        public void WriteProductosLotes(List<ProductosLotes> productosLotes)
+        {
+            Console.WriteLine("Inserting on ProductosLotes table");
+            try
+            {
+                connection.Open();
+                foreach (ProductosLotes producto in productosLotes)
+                {
+                    var query = new System.Text.StringBuilder();
+                    query.AppendLine(@"INSERT INTO ProductosLotes (");
+                    query.AppendLine(@"IdProductoLote, Descripcion)");
+                    query.AppendLine(@"VALUES (");
+                    query.AppendLine(@"@IdProductoLote, @Descripcion");
+                    query.AppendLine(@")");
+
+                    SQLiteCommand command = new SQLiteCommand(query.ToString(), connection);
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.Add(new SQLiteParameter("@IdProductoLote", producto.IdProductoLote));
+                    command.Parameters.Add(new SQLiteParameter("@Descripcion", producto.Descripcion));
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        public void WriteDeclaracionConformidad(List<DeclaracionConformidad> declaraciones)
+        {
+            Console.WriteLine("Inserting on DeclaracionConformidad table");
+            try
+            {
+                connection.Open();
+                foreach (DeclaracionConformidad declaracion in declaraciones)
+                {
+                    var query = new System.Text.StringBuilder();
+                    query.AppendLine(@"INSERT INTO DeclaracionConformidad (");
+                    query.AppendLine(@"IdDeclaracion, IdTrabajo, Fecha, Meses)");
+                    query.AppendLine(@"VALUES (");
+                    query.AppendLine(@"@IdDeclaracion, @IdTrabajo, @Fecha, @Meses");
+                    query.AppendLine(@")");
+
+                    SQLiteCommand command = new SQLiteCommand(query.ToString(), connection);
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.Add(new SQLiteParameter("@IdDeclaracion", declaracion.IdDeclaracion));
+                    command.Parameters.Add(new SQLiteParameter("@IdTrabajo", declaracion.IdTrabajo));
+                    command.Parameters.Add(new SQLiteParameter("@Fecha", declaracion.Fecha));
+                    command.Parameters.Add(new SQLiteParameter("@Meses", declaracion.Meses));
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        public void WriteDeclaracionProductos(List<DeclaracionProductos> declaracionesProductos)
+        {
+            Console.WriteLine("Inserting on DeclaracionProductos table");
+            try
+            {
+                connection.Open();
+                foreach (DeclaracionProductos declaracionProducto in declaracionesProductos)
+                {
+                    var query = new System.Text.StringBuilder();
+                    query.AppendLine(@"INSERT INTO DeclaracionProductos (");
+                    query.AppendLine(@"IdDeclaracion, IdProductoLote)");
+                    query.AppendLine(@"VALUES (");
+                    query.AppendLine(@"@IdDeclaracion, @IdProductoLote");
+                    query.AppendLine(@")");
+
+                    SQLiteCommand command = new SQLiteCommand(query.ToString(), connection);
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.Add(new SQLiteParameter("@IdDeclaracion", declaracionProducto.IdDeclaracion));
+                    command.Parameters.Add(new SQLiteParameter("@IdProductoLote", declaracionProducto.IdProductoLote));
                     command.ExecuteNonQuery();
                 }
             }

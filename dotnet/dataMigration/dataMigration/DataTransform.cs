@@ -9,10 +9,12 @@ namespace dataMigration
 {
     class DataTransform
     {
-        private int counterFichas = 1;
+        private int counterTrabajoDetalle = 1;
         private int counterPruebas = 1;
         private int counterDentistas = 1;
         private int counterFacturasDetalle = 1;
+        private int counterDeclaracion = 1;
+        private Dictionary<int, int> transformProductoLoteId = new Dictionary<int, int>();
 
         #region "Trabajos"
         public Tuple<List<TrabajoDetalle>, List<TrabajoTemp>> TransformFichas(List<FichaTrabajoAccess> fichas)
@@ -72,7 +74,7 @@ namespace dataMigration
             {
                 detalles.Add(new TrabajoDetalle
                 {
-                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajoDetalle = counterTrabajoDetalle++,
                     IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones1,
                     Precio = Convert.ToDecimal(ficha.Precio1)
@@ -82,7 +84,7 @@ namespace dataMigration
             {
                 detalles.Add(new TrabajoDetalle
                 {
-                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajoDetalle = counterTrabajoDetalle++,
                     IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones2,
                     Precio = Convert.ToDecimal(ficha.Precio2)
@@ -92,7 +94,7 @@ namespace dataMigration
             {
                 detalles.Add(new TrabajoDetalle
                 {
-                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajoDetalle = counterTrabajoDetalle++,
                     IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones3,
                     Precio = Convert.ToDecimal(ficha.Precio3)
@@ -102,7 +104,7 @@ namespace dataMigration
             {
                 detalles.Add(new TrabajoDetalle
                 {
-                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajoDetalle = counterTrabajoDetalle++,
                     IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones4,
                     Precio = Convert.ToDecimal(ficha.Precio4)
@@ -112,7 +114,7 @@ namespace dataMigration
             {
                 detalles.Add(new TrabajoDetalle
                 {
-                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajoDetalle = counterTrabajoDetalle++,
                     IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones5,
                     Precio = Convert.ToDecimal(ficha.Precio5)
@@ -122,7 +124,7 @@ namespace dataMigration
             {
                 detalles.Add(new TrabajoDetalle
                 {
-                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajoDetalle = counterTrabajoDetalle++,
                     IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones6,
                     Precio = Convert.ToDecimal(ficha.Precio6)
@@ -132,7 +134,7 @@ namespace dataMigration
             {
                 detalles.Add(new TrabajoDetalle
                 {
-                    IdTrabajoDetalle = counterFichas++,
+                    IdTrabajoDetalle = counterTrabajoDetalle++,
                     IdTrabajo = ficha.Id,
                     Descripcion = ficha.Indicaciones7,
                     Precio = Convert.ToDecimal(ficha.Precio7)
@@ -451,14 +453,14 @@ namespace dataMigration
             }
         }
 
-        private FacturaTemp MapFacturaAccess(FacturaAccess factura, int IdColegiado)
+        private FacturaTemp MapFacturaAccess(FacturaAccess factura, int IdDentista)
         {
             // Probably using automapper would be a better idea. But this
             // implementation is good enough for this tiny case.
             FacturaTemp returnedValue = new FacturaTemp
             {
                 IdFactura = factura.IdFactura,
-                IdColegiado = IdColegiado,
+                IdDentista = IdDentista,
                 Fecha = Convert.ToDateTime(factura.Fecha),
                 Total = Convert.ToDecimal(factura.Total),
                 Descuento = Convert.ToDecimal(factura.Descuento),
@@ -467,6 +469,80 @@ namespace dataMigration
             };            
 
             return returnedValue;
+        }
+        #endregion
+
+        #region "Productos y Lotes"
+        public List<ProductosLotes> TransformProductos(List<ProductosLotesAccess> productosBruto)
+        {
+            List<ProductosLotes> returnedValue = new List<ProductosLotes>();
+            int newId = 1;
+            foreach(ProductosLotesAccess p in productosBruto)
+            {
+                if (!string.IsNullOrEmpty(p.Campo1))
+                {
+                    returnedValue.Add(new ProductosLotes
+                    {
+                        IdProductoLote = newId,
+                        Descripcion = p.Campo1
+                    });
+                    transformProductoLoteId.Add(p.id, newId++);                    
+                }
+            }
+            return returnedValue;
+        }
+        #endregion
+
+        #region "Declaracion de Conformidad"
+        public Tuple<List<DeclaracionConformidad>, List<DeclaracionProductos>> TransformDeclaracionConformidad(List<DeclaracionConformidadAccess> declaracionesBruto)
+        {
+            List<DeclaracionConformidad> returnedValue = new List<DeclaracionConformidad>();
+            List<DeclaracionProductos> join = new List<DeclaracionProductos>();
+            foreach(DeclaracionConformidadAccess declaracion in declaracionesBruto)
+            {
+                returnedValue.Add(new DeclaracionConformidad
+                {
+                    IdDeclaracion = counterDeclaracion,
+                    IdTrabajo = declaracion.Albaran,
+                    Fecha = declaracion.Fecha,
+                    Meses = (declaracion.Meses == 12)?12:0
+
+                });
+                if (!string.IsNullOrEmpty(declaracion.ProductoLote))
+                {
+                    join.Add(new DeclaracionProductos
+                    {
+                        IdDeclaracion = counterDeclaracion,
+                        IdProductoLote = transformProductoLoteId[Convert.ToInt32(declaracion.ProductoLote)]
+                    });
+                }
+                if (!string.IsNullOrEmpty(declaracion.ProductoLote2))
+                {
+                    join.Add(new DeclaracionProductos
+                    {
+                        IdDeclaracion = counterDeclaracion,
+                        IdProductoLote = transformProductoLoteId[Convert.ToInt32(declaracion.ProductoLote2)]
+                    });
+                }
+                if (!string.IsNullOrEmpty(declaracion.ProductoLote3))
+                {
+                    join.Add(new DeclaracionProductos
+                    {
+                        IdDeclaracion = counterDeclaracion,
+                        IdProductoLote = transformProductoLoteId[Convert.ToInt32(declaracion.ProductoLote3)]
+                    });
+                }
+                if (!string.IsNullOrEmpty(declaracion.ProductoLote4))
+                {
+                    join.Add(new DeclaracionProductos
+                    {
+                        IdDeclaracion = counterDeclaracion,
+                        IdProductoLote = transformProductoLoteId[Convert.ToInt32(declaracion.ProductoLote4)]
+                    });
+                }
+                counterDeclaracion++;
+            }
+            return new Tuple<List<DeclaracionConformidad>, List<DeclaracionProductos>>(returnedValue, join);
         }
         #endregion
 

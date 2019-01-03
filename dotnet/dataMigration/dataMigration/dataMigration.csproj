@@ -64,10 +64,16 @@
     <Compile Include="DataRecorder.cs" />
     <Compile Include="DataTransform.cs" />
     <Compile Include="DataLoader.cs" />
+    <Compile Include="DTO\DeclaracionProductos.cs" />
+    <Compile Include="DTO\DeclaracionConformidad.cs" />
+    <Compile Include="DTO\NotaEntregaAccess.cs" />
+    <Compile Include="DTO\ProductosLotes.cs" />
+    <Compile Include="DTO\ProductosLotesAccess.cs" />
     <Compile Include="DTO\Dentista.cs" />
     <Compile Include="DTO\DentistaAccess.cs" />
     <Compile Include="DTO\FacturaDetalle.cs" />
     <Compile Include="DTO\FacturaTemp.cs" />
+    <Compile Include="DTO\DeclaracionConformidadAccess.cs" />
     <Compile Include="DTO\TrabajoDetalle.cs" />
     <Compile Include="DTO\FacturaAccess.cs" />
     <Compile Include="DTO\Trabajo.cs" />
