@@ -27,6 +27,11 @@
         cssClass="bg-success"
         icon="fas fa-euro-sign" />
     </div>
+    <div class="row">
+      <router-link to="/finances/monthCheck/2018/1" class="nav-link" role="button">
+      Cierre de mes
+      </router-link>
+    </div>
   </div>
 </div>
 </template>
@@ -38,7 +43,7 @@ import { getWorkInExecution, getWorksEndedThisMonth, getWorksEndedLast30days, ge
 export default {
   name: 'finances',
   components: { myIconCard },
-    data () {
+  data () {
     return {
       worksInProgressCount: 0,
       worksEndedThisMonthCount: 0,

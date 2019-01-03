@@ -10,9 +10,9 @@
         </div>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
-    <div>
+    <div class="row">
       <myTable :headers="headers" :searchFields="searchFields" ref="dentistTable"  urlBase="/dentists/details/" masterKey="IdDentista"/>
-    </div>
+    </div> <!-- row -->
   </div>
 
 </template>

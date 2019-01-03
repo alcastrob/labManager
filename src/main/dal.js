@@ -380,12 +380,6 @@ export function updateDentist(dentist, fileName) {
     dentist.IdDentista])
 }
 
-export function deleteDentist(dentistId, fileName){
-  db = new sqlite3.Database(fileName)
-  var query = 'DELETE FROM Dentistas WHERE IdDentista = ?'
-  return runAsync(db, query, [dentistId])
-}
-
 //Tested
 export function searchDentistsByName (dentistName, fileName) {
   db = new sqlite3.Database(fileName)
@@ -396,6 +390,41 @@ export function searchDentistsByName (dentistName, fileName) {
     return rows
   })
 }
+
+// Work Month Check -----------------------------------------------------------
+
+//Tested
+export function getWorksAggregatedByDentist (year, month, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT d.IdDentista AS Key, d.IdDentista AS IdDentista, d.NombreDentista, ' +
+    '  sum(t.PrecioFinal) AS SumaPrecioFinal, ' +
+    '  ifnull(sum(t.PrecioMetal), 0) AS SumaAditamentos, ' +
+    '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaCeramica, ' +
+    '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaResina, ' +
+    '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaOrtodoncia, ' +
+    '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaEsqueletico, ' +
+    '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaZirconio, ' +
+    '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
+    '  sum(CASE WHEN t.IdTipoTrabajo = "7" THEN t.PrecioFinal ELSE 0 END) - ' +
+    '  sum(t.PrecioMetal), 0) AS SumaFija, ' +
+    '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
+    '  sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
+    '  sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
+    '  sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
+    '  sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) + ' +
+    '  sum(CASE WHEN t.IdTipoTrabajo = "7" THEN t.PrecioFinal ELSE 0 END) - ' +
+    '  sum(t.PrecioMetal), 0) AS SumaTotalMetal ' +
+    'FROM Trabajos t ' +
+    'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+    'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
+    'GROUP BY t.IdDentista, d.NombreDentista ' +
+    'ORDER BY d.NombreDentista'
+
+  return allAsync(db, query, []).then((rows) => {
+    return rows
+  })
+}
+
 
 // Generic functions ----------------------------------------------------------
 

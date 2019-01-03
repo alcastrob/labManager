@@ -10,6 +10,7 @@ import workDetail from '../components/Pages/WorkDetail.vue'
 import dentistsList from '../components/Pages/DentistsList.vue'
 import dentistDetails from '../components/Pages/DentistDetail.vue'
 import finances from '../components/Pages/Finances.vue'
+import monthCheck from '../components/Pages/MonthCheck.vue'
 import dashboard from '../components/Pages/Dashboard.vue'
 import dentistNew from '../components/Pages/DentistNew.vue'
 
@@ -61,6 +62,10 @@ export default new Router({
         {
           path: 'finances',
           component: finances
+        },
+        {
+          path: 'finances/monthCheck/:year/:month',
+          component: monthCheck
         }
       ]
     }
