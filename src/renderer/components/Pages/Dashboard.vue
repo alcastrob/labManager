@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container-fluid">      
+    <div class="container-fluid">
       <div class="row">
         <div class="col-md-4 mt-2">
           <div class="card" mb-3>
@@ -9,6 +9,7 @@
               Trabajos a la espera de entrada de prueba
             </div>
             <div class="card-body">
+              <h4>Por la mañana</h4>
               <draggable v-model="myArray" :move="checkMove" v-on:start="start" v-on:end="end">
                 <transition-group>
                   <div class="card p-2" :key="1">
@@ -97,6 +98,95 @@
                   </div>
                 </transition-group>
               </draggable>
+              <h4 class="mt-4">Por la tarde</h4>
+              <draggable v-model="myArray" :move="checkMove" v-on:start="start" v-on:end="end">
+                <transition-group>
+                  <div class="card p-2" :key="1">
+                    <div class="form-check">
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Dental Revolution</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
+                      </div>
+                      <div>Elizabeth Davis</div>
+                    </div>
+                  </div>
+                  <div class="card p-2" :key="2">
+                    <div class="form-check">
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Laboratorio Open Dental</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
+                      </div>
+                      <div>Jennifer Moore</div>
+                    </div>
+                  </div>
+                  <div class="card p-2" :key="3">
+                    <div class="form-check">
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Dental Pro</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge ortodoncia-color" title="Ortodoncia"></i>
+                      </div>
+                      <div>Amanda Wilson</div>
+                    </div>
+                  </div>
+                  <div class="card p-2" :key="4">
+                    <div class="form-check">
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Nación Protésica</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge esqueletico-color" title="Esqueletico"></i>
+                      </div>
+                      <div>Sarah Jones</div>
+                    </div>
+                  </div>
+                  <div class="card p-2" :key="5">
+                    <div class="form-check">
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Dental Letter</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge zirconio-color" title="Zirconio"></i>
+                      </div>
+                      <div>Stephanie Smith</div>
+                    </div>
+                  </div>
+                  <div class="card p-2" :key="6">
+                    <div class="form-check">
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Seguros Dentales</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge implante-color" title="Implante"></i>
+                      </div>
+                      <div>Nicole Blaese</div>
+                    </div>
+                  </div>
+                  <div class="card p-2" :key="7">
+                    <div class="form-check">
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Sevilla Maxilofacial</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge compostura-color" title="Compostura"></i>
+                      </div>
+                      <div>Ashley Williams</div>
+                    </div>
+                  </div>
+                </transition-group>
+              </draggable>
             </div> <!-- card-body -->
             <div class="card-footer small text-muted">Hoy se espera el retorno de XX pruebas, de las cuales se han recepcionado YY.</div>
           </div> <!-- card -->
@@ -108,8 +198,9 @@
               Trabajos con pruebas que salen hoy
             </div>
             <div class="card-body">
+              <h4>Por la mañana</h4>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -121,7 +212,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -133,7 +224,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -145,7 +236,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -157,7 +248,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -169,7 +260,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -181,13 +272,38 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
                   <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge compostura-color" title="Compostura"></i>
+                  </div>
+                  <div>Paciente paciente paciente</div>
+                </div>
+              </div>
+              <h4 class="mt-4">Por la tarde</h4>
+              <div class="card p-2">
+                <div class="form-check">
+                  <div>
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                  </div>
+                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
+                  <div class="badge-container pr-2">
+                    <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
+                  </div>
+                  <div>Paciente paciente paciente</div>
+                </div>
+              </div>
+              <div class="card p-2">
+                <div class="form-check">
+                  <div>
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                  </div>
+                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
+                  <div class="badge-container pr-2">
+                    <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
                 </div>
@@ -204,7 +320,7 @@
             </div>
             <div class="card-body">
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -216,7 +332,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -228,7 +344,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -240,7 +356,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -252,7 +368,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -264,7 +380,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -276,7 +392,7 @@
                 </div>
               </div>
               <div class="card p-2">
-                <div class="form-check">                  
+                <div class="form-check">
                   <div>
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
@@ -379,14 +495,14 @@ body.fixed-nav.sidebar-toggled #content-wrapper {
 }
 
 .badge-container {
-  z-index: 1; 
-  height: 0px; 
+  z-index: 1;
+  height: 0px;
   text-align: right!important;
 }
 
 .colored-badge {
-  position: relative; 
-  top: -32px; 
+  position: relative;
+  top: -32px;
   font-size: 20px;
   /* -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: #A0A0A0; */
