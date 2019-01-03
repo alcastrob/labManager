@@ -9,90 +9,94 @@
               Trabajos a la espera de entrada de prueba
             </div>
             <div class="card-body">
-              <div class="card p-2">
-                <div class="form-check">                  
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+              <draggable v-model="myArray" :move="checkMove" v-on:start="start" v-on:end="end">
+                <transition-group>
+                  <div class="card p-2" :key="1">
+                    <div class="form-check">                  
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Dental Revolution</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
+                      </div>
+                      <div>Elizabeth Davis</div>
+                    </div>
                   </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
-                    <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
+                  <div class="card p-2" :key="2">
+                    <div class="form-check">                  
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Laboratorio Open Dental</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
+                      </div>
+                      <div>Jennifer Moore</div>
+                    </div>
                   </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">                  
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                  <div class="card p-2" :key="3">
+                    <div class="form-check">                  
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Dental Pro</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge ortodoncia-color" title="Ortodoncia"></i>
+                      </div>
+                      <div>Amanda Wilson</div>
+                    </div>
                   </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
-                    <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
+                  <div class="card p-2" :key="4">
+                    <div class="form-check">                  
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Nación Protésica</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge esqueletico-color" title="Esqueletico"></i>
+                      </div>
+                      <div>Sarah Jones</div>
+                    </div>
                   </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">                  
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                  <div class="card p-2" :key="5">
+                    <div class="form-check">                  
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Dental Letter</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge zirconio-color" title="Zirconio"></i>
+                      </div>
+                      <div>Stephanie Smith</div>
+                    </div>
                   </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
-                    <i class="fas fa-bookmark colored-badge ortodoncia-color" title="Ortodoncia"></i>
+                  <div class="card p-2" :key="6">
+                    <div class="form-check">                  
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Seguros Dentales</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge implante-color" title="Implante"></i>
+                      </div>
+                      <div>Nicole Blaese</div>
+                    </div>
                   </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">                  
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                  <div class="card p-2" :key="7">
+                    <div class="form-check">                  
+                      <div>
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                      </div>
+                      <div>12345&nbsp;|&nbsp;Sevilla Maxilofacial</div>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge compostura-color" title="Compostura"></i>
+                      </div>
+                      <div>Ashley Williams</div>
+                    </div>
                   </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
-                    <i class="fas fa-bookmark colored-badge esqueletico-color" title="Esqueletico"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">                  
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
-                    <i class="fas fa-bookmark colored-badge zirconio-color" title="Zirconio"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">                  
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
-                    <i class="fas fa-bookmark colored-badge implante-color" title="Implante"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">                  
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
-                    <i class="fas fa-bookmark colored-badge compostura-color" title="Compostura"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
+                </transition-group>
+              </draggable>
             </div> <!-- card-body -->
             <div class="card-footer small text-muted">Hoy se espera el retorno de XX pruebas, de las cuales se han recepcionado YY.</div>
           </div> <!-- card -->
@@ -110,7 +114,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -122,7 +126,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -134,7 +138,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge ortodoncia-color" title="Ortodoncia"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -146,7 +150,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge esqueletico-color" title="Esqueletico"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -158,7 +162,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge zirconio-color" title="Zirconio"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -170,7 +174,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge implante-color" title="Implante"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -182,7 +186,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge compostura-color" title="Compostura"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -205,7 +209,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -217,7 +221,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -229,7 +233,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge ortodoncia-color" title="Ortodoncia"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -241,7 +245,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge esqueletico-color" title="Esqueletico"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -253,7 +257,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge zirconio-color" title="Zirconio"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -265,7 +269,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge implante-color" title="Implante"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -277,7 +281,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                   </div>
                   <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container">
+                  <div class="badge-container pr-2">
                     <i class="fas fa-bookmark colored-badge compostura-color" title="Compostura"></i>
                   </div>
                   <div>Paciente paciente paciente</div>
@@ -296,20 +300,32 @@
 import topBar from '../PageElements/TopBar'
 import myIconCard from '../PageElements/iconCards/myIconCard'
 import { getInboundWorksToday } from '../../../main/dal.js'
+import draggable from 'vuedraggable'
 
 export default {
   name: 'dashboard',
-  components: { topBar, myIconCard },
+  components: { topBar, myIconCard, draggable },
   data () {
     return {
-      inboundWorksToday: 0
+      inboundWorksToday: 0,
+      myArray: []
+    }
+  },
+  methods: {
+    checkMove: function(a, b, c) {
+      return true
+    },
+    start: function (event) {
+      event.item.classList.add('darkborder')
+    },
+    end: function (event){
+      event.item.classList.remove('darkborder')
     }
   },
   mounted () {
     getInboundWorksToday('labManager.sqlite').then((count) => {
       this.inboundWorksToday = count.Count
       })
-    this.$refs.popover.popover()
   },
   computed: {
     worksReceivedTodayCopy: function() {
@@ -397,5 +413,10 @@ body.fixed-nav.sidebar-toggled #content-wrapper {
 }
 .implante-color {
   color: #ECD2D2;
+}
+
+.darkborder {
+  border: 1px solid #999999;
+  background-color: #E5F1F9;
 }
 </style>
