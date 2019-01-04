@@ -36,6 +36,8 @@ import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist } from '../.
 
 Vue.use(FloatThead)
 
+var lastClickedRow = -1, rowsAdded = 0
+
 export default {
   name: 'monthCheckExtendedTable',
   mixins: [tableMixin],
@@ -54,7 +56,8 @@ export default {
   },
   data () {
     return {
-      lastClickedRow: -1
+      // lastClickedRow: -1,
+      // rowsAdded: 0
     }
   },
   methods: {
@@ -65,14 +68,22 @@ export default {
       this.$parent.processFilterChange(filterData)
     },
     toggleExtraData(event, idDentist, b) {
-      console.log(idDentist)
       var table = event.currentTarget.parentElement
       var clickedRowOrder = event.currentTarget.rowIndex
 
+      console.log(`IdDentist: ${idDentist} | lastClickedRow: ${lastClickedRow} | clickedRowOrder: ${clickedRowOrder}`)
+
       this.removeExtraRows(table)
-      if (this.lastClickedRow !== clickedRowOrder) {
-        this.lastClickedRow = clickedRowOrder
+      if (lastClickedRow !== clickedRowOrder) {
+        // The table uses position index to insert and delete, instead of keys.
+        // If the inserted rows of the previous selected value are BENEATH the new position, when you remote the previos rows, you will have a mistmatch on the insertion position.
+        if (lastClickedRow !== -1 && clickedRowOrder > lastClickedRow) {
+          clickedRowOrder -= rowsAdded
+          console.log('clickedRowOrder minus ' + rowsAdded + ' = ' + clickedRowOrder)
+        }
+        lastClickedRow = clickedRowOrder
         getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, 'labManager.sqlite').then((workDetails) => {
+          rowsAdded = workDetails.length
           var moneyFormatter = new Intl.NumberFormat('es-ES', {
             style: 'currency',
             currency: 'EUR'
@@ -144,7 +155,7 @@ export default {
           })
         })
       } else {
-        this.lastClickedRow = -1
+        lastClickedRow = -1
       }
     },
     removeExtraRows(table) {

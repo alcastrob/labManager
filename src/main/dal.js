@@ -418,7 +418,6 @@ export function getWorksAggregatedByDentist (year, month, fileName) {
     'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
     'GROUP BY t.IdDentista, d.NombreDentista ' +
     'ORDER BY d.NombreDentista'
-    console.log(query)
   return allAsync(db, query, []).then((rows) => {
     return rows
   })
