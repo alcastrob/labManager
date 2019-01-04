@@ -5,7 +5,8 @@
         <tr>
           <th v-for="header in headers" v-bind:key="header.dataField"
             v-bind:class="header.titleClass">
-            {{header.title}}
+            {{header.title}}<br>{{getSum(header.dataField)}}
+            <!-- {{getSum(header.dataField)}} -->
           </th>
         </tr>
       </thead>
@@ -14,10 +15,10 @@
         v-on:click="toggleExtraData($event, row['Key'])">
           <template v-for="column in headers">
             <td v-bind:key="column.dataField" v-bind:class="column.rowClass">
-              <span>
+              <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row['Key'])">
+              <span v-else :value="row[column.dataField]">
                 {{formatRow(row[column.dataField], column.formatter)}}
               </span>
-              <span></span>
             </td>
           </template>
         </tr>
@@ -37,6 +38,10 @@ import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist } from '../.
 Vue.use(FloatThead)
 
 var lastClickedRow = -1, rowsAdded = 0
+var moneyFormatter = new Intl.NumberFormat('es-ES', {
+  style: 'currency',
+  currency: 'EUR'
+})
 
 export default {
   name: 'monthCheckExtendedTable',
@@ -56,22 +61,52 @@ export default {
   },
   data () {
     return {
-      // lastClickedRow: -1,
-      // rowsAdded: 0
+      sums: {},
+      columnIndex: {}
     }
   },
   methods: {
-    setFilters: function(filterName) {
-      this.$refs.filterBar.setFilterName(filterName)
+    isEditable: function(field) {
+      return field === 'percentage'
     },
-    processFilterChange(filterData) {
-      this.$parent.processFilterChange(filterData)
+    updateTotal: function(a, b) {
+      var totalMetal = parseFloat(event.srcElement.parentNode.parentNode.children[11].children[0].attributes["value"].value)
+      var precioMetal = parseFloat(event.srcElement.parentNode.parentNode.children[4].children[0].attributes["value"].value)
+      var percentage = parseFloat(event.target.value)
+      var dto = totalMetal * (percentage / 100)
+
+      // event.srcElement.parentNode.parentNode.children[13].children[0].setAttribute('value', dto)
+      // event.srcElement.parentNode.parentNode.children[13].children[0].innerText = moneyFormatter.format(dto)
+      this.setCellValue(13, event.srcElement, dto)
+
+      var grandTotal = totalMetal - dto + precioMetal
+      // event.srcElement.parentNode.parentNode.children[14].children[0].setAttribute('value', grandTotal)
+      // event.srcElement.parentNode.parentNode.children[14].children[0].innerText = moneyFormatter.format(grandTotal)
+      this.setCellValue(14, event.srcElement, grandTotal)
+    },
+    setCellValue(position, currentElement, value) {
+      currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
+      currentElement.parentNode.parentNode.children[position].children[0].innerText = moneyFormatter.format(value)
+    },
+    calcColumnSums: function(){
+      for (var column of this.headers){
+        var columnName = column.dataField
+        if (columnName !== 'IdDentista' && columnName !== 'estado' && columnName !== 'NombreDentista' && columnName !== 'percentage'){
+          this.sums[columnName] = 0
+          this.columnIndex[columnName] = _.findIndex(this.headers, ['dataField', columnName])
+        }
+      }
+      for (var row of this.rawDataset){
+        for (var field in row){
+          if (field !== 'IdDentista' && field !== 'Key' && field !== 'NombreDentista'){
+            this.sums[field] += row[field]
+          }
+        }
+      }
     },
     toggleExtraData(event, idDentist, b) {
       var table = event.currentTarget.parentElement
       var clickedRowOrder = event.currentTarget.rowIndex
-
-      console.log(`IdDentist: ${idDentist} | lastClickedRow: ${lastClickedRow} | clickedRowOrder: ${clickedRowOrder}`)
 
       this.removeExtraRows(table)
       if (lastClickedRow !== clickedRowOrder) {
@@ -79,15 +114,10 @@ export default {
         // If the inserted rows of the previous selected value are BENEATH the new position, when you remote the previos rows, you will have a mistmatch on the insertion position.
         if (lastClickedRow !== -1 && clickedRowOrder > lastClickedRow) {
           clickedRowOrder -= rowsAdded
-          console.log('clickedRowOrder minus ' + rowsAdded + ' = ' + clickedRowOrder)
         }
         lastClickedRow = clickedRowOrder
         getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, 'labManager.sqlite').then((workDetails) => {
           rowsAdded = workDetails.length
-          var moneyFormatter = new Intl.NumberFormat('es-ES', {
-            style: 'currency',
-            currency: 'EUR'
-          })
           _.forEach(workDetails, function(work) {
             var row = table.insertRow(clickedRowOrder)
             row.classList.add('deaggregated')
@@ -164,6 +194,13 @@ export default {
           table.deleteRow(position)
         }
       }
+    },
+    getSum(field){
+      if (field !== 'IdDentista' && field !== 'Key' && field !== 'estado' && field !== 'NombreDentista' && field !== 'percentage'){
+        return moneyFormatter.format(this.sums[field])
+      } else {
+        return ''
+      }
     }
   },
   created() {
@@ -175,13 +212,10 @@ export default {
 
     getWorksAggregatedByDentist(parseInt(this.year), parseInt(this.month), 'labManager.sqlite').then((dentistGroup) => {
       this.rawDataset = dentistGroup
+      this.calcColumnSums()
     })
   },
   mounted () {
   }
 }
 </script>
-
-<style>
-
-</style>

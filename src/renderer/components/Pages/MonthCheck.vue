@@ -35,7 +35,7 @@ export default {
         }, {
           title: 'Dentista',
           dataField: 'NombreDentista',
-          titleClass: 'text-left small-text column20',
+          titleClass: 'text-left small-text column20 align-top',
           rowClass: 'small-text column20'
         }, {
           title: 'Precio Final',
@@ -94,8 +94,8 @@ export default {
         }, {
           title: '% Dto.',
           dataField: 'percentage',
-          titleClass: 'text-right small-text column5',
-          rowClass: 'text-right small-text'
+          titleClass: 'text-right small-text column5 align-top',
+          rowClass: 'noMargins'
         }, {
           title: 'Dto.',
           dataField: 'discount',

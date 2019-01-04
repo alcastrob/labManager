@@ -48,6 +48,9 @@
     background-color:#AFA8A1;
     color: #fff!important;
   }
+  table.table-bordered tfoot tr td {
+    background-color:#AFA8A1;
+  }
   table.table-bordered tr:nth-child(odd) {
     background-color: #F2ECE6;
   }
