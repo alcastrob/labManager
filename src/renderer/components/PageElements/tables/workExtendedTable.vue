@@ -22,7 +22,7 @@
 
 <script>
 import pagination from './pagination'
-import Vue from 'Vue'
+import Vue from 'vue'
 import workFilterBar from './workFilterBar'
 import tableMixin from './tableMixin'
 

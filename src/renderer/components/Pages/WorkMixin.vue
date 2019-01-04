@@ -2,7 +2,7 @@
 </template>
 
 <script>
-import Vue from 'Vue'
+import Vue from 'vue'
 import workIndicationsTable from '../PageElements/WorkIndicationsTable'
 import workTestsTable from '../PageElements/workTestsTable'
 import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'

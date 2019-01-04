@@ -30,8 +30,8 @@ export default {
         }, {
           title: '',
           dataField: 'estado',
-          titleClass: 'text-left small-text column5',
-          rowClass: 'column5'
+          titleClass: 'text-left small-text column3',
+          rowClass: ''
         }, {
           title: 'Dentista',
           dataField: 'NombreDentista',
@@ -40,72 +40,72 @@ export default {
         }, {
           title: 'Precio Final',
           dataField: 'SumaPrecioFinal',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
-          title: 'Aditamentos',
+          title: 'Precio Metal',
           dataField: 'SumaAditamentos',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Cerámica',
           dataField: 'SumaCeramica',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Resina',
           dataField: 'SumaResina',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Ortodoncia',
           dataField: 'SumaOrtodoncia',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Esquelético',
           dataField: 'SumaEsqueletico',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Zirconio',
           dataField: 'SumaZirconio',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
-          title: 'Fija',
+          title: 'Fija Metal',
           dataField: 'SumaFija',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Total Metal',
           dataField: 'SumaTotalMetal',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: '% Dto.',
           dataField: 'percentage',
-          titleClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5',
           rowClass: 'text-right small-text'
         }, {
           title: 'Dto.',
           dataField: 'discount',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Total',
           dataField: 'grandtotal',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         },
@@ -132,14 +132,43 @@ export default {
 <style>
 .small-text {
   font-size: .8em;
+  padding-left: 3px!important;
+  padding-right: 0px!important;
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
+}
+
+.dentist-text {
+  font-size: .8em;
+  font-style: italic;
+  padding-left: 15px!important;
+  padding-right: 3px!important;
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
 }
 
 .very-small-text {
-  font-size: .7em;
+  font-size: .8em;
+  /* font-style: italic; */
+  padding-left: 0px!important;
+  padding-right: 3px!important;
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
 }
 
 .column20 {
   width: 20%;
+}
+
+.column7 {
+  width: 7%;
+}
+
+.column5 {
+  width: 5%;
+}
+.column3 {
+  width: 3%;
 }
 
 </style>

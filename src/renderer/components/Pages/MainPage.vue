@@ -18,7 +18,7 @@
 <script>
 import topbar from '../PageElements/TopBar'
 import VueRouter from 'vue-router'
-var {ipcRenderer} = require('electron')
+var { ipcRenderer } = require('electron')
 
 export default {
   name: 'mainPage',

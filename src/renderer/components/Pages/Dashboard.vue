@@ -413,14 +413,13 @@
 </template>
 
 <script>
-import topBar from '../PageElements/TopBar'
 import myIconCard from '../PageElements/iconCards/myIconCard'
 import { getInboundWorksToday } from '../../../main/dal.js'
 import draggable from 'vuedraggable'
 
 export default {
   name: 'dashboard',
-  components: { topBar, myIconCard, draggable },
+  components: { myIconCard, draggable },
   data () {
     return {
       inboundWorksToday: 0,
