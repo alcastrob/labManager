@@ -45,22 +45,22 @@
       </div> <!-- col-md-12 -->
     </div> <!-- row -->
     <div class="row">
-      <div class="col-md-4 mt-3">
+      <div class="col-md-6 mt-3">
         <label for="fEntrada">Fecha entrada</label>
         <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada">
         <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
         <i class="far fa-calendar-alt"></i>
         Poner fecha de hoy
         </a>
-      </div> <!-- col-md-4 -->
-      <div class="col-md-4 mt-3">
+      </div> <!-- col-md-6 -->
+      <div class="col-md-6 mt-3">
         <label for="fPrevista">Fecha prevista</label>
         <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
-      </div> <!-- col-md-4 -->
-      <div class="col-md-4 mt-3">
+      </div> <!-- col-md-6 -->
+      <!-- <div class="col-md-4 mt-3">
         <label for="fSalida">Fecha terminación</label>
         <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
-      </div>
+      </div> -->
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-4">

@@ -34,7 +34,7 @@ export default {
   data () {
     return {
       rawDataset: [],
-      filteredDataset: '',
+      filteredDataset: [],
       pageSize: pageSize,
       currentPage: 1,
       currentSortCriteria: '',

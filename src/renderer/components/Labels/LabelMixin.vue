@@ -52,8 +52,6 @@ export default {
     // Check the required parameters (props)
     if (this.workData === undefined || this.workData === null)
       throw 'Missing prop workData in PrintedLabel1.vue'
-    // if (this.workIndications === undefined || this.workIndications === null)
-    //   throw 'Missing prop workindications in PrintedLabel1.vue'
   }
 }
 </script>

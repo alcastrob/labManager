@@ -6,13 +6,12 @@
     </div>
   </div> <!-- row -->
   <div class="row">
-    <monthCheckExtendedTable :headers="headers" :searchFields="[]" ref="theTable" urlBase="/works/details/" masterKey="IdDentista"/>
+    <monthCheckExtendedTable :headers="headers" :searchFields="[]" ref="theTable" urlBase="/works/details/" :year="year" :month="month" masterKey="IdDentista"/>
   </div>
 </div>
 </template>
 
 <script>
-import { getWorksAggregatedByDentist } from '../../../main/dal.js'
 import monthCheckExtendedTable from '../PageElements/tables/monthCheckExtendedTable'
 
 
@@ -29,15 +28,15 @@ export default {
           titleClass: 'invisible',
           rowClass: 'invisible'
         }, {
-          title: 'Estado',
+          title: '',
           dataField: 'estado',
-          titleClass: 'text-left small-text',
-          rowClass: ''
+          titleClass: 'text-left small-text column5',
+          rowClass: 'column5'
         }, {
           title: 'Dentista',
           dataField: 'NombreDentista',
-          titleClass: 'text-left small-text',
-          rowClass: 'small-text'
+          titleClass: 'text-left small-text column20',
+          rowClass: 'small-text column20'
         }, {
           title: 'Precio Final',
           dataField: 'SumaPrecioFinal',
@@ -95,7 +94,7 @@ export default {
         }, {
           title: '% Dto.',
           dataField: 'percentage',
-          titleClass: 'text-right mr-2 small-text',
+          titleClass: 'text-right small-text',
           rowClass: 'text-right small-text'
         }, {
           title: 'Dto.',
@@ -124,14 +123,9 @@ export default {
       return objDate.toLocaleString("es-es", {month: 'long'})
     }
   },
-  mounted () {
-    debugger
+  created () {
     this.year = this.$route.params.year
     this.month = this.$route.params.month
-    getWorksAggregatedByDentist(this.year, this.month, 'labManager.sqlite').then((workDetails) => {
-      this.rows = workDetails
-      this.$refs.theTable.setDataset(this.rows)
-    })
   }
 }
 </script>
@@ -139,6 +133,15 @@ export default {
 .small-text {
   font-size: .8em;
 }
+
+.very-small-text {
+  font-size: .7em;
+}
+
+.column20 {
+  width: 20%;
+}
+
 </style>
 
 

@@ -54,7 +54,19 @@
   table.table-bordered tr:nth-child(even) {
     background-color: #FFF6ED;
   }
-  table.table-bordered tr:hover td {
+
+  .deaggregated {
+    background-color: #FBC2B5!important;
+    /* transition: all 0.1s ease-out; */
+  }
+  /* .deaggregated:hover {
+  background-color:#FFFF00!important;
+} */
+  table.table-bordered tr.deaggregated:hover {
+    background-color:#DDAB9F!important;
+  }
+
+  table.table-bordered tr:not(.deaggregated):hover td {
     background-color:#DDD8D2;
   }
   table.table-bordered th,

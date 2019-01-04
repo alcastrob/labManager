@@ -419,12 +419,42 @@ export function getWorksAggregatedByDentist (year, month, fileName) {
     'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
     'GROUP BY t.IdDentista, d.NombreDentista ' +
     'ORDER BY d.NombreDentista'
-
   return allAsync(db, query, []).then((rows) => {
     return rows
   })
 }
 
+export function getWorksDeaggregatedByDentist (year, month, idDentist, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo AS IdTrabajo, t.Paciente, ' +
+  't.IdTipoTrabajo, tt.Descripcion, date(t.FechaTerminacion) AS FechaTerminacion, ' +
+  'ifnull(t.PrecioFinal, 0) AS SumaPrecioFinal, ' +
+  'ifnull(t.PrecioMetal, 0) AS SumaAditamentos, ' +
+  'CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END AS SumaCeramica, ' +
+  'CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END AS SumaResina, ' +
+  'CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END AS SumaOrtodoncia, ' +
+  'CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END AS SumaEsqueletico, ' +
+  'CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END AS SumaZirconio, ' +
+  'ifnull((CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
+  '(CASE WHEN t.IdTipoTrabajo = "7" THEN t.PrecioFinal ELSE 0 END) - ' +
+  'ifnull(t.PrecioMetal,0), 0) AS SumaFija, ' +
+  'ifnull((CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
+  '(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
+  '(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
+  '(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
+  '(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) + ' +
+  '(CASE WHEN t.IdTipoTrabajo = "7" THEN t.PrecioFinal ELSE 0 END) - ' +
+  'ifnull(t.PrecioMetal, 0), 0) AS SumaTotalMetal ' +
+  'FROM Trabajos t ' +
+  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+  'INNER JOIN TipoTrabajos tt ON t.IdTipoTrabajo = tt.IdTipoTrabajo ' +
+  'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
+  'AND t.IdDentista = ? ' +
+  'ORDER BY t.FechaTerminacion DESC, t.IdTrabajo DESC'
+  return allAsync(db, query, [idDentist]).then((rows) => {
+    return rows
+  })
+}
 
 // Generic functions ----------------------------------------------------------
 
