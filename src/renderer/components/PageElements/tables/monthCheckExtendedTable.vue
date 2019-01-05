@@ -11,16 +11,13 @@
       </thead>
       <tbody>
         <template v-for="row in rawDataset">
-          <tr v-bind:key="'a' + row['Key']" v-on:click="toggleExtraData($event, row['Key'])">
+          <tr v-bind:key="'a' + row['Key']">
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
-
                 <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row['Key'])">
-
-                <span v-else :value="row[column.dataField]">
+                <span v-else :value="row[column.dataField]" v-on:click="toggleExtraData($event, row['Key'])">
                   {{formatRow(row[column.dataField], column.formatter)}}
                 </span>
-
               </td>
             </template>
           </tr>
@@ -124,8 +121,8 @@ export default {
       return field === 'percentage'
     },
     updateTotal: function(a, key) {
-      var totalMetal = parseFloat(event.srcElement.parentNode.parentNode.children[11].children[0].attributes["value"].value)
-      var precioMetal = parseFloat(event.srcElement.parentNode.parentNode.children[4].children[0].attributes["value"].value)
+      var totalMetal = this.getCellValue(10, event.srcElement)
+      var precioMetal = this.getCellValue(3, event.srcElement)
       var percentage = parseFloat(event.target.value)
       if (isNaN(percentage)){
         percentage = 0
@@ -135,13 +132,16 @@ export default {
       var row = _.find(this.rawDataset, ['IdDentista', key])
       row['SumaDescuento'] = dto
       row['SumaGranTotal'] = grandTotal
-      this.setCellValue(13, event.srcElement, dto)
-      this.setCellValue(14, event.srcElement, grandTotal)
+      this.setCellValue(12, event.srcElement, dto)
+      this.setCellValue(13, event.srcElement, grandTotal)
       this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
     },
     setCellValue(position, currentElement, value) {
       currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
       currentElement.parentNode.parentNode.children[position].children[0].innerText = moneyFormatter.format(value)
+    },
+    getCellValue(position, currentElement) {
+      return parseFloat(currentElement.parentNode.parentNode.children[position].children[0].attributes["value"].value)
     },
     calcColumnSums: function(includedColumns){
       for (var column of this.headers){
@@ -213,8 +213,6 @@ export default {
       }
     })
 
-  },
-  mounted () {
   }
 }
 </script>
