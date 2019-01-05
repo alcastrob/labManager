@@ -1,8 +1,9 @@
 <template>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
       <h1>Cierre mensual - {{monthName}} {{year}}</h1>
+      <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consequatur harum libero quam! Molestiae numquam facilis quidem nulla similique consequuntur assumenda ad autem dolorum, molestias, quam consectetur saepe vero deserunt. Laborum!</p>
     </div>
   </div> <!-- row -->
   <div class="row">
@@ -14,7 +15,6 @@
 <script>
 import monthCheckExtendedTable from '../PageElements/tables/monthCheckExtendedTable'
 
-
 export default {
   name: 'monthCheck',
   components: {
@@ -22,17 +22,11 @@ export default {
   },
   data () {
     return {
-      headers: [ //{
-          // title: '',
-          // dataField: 'IdDentista',
-          // titleClass: 'invisible',
-          // rowClass: 'invisible'
-        //}, {
-        {
+      headers: [ {
           title: '',
           dataField: 'estado',
           titleClass: 'text-left small-text column5 align-top',
-          rowClass: 'very-small-text text-right'
+          rowClass: 'small-text text-right'
         }, {
           title: 'Dentista',
           dataField: 'NombreDentista',

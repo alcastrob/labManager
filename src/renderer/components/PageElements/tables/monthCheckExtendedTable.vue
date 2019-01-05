@@ -11,23 +11,22 @@
       </thead>
       <tbody>
         <template v-for="row in rawDataset">
-          <tr v-bind:key="'a' + row['Key']">
+          <tr v-bind:key="'a' + row.IdDentista" v-on:click="toggleExtraData($event, row.IdDentista)">
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
-                <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row['Key'])">
-                <span v-else :value="row[column.dataField]" v-on:click="toggleExtraData($event, row['Key'])">
+                <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row.IdDentista)">
+                <input type="checkbox" v-else-if="isButton(column.dataField)" @change="selectedForInvoice($event, row.IdDentista)" :id="'chkDentist-' + row.IdDentista">
+                <span v-else :value="row[column.dataField]">
                   {{formatRow(row[column.dataField], column.formatter)}}
                 </span>
               </td>
             </template>
           </tr>
-          <template v-for="work in worksPerDentist[row['IdDentista']]">
+          <template v-for="work in worksPerDentist[row.IdDentista]">
             <transition name="fade">
-              <tr v-if="selectedDentist === row['IdDentista']" v-bind:key="'c' + work['IdTrabajo']" class="deaggregated" @click="clickedWork($event, row['IdDentista'], work.IdTrabajo)">
-                <!-- <td class="invisible"></td> -->
+              <tr v-if="selectedDentist === row.IdDentista" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.IdTrabajo}}&nbsp;<input type="checkbox" v-model="work.Chequeado">
-                  <!-- @change="clickedCheckbox($event, row['IdDentista'], work.IdTrabajo)" -->
                 </td>
                 <td class="dentist-text column-20" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.Paciente}}&nbsp;|&nbsp;{{endDate(work)}}
@@ -120,6 +119,9 @@ export default {
     isEditable: function(field) {
       return field === 'percentage'
     },
+    isButton: function(field) {
+      return field === 'estado'
+    },
     updateTotal: function(a, key) {
       var totalMetal = this.getCellValue(10, event.srcElement)
       var precioMetal = this.getCellValue(3, event.srcElement)
@@ -175,18 +177,35 @@ export default {
     },
     toggleExtraData(event, idDentist) {
       this.$forceUpdate()
-      if (this.selectedDentist !== idDentist){
-        this.selectedDentist = idDentist
-      } else {
-        this.selectedDentist = 0
+      if (event.srcElement.localName !== 'input'){
+        if (this.selectedDentist !== idDentist){
+          this.selectedDentist = idDentist
+        } else {
+          this.selectedDentist = 0
+        }
       }
+    },
+    selectedForInvoice(event, idDentist){
+      this.selectedDentist = idDentist
+      this.$forceUpdate()
+      if (!this.areAllWorksOfDentistChecked(idDentist)) {
+        event.srcElement.checked = false
+      }
+    },
+    areAllWorksOfDentistChecked(idDentist){
+      var result = true
+      var works = this.worksPerDentist[idDentist]
+      for (var work of works) {
+        result = result && work.Chequeado
+      }
+      return result
     },
     endDate(work) {
       return moment(work.FechaTerminacion).format('DD/MM/YYYY')
     },
-    clickedWork(event, idDentista, idTrabajo){
+    clickedWork(event, idDentist, idTrabajo){
       if (event.currentTarget.localName !== 'input'){
-        var works = this.worksPerDentist[idDentista]
+        var works = this.worksPerDentist[idDentist]
         var work = _.find(works, ['IdTrabajo', idTrabajo])
         work.Chequeado = !work.Chequeado
         setCheckToWork(idTrabajo, work.Chequeado, 'labManager.sqlite')
@@ -195,6 +214,7 @@ export default {
         setCheckToWork(idTrabajo, event.currentTarget.checked, 'labManager.sqlite')
       }
       this.$forceUpdate()
+      document.getElementById('chkDentist-' + idDentist).checked = this.areAllWorksOfDentistChecked(idDentist)
     }
   },
   created() {
