@@ -98,13 +98,13 @@ export default {
           rowClass: 'noMargins'
         }, {
           title: 'Dto.',
-          dataField: 'discount',
+          dataField: 'SumaDescuento',
           titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Total',
-          dataField: 'grandtotal',
+          dataField: 'SumaGranTotal',
           titleClass: 'text-right small-text column7',
           rowClass: 'text-right small-text',
           formatter: 'money'

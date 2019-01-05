@@ -5,8 +5,8 @@
         <tr>
           <th v-for="header in headers" v-bind:key="header.dataField"
             v-bind:class="header.titleClass">
-            {{header.title}}<br>{{getSum(header.dataField)}}
-            <!-- {{getSum(header.dataField)}} -->
+            <!-- {{header.title}}<br>{{getSum(header.dataField)}} -->
+            {{header.title}}<br>{{subheaders[header.dataField]}}
           </th>
         </tr>
       </thead>
@@ -62,36 +62,35 @@ export default {
   data () {
     return {
       sums: {},
-      columnIndex: {}
+      columnIndex: {},
+      subheaders: {}
     }
   },
   methods: {
     isEditable: function(field) {
       return field === 'percentage'
     },
-    updateTotal: function(a, b) {
+    updateTotal: function(a, key) {
       var totalMetal = parseFloat(event.srcElement.parentNode.parentNode.children[11].children[0].attributes["value"].value)
       var precioMetal = parseFloat(event.srcElement.parentNode.parentNode.children[4].children[0].attributes["value"].value)
       var percentage = parseFloat(event.target.value)
       var dto = totalMetal * (percentage / 100)
-
-      // event.srcElement.parentNode.parentNode.children[13].children[0].setAttribute('value', dto)
-      // event.srcElement.parentNode.parentNode.children[13].children[0].innerText = moneyFormatter.format(dto)
-      this.setCellValue(13, event.srcElement, dto)
-
       var grandTotal = totalMetal - dto + precioMetal
-      // event.srcElement.parentNode.parentNode.children[14].children[0].setAttribute('value', grandTotal)
-      // event.srcElement.parentNode.parentNode.children[14].children[0].innerText = moneyFormatter.format(grandTotal)
+      var row = _.find(this.rawDataset, ['IdDentista', key])
+      row['SumaDescuento'] = dto
+      row['SumaGranTotal'] = grandTotal
+      this.setCellValue(13, event.srcElement, dto)
       this.setCellValue(14, event.srcElement, grandTotal)
+      this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
     },
     setCellValue(position, currentElement, value) {
       currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
       currentElement.parentNode.parentNode.children[position].children[0].innerText = moneyFormatter.format(value)
     },
-    calcColumnSums: function(){
+    calcColumnSums: function(includedColumns){
       for (var column of this.headers){
         var columnName = column.dataField
-        if (columnName !== 'IdDentista' && columnName !== 'estado' && columnName !== 'NombreDentista' && columnName !== 'percentage'){
+        if (includedColumns.includes(columnName)){
           this.sums[columnName] = 0
           this.columnIndex[columnName] = _.findIndex(this.headers, ['dataField', columnName])
         }
@@ -102,6 +101,16 @@ export default {
             this.sums[field] += row[field]
           }
         }
+      }
+      for (var column of this.headers){
+        this.subheaders[column.dataField] = this.getSum(column.dataField)
+      }
+    },
+    getSum(field){
+      if (field !== 'IdDentista' && field !== 'Key' && field !== 'estado' && field !== 'NombreDentista' && field !== 'percentage'){
+        return moneyFormatter.format(this.sums[field])
+      } else {
+        return ''
       }
     },
     toggleExtraData(event, idDentist, b) {
@@ -194,13 +203,6 @@ export default {
           table.deleteRow(position)
         }
       }
-    },
-    getSum(field){
-      if (field !== 'IdDentista' && field !== 'Key' && field !== 'estado' && field !== 'NombreDentista' && field !== 'percentage'){
-        return moneyFormatter.format(this.sums[field])
-      } else {
-        return ''
-      }
     }
   },
   created() {
@@ -212,7 +214,7 @@ export default {
 
     getWorksAggregatedByDentist(parseInt(this.year), parseInt(this.month), 'labManager.sqlite').then((dentistGroup) => {
       this.rawDataset = dentistGroup
-      this.calcColumnSums()
+      this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
     })
   },
   mounted () {
