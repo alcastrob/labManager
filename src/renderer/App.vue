@@ -62,9 +62,6 @@
     background-color: #FBC2B5!important;
     /* transition: all 0.1s ease-out; */
   }
-  /* .deaggregated:hover {
-  background-color:#FFFF00!important;
-} */
   table.table-bordered tr.deaggregated:hover {
     background-color:#DDAB9F!important;
   }

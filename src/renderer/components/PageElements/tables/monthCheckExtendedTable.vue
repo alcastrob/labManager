@@ -1,11 +1,10 @@
 <template>
   <div class="table-responsive">
-    <float-thead-table class="table table-bordered" :top="56">
+    <float-thead-table class="table table-bordered" :top="56" ref="table" :autoReflow="true" >
       <thead>
         <tr>
           <th v-for="header in headers" v-bind:key="header.dataField"
             v-bind:class="header.titleClass">
-            <!-- {{header.title}}<br>{{getSum(header.dataField)}} -->
             {{header.title}}<br>{{subheaders[header.dataField]}}
           </th>
         </tr>
@@ -74,6 +73,9 @@ export default {
       var totalMetal = parseFloat(event.srcElement.parentNode.parentNode.children[11].children[0].attributes["value"].value)
       var precioMetal = parseFloat(event.srcElement.parentNode.parentNode.children[4].children[0].attributes["value"].value)
       var percentage = parseFloat(event.target.value)
+      if (isNaN(percentage)){
+        percentage = 0
+      }
       var dto = totalMetal * (percentage / 100)
       var grandTotal = totalMetal - dto + precioMetal
       var row = _.find(this.rawDataset, ['IdDentista', key])
@@ -97,20 +99,16 @@ export default {
       }
       for (var row of this.rawDataset){
         for (var field in row){
-          if (field !== 'IdDentista' && field !== 'Key' && field !== 'NombreDentista'){
+          if (includedColumns.includes(field)){
+          //if (field !== 'IdDentista' && field !== 'Key' && field !== 'NombreDentista'){
             this.sums[field] += row[field]
           }
         }
       }
       for (var column of this.headers){
-        this.subheaders[column.dataField] = this.getSum(column.dataField)
-      }
-    },
-    getSum(field){
-      if (field !== 'IdDentista' && field !== 'Key' && field !== 'estado' && field !== 'NombreDentista' && field !== 'percentage'){
-        return moneyFormatter.format(this.sums[field])
-      } else {
-        return ''
+        if(includedColumns.includes(column.dataField)){
+          this.subheaders[column.dataField] = moneyFormatter.format(this.sums[column.dataField])
+        }
       }
     },
     toggleExtraData(event, idDentist, b) {
@@ -218,6 +216,7 @@ export default {
     })
   },
   mounted () {
+    //this.$refs.table.reflow()
   }
 }
 </script>

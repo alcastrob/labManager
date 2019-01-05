@@ -430,6 +430,7 @@ export function getWorksAggregatedByDentist (year, month, fileName) {
   })
 }
 
+//Tested
 export function getWorksDeaggregatedByDentist (year, month, idDentist, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo AS IdTrabajo, t.Paciente, ' +
