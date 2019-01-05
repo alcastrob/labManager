@@ -60,7 +60,6 @@
 
   .deaggregated {
     background-color: #FBC2B5!important;
-    /* transition: all 0.1s ease-out; */
   }
   table.table-bordered tr.deaggregated:hover {
     background-color:#DDAB9F!important;

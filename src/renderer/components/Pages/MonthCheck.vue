@@ -22,90 +22,91 @@ export default {
   },
   data () {
     return {
-      headers: [ {
-          title: '',
-          dataField: 'IdDentista',
-          titleClass: 'invisible',
-          rowClass: 'invisible'
-        }, {
+      headers: [ //{
+          // title: '',
+          // dataField: 'IdDentista',
+          // titleClass: 'invisible',
+          // rowClass: 'invisible'
+        //}, {
+        {
           title: '',
           dataField: 'estado',
-          titleClass: 'text-left small-text column3',
-          rowClass: ''
+          titleClass: 'text-left small-text column5 align-top',
+          rowClass: 'very-small-text text-right'
         }, {
           title: 'Dentista',
           dataField: 'NombreDentista',
           titleClass: 'text-left small-text column20 align-top',
-          rowClass: 'small-text column20'
+          rowClass: 'small-text'
         }, {
-          title: 'Precio Final',
+          title: 'P. Final',
           dataField: 'SumaPrecioFinal',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
-          title: 'Precio Metal',
+          title: 'P. Metal',
           dataField: 'SumaAditamentos',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Cerámica',
           dataField: 'SumaCeramica',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Resina',
           dataField: 'SumaResina',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Ortodoncia',
           dataField: 'SumaOrtodoncia',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Esquelético',
           dataField: 'SumaEsqueletico',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Zirconio',
           dataField: 'SumaZirconio',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Fija Metal',
           dataField: 'SumaFija',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Total Metal',
           dataField: 'SumaTotalMetal',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: '% Dto.',
           dataField: 'percentage',
-          titleClass: 'text-right small-text column5 align-top',
+          titleClass: 'text-right small-text column3 align-top',
           rowClass: 'noMargins'
         }, {
           title: 'Dto.',
           dataField: 'SumaDescuento',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         }, {
           title: 'Total',
           dataField: 'SumaGranTotal',
-          titleClass: 'text-right small-text column7',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'text-right small-text',
           formatter: 'money'
         },
@@ -133,7 +134,7 @@ export default {
 .small-text {
   font-size: .8em;
   padding-left: 3px!important;
-  padding-right: 0px!important;
+  padding-right: 2px!important;
   padding-top: 5px!important;
   padding-bottom: 5px!important;
 }
@@ -142,15 +143,6 @@ export default {
   font-size: .8em;
   font-style: italic;
   padding-left: 15px!important;
-  padding-right: 3px!important;
-  padding-top: 5px!important;
-  padding-bottom: 5px!important;
-}
-
-.very-small-text {
-  font-size: .8em;
-  /* font-style: italic; */
-  padding-left: 0px!important;
   padding-right: 3px!important;
   padding-top: 5px!important;
   padding-bottom: 5px!important;

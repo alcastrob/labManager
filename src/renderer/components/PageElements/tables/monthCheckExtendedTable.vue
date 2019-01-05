@@ -10,17 +10,69 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="row in rawDataset" v-bind:key="row[0]"
-        v-on:click="toggleExtraData($event, row['Key'])">
-          <template v-for="column in headers">
-            <td v-bind:key="column.dataField" v-bind:class="column.rowClass">
-              <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row['Key'])">
-              <span v-else :value="row[column.dataField]">
-                {{formatRow(row[column.dataField], column.formatter)}}
-              </span>
-            </td>
+        <template v-for="row in rawDataset">
+          <tr v-bind:key="'a' + row['Key']" v-on:click="toggleExtraData($event, row['Key'])">
+            <template v-for="column in headers">
+              <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
+
+                <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row['Key'])">
+
+                <span v-else :value="row[column.dataField]">
+                  {{formatRow(row[column.dataField], column.formatter)}}
+                </span>
+
+              </td>
+            </template>
+          </tr>
+          <template v-for="work in worksPerDentist[row['IdDentista']]">
+            <transition name="fade">
+              <tr v-if="selectedDentist === row['IdDentista']" v-bind:key="'c' + work['IdTrabajo']" class="deaggregated" @click="clickedWork($event, row['IdDentista'], work.IdTrabajo)">
+                <!-- <td class="invisible"></td> -->
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{work.IdTrabajo}}&nbsp;<input type="checkbox" v-model="work.Chequeado">
+                  <!-- @change="clickedCheckbox($event, row['IdDentista'], work.IdTrabajo)" -->
+                </td>
+                <td class="dentist-text column-20" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{work.Paciente}}&nbsp;|&nbsp;{{endDate(work)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaPrecioFinal)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaAditamentos)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaCeramica)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaResina)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaOrtodoncia)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaEsqueletico)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaZirconio)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaFija)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                  {{moneyFormatter.format(work.SumaTotalMetal)}}
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                </td>
+                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                </td>
+              </tr>
+            </transition>
+
           </template>
-        </tr>
+         </template>
       </tbody>
     </float-thead-table>
   </div>
@@ -32,7 +84,7 @@ import FloatThead from 'vue-floatthead'
 import _ from 'lodash'
 import moment from 'moment'
 import tableMixin from './tableMixin'
-import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist } from '../../../../main/dal.js'
+import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork } from '../../../../main/dal.js'
 
 Vue.use(FloatThead)
 
@@ -62,7 +114,9 @@ export default {
     return {
       sums: {},
       columnIndex: {},
-      subheaders: {}
+      subheaders: {},
+      worksPerDentist: {},
+      selectedDentist: 0
     }
   },
   methods: {
@@ -100,7 +154,6 @@ export default {
       for (var row of this.rawDataset){
         for (var field in row){
           if (includedColumns.includes(field)){
-          //if (field !== 'IdDentista' && field !== 'Key' && field !== 'NombreDentista'){
             this.sums[field] += row[field]
           }
         }
@@ -111,96 +164,37 @@ export default {
         }
       }
     },
-    toggleExtraData(event, idDentist, b) {
-      var table = event.currentTarget.parentElement
-      var clickedRowOrder = event.currentTarget.rowIndex
-
-      this.removeExtraRows(table)
-      if (lastClickedRow !== clickedRowOrder) {
-        // The table uses position index to insert and delete, instead of keys.
-        // If the inserted rows of the previous selected value are BENEATH the new position, when you remote the previos rows, you will have a mistmatch on the insertion position.
-        if (lastClickedRow !== -1 && clickedRowOrder > lastClickedRow) {
-          clickedRowOrder -= rowsAdded
-        }
-        lastClickedRow = clickedRowOrder
-        getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, 'labManager.sqlite').then((workDetails) => {
-          rowsAdded = workDetails.length
-          _.forEach(workDetails, function(work) {
-            var row = table.insertRow(clickedRowOrder)
-            row.classList.add('deaggregated')
-
-            var cell = row.insertCell(0)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${work.IdTrabajo}`
-
-            cell = row.insertCell(1)
-            cell.classList.add('dentist-text')
-            cell.innerHTML = `${work.Paciente} | ${moment(work.FechaTerminacion).format('DD/MM/YYYY')}`
-
-            cell = row.insertCell(2)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaPrecioFinal)}`
-
-            cell = row.insertCell(3)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaAditamentos)}`
-
-            cell = row.insertCell(4)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaCeramica)}`
-
-            cell = row.insertCell(5)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaResina)}`
-
-            cell = row.insertCell(6)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaOrtodoncia)}`
-
-            cell = row.insertCell(7)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaEsqueletico)}`
-
-            cell = row.insertCell(8)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaZirconio)}`
-
-            cell = row.insertCell(9)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaFija)}`
-
-            cell = row.insertCell(10)
-            cell.classList.add('very-small-text')
-            cell.classList.add('text-right')
-            cell.innerHTML = `${moneyFormatter.format(work.SumaTotalMetal)}`
-
-            cell = row.insertCell(11)
-            cell.classList.add('very-small-text')
-            cell = row.insertCell(12)
-            cell.classList.add('very-small-text')
-            cell = row.insertCell(13)
-            cell.classList.add('very-small-text')
-          })
-        })
-      } else {
-        lastClickedRow = -1
+    getWorksOfDentist(idDentist) {
+      getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, 'labManager.sqlite').then(this.assignWorks)
+    },
+    assignWorks(works) {
+      if (works.length > 0) {
+        var idDentista = works[0].IdDentista
+        this.worksPerDentist[idDentista] = works
       }
     },
-    removeExtraRows(table) {
-      for (var position = table.children.length - 1; position !== 0; position--) {
-        if (table.children[position].className === 'deaggregated') {
-          table.deleteRow(position)
-        }
+    toggleExtraData(event, idDentist) {
+      this.$forceUpdate()
+      if (this.selectedDentist !== idDentist){
+        this.selectedDentist = idDentist
+      } else {
+        this.selectedDentist = 0
       }
+    },
+    endDate(work) {
+      return moment(work.FechaTerminacion).format('DD/MM/YYYY')
+    },
+    clickedWork(event, idDentista, idTrabajo){
+      if (event.currentTarget.localName !== 'input'){
+        var works = this.worksPerDentist[idDentista]
+        var work = _.find(works, ['IdTrabajo', idTrabajo])
+        work.Chequeado = !work.Chequeado
+        setCheckToWork(idTrabajo, work.Chequeado, 'labManager.sqlite')
+      }
+      else {
+        setCheckToWork(idTrabajo, event.currentTarget.checked, 'labManager.sqlite')
+      }
+      this.$forceUpdate()
     }
   },
   created() {
@@ -213,10 +207,38 @@ export default {
     getWorksAggregatedByDentist(parseInt(this.year), parseInt(this.month), 'labManager.sqlite').then((dentistGroup) => {
       this.rawDataset = dentistGroup
       this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
+
+      for(var dentist of this.rawDataset) {
+        this.getWorksOfDentist(dentist.IdDentista)
+      }
     })
+
   },
   mounted () {
-    //this.$refs.table.reflow()
   }
 }
 </script>
+<style>
+.fade-enter-active {
+  transition: opacity .5s;
+}
+.fade-leave-active {
+  transition: opacity .06s;
+}
+.fade-enter {
+  opacity: 0;
+}
+.fade-leave-to {
+  opacity: 1;
+}
+.stroke {
+  font-weight: normal;
+  text-decoration: line-through;
+  background-color: #F9DBD4;
+}
+.bold {
+  /* font-weight: bold; */
+}
+
+
+</style>

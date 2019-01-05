@@ -433,34 +433,20 @@ export function getWorksAggregatedByDentist (year, month, fileName) {
 //Tested
 export function getWorksDeaggregatedByDentist (year, month, idDentist, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT t.IdTrabajo AS Key, t.IdTrabajo AS IdTrabajo, t.Paciente, ' +
-  't.IdTipoTrabajo, tt.Descripcion, date(t.FechaTerminacion) AS FechaTerminacion, ' +
-  'ifnull(t.PrecioFinal, 0) AS SumaPrecioFinal, ' +
-  'ifnull(t.PrecioMetal, 0) AS SumaAditamentos, ' +
-  'CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END AS SumaCeramica, ' +
-  'CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END AS SumaResina, ' +
-  'CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END AS SumaOrtodoncia, ' +
-  'CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END AS SumaEsqueletico, ' +
-  'CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END AS SumaZirconio, ' +
-  'ifnull((CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
-  '(CASE WHEN t.IdTipoTrabajo = "7" THEN t.PrecioFinal ELSE 0 END) - ' +
-  'ifnull(t.PrecioMetal,0), 0) AS SumaFija, ' +
-  'ifnull((CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
-  '(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
-  '(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
-  '(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
-  '(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) + ' +
-  '(CASE WHEN t.IdTipoTrabajo = "7" THEN t.PrecioFinal ELSE 0 END) - ' +
-  'ifnull(t.PrecioMetal, 0), 0) AS SumaTotalMetal ' +
-  'FROM Trabajos t ' +
-  'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-  'INNER JOIN TipoTrabajos tt ON t.IdTipoTrabajo = tt.IdTipoTrabajo ' +
-  'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
-  'AND t.IdDentista = ? ' +
-  'ORDER BY t.FechaTerminacion DESC, t.IdTrabajo DESC'
-  return allAsync(db, query, [idDentist]).then((rows) => {
+  var sMonth = ('00' + month).substr(-2)
+  var query = 'SELECT * FROM vTrabajosPorDentista WHERE ' +
+  'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+  'AND IdDentista = ' + idDentist
+  return allAsync(db, query, []).then((rows) => {
     return rows
   })
+}
+
+//Tested
+export function setCheckToWork (idTrabajo, check, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'INSERT OR REPLACE INTO TrabajosChequeados (IdTrabajo, Chequeado) VALUES (?, ?)'
+  return runAsync(db, query, [idTrabajo, check])
 }
 
 // Generic functions ----------------------------------------------------------
