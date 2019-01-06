@@ -1,31 +1,23 @@
 <template>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-8">
       <h1>Cierre mensual - {{monthName}} {{year}}</h1>
+    </div> <!-- col-md-8 -->
+    <div class="col-md-4 mt-2">
+      <div class="float-right">
+        <button class="btn btn-warning" :disabled="true"><i class="fas fa-file-invoice-dollar"></i> Generar facturas</button>
+      </div>
+    </div> <!-- col-md-4 -->
+  </div> <!-- row -->
+  <div class="row">
+    <div class="col-md-12">
       <p class="text-justify">Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Emitir Factura. Para poder marcar un dentista hay que marcar previamente todos sus trabajos. </p>
     </div>
-    <!-- <button ref="sss" data-placement="top">
-    Botón</button>
-    <b-tooltip :target="() => $refs.sss" placement="right">
-      <div class="text-left">
-        Tipo: Esquelético <br>
-        Color: 2B<br>
-        Fecha Entrada: 02/01/2018<br>
-        Indicaciones:<br>
-        <ul>
-          <li>REPETICION DE ESTRUCTURA DE ESQUELETICO (50%) | 57.50€</li>
-          <li>ESQUELETICO SUPERIOR DE 4 PIEZAS | 175.00€</li>
-          <li>1 ENCAMISADO DE ATTACHE | 31.00€</li>
-          <li>COLCACION DE 1 ATTACHE | 25.00€</li>
-          <li>1 ENCAMISADO DE ATTACHE (50%) | 6.00€</li>
-        </ul>
-      </div>
-    </b-tooltip> -->
   </div> <!-- row -->
   <div class="row">
     <monthCheckExtendedTable :headers="headers" :searchFields="[]" ref="theTable" urlBase="/works/details/" :year="year" :month="month" masterKey="IdDentista"/>
-  </div>
+  </div> <!-- row -->
 </div>
 </template>
 
@@ -36,7 +28,7 @@ import bTooltip from 'bootstrap-vue'
 export default {
   name: 'monthCheck',
   components: {
-    monthCheckExtendedTable
+    monthCheckExtendedTable,
   },
   data () {
     return {
@@ -139,8 +131,6 @@ export default {
   created () {
     this.year = this.$route.params.year
     this.month = this.$route.params.month
-  },
-  mounted () {
   }
 }
 </script>

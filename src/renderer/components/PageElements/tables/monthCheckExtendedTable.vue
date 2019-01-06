@@ -14,11 +14,16 @@
           <tr v-bind:key="'a' + row.IdDentista" v-on:click="toggleExtraData($event, row.IdDentista)">
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
+
                 <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row.IdDentista)">
+
                 <input type="checkbox" v-else-if="isButton(column.dataField)" @change="selectedForInvoice($event, row.IdDentista)" :id="'chkDentist-' + row.IdDentista">
+
                 <span v-else :value="row[column.dataField]">
                   {{formatRow(row[column.dataField], column.formatter)}}
+                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[row.IdDentista]}}</b-badge>
                 </span>
+
               </td>
             </template>
           </tr>
@@ -26,7 +31,8 @@
             <transition name="fade">
               <tr v-if="selectedDentist === row.IdDentista" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{work.IdTrabajo}}&nbsp;<input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheck(row.IdDentista)">
+                  {{work.IdTrabajo}}&nbsp;
+                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheck(row.IdDentista)">
                 </td>
                 <td class="dentist-text column-20" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;<router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
@@ -92,6 +98,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import tableMixin from './tableMixin'
 import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork, getWorkIndications } from '../../../../main/dal.js'
+import bBadge from 'bootstrap-vue'
 
 Vue.use(FloatThead)
 
@@ -123,39 +130,45 @@ export default {
       columnIndex: {},
       subheaders: {},
       worksPerDentist: {},
+      remainingWorks: {},
       selectedDentist: 0,
       workIndications: {}
     }
   },
   methods: {
-    isEditable: function(field) {
-      return field === 'percentage'
-    },
-    isButton: function(field) {
-      return field === 'estado'
-    },
-    updateTotal: function(a, key) {
-      var totalMetal = this.getCellValue(10, event.srcElement)
-      var precioMetal = this.getCellValue(3, event.srcElement)
-      var percentage = parseFloat(event.target.value)
-      if (isNaN(percentage)){
-        percentage = 0
+    //Event responses----------------------------
+    toggleExtraData(event, idDentist) {
+      this.$forceUpdate()
+      if (event.srcElement.localName !== 'input'){
+        if (this.selectedDentist !== idDentist){
+          this.selectedDentist = idDentist
+        } else {
+          this.selectedDentist = 0
+        }
       }
-      var dto = totalMetal * (percentage / 100)
-      var grandTotal = totalMetal - dto + precioMetal
-      var row = _.find(this.rawDataset, ['IdDentista', key])
-      row['SumaDescuento'] = dto
-      row['SumaGranTotal'] = grandTotal
-      this.setCellValue(12, event.srcElement, dto)
-      this.setCellValue(13, event.srcElement, grandTotal)
-      this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
     },
-    setCellValue(position, currentElement, value) {
-      currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
-      currentElement.parentNode.parentNode.children[position].children[0].innerText = moneyFormatter.format(value)
+    clickedWork(event, idDentist, idTrabajo){
+      var works = this.worksPerDentist[idDentist]
+      if (event.srcElement.localName !== 'input' && event.srcElement.localName !== 'a'){
+        var work = _.find(works, ['IdTrabajo', idTrabajo])
+        work.Chequeado = !work.Chequeado
+        setCheckToWork(idTrabajo, work.Chequeado, 'labManager.sqlite')
+      }
+      else {
+        setCheckToWork(idTrabajo, event.srcElement.checked, 'labManager.sqlite')
+      }
+      this.remainingWorks[idDentist] = this.calculateRemainingWorks(works)
+
+      this.updateDentistCheck(idDentist)
+      this.$forceUpdate()
     },
-    getCellValue(position, currentElement) {
-      return parseFloat(currentElement.parentNode.parentNode.children[position].children[0].attributes["value"].value)
+
+    //Calculations-------------------------------
+    calculateRemainingWorks(works) {
+      var remainingCandidates = _.filter(works, function(w) {
+        return w.Chequeado === 0 || w.Chequeado === false
+      })
+      return remainingCandidates.length===0?'':remainingCandidates.length
     },
     calcColumnSums: function(includedColumns){
       for (var column of this.headers){
@@ -178,36 +191,32 @@ export default {
         }
       }
     },
-    getWorksOfDentist(idDentist) {
-      getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, 'labManager.sqlite').then(this.assignWorks)
-    },
-    assignWorks(works) {
-      if (works.length > 0) {
-        var idDentista = works[0].IdDentista
-        this.worksPerDentist[idDentista] = works
-        for (var work of works){
-          this.getWorkIndications(work.IdTrabajo)
-        }
+    updateTotal: function(a, key) {
+      var totalMetal = this.getCellValue(10, event.srcElement)
+      var precioMetal = this.getCellValue(3, event.srcElement)
+      var percentage = parseFloat(event.target.value)
+      if (isNaN(percentage)){
+        percentage = 0
       }
+      var dto = totalMetal * (percentage / 100)
+      var grandTotal = totalMetal - dto + precioMetal
+      var row = _.find(this.rawDataset, ['IdDentista', key])
+      row['SumaDescuento'] = dto
+      row['SumaGranTotal'] = grandTotal
+      this.setCellValue(12, event.srcElement, dto)
+      this.setCellValue(13, event.srcElement, grandTotal)
+      this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
     },
-    getWorkIndications(idTrabajo) {
-      getWorkIndications(idTrabajo, 'labManager.sqlite').then(this.assignWorkIndications)
+
+    //Verifications------------------------------
+    areAllWorksOfDentistChecked(idDentist){
+      return this.calculateRemainingWorks(this.worksPerDentist[idDentist]).length === 0
     },
-    assignWorkIndications(workIndications){
-      if (workIndications.length > 0) {
-        var idTrabajo = workIndications[0].IdTrabajo
-        this.workIndications[idTrabajo] = workIndications
-      }
+    isEditable: function(field) {
+      return field === 'percentage'
     },
-    toggleExtraData(event, idDentist) {
-      this.$forceUpdate()
-      if (event.srcElement.localName !== 'input'){
-        if (this.selectedDentist !== idDentist){
-          this.selectedDentist = idDentist
-        } else {
-          this.selectedDentist = 0
-        }
-      }
+    isButton: function(field) {
+      return field === 'estado'
     },
     selectedForInvoice(event, idDentist){
       this.selectedDentist = idDentist
@@ -216,13 +225,17 @@ export default {
         event.srcElement.checked = false
       }
     },
-    areAllWorksOfDentistChecked(idDentist){
-      var result = true
-      var works = this.worksPerDentist[idDentist]
-      for (var work of works) {
-        result = result && work.Chequeado
-      }
-      return result
+
+    //Updates and manipulation of the UI---------
+    updateDentistCheck(idDentist) {
+      document.getElementById('chkDentist-' + idDentist).checked = this.areAllWorksOfDentistChecked(idDentist)
+    },
+    setCellValue(position, currentElement, value) {
+      currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
+      currentElement.parentNode.parentNode.children[position].children[0].innerText = moneyFormatter.format(value)
+    },
+    getCellValue(position, currentElement) {
+      return parseFloat(currentElement.parentNode.parentNode.children[position].children[0].attributes["value"].value)
     },
     formatDate(row, field) {
       var returnedValue = moment(row[field]).format('DD/MM/YYYY')
@@ -232,21 +245,32 @@ export default {
         return ''
       }
     },
-    clickedWork(event, idDentist, idTrabajo){
-      if (event.srcElement.localName !== 'input' && event.srcElement.localName !== 'a'){
-        var works = this.worksPerDentist[idDentist]
-        var work = _.find(works, ['IdTrabajo', idTrabajo])
-        work.Chequeado = !work.Chequeado
-        setCheckToWork(idTrabajo, work.Chequeado, 'labManager.sqlite')
-      }
-      else {
-        setCheckToWork(idTrabajo, event.currentTarget.checked, 'labManager.sqlite')
-      }
-      this.$forceUpdate()
-      this.updateDentistCheck(idDentist)
+
+    //Persistence--------------------------------
+    getWorksOfDentist(idDentist) {
+      getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, 'labManager.sqlite').then(this.getWorksOfDentist_Companion)
     },
-    updateDentistCheck(idDentist) {
-      document.getElementById('chkDentist-' + idDentist).checked = this.areAllWorksOfDentistChecked(idDentist)
+    getWorksOfDentist_Companion(works) {
+      if (works.length > 0) {
+        var idDentista = works[0].IdDentista
+        this.worksPerDentist[idDentista] = works
+
+        this.remainingWorks[idDentista] = this.calculateRemainingWorks(works)
+
+        for (var work of works){
+          this.getWorkIndications(work.IdTrabajo)
+        }
+        this.$forceUpdate()
+      }
+    },
+    getWorkIndications(idTrabajo) {
+      getWorkIndications(idTrabajo, 'labManager.sqlite').then(this.getWorkIndications_Companion)
+    },
+    getWorkIndications_Companion(workIndications){
+      if (workIndications.length > 0) {
+        var idTrabajo = workIndications[0].IdTrabajo
+        this.workIndications[idTrabajo] = workIndications
+      }
     }
   },
   created() {
@@ -264,7 +288,8 @@ export default {
         this.getWorksOfDentist(dentist.IdDentista)
       }
     })
-
+  },
+  computed: {
   }
 }
 </script>
