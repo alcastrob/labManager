@@ -118,7 +118,9 @@ export function updateWork(work, fileName) {
   'FechaEntrada = ?, FechaPrevista = ?, ' +
   'PrecioMetal = ?, Nombre = ? ' +
   'WHERE IdTrabajo = ?'
-  return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente, work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.PrecioMetal, work.Nombre, work.IdTrabajo])
+  return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
+    work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista,
+    work.PrecioMetal, work.Nombre, work.IdTrabajo])
 }
 
 // Work Indications------------------------------------------------------------
@@ -448,6 +450,84 @@ export function setCheckToWork (idTrabajo, check, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'INSERT OR REPLACE INTO TrabajosChequeados (IdTrabajo, Chequeado) VALUES (?, ?)'
   return runAsync(db, query, [idTrabajo, check])
+}
+
+// Invoices ------------------------------------------------------------------
+
+export function getInvoicesList (fileName, customFilters) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM vFacturas WHERE 1=1'
+  if (customFilters !== undefined){
+  }
+  return allAsync(db, query, []).then((row) => {
+    return row
+  })
+
+  export function insertInvoice(invoice, fileName) {
+    db = new sqlite3.Database(fileName)
+    var query = 'INSERT INTO Facturas (IdDentista, ' +
+    'Fecha, Total, Descuento, Banco, Efectivo) ' +
+    'VALUES (?, ?, ?, ?, ?, ?)'
+    return runAsync(db, query, [invoice.IdFactura, invoice.IdDentista, invoice.Fecha,
+      invoice.Total, invoice.Descuento, invoice.Banco, invoice.Efectivo])
+  }
+
+  export function getInvoice (invoiceId, fileName) {
+    db = new sqlite3.Database(fileName)
+    var query = 'SELECT * FROM vFacturas WHERE IdFactura = ?'
+    if (customFilters !== undefined){
+    }
+    return getAsync(db, query, [invoiceId]).then((row) => {
+      return row
+    })
+  }
+
+  export function updateInvoice(invoice, fileName) {
+    db = new sqlite3.Database(fileName)
+    var query = 'UPDATE Facturas SET IdDentista = ?, ' +
+    'Fecha = ?, Total = ?, Descuento = ?, '+
+    'Banco = ?, Efectivo = ? ' +
+    'WHERE IdFactura = ?'
+    return runAsync(db, query, [invoice.IdDentista, invoice.Fecha,
+      invoice.Total, invoice.Descuento, invoice.Banco, invoice.Efectivo])
+  }
+
+  export function deleteInvoice(invoiceId, fileName) {
+    db = new sqlite3.Database(fileName)
+    var query = 'DELETE FROM Facturas WHERE IdFactura = ?'
+    return runAsync(db, query, [invoiceId])
+  }
+
+// Invoice details ------------------------------------------------------------
+
+export function getInvoiceDetails (invoiceId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM FacturasDetalle WEHRE IdFactura = ?'
+  if (customFilters !== undefined){
+  }
+  return getAsync(db, query, [invoiceId]).then((row) => {
+    return row
+  })
+}
+
+export function insertInvoiceDetail(invoiceDetail, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'INSERT INTO FacturasDetalle (IdFactura, Descripcion, Precio) VALUES (?, ?, ?)'
+  return runAsync(db, query, [invoiceDetail.IdFacturaDetalle, invoiceDetail.Descripcion, invoiceDetail.Precio])
+}
+
+export function updateInvoiceDetail(invoiceDetail, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'UPDATE FacturasDetalle SET IdFactura = ?, Descripcion = ?, Precio = ? ' +
+  'WHERE IdFacturaDetalle = ?'
+  return runAsync(db, query, [invoiceDetail.IdFactura, invoiceDetail.Descripcion, 
+    invoiceDetail.Precio, invoiceDetail.IdFacturaDetalle])
+}
+
+export function deleteInvoiceDetail(invoiceDetailId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'DELETE FROM FacturasDetalle WHERE IdFacturaDetalle = ?'
+  return runAsync(db, query, [invoiceDetailId])
 }
 
 // Generic functions ----------------------------------------------------------
