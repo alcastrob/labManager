@@ -1,36 +1,36 @@
 <template>
 <div id="table" class="table-editable">
     <table class="table table-bordered table-responsive-xs table-striped">
-    <tr>
-      <th style="width: 4%;"></th>
-      <th class="text-left" style="width: 80%;">Descripción</th>
-      <th style="width: 16%;" class="text-right">Precio</th>
-    </tr>
-    <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
-      <td class="pt-3-half">
-        <i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)"></i>
-      </td>
-      <td class="noMargins">
-        <input type="text" v-model="indication.Descripcion" class="inputInTd" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')">
-        <!-- <div class="typeahead-dropdown list-group myTypeahead" v-if="canDisplayDropdown()">
-          <span class="list-group-item clickable">
-            <i class="fas fa-align-left mr-1"></i>
-            Usar como texto libre</span>
-        </div> -->
-      </td>
-      <td class="noMargins">
-        <input type="text" class="inputInTd text-right" @blur="updatePrice($event, indication.IdTrabajoDetalle)" v-model="indication.Precio" :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}" v-on:keydown="filterJustNumberKeystrokes" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')">
-      </td>
-    </tr>
-    <tr>
-      <td class="pt-3-half"></td>
-      <td class="noMargins">
-        <input type="text" class="inputInTd" ref="newDescripcion">
-      </td>
-      <td class="noMargins">
-        <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
-      </td>
-    </tr>
+      <tr>
+        <th style="width: 4%;"></th>
+        <th class="text-left" style="width: 80%;">Descripción</th>
+        <th style="width: 16%;" class="text-right">Precio</th>
+      </tr>
+      <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
+        <td class="pt-3-half">
+          <i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdTrabajoDetalle)" v-if="$attrs.disabled !== true"></i>
+        </td>
+        <td class="noMargins">
+          <input type="text" v-model="indication.Descripcion" class="inputInTd" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')" :disabled="$attrs.disabled === true">
+          <!-- <div class="typeahead-dropdown list-group myTypeahead" v-if="canDisplayDropdown()">
+            <span class="list-group-item clickable">
+              <i class="fas fa-align-left mr-1"></i>
+              Usar como texto libre</span>
+          </div> -->
+        </td>
+        <td class="noMargins">
+          <input type="text" class="inputInTd text-right" @blur="updatePrice($event, indication.IdTrabajoDetalle)" v-model="indication.Precio" :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}" v-on:keydown="filterJustNumberKeystrokes" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')" :disabled="$attrs.disabled === true">
+        </td>
+      </tr>
+      <tr v-if="$attrs.disabled !== true">
+        <td class="pt-3-half"></td>
+        <td class="noMargins">
+          <input type="text" class="inputInTd" ref="newDescripcion" >
+        </td>
+        <td class="noMargins">
+          <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
+        </td>
+      </tr>
     </table>
     <div>
       <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger animated shake': sumError}">{{getSum()}}</p>

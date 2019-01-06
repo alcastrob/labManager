@@ -32,19 +32,24 @@
           </div>
         </div>
       </div> <!-- row -->
+      <div class="row" v-if="work.FechaTerminacion !== undefined">
+        <div class="col-md-12">
+          <h4>Este trabajo está cerrado, por lo que no se puede editar</h4>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed"></dentist-search>
+          <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="work.FechaTerminacion !== undefined"></dentist-search>
           <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="paciente">Paciente</label>
-          <input type="text" class="form-control" v-model="$v.work.Paciente.$model">
+          <input type="text" class="form-control" v-model="$v.work.Paciente.$model" :disabled="work.FechaTerminacion !== undefined">
         </div> <!-- col-md-6 -->
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
-          <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model">
+          <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="work.FechaTerminacion !== undefined">
             <option disabled value="">Seleccione una opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
@@ -52,43 +57,43 @@
         </div> <!-- col-md-6 -->
         <div class="col-md-2">
           <label for="precioMetal">Precio metal</label>
-          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}">
+          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}" :disabled="work.FechaTerminacion !== undefined">
           <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
         </div> <!-- col-md-2 -->
         <div class="col-md-4">
           <label for="color">Color</label>
-          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model">
+          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model" :disabled="work.FechaTerminacion !== undefined">
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-4">
           <h4>Indicaciones</h4>
-          <workIndicationsTable v-model="workIndications" ref="workIndications"></workIndicationsTable>
+          <workIndicationsTable v-model="workIndications" ref="workIndications" :disabled="work.FechaTerminacion !== undefined"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-4">
           <label for="fEntrada">Fecha entrada</label>
-          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada">
-          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
+          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada" :disabled="work.FechaTerminacion !== undefined">
+          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()" v-if="work.FechaTerminacion === undefined">
           <i class="far fa-calendar-alt"></i>
           Poner fecha de hoy
           </a>
         </div> <!-- col-md-4 -->
         <div class="col-md-4">
           <label for="fPrevista">Fecha prevista</label>
-          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
+          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista" :disabled="work.FechaTerminacion !== undefined">
         </div> <!-- col-md-4 -->
         <div class="col-md-4">
           <label for="fSalida">Fecha terminación</label>
-          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
+          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion" :disabled="work.FechaTerminacion !== undefined">
         </div>
       </div> <!-- row -->
 
       <div class="row">
         <div class="col-md-12 mt-4">
           <h4>Pruebas</h4>
-          <workTestsTable v-model="workTests" :workId="work.IdTrabajo" ref="workTests"></workTestsTable>
+          <workTestsTable v-model="workTests" :workId="work.IdTrabajo" ref="workTests" :disabled="work.FechaTerminacion !== undefined"></workTestsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
 
@@ -99,7 +104,7 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <button class="btn btn-secondary btn-block" type="button" @click="save">
+          <button class="btn btn-secondary btn-block" type="button" @click="save" v-if="work.FechaTerminacion === undefined">
             <i class="fas fa-save"></i>
             Guardar
           </button>

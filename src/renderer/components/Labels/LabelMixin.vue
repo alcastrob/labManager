@@ -19,10 +19,6 @@ export default {
       type: String,
       required: false
     },
-    // workIndications: {
-    //   type: [Object, Array],
-    //   required: true
-    // },
     workAdjunts: {
       type: Object,
       required: false
@@ -51,7 +47,7 @@ export default {
     this.cssText = fs.readFileSync(path.resolve(__dirname, '../../assets/css/labelStyle.css'), 'UTF-8')
     // Check the required parameters (props)
     if (this.workData === undefined || this.workData === null)
-      throw 'Missing prop workData in PrintedLabel1.vue'
+      throw 'Missing prop workData in LabelMixin.vue'
   }
 }
 </script>

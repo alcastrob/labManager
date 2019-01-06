@@ -32,11 +32,11 @@
           <template v-for="work in worksPerDentist[row.IdDentista.$model]">
             <transition name="fade">
               <tr v-if="selectedDentist === row.IdDentista.$model" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista.$model, work.IdTrabajo)">
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.IdTrabajo}}&nbsp;
                   <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(row.IdDentista.$model)">
                 </td>
-                <td class="dentist-text column-20" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="dentist-text column-20" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;<router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
                 </td>
                 <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
@@ -50,38 +50,38 @@
                     </ul>
                   </div>
                 </b-tooltip>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaPrecioFinal)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaAditamentos)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaCeramica)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaResina)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaOrtodoncia)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaEsqueletico)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaZirconio)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaFija)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaTotalMetal)}}
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"> ---
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"> ---
                 </td>
-                <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"> ---
                 </td>
               </tr>
             </transition>
@@ -388,7 +388,7 @@ export default {
 .fade-leave-to {
   opacity: 1;
 }
-.stroke {
+.strikethrough {
   font-weight: normal;
   text-decoration: line-through;
   background-color: #F9DBD4;

@@ -454,14 +454,15 @@ export function setCheckToWork (idTrabajo, check, fileName) {
 
 // Invoices ------------------------------------------------------------------
 
-export function getInvoicesList (fileName, customFilters) {
-  db = new sqlite3.Database(fileName)
-  var query = 'SELECT * FROM vFacturas WHERE 1=1'
-  if (customFilters !== undefined){
+  export function getInvoicesList (fileName, customFilters) {
+    db = new sqlite3.Database(fileName)
+    var query = 'SELECT * FROM vFacturas WHERE 1=1'
+    if (customFilters !== undefined){
+    }
+    return allAsync(db, query, []).then((row) => {
+      return row
+    })
   }
-  return allAsync(db, query, []).then((row) => {
-    return row
-  })
 
   export function insertInvoice(invoice, fileName) {
     db = new sqlite3.Database(fileName)
@@ -520,7 +521,7 @@ export function updateInvoiceDetail(invoiceDetail, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'UPDATE FacturasDetalle SET IdFactura = ?, Descripcion = ?, Precio = ? ' +
   'WHERE IdFacturaDetalle = ?'
-  return runAsync(db, query, [invoiceDetail.IdFactura, invoiceDetail.Descripcion, 
+  return runAsync(db, query, [invoiceDetail.IdFactura, invoiceDetail.Descripcion,
     invoiceDetail.Precio, invoiceDetail.IdFacturaDetalle])
 }
 
@@ -528,6 +529,49 @@ export function deleteInvoiceDetail(invoiceDetailId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'DELETE FROM FacturasDetalle WHERE IdFacturaDetalle = ?'
   return runAsync(db, query, [invoiceDetailId])
+}
+
+// Conformity Declarations ----------------------------------------------------
+
+export function getConformityDeclaration (workId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM vDeclaracionConformidad WEHRE IdTrabajo = ?'
+  if (customFilters !== undefined){
+  }
+  return getAsync(db, query, [workId]).then((row) => {
+    return row
+  })
+}
+
+export function insertConformityDeclaration(conformity, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses) ' +
+  'VALUES (?, ?, ?) '
+  return runAsync(db, query, [conformity.IdTrabajo, conformity.Fecha, conformity.Meses])
+}
+
+// Conformity Declaration Details ---------------------------------------------
+
+export function getConformityDeclarationDetails (conformityId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM DeclaracionProductos ' +
+  ' WHERE IdDeclaracion = ?'
+  return getAsync(db, query, [conformityId]).then((row) => {
+    return row
+  })
+}
+
+export function insertConformityDeclarationDetails(conformityId, productId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'INSERT INTO DeclaracionConformidad (IdDeclaracion, IdProductoLote) ' +
+  'VALUES (?, ?) '
+  return runAsync(db, query, [conformityId, productId])
+}
+
+export function deleteConformityDeclarationDetails(conformityId, productId, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'DELETE FROM DeclaracionConformidad WHERE IdDeclaracion = ? AND IdProductoLote = ?'
+  return runAsync(db, query, [conformityId, productId])
 }
 
 // Generic functions ----------------------------------------------------------
@@ -574,4 +618,3 @@ function runAsync (db, sql, params) {
 export function getLastId(){
   return id
 }
-

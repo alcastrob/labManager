@@ -12,11 +12,10 @@
     </tr>
     <tr v-for="test in data" v-bind:key="test.IdPrueba">
       <td class="pt-3-half" @focus="hidePanel">
-        <i class="fa fa-times-circle" v-on:click="deleteRow(test.IdPrueba)"></i>
+        <i class="fa fa-times-circle" v-on:click="deleteRow(test.IdPrueba)" v-if="$attrs.disabled !== true"></i>
       </td>
-      <!-- v-on-clickaway="hidePanel(test.IdPrueba)" -->
       <td class="noMargins">
-        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" :id="test.IdPrueba" v-on:focus="showPanel($event)">
+        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" :id="test.IdPrueba" v-on:focus="showPanel($event)" :disabled="$attrs.disabled === true">
         <div v-if="canShow(test.IdPrueba)" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
           <span class="list-group-item clickable" @click="click">Truwa</span>
           <span class="list-group-item clickable" @click="click">Fri</span>
@@ -27,28 +26,28 @@
         </div>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')" @focus="hidePanel">
+        <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
       </td>
       <td class="noMargins">
-        <select class="inputInTd" v-model="test.IdTurnoFechaSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')" @focus="hidePanel">
+        <select class="inputInTd" v-model="test.IdTurnoFechaSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
           <option value=""></option>
           <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
         </select>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" v-model="test.FechaEntrada" @change="trackChanges($event, test.IdPrueba, 'FechaEntrada')" @focus="hidePanel">
+        <input type="date" class="inputInTd" v-model="test.FechaEntrada" @change="trackChanges($event, test.IdPrueba, 'FechaEntrada')" @focus="hidePanel" :disabled="$attrs.disabled === true">
       </td>
       <td class="noMargins">
-        <select class="inputInTd" v-model="test.IdTurnoFechaEntrada" @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaEntrada')" @focus="hidePanel">
+        <select class="inputInTd" v-model="test.IdTurnoFechaEntrada" @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaEntrada')" @focus="hidePanel" :disabled="$attrs.disabled === true">
           <option value=""></option>
           <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
         </select>
       </td>
       <td class="noMargins">
-        <input type="text" v-model="test.Comentario" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Comentario')" @focus="hidePanel">
+        <input type="text" v-model="test.Comentario" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Comentario')" @focus="hidePanel" :disabled="$attrs.disabled === true">
       </td>
     </tr>
-    <tr>
+    <tr v-if="$attrs.disabled !== true">
       <td class="pt-3-half"></td>
       <td class="noMargins">
         <input type="text" class="inputInTd" ref="newDescripcion" id="newDescripcion" v-on:focus="showPanel($event)">

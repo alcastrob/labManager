@@ -1,6 +1,6 @@
 <template>
   <div class="input-group">
-    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica" :class="{'is-invalid': isInvalid}">
+    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica" :class="{'is-invalid': isInvalid}" :disabled="$attrs.disabled === true">
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
       <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</span>
       <div v-for="dentist in candidateDentistsFromQuery" :key='dentist.IdDentista'>
@@ -65,6 +65,7 @@ export default {
     }
   },
   mounted () {
+    debugger
     this.$refs.clinica.focus()
     this.$watch('value', function (newVal, oldVal) {
       getDentist(newVal, 'labManager.sqlite').then((dentistDetail) => {
