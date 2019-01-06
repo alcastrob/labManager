@@ -412,6 +412,7 @@ export function getWorksAggregatedByDentist (year, month, fileName) {
     '  sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
     '  sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) - ' +
     '  ifnull(sum(t.PrecioMetal), 0) AS SumaTotalMetal, ' +
+    ' 0 as percentage, ' +
     ' 0 as SumaDescuento, ' +
     ' ifnull(sum(t.PrecioMetal), 0) + ' +
     ' sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +

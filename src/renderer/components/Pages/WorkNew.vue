@@ -158,7 +158,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" @click="hideModal">No imprimir nada</button>
-      <button class="btn btn-secondary" @click="printLabels" disabled ref="btnPrint">Imprimir</button>
+      <button class="btn btn-secondary" @click="printLabels" disabled ref="btnPrint"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir</button>
     </div>
   </b-modal>
   <div ref="labelContainer"></div>

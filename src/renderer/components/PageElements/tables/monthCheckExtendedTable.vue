@@ -16,7 +16,7 @@
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
 
-                <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row.IdDentista)">
+                <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" v-model="row.percentage" @change="updateTotal($event, row.IdDentista)">
 
                 <input type="checkbox" v-else-if="isButton(column.dataField)" @change="forceAllWorksChechedBeforCheckingTheDentist($event, row.IdDentista)" :id="'chkDentist-' + row.IdDentista">
 
@@ -34,7 +34,7 @@
               <tr v-if="selectedDentist === row.IdDentista" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.IdTrabajo}}&nbsp;
-                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheck(row.IdDentista)">
+                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(row.IdDentista)">
                 </td>
                 <td class="dentist-text column-20" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;<router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
@@ -92,7 +92,6 @@
     </float-thead-table>
   </div>
 </template>
-
 <script>
 import Vue from 'vue'
 import FloatThead from 'vue-floatthead'
@@ -132,13 +131,28 @@ export default {
   },
   data () {
     return {
+      //The sums of all the dataset(grouped by column, i.e. SumaFija, SumaOrtodoncia...)
       sums: {},
+
+      //A mapping of column indexes and column name
       columnIndex: {},
+
+      //The sum values that are contained on the column headers (including the money format)
       subheaders: {},
+
+      //The all work entities, grouped by dentistId
       worksPerDentist: {},
+
+      //The count of works without the check, grouped by dentist (used by the badges)
       remainingWorks: {},
+
+      //The dentistId that currently is selected
       selectedDentist: 0,
+
+      //The indications of every work in the dataset (used by tooltips)
       workIndications: {},
+
+      //The dentistId of the dentists with the checkbox set
       dentistsChecked: []
     }
   },
@@ -164,9 +178,10 @@ export default {
       else {
         setCheckToWork(idTrabajo, event.srcElement.checked, 'labManager.sqlite')
       }
+      //Updates the count of the badge
       this.remainingWorks[idDentist] = this.calculateRemainingWorks(works)
 
-      this.updateDentistCheck(idDentist)
+      this.updateDentistCheckbox(idDentist)
       this.$forceUpdate()
     },
 
@@ -199,8 +214,8 @@ export default {
       }
     },
     updateTotal: function(a, key) {
-      var totalMetal = this.getCellValue(10, event.srcElement)
-      var precioMetal = this.getCellValue(3, event.srcElement)
+      var totalMetal = this.getCellValue(this.columnIndex['SumaTotalMetal'], event.srcElement)
+      var precioMetal = this.getCellValue(this.columnIndex['SumaAditamentos'], event.srcElement)
       var percentage = parseFloat(event.target.value)
       if (isNaN(percentage)){
         percentage = 0
@@ -210,8 +225,8 @@ export default {
       var row = _.find(this.rawDataset, ['IdDentista', key])
       row['SumaDescuento'] = dto
       row['SumaGranTotal'] = grandTotal
-      this.setCellValue(12, event.srcElement, dto)
-      this.setCellValue(13, event.srcElement, grandTotal)
+      this.setCellValue(this.columnIndex['SumaDescuento'], event.srcElement, dto)
+      this.setCellValue(this.columnIndex['SumaGranTotal'], event.srcElement, grandTotal)
       this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
     },
 
@@ -236,19 +251,44 @@ export default {
       if (event.srcElement.checked) {
         this.dentistsChecked.push(idDentist)
       } else {
-        this.dentistsChecked = _.remove(this.dentistsChecked, idDentist) 
+        this.dentistsChecked = _.remove(this.dentistsChecked, function(d) {
+          return d !== idDentist
+        })
       }
-      this.$emit('input', this.dentistsChecked)
+      //Send the data to the v-model of the container
+      this.emitDataBack()
     },
-    updateDentistCheck(idDentist) {
+    updateDentistCheckbox(idDentist) {
       var areChecked = this.areAllWorksOfDentistChecked(idDentist)
       document.getElementById('chkDentist-' + idDentist).checked = areChecked
       if (areChecked){
         this.dentistsChecked.push(idDentist)
       } else {
-        this.dentistsChecked = _.remove(this.dentistsChecked, idDentist)
+        this.dentistsChecked = _.remove(this.dentistsChecked, function(d) {
+          return d !== idDentist
+        })
       }
-      this.$emit('input', this.dentistsChecked)
+      //Updates the count of the badge
+      this.remainingWorks[idDentist] = this.calculateRemainingWorks(this.worksPerDentist[idDentist])
+      this.$forceUpdate()
+
+      //Send the data to the v-model of the container
+      this.emitDataBack()
+    },
+    emitDataBack(){
+      var returnedValue = []
+      for (var dentistId  of this.dentistsChecked) {
+        var dentistData = _.find(this.rawDataset, ['IdDentista', dentistId])
+        returnedValue.push({
+          'IdDentista': dentistId,
+          'NombreDentista': dentistData.NombreDentista,
+          'ImporteBase': dentistData.SumaPrecioFinal,
+          'Dto': dentistData.percentage,
+          'ImporteDto': dentistData.SumaDescuento,
+          'Total': dentistData.SumaGranTotal
+         })
+      }
+      this.$emit('input', returnedValue)
     },
     setCellValue(position, currentElement, value) {
       currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
@@ -331,12 +371,33 @@ export default {
   text-decoration: line-through;
   background-color: #F9DBD4;
 }
-.bold {
-  /* font-weight: bold; */
+
+.small-text {
+  font-size: .8em;
+  padding-left: 3px!important;
+  padding-right: 2px!important;
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
 }
-/* .compostura-color {
-  color: #4CFF40;
-} */
+.dentist-text {
+  font-size: .8em;
+  font-style: italic;
+  padding-left: 15px!important;
+  padding-right: 3px!important;
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
+}
 
-
+.column20 {
+  width: 20%;
+}
+.column7 {
+  width: 7%;
+}
+.column5 {
+  width: 5%;
+}
+.column3 {
+  width: 3%;
+}
 </style>

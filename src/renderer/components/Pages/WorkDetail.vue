@@ -114,8 +114,8 @@
         <textarea class="form-control" id="labelText" rows="4" cols="60" v-model="workIndicationsText"></textarea>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" @click="hideModal">Cancelar</button>
-        <button class="btn btn-secondary" @click="printLabelAndHide">Imprimir</button>
+        <button class="btn btn-secondary" @click="hideModal"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
+        <button class="btn btn-secondary" @click="printLabelAndHide"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir</button>
       </div>
     </b-modal>
     <div ref="labelContainer"></div>
