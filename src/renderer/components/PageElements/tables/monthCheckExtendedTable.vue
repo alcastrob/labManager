@@ -10,6 +10,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- The rows of the dentists -->
         <template v-for="row in rawDataset">
           <tr v-bind:key="'a' + row.IdDentista" v-on:click="toggleExtraData($event, row.IdDentista)">
             <template v-for="column in headers">
@@ -17,7 +18,7 @@
 
                 <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" @change="updateTotal($event, row.IdDentista)">
 
-                <input type="checkbox" v-else-if="isButton(column.dataField)" @change="selectedForInvoice($event, row.IdDentista)" :id="'chkDentist-' + row.IdDentista">
+                <input type="checkbox" v-else-if="isButton(column.dataField)" @change="forceAllWorksChechedBeforCheckingTheDentist($event, row.IdDentista)" :id="'chkDentist-' + row.IdDentista">
 
                 <span v-else :value="row[column.dataField]">
                   {{formatRow(row[column.dataField], column.formatter)}}
@@ -27,6 +28,7 @@
               </td>
             </template>
           </tr>
+          <!-- The rows of the works -->
           <template v-for="work in worksPerDentist[row.IdDentista]">
             <transition name="fade">
               <tr v-if="selectedDentist === row.IdDentista" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo)">
@@ -122,6 +124,10 @@ export default {
     month: {
       type: String,
       required: true
+    },
+    'value': {
+      type: Array,
+      required: false
     }
   },
   data () {
@@ -132,7 +138,8 @@ export default {
       worksPerDentist: {},
       remainingWorks: {},
       selectedDentist: 0,
-      workIndications: {}
+      workIndications: {},
+      dentistsChecked: []
     }
   },
   methods: {
@@ -210,7 +217,7 @@ export default {
 
     //Verifications------------------------------
     areAllWorksOfDentistChecked(idDentist){
-      return this.calculateRemainingWorks(this.worksPerDentist[idDentist]).length === 0
+      return this.calculateRemainingWorks(this.worksPerDentist[idDentist]) === ''
     },
     isEditable: function(field) {
       return field === 'percentage'
@@ -218,17 +225,30 @@ export default {
     isButton: function(field) {
       return field === 'estado'
     },
-    selectedForInvoice(event, idDentist){
+
+    //Updates and manipulation of the UI---------
+    forceAllWorksChechedBeforCheckingTheDentist(event, idDentist){
       this.selectedDentist = idDentist
       this.$forceUpdate()
       if (!this.areAllWorksOfDentistChecked(idDentist)) {
         event.srcElement.checked = false
       }
+      if (event.srcElement.checked) {
+        this.dentistsChecked.push(idDentist)
+      } else {
+        this.dentistsChecked = _.remove(this.dentistsChecked, idDentist) 
+      }
+      this.$emit('input', this.dentistsChecked)
     },
-
-    //Updates and manipulation of the UI---------
     updateDentistCheck(idDentist) {
-      document.getElementById('chkDentist-' + idDentist).checked = this.areAllWorksOfDentistChecked(idDentist)
+      var areChecked = this.areAllWorksOfDentistChecked(idDentist)
+      document.getElementById('chkDentist-' + idDentist).checked = areChecked
+      if (areChecked){
+        this.dentistsChecked.push(idDentist)
+      } else {
+        this.dentistsChecked = _.remove(this.dentistsChecked, idDentist)
+      }
+      this.$emit('input', this.dentistsChecked)
     },
     setCellValue(position, currentElement, value) {
       currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)

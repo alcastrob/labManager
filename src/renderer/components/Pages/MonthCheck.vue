@@ -6,17 +6,18 @@
     </div> <!-- col-md-8 -->
     <div class="col-md-4 mt-2">
       <div class="float-right">
-        <button class="btn btn-warning" :disabled="true"><i class="fas fa-file-invoice-dollar"></i> Generar facturas</button>
+        <button class="btn btn-warning" :disabled="selectedDentists.length === 0"><i class="fas fa-file-invoice-dollar"></i> Generar facturas</button>
       </div>
     </div> <!-- col-md-4 -->
   </div> <!-- row -->
   <div class="row">
     <div class="col-md-12">
       <p class="text-justify">Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Emitir Factura. Para poder marcar un dentista hay que marcar previamente todos sus trabajos. </p>
+      {{selectedDentists}}
     </div>
   </div> <!-- row -->
   <div class="row">
-    <monthCheckExtendedTable :headers="headers" :searchFields="[]" ref="theTable" urlBase="/works/details/" :year="year" :month="month" masterKey="IdDentista"/>
+    <monthCheckExtendedTable :headers="headers" :searchFields="[]" ref="theTable" urlBase="/works/details/" :year="year" :month="month" masterKey="IdDentista" v-model="selectedDentists" />
   </div> <!-- row -->
 </div>
 </template>
@@ -117,7 +118,8 @@ export default {
       ],
       rows: [],
       year: 0,
-      month: 0
+      month: 0,
+      selectedDentists: []
     }
   },
   methods: {},
