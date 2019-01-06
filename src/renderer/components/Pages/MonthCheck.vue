@@ -12,8 +12,8 @@
   </div> <!-- row -->
   <div class="row">
     <div class="col-md-12">
-      <p class="text-justify">Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Emitir Factura. Para poder marcar un dentista hay que marcar previamente todos sus trabajos. </p>
-      {{selectedDentists}}
+      <p class="text-justify">Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Generar facturas. Para poder marcar un dentista hay que marcar previamente todos sus trabajos. </p>
+      <!-- {{selectedDentists}} -->
     </div> <!-- col-md-12 -->
   </div> <!-- row -->
   <div class="row">
@@ -27,11 +27,8 @@
             <span>
               Se van a emitir facturas para los siguientes clientes. Por favor, verifique que los datos de los posibles descuentos aplicados son correctos. Una vez emitidas las facturas, se podrán consultar y volver a imprimir desde la sección Facturas del área de Gestión Económica.
             </span>
-            <ul class="pt-4" v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">
-              <li>{{dentist.NombreDentista}} | Importe base: {{moneyFormatter.format(dentist.ImporteBase)}} | Dto. {{dentist.Dto}}% ({{moneyFormatter.format(dentist.ImporteDto)}}) | Total factura: {{moneyFormatter.format(dentist.Total)}}</li>
-              <!-- <li>Cliente 1 | Importe base: 14.312,00€ | Dto. 5% (12,00€) | Total factura: 14.300,00€</li>
-              <li>Cliente 2 | Importe base: 14.312,00€ | Dto. 5% (12,00€) | Total factura: 14.300,00€</li>
-              <li>Cliente 3 | Importe base: 14.312,00€ | Dto. 5% (12,00€) | Total factura: 14.300,00€</li> -->
+            <ul class="pt-3">
+              <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{moneyFormatter.format(dentist.ImporteBase)}} | Dto. {{dentist.Dto}}% ({{moneyFormatter.format(dentist.ImporteDto)}}) | Total factura: {{moneyFormatter.format(dentist.Total)}}</li>
             </ul>
           </div> <!-- col-md-12 -->
         </div> <!-- row -->
@@ -57,6 +54,7 @@
     <div class="modal-footer">
       <button class="btn btn-secondary" @click="hideModal"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
       <button class="btn btn-secondary " @click="confirmGeneration" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
+      <button class="btn btn-secondary " @click="confirmGeneration" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-print mr-2"></i>Generar e imprimir facturas</button>
     </div>
   </b-modal>
 </div>

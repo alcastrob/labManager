@@ -11,30 +11,30 @@
       </thead>
       <tbody>
         <!-- The rows of the dentists -->
-        <template v-for="row in rawDataset">
-          <tr v-bind:key="'a' + row.IdDentista" v-on:click="toggleExtraData($event, row.IdDentista)">
+        <template v-for="row in $v.rawDataset.$each.$iter">
+          <tr v-bind:key="'a' + row.IdDentista.$model" v-on:click="toggleExtraData($event, row.IdDentista.$model)">
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
 
-                <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" v-model="row.percentage" @change="updateTotal($event, row.IdDentista)">
+                <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" v-model="row.percentage.$model"  @change="updateTotal($event, row.IdDentista.$model)" :class="{'bg-danger text-white animated shake': row.percentage.$error}">
 
-                <input type="checkbox" v-else-if="isButton(column.dataField)" @change="forceAllWorksChechedBeforCheckingTheDentist($event, row.IdDentista)" :id="'chkDentist-' + row.IdDentista">
+                <input type="checkbox" v-else-if="isButton(column.dataField)" @change="forceAllWorksChechedBeforCheckingTheDentist($event, row.IdDentista.$model)" :id="'chkDentist-' + row.IdDentista.$model">
 
-                <span v-else :value="row[column.dataField]">
-                  {{formatRow(row[column.dataField], column.formatter)}}
-                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[row.IdDentista]}}</b-badge>
+                <span v-else :value="row[column.dataField].$model">
+                  {{formatRow(row[column.dataField].$model, column.formatter)}}
+                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[row.IdDentista.$model]}}</b-badge>
                 </span>
 
               </td>
             </template>
           </tr>
           <!-- The rows of the works -->
-          <template v-for="work in worksPerDentist[row.IdDentista]">
+          <template v-for="work in worksPerDentist[row.IdDentista.$model]">
             <transition name="fade">
-              <tr v-if="selectedDentist === row.IdDentista" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo)">
+              <tr v-if="selectedDentist === row.IdDentista.$model" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista.$model, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.IdTrabajo}}&nbsp;
-                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(row.IdDentista)">
+                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(row.IdDentista.$model)">
                 </td>
                 <td class="dentist-text column-20" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;<router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
@@ -100,6 +100,7 @@ import moment from 'moment'
 import tableMixin from './tableMixin'
 import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork, getWorkIndications } from '../../../../main/dal.js'
 import bBadge from 'bootstrap-vue'
+import { decimal } from 'vuelidate/lib/validators'
 
 Vue.use(FloatThead)
 
@@ -154,6 +155,27 @@ export default {
 
       //The dentistId of the dentists with the checkbox set
       dentistsChecked: []
+    }
+  },
+  validations: {
+    rawDataset: {
+      $each: {
+        Key: {},
+        IdDentista: {},
+        NombreDentista: {},
+        SumaAditamentos: {},
+        SumaCeramica: {},
+        SumaEsqueletico: {},
+        SumaFija: {},
+        SumaOrtodoncia: {},
+        SumaPrecioFinal: {},
+        SumaResina: {},
+        SumaTotalMetal: {},
+        SumaZirconio: {},
+        percentage: { decimal },
+        SumaDescuento: {},
+        SumaGranTotal: {}
+      }
     }
   },
   methods: {
