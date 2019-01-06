@@ -3,8 +3,25 @@
   <div class="row">
     <div class="col-md-12">
       <h1>Cierre mensual - {{monthName}} {{year}}</h1>
-      <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consequatur harum libero quam! Molestiae numquam facilis quidem nulla similique consequuntur assumenda ad autem dolorum, molestias, quam consectetur saepe vero deserunt. Laborum!</p>
+      <p class="text-justify">Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Emitir Factura. Para poder marcar un dentista hay que marcar previamente todos sus trabajos. </p>
     </div>
+    <!-- <button ref="sss" data-placement="top">
+    Botón</button>
+    <b-tooltip :target="() => $refs.sss" placement="right">
+      <div class="text-left">
+        Tipo: Esquelético <br>
+        Color: 2B<br>
+        Fecha Entrada: 02/01/2018<br>
+        Indicaciones:<br>
+        <ul>
+          <li>REPETICION DE ESTRUCTURA DE ESQUELETICO (50%) | 57.50€</li>
+          <li>ESQUELETICO SUPERIOR DE 4 PIEZAS | 175.00€</li>
+          <li>1 ENCAMISADO DE ATTACHE | 31.00€</li>
+          <li>COLCACION DE 1 ATTACHE | 25.00€</li>
+          <li>1 ENCAMISADO DE ATTACHE (50%) | 6.00€</li>
+        </ul>
+      </div>
+    </b-tooltip> -->
   </div> <!-- row -->
   <div class="row">
     <monthCheckExtendedTable :headers="headers" :searchFields="[]" ref="theTable" urlBase="/works/details/" :year="year" :month="month" masterKey="IdDentista"/>
@@ -14,6 +31,7 @@
 
 <script>
 import monthCheckExtendedTable from '../PageElements/tables/monthCheckExtendedTable'
+import bTooltip from 'bootstrap-vue'
 
 export default {
   name: 'monthCheck',
@@ -121,6 +139,8 @@ export default {
   created () {
     this.year = this.$route.params.year
     this.month = this.$route.params.month
+  },
+  mounted () {
   }
 }
 </script>

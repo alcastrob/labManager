@@ -13,7 +13,7 @@
               <draggable v-model="myArray" :move="checkMove" v-on:start="start" v-on:end="end">
                 <transition-group>
                   <div class="card p-2" :key="1">
-                    <div class="form-check">                  
+                    <div class="form-check">
                       <div>
                         <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                       </div>
@@ -25,7 +25,7 @@
                     </div>
                   </div>
                   <div class="card p-2" :key="2">
-                    <div class="form-check">                  
+                    <div class="form-check">
                       <div>
                         <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                       </div>
@@ -37,7 +37,7 @@
                     </div>
                   </div>
                   <div class="card p-2" :key="3">
-                    <div class="form-check">                  
+                    <div class="form-check">
                       <div>
                         <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                       </div>
@@ -49,7 +49,7 @@
                     </div>
                   </div>
                   <div class="card p-2" :key="4">
-                    <div class="form-check">                  
+                    <div class="form-check">
                       <div>
                         <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                       </div>
@@ -61,7 +61,7 @@
                     </div>
                   </div>
                   <div class="card p-2" :key="5">
-                    <div class="form-check">                  
+                    <div class="form-check">
                       <div>
                         <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                       </div>
@@ -73,7 +73,7 @@
                     </div>
                   </div>
                   <div class="card p-2" :key="6">
-                    <div class="form-check">                  
+                    <div class="form-check">
                       <div>
                         <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                       </div>
@@ -85,7 +85,7 @@
                     </div>
                   </div>
                   <div class="card p-2" :key="7">
-                    <div class="form-check">                  
+                    <div class="form-check">
                       <div>
                         <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                       </div>

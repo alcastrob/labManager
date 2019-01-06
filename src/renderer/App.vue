@@ -7,7 +7,7 @@
 <script>
   import mainPage from './components/pages/mainPage.vue'
   import 'jquery/dist/jquery.min.js'
-  import 'bootstrap/dist/js/bootstrap.min.js'
+  import 'bootstrap/dist/js/bootstrap.bundle.min.js'
   export default {
     name: 'labManager',
     components: {

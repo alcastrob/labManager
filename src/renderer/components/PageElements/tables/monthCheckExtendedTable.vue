@@ -26,11 +26,22 @@
             <transition name="fade">
               <tr v-if="selectedDentist === row.IdDentista" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{work.IdTrabajo}}&nbsp;<input type="checkbox" v-model="work.Chequeado">
+                  {{work.IdTrabajo}}&nbsp;<input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheck(row.IdDentista)">
                 </td>
                 <td class="dentist-text column-20" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{work.Paciente}}&nbsp;|&nbsp;{{endDate(work)}}
+                  {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;<router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
                 </td>
+                <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
+                  <div class="text-left">
+                    Tipo: <i class="fas fa-bookmark " :class="work.TipoTrabajo.toLowerCase() + '-color'"></i> {{work.TipoTrabajo}} <br>
+                    Color: {{work.Color}}<br>
+                    Fecha Entrada: {{formatDate(work, 'FechaEntrada')}}<br>
+                    Indicaciones:<br>
+                    <ul v-for="indication in workIndications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
+                      <li>{{indication.Descripcion}} | {{moneyFormatter.format(indication.Precio)}}</li>
+                    </ul>
+                  </div>
+                </b-tooltip>
                 <td class="small-text text-right" :class="{'stroke': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaPrecioFinal)}}
                 </td>
@@ -80,7 +91,7 @@ import FloatThead from 'vue-floatthead'
 import _ from 'lodash'
 import moment from 'moment'
 import tableMixin from './tableMixin'
-import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork } from '../../../../main/dal.js'
+import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork, getWorkIndications } from '../../../../main/dal.js'
 
 Vue.use(FloatThead)
 
@@ -112,7 +123,8 @@ export default {
       columnIndex: {},
       subheaders: {},
       worksPerDentist: {},
-      selectedDentist: 0
+      selectedDentist: 0,
+      workIndications: {}
     }
   },
   methods: {
@@ -173,6 +185,18 @@ export default {
       if (works.length > 0) {
         var idDentista = works[0].IdDentista
         this.worksPerDentist[idDentista] = works
+        for (var work of works){
+          this.getWorkIndications(work.IdTrabajo)
+        }
+      }
+    },
+    getWorkIndications(idTrabajo) {
+      getWorkIndications(idTrabajo, 'labManager.sqlite').then(this.assignWorkIndications)
+    },
+    assignWorkIndications(workIndications){
+      if (workIndications.length > 0) {
+        var idTrabajo = workIndications[0].IdTrabajo
+        this.workIndications[idTrabajo] = workIndications
       }
     },
     toggleExtraData(event, idDentist) {
@@ -200,11 +224,16 @@ export default {
       }
       return result
     },
-    endDate(work) {
-      return moment(work.FechaTerminacion).format('DD/MM/YYYY')
+    formatDate(row, field) {
+      var returnedValue = moment(row[field]).format('DD/MM/YYYY')
+      if (returnedValue !== 'Invalid date') {
+        return returnedValue
+      } else {
+        return ''
+      }
     },
     clickedWork(event, idDentist, idTrabajo){
-      if (event.currentTarget.localName !== 'input'){
+      if (event.srcElement.localName !== 'input' && event.srcElement.localName !== 'a'){
         var works = this.worksPerDentist[idDentist]
         var work = _.find(works, ['IdTrabajo', idTrabajo])
         work.Chequeado = !work.Chequeado
@@ -214,6 +243,9 @@ export default {
         setCheckToWork(idTrabajo, event.currentTarget.checked, 'labManager.sqlite')
       }
       this.$forceUpdate()
+      this.updateDentistCheck(idDentist)
+    },
+    updateDentistCheck(idDentist) {
       document.getElementById('chkDentist-' + idDentist).checked = this.areAllWorksOfDentistChecked(idDentist)
     }
   },
@@ -257,6 +289,9 @@ export default {
 .bold {
   /* font-weight: bold; */
 }
+/* .compostura-color {
+  color: #4CFF40;
+} */
 
 
 </style>

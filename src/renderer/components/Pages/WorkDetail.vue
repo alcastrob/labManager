@@ -99,8 +99,6 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <!-- v-on:click="save()" -->
-          <!-- v-bind:class="{disabled: !canBeSaved()}" -->
           <button class="btn btn-secondary btn-block" type="button" @click="save">
             <i class="fas fa-save"></i>
             Guardar
@@ -130,6 +128,7 @@ import { getWork, getWorkIndications, getAdjuntsOfWork, getWorkTestsList, update
 import { validId } from '../Validators/validId.js'
 import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
+import _ from 'lodash'
 
 export default {
   name: 'workDetail',

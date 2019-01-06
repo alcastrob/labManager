@@ -126,7 +126,7 @@ export function updateWork(work, fileName) {
 //Tested
 export function getWorkIndications (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdTrabajoDetalle, Descripcion, Precio ' +
+  var query = 'SELECT IdTrabajoDetalle, IdTrabajo, Descripcion, Precio ' +
   'FROM TrabajosDetalle ' +
   'WHERE IdTrabajo = ?'
   return allAsync(db, query, [workId]).then((rows) => {
