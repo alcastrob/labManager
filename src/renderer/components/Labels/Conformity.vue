@@ -29,7 +29,7 @@
   </div> <!-- row -->
   <div class="row">
     <div class="col-sm-12">
-      <span class="small-text">
+      <span>
         DECLARA: que el producto sanitario descrito a continuación, cumple los requisitos esenciales establecidos en el Anexo I del R.D. que le son de aplicación, por lo que queda garantizada la ausencia de compromiso para la salud y la seguridad de la persona indicada a continuación, para la cual se ha fabricado a medida, según prescripción del profesional que se indica también a continuación, siempre que el producto se utilice conforme a su finalidad prevista, así como que ofrece las prestaciones asignadas.Se compromete: a mantener a dispociones de las autoridades sanitarias competentes la documentación relativa al diseño y fabricación del producto a medida fabricado durante 5 años.
       </span><br><br>
     </div> <!-- col-sm-12 -->
@@ -88,6 +88,7 @@ var path = require('path')
 var fs = require('fs')
 
 export default {
+  name: 'conformity',
   data () {
     return {
       cssText: ''
@@ -114,7 +115,7 @@ export default {
     }
   },
   mounted () {
-    this.cssText = fs.readFileSync(path.resolve(__dirname, '../../assets/css/conformity.css'), 'UTF-8')
+    this.cssText = fs.readFileSync(path.resolve(__dirname, '../../assets/css/printed.css'), 'UTF-8')
     this.cssText += fs.readFileSync(path.resolve(__dirname, '../../assets/css/bootstrap/css/bootstrap.min.css'), 'UTF-8')
 
     // Check the required parameters (props)
@@ -128,6 +129,6 @@ export default {
 </script>
 
 <style>
-  @import url('~@/assets/css/conformity.css');
+  @import url('~@/assets/css/printed.css');
   @import url('~@/assets/css/bootstrap/css/bootstrap.min.css');
 </style>

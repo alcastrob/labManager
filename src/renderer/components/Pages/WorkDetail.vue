@@ -75,7 +75,7 @@
         <div class="col-md-4">
           <label for="fEntrada">Fecha entrada</label>
           <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada" :disabled="readOnly">
-          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()" v-if="work.FechaTerminacion !== ''">
+          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()" v-if="!readOnly">
           <i class="far fa-calendar-alt"></i>
           Poner fecha de hoy
           </a>
@@ -135,6 +135,7 @@ import { validId } from '../Validators/validId.js'
 import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
 import conformity from '../Labels/Conformity'
+import delivery from '../Labels/Delivery'
 import _ from 'lodash'
 
 export default {
@@ -197,8 +198,34 @@ export default {
       printLabel()
       this.hideModal()
     },
-    getDeliveryNote: function () { },
-    getDeclarationOfConformity: function (a) {
+    getDeliveryNote: function () {
+      var ComponentClass = Vue.extend(delivery)
+      var instance = new ComponentClass({
+        propsData: {
+          IdTrabajo: 22,
+          NombreDentista: 'Dentista',
+          Paciente: 'Paciente',
+          FechaTerminacion: new Date(),
+          Detalles: [{
+            IdTrabajoDetalle: 1,
+            IdTrabajo: 22,
+            Descripcion: 'Descripcion',
+            Precio: 100
+          },{
+            IdTrabajoDetalle: 2,
+            IdTrabajo: 22,
+            Descripcion: 'Descripcion2',
+            Precio: 23.45
+          }],
+          PrecioFinal: 123.45
+        }
+      })
+      instance.$mount()
+      this.$refs.labelContainer.appendChild(instance.$el)
+      instance.print()
+      // this.$refs.labelContainer.removeChild(instance.$el)
+    },
+    getDeclarationOfConformity: function () {
       var ComponentClass = Vue.extend(conformity)
       var instance = new ComponentClass({
         propsData: {
@@ -224,7 +251,7 @@ export default {
       instance.$mount()
       this.$refs.labelContainer.appendChild(instance.$el)
       instance.print()
-      // this.$refs.labelContainer.removeChild(instance.$el)
+      this.$refs.labelContainer.removeChild(instance.$el)
     }
   },
   created () {
