@@ -10,7 +10,7 @@
         </div>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
-    <div class="row">
+    <div>
       <myTable :headers="headers" :searchFields="searchFields" ref="dentistTable"  urlBase="/dentists/details/" masterKey="IdDentista"/>
     </div> <!-- row -->
   </div>
@@ -30,12 +30,14 @@ export default {
   },
   data () {
     return {
-      headers: [ {
-          title: 'Nº',
-          dataField: 'IdDentista',
-          titleClass: 'invisible',
-          rowClass: 'invisible'
-        }, {
+      headers: [ 
+        // {
+        //   title: 'Nº',
+        //   dataField: 'IdDentista',
+        //   titleClass: '',//invisible
+        //   rowClass: ''
+        // }, 
+        {
           title: 'Nombre',
           dataField: 'NombreDentista',
           titleClass: 'text-left',

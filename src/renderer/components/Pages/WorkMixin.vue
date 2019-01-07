@@ -120,7 +120,6 @@ export default {
       this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
     },
     showAdjunts: function(justAdded) {
-      debugger
       if (justAdded === undefined) {
         this.workAdjunctsJustAdded = true
         this.workAdjuncts = {

@@ -65,7 +65,6 @@ export default {
     }
   },
   mounted () {
-    debugger
     this.$refs.clinica.focus()
     this.$watch('value', function (newVal, oldVal) {
       getDentist(newVal, 'labManager.sqlite').then((dentistDetail) => {

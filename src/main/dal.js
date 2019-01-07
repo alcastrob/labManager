@@ -554,7 +554,7 @@ export function insertConformityDeclaration(conformity, fileName) {
 
 export function getConformityDeclarationDetails (conformityId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT * FROM DeclaracionProductos ' +
+  var query = 'SELECT * FROM vDeclaracionProductos ' +
   ' WHERE IdDeclaracion = ?'
   return getAsync(db, query, [conformityId]).then((row) => {
     return row

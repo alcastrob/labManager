@@ -8,9 +8,9 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <collapsable-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible"></collapsable-action-button>
-              <collapsable-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="getDeliveryNote"></collapsable-action-button>
-              <collapsable-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeclarationOfConformity"></collapsable-action-button>
+              <collapsable-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible && !readOnly"></collapsable-action-button>
+              <collapsable-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="getDeclarationOfConformity"></collapsable-action-button>
+              <collapsable-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote"></collapsable-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
@@ -32,24 +32,24 @@
           </div>
         </div>
       </div> <!-- row -->
-      <div class="row" v-if="work.FechaTerminacion !== undefined">
+      <div class="row" v-if="readOnly">
         <div class="col-md-12">
-          <h4>Este trabajo está cerrado, por lo que no se puede editar</h4>
+          <span><em>Este trabajo está cerrado, por lo que no se puede editar.</em></span>
         </div>
       </div>
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="work.FechaTerminacion !== undefined"></dentist-search>
+          <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="readOnly"></dentist-search>
           <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
           <label for="paciente">Paciente</label>
-          <input type="text" class="form-control" v-model="$v.work.Paciente.$model" :disabled="work.FechaTerminacion !== undefined">
+          <input type="text" class="form-control" v-model="$v.work.Paciente.$model" :disabled="readOnly">
         </div> <!-- col-md-6 -->
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
-          <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="work.FechaTerminacion !== undefined">
+          <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="readOnly">
             <option disabled value="">Seleccione una opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
@@ -57,54 +57,54 @@
         </div> <!-- col-md-6 -->
         <div class="col-md-2">
           <label for="precioMetal">Precio metal</label>
-          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}" :disabled="work.FechaTerminacion !== undefined">
+          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}" :disabled="readOnly">
           <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
         </div> <!-- col-md-2 -->
         <div class="col-md-4">
           <label for="color">Color</label>
-          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model" :disabled="work.FechaTerminacion !== undefined">
+          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model" :disabled="readOnly">
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-4">
           <h4>Indicaciones</h4>
-          <workIndicationsTable v-model="workIndications" ref="workIndications" :disabled="work.FechaTerminacion !== undefined"></workIndicationsTable>
+          <workIndicationsTable v-model="workIndications" ref="workIndications" :disabled="readOnly"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-4">
           <label for="fEntrada">Fecha entrada</label>
-          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada" :disabled="work.FechaTerminacion !== undefined">
-          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()" v-if="work.FechaTerminacion === undefined">
+          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada" :disabled="readOnly">
+          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()" v-if="work.FechaTerminacion !== ''">
           <i class="far fa-calendar-alt"></i>
           Poner fecha de hoy
           </a>
         </div> <!-- col-md-4 -->
         <div class="col-md-4">
           <label for="fPrevista">Fecha prevista</label>
-          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista" :disabled="work.FechaTerminacion !== undefined">
+          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista" :disabled="readOnly">
         </div> <!-- col-md-4 -->
         <div class="col-md-4">
           <label for="fSalida">Fecha terminación</label>
-          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion" :disabled="work.FechaTerminacion !== undefined">
+          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion" :disabled="readOnly">
         </div>
       </div> <!-- row -->
 
       <div class="row">
         <div class="col-md-12 mt-4">
           <h4>Pruebas</h4>
-          <workTestsTable v-model="workTests" :workId="work.IdTrabajo" ref="workTests" :disabled="work.FechaTerminacion !== undefined"></workTestsTable>
+          <workTestsTable v-model="workTests" :workId="work.IdTrabajo" ref="workTests" :disabled="readOnly"></workTestsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
 
       <div class="row">
         <div class="col-md-12 mt-4">
-          <workAdjuncts v-model="workAdjuncts" v-if="adjunctsVisible"></workAdjuncts>
+          <workAdjuncts v-model="workAdjuncts" v-if="adjunctsVisible" :disabled="readOnly"></workAdjuncts>
         </div> <!-- col-md-8 -->
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <button class="btn btn-secondary btn-block" type="button" @click="save" v-if="work.FechaTerminacion === undefined">
+          <button class="btn btn-secondary btn-block" type="button" @click="save" v-if="work.FechaTerminacion !== ''">
             <i class="fas fa-save"></i>
             Guardar
           </button>
@@ -129,19 +129,25 @@
 
 <script>
 
-import { getWork, getWorkIndications, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork } from '../../../main/dal.js'
+import Vue from 'vue'
+import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
 import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
+import conformity from '../Labels/Conformity'
 import _ from 'lodash'
 
 export default {
   name: 'workDetail',
   mixins: [workMixin],
+  components: {
+    conformity
+  },
   data () {
     return {
       printedLabel: '',
-      workTests: []
+      workTests: [],
+      readOnly: false
     }
   },
   validations: {
@@ -192,7 +198,34 @@ export default {
       this.hideModal()
     },
     getDeliveryNote: function () { },
-    getDeclarationOfConformity: function () { }
+    getDeclarationOfConformity: function (a) {
+      var ComponentClass = Vue.extend(conformity)
+      var instance = new ComponentClass({
+        propsData: {
+          conformityDeclaration: {
+            IdDeclaracion: 1,
+            IdTrabajo: 22,
+            NombreDentista: 'Dentista',
+            Paciente: 'Paciente',
+            Fecha: new Date(),
+            Meses: 12
+          },
+          conformityDeclarationDetails: [{
+            IdDeclaracion: 1,
+            IdProductoLote: 20,
+            Descripcion: 'Descripcion'
+          },{
+            IdDeclaracion: 1,
+            IdProductoLote: 121,
+            Descripcion: 'Descripcion 2'
+          }]
+        }
+      })
+      instance.$mount()
+      this.$refs.labelContainer.appendChild(instance.$el)
+      instance.print()
+      // this.$refs.labelContainer.removeChild(instance.$el)
+    }
   },
   created () {
     this.work.IdTrabajo = parseInt(this.$route.params.id)
@@ -200,6 +233,7 @@ export default {
   mounted () {
     getWork(this.work.IdTrabajo, 'labManager.sqlite').then((workDetails) => {
       this.work = workDetails
+      this.readOnly = workDetails.FechaTerminacion !== null
     })
     getWorkIndications(this.work.IdTrabajo, 'labManager.sqlite').then((workIndicat) => {
       this.workIndications = workIndicat
