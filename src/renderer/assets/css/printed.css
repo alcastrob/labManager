@@ -120,6 +120,15 @@
   ul.action-links {
     display:none !important;
   }
+
+  table.table-bordered,
+  table.table-bordered th {
+    border: 0px!important;
+  }
+
+  table.table-bordered td {
+    border: 1px solid black!important;
+  }
 }
 
 .printed {

@@ -535,9 +535,8 @@ export function deleteInvoiceDetail(invoiceDetailId, fileName) {
 
 export function getConformityDeclaration (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT * FROM vDeclaracionConformidad WEHRE IdTrabajo = ?'
-  if (customFilters !== undefined){
-  }
+  var query = 'SELECT * FROM vDeclaracionConformidad WHERE IdTrabajo = ?'
+  debugger
   return getAsync(db, query, [workId]).then((row) => {
     return row
   })

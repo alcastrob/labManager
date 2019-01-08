@@ -69,6 +69,7 @@
         <div class="col-md-12 mt-4">
           <h4>Indicaciones</h4>
           <workIndicationsTable v-model="workIndications" ref="workIndications" :disabled="readOnly"></workIndicationsTable>
+          {{work.PrecioFinal}}
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
@@ -104,7 +105,7 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <button class="btn btn-secondary btn-block" type="button" @click="save" v-if="work.FechaTerminacion !== ''">
+          <button class="btn btn-secondary btn-block" type="button" @click="save" v-if="!readOnly">
             <i class="fas fa-save"></i>
             Guardar
           </button>
@@ -130,7 +131,7 @@
 <script>
 
 import Vue from 'vue'
-import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork } from '../../../main/dal.js'
+import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConformityDeclaration, insertConformityDeclaration, getConformityDeclarationDetails, insertConformityDeclarationDetails } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
 import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
@@ -202,38 +203,35 @@ export default {
       var ComponentClass = Vue.extend(delivery)
       var instance = new ComponentClass({
         propsData: {
-          IdTrabajo: 22,
-          NombreDentista: 'Dentista',
-          Paciente: 'Paciente',
-          FechaTerminacion: new Date(),
-          Detalles: [{
-            IdTrabajoDetalle: 1,
-            IdTrabajo: 22,
-            Descripcion: 'Descripcion',
-            Precio: 100
-          },{
-            IdTrabajoDetalle: 2,
-            IdTrabajo: 22,
-            Descripcion: 'Descripcion2',
-            Precio: 23.45
-          }],
-          PrecioFinal: 123.45
+          IdTrabajo: this.work.IdTrabajo,
+          NombreDentista: this.work.NombreDentista,
+          Paciente: this.work.Paciente,
+          FechaTerminacion: this.work.FechaTerminacion,
+          Detalles: this.workIndications,
+          PrecioFinal: this.work.PrecioFinal
         }
       })
       instance.$mount()
       this.$refs.labelContainer.appendChild(instance.$el)
       instance.print()
-      // this.$refs.labelContainer.removeChild(instance.$el)
+      this.$refs.labelContainer.removeChild(instance.$el)
     },
     getDeclarationOfConformity: function () {
+      getConformityDeclaration(this.work.IdTrabajo, 'labManager.sqlite').then((declaration) => {
+        if (declaration !== undefined){
+          //1. Check if the note exists -> Use its data
+        } else {
+          //2. If not, ask the user for the warranty months and create it -> Use its data
+        }
+      })
       var ComponentClass = Vue.extend(conformity)
       var instance = new ComponentClass({
         propsData: {
           conformityDeclaration: {
             IdDeclaracion: 1,
-            IdTrabajo: 22,
-            NombreDentista: 'Dentista',
-            Paciente: 'Paciente',
+            IdTrabajo: this.work.IdTrabajo,
+            NombreDentista: this.work.NombreDentista,
+            Paciente: this.work.Paciente,
             Fecha: new Date(),
             Meses: 12
           },

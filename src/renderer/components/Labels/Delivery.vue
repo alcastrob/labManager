@@ -21,33 +21,32 @@
       {{format(FechaTerminacion)}}<br>
     </div>
   </div> <!-- row -->
-  <div class="row">
+
+  <div class="row pt-4">
     <div class="col-sm-12">
-      <div class="table-responsive">
-      <table class="table table-bordered" width="100%" cellspacing="0">
+      <table class="table table-bordered" width="95%" cellspacing="0">
         <tr>
-          <td>
+          <th width="68%">
             Descripción
-          </td>
-          <td>
+          </th>
+          <th class="text-right" width="28%">
             Precio
-          </td>
+          </th>
         </tr>
         <tr v-for="indication in Detalles" v-bind:key="indication.IdTrabajoDetalle">
           <td>
             {{indication.Descripcion}}
           </td>
-          <td>
-            {{indication.Precio}}
+          <td class="text-right">
+            {{moneyFormatter.format(indication.Precio)}}
           </td>
         </tr>
       </table>
-      </div>
     </div> <!-- col-sm-12 -->
   </div> <!-- row -->
   <div class="row">
-    <div class="col-sm-12 text-right">
-      Precio PrecioFinal: {{moneyFormatter.format(PrecioFinal)}}
+    <div class="col-sm-12 text-right font-weight-bold">
+      Total: {{moneyFormatter.format(PrecioFinal)}}
     </div>
   </div> <!-- row -->
 </div>

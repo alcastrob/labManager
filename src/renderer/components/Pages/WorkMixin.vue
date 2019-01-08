@@ -38,6 +38,7 @@ export default {
         Paciente: '',
         Color: '',
         PrecioMetal: 0,
+        PrecioFinal: 0,
         FechaEntrada: '',
         FechaPrevista: '',
         FechaTerminacion: ''
