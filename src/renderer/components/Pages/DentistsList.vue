@@ -30,13 +30,7 @@ export default {
   },
   data () {
     return {
-      headers: [ 
-        // {
-        //   title: 'Nº',
-        //   dataField: 'IdDentista',
-        //   titleClass: '',//invisible
-        //   rowClass: ''
-        // }, 
+      headers: [
         {
           title: 'Nombre',
           dataField: 'NombreDentista',

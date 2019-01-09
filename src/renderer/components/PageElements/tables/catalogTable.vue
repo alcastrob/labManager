@@ -104,13 +104,13 @@
 </template>
 
 <script>
-import tableMixin from './tables/TablesWithEmptyRowsMixin'
-import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../main/dal.js'
+import tableMixin from './TablesWithEmptyRowsMixin'
+import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 
 export default {
-  name: 'workTestsTable',
+  name: 'catalogTable',
   mixins: [ clickaway, tableMixin ],
   props: {
     workId: Number
@@ -202,26 +202,6 @@ export default {
       this.deletedRows = []
       this.updatedRows = []
     },
-    showPanel: function(event) {
-      _.forEach(Object.keys(this.panels), (panelId) => {
-        this.panels[panelId] = false
-      })
-      this.panels[event.currentTarget.id] = true
-      this.$forceUpdate()
-    },
-    hidePanel: function(id) {
-      if (id === undefined || id.type === undefined) {
-        this.panels[id] = false
-      } else {
-      _.forEach(Object.keys(this.panels), (panelId) => {
-        this.panels[panelId] = false
-      })
-      }
-      this.$forceUpdate()
-    },
-    canShow: function(id) {
-      return this.panels[id]
-     },
     click: function(event) {
       var id = event.currentTarget.parentElement.previousElementSibling.id
       if (id === 'newDescripcion'){
@@ -241,9 +221,6 @@ export default {
     // Check the required parameters (props)
     if (this.workId === undefined || this.workId === null)
       throw 'Missing prop workId in WorkTestTable.vue'
-    getDeliveryShifts('labManager.sqlite').then((shifts) => {
-      this.deliveryShifts = shifts
-    })
   }
 }
 </script>

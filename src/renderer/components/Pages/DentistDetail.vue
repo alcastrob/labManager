@@ -2,12 +2,13 @@
   <div>
     <div class="container">
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
           <h1>Dentista</h1>
         </div> <!-- col-md-6 -->
-        <div class="col-md-6 mt-2">
+        <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
+              <collapsable-link-button iconCss="fas fa-file-invoice-dollar mr-2" text="Ver sus facturas" :pathTo="getWorkListUrl()"></collapsable-link-button>
               <collapsable-link-button iconCss="fa fa-fw fa-list" text="Ver sus trabajos" :pathTo="getWorkListUrl()"></collapsable-link-button>
             </div>
           </div>

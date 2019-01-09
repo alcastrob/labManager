@@ -126,6 +126,18 @@ const menuTemplate = [{
       click () {}
     }
   ]
+}, 
+{
+  label: 'Mantenimientos',
+  submenu: [
+    {
+      label: 'Catálogo',
+      click () {
+        mainWindow.webContents.send
+        ('navigation:navigateTo', {page: '/maintenace/catalog'})
+      }
+    }
+  ]
 },
 {
   label: 'Ayuda',

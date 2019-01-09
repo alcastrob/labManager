@@ -348,6 +348,11 @@ namespace dataMigration
             {
                 //Creamos los correspondientes detalles de esta factura
                 ProcessFactura(detallesFacturas, factura);
+                if (factura.Nombre == "LABORATORIO DENTAL S.L.L")
+                {
+                    factura.Nombre = "LABORATORIO SEVILLA DENTAL S.L.L";
+                }
+
                 var query = dentistas.Where(d => d.NombreDentista == factura.Nombre && d.Direccion == factura.Direccion);
                 if (query.Count() != 1)
                 {

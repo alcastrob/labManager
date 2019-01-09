@@ -613,6 +613,16 @@ function getProductList(fileName){
 
 }
 
+// Catalog --------------------------------------------------------------------
+
+export function getCatalogList (fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM vCatalogo'
+  return allAsync(db, query, []).then((row) => {
+    return row
+  })
+}
+
 // Generic functions ----------------------------------------------------------
 
 function getAsync (db, sql, params) {

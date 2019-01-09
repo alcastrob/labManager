@@ -10,8 +10,8 @@ namespace dataMigration
         static void Main(string[] args)
         {
             Console.WriteLine("Reading the Access file data");
-            string accessDataDirectory = @"C:\Users\Angel\Documents\Trabajo\Antonio Aguilar - ORMA\Data\";
-            string sqliteDataDirectory = @"D:\git\labManager\";
+            string accessDataDirectory = @"c:\temp\";
+            string sqliteDataDirectory = @"C:\git\labManager\";
             DataLoader loader = new DataLoader($"Provider=Microsoft.Jet.OLEDB.4.0;Data source={accessDataDirectory}SOLO_DATOS.mdb");
             DataRecorder recorder = new DataRecorder($"Data Source={sqliteDataDirectory}labManager.sqlite;Version=3;");
 

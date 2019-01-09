@@ -35,12 +35,12 @@
           Listado Dentistas
         </router-link>
       </li>
-      <li class="nav-item no-arrow">
+      <!-- <li class="nav-item no-arrow">
         <router-link to="/finances" class="nav-link" role="button">
           <i class="fas fa-fw fa-money-bill-alt"></i>
           Gestión Económica
         </router-link>
-      </li>
+      </li> -->
     </ul>
 
     <!-- Navbar Search -->

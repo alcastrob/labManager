@@ -12,7 +12,7 @@ export default {
     },
     searchFields: {
       type: Array,
-      required: true
+      required: false
     },
     filterType: {
       type: String,
@@ -134,8 +134,6 @@ export default {
     // Check the required parameters (props)
     if (this.headers === undefined || this.headers === null)
       throw 'Missing prop headers in myTable.vue'
-    if (this.searchFields === undefined || this.searchFields === null)
-      throw 'Missing prop searchFields in myTable.vue'
     if (this.urlBase === undefined || this.urlBase === null)
       throw 'Missing prop urlBase in myTable.vue'
     if (this.masterKey === undefined || this.masterKey === null)

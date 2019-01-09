@@ -38,23 +38,25 @@ export default {
     this.currentSortCriteria = this.searchFields[0]
     this.currentSortDesc = true
 
-// Loading the filter component based ion configuration
-    var ComponentClass, instance
-    if (this.filterType === 'WorkFilterBar'){
-      ComponentClass = Vue.extend(workFilterBar)
-      instance = new ComponentClass({
-        propsData: {
-          filterName: this.filterName
-        }
-      })
-    } else {
-      ComponentClass = Vue.extend(filterBar)
-      instance = new ComponentClass()
-    }
-    instance.$parent = this
-    instance.$root = this.$root
-    instance.$mount()
-    this.$refs.filterContainer.appendChild(instance.$el)
+    if (this.searchFields !== undefined){
+      // Loading the filter component based on configuration
+      var ComponentClass, instance
+      if (this.filterType === 'WorkFilterBar'){
+        ComponentClass = Vue.extend(workFilterBar)
+        instance = new ComponentClass({
+          propsData: {
+            filterName: this.filterName
+          }
+        })
+      } else {
+        ComponentClass = Vue.extend(filterBar)
+        instance = new ComponentClass()
+      }
+      instance.$parent = this
+      instance.$root = this.$root
+      instance.$mount()
+      this.$refs.filterContainer.appendChild(instance.$el)
+      }
   }
 }
 </script>
