@@ -6,7 +6,7 @@
       </div> <!-- col-md-12 -->
     </div> <!-- row -->
     <div>
-     <catalogTable v´model="xxxx" ref="catalog"></catalogTable>
+     <!-- <catalogTable v´model="xxxx" ref="catalog"></catalogTable> -->
     </div> <!-- row -->
   </div>
 </template>

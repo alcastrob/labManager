@@ -28,7 +28,7 @@
     <div class="col-sm-6">
       PRODUCTO Y LOTE:
       <ul>
-        <li v-for="product in conformityDeclarationDetails" v-bind:key="product.IdProductoLote">{{product.Descripcion}} Hola</li>
+        <li v-for="product in conformityDeclarationDetails" v-bind:key="product.IdProductoLote">{{product.Descripcion}}</li>
       </ul>
       <br>
     </div>
@@ -121,8 +121,11 @@ export default {
     }
   },
   mounted () {
-    this.cssText = fs.readFileSync(path.resolve(__dirname, '../../assets/css/printed.css'), 'UTF-8')
-    this.cssText += fs.readFileSync(path.resolve(__dirname, '../../assets/css/bootstrap/css/bootstrap.min.css'), 'UTF-8')
+    // this.cssText = fs.readFileSync(path.resolve(__dirname, '../../assets/css/printed.css'), 'UTF-8')
+    // this.cssText += fs.readFileSync(path.resolve(__dirname, '../../assets/css/bootstrap/css/bootstrap.min.css'), 'UTF-8')
+    debugger
+    this.cssText = require('../../assets/css/printed.css')
+    //  + require('../../assets/css/bootstrap/css/bootstrap.min.css')
 
     // Check the required parameters (props)
     if (this.conformityDeclaration === undefined || this.conformityDeclaration === null)

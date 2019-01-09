@@ -5,7 +5,7 @@
       <div id="wrapper">
         <div id="content-wrapper">
           <div class="container-fluid">
-            <keep-alive exclude="workDetail,dentistDetail,worksListUncached">
+            <keep-alive exclude="workDetail,dentistDetail,worksListUncached,finances,monthCheck">
               <router-view></router-view>
             </keep-alive>
           </div>

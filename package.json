@@ -1,8 +1,8 @@
 {
   "name": "labManager",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Angel Castro <al.castro@gmail.com>",
-  "description": "An electron-vue project",
+  "description": "An application for managing a prothesic laboratory",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {

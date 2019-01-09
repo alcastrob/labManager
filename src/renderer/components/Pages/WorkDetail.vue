@@ -218,7 +218,7 @@ export default {
       this.$refs.printLabelModal.show()
     },
     printLabelAndHide: function() {
-      printLabel()
+      this.printLabel()
       this.hideModal()
     },
     getDeliveryNote: function () {
@@ -255,10 +255,10 @@ export default {
           //2. If not, ask the user for the warranty months and create it -> Use its data
           this.$refs.conformityModal.show()
         }
-        // instance.$mount()
-        // this.$refs.labelContainer.appendChild(instance.$el)
-        // instance.print()
-        // this.$refs.labelContainer.removeChild(instance.$el)
+        instance.$mount()
+        this.$refs.labelContainer.appendChild(instance.$el)
+        instance.print()
+        this.$refs.labelContainer.removeChild(instance.$el)
       })
     },
     deleteBatch(idProductoLote){
