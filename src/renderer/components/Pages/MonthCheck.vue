@@ -1,11 +1,12 @@
 <template>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-6">
       <h1>Cierre mensual - {{monthName}} {{year}}</h1>
     </div> <!-- col-md-8 -->
-    <div class="col-md-4 mt-2">
+    <div class="col-md-6 mt-2">
       <div class="float-right">
+        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar Resumen Mensual</button>
         <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       </div>
     </div> <!-- col-md-4 -->

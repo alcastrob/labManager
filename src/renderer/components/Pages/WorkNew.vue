@@ -57,10 +57,6 @@
         <label for="fPrevista">Fecha prevista</label>
         <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
       </div> <!-- col-md-6 -->
-      <!-- <div class="col-md-4 mt-3">
-        <label for="fSalida">Fecha terminación</label>
-        <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion">
-      </div> -->
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-4">
@@ -76,7 +72,7 @@
       </div>
     </div> <!-- row -->
   </div> <!-- container -->
-  <b-modal ref="modal" size="lg" title="Imprimir etiquetas" hide-footer @hidden="goBack()">
+  <b-modal ref="printLabelModal" size="lg" title="Imprimir etiquetas" hide-footer @hidden="goBack()">
     <div class="modal-body">
       <div class="containter">
         <div class="row">
@@ -170,6 +166,7 @@
 import { insertWork, getLastId, insertAdjuntsOfWork } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
 import workMixin from './WorkMixin'
+import _ from 'lodash'
 
 export default {
   name: 'WorkNew',
@@ -205,7 +202,7 @@ export default {
     showModal() {
       this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
       this.work.NombreDentista = this.$refs.dentist.query
-      this.$refs.modal.show()
+      this.$refs.printLabelModal.show()
     },
     printLabels: function() {
       if (this.$refs.cbResina.checked) this.printLabel('Resina')

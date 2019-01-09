@@ -28,7 +28,7 @@
         icon="fas fa-euro-sign" />
     </div>
     <div class="row">
-      <router-link to="/finances/monthCheck/2018/1" class="nav-link" role="button">
+      <router-link to="/finances/monthCheck/2018/2" class="nav-link" role="button">
       Cierre de mes
       </router-link>
     </div>

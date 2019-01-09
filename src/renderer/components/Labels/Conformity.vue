@@ -25,7 +25,13 @@
       {{conformityDeclaration.Paciente}}<br>
       FINALIDAD TERAPEUTICA: Compensación de una deficiencia<br><br>
     </div>
-    <div class="col-sm-6">Poner aquí lo de los productos y lotes</div>
+    <div class="col-sm-6">
+      PRODUCTO Y LOTE:
+      <ul>
+        <li v-for="product in conformityDeclarationDetails" v-bind:key="product.IdProductoLote">{{product.Descripcion}} Hola</li>
+      </ul>
+      <br>
+    </div>
   </div> <!-- row -->
   <div class="row">
     <div class="col-sm-12">
@@ -124,7 +130,6 @@ export default {
     if (this.conformityDeclarationDetails === undefined || this.conformityDeclarationDetails === null)
       throw 'Missing prop conformityDeclarationDetails in Conformity.vue'
   }
-
 }
 </script>
 

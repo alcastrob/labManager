@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     hideModal() {
-      this.$refs.modal.hide()
+      this.$refs.printLabelModal.hide()
     },
     printLabel: function() {
       var ComponentClass = this.mapType(this.printedLabel)

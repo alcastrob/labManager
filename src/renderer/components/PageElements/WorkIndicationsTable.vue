@@ -1,6 +1,6 @@
 <template>
 <div id="table" class="table-editable">
-    <div v-if="data.length>0">
+    <div>
       <table class="table table-bordered table-responsive-xs table-striped" >
         <tr>
           <th style="width: 4%;"></th>
@@ -50,9 +50,6 @@
           <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
         </ul>
       </div> -->
-    </div>
-    <div v-else>
-      <span>No hay indicaciones que mostrar</span>
     </div>
 </div>
 </template>

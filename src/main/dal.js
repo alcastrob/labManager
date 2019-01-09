@@ -533,12 +533,27 @@ export function deleteInvoiceDetail(invoiceDetailId, fileName) {
 
 // Conformity Declarations ----------------------------------------------------
 
+//Tested
 export function getConformityDeclaration (workId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT * FROM vDeclaracionConformidad WHERE IdTrabajo = ?'
-  debugger
-  return getAsync(db, query, [workId]).then((row) => {
+  var query1 = 'SELECT * FROM vDeclaracionConformidad WHERE IdTrabajo = ?'
+  var query2 = 'SELECT * FROM vDeclaracionProductos ' +
+    ' WHERE IdTrabajo = ?'
+
+  var promise1 = getAsync(db, query1, [workId]).then((row) => {
     return row
+  })
+  var promise2 = allAsync(db, query2, [workId]).then((row) => {
+    return row
+  })
+
+  return new Promise(function(resolve, reject) {
+    Promise.all([promise1, promise2]).then((rows) => {
+      resolve({
+        data: rows[0],
+        details: rows[1]
+      })
+    })
   })
 }
 
@@ -551,15 +566,6 @@ export function insertConformityDeclaration(conformity, fileName) {
 
 // Conformity Declaration Details ---------------------------------------------
 
-export function getConformityDeclarationDetails (conformityId, fileName) {
-  db = new sqlite3.Database(fileName)
-  var query = 'SELECT * FROM vDeclaracionProductos ' +
-  ' WHERE IdDeclaracion = ?'
-  return getAsync(db, query, [conformityId]).then((row) => {
-    return row
-  })
-}
-
 export function insertConformityDeclarationDetails(conformityId, productId, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO DeclaracionConformidad (IdDeclaracion, IdProductoLote) ' +
@@ -571,6 +577,40 @@ export function deleteConformityDeclarationDetails(conformityId, productId, file
   db = new sqlite3.Database(fileName)
   var query = 'DELETE FROM DeclaracionConformidad WHERE IdDeclaracion = ? AND IdProductoLote = ?'
   return runAsync(db, query, [conformityId, productId])
+}
+
+// Products and batches -------------------------------------------------------
+
+function searchProductByName(productName, fileName){
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion LIKE ?'
+  return allAsync(db, query, ['%' + productName + '%']).then((rows) => {
+    return rows
+  })
+}
+
+function getProduct(productId, fileName){
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM ProductosLotes WHERE IdProductoLote = ?'
+  return getAsync(db, query, [productId]).then((row) => {
+    return row
+  })
+}
+
+function insertProduct(product, fileName){
+
+}
+
+function updateProduct(prodcut, fileName){
+
+}
+
+function deleteProduct(productId, fileName){
+
+}
+
+function getProductList(fileName){
+
 }
 
 // Generic functions ----------------------------------------------------------
