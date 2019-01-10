@@ -44,6 +44,7 @@ export default {
       this.query = name
       this.resultsVisible = false
       this.$emit('input', id)
+      this.$emit('change', null)
     },
     createNew: function(name) {
       this.$router.push({

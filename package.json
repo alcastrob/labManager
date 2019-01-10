@@ -1,9 +1,9 @@
 {
   "name": "labManager",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "author": "Angel Castro <al.castro@gmail.com>",
-  "description": "An application for managing a prothesic laboratory",
-  "license": null,
+  "description": "An application for managing a dental prosthetic laboratory",
+  "license": "MIT",
   "main": "./dist/electron/main.js",
   "repository": "https://github.com/alcastrob/labManager",
   "scripts": {
@@ -52,7 +52,14 @@
     },
     "linux": {
       "icon": "build/icons"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "alcastrob",
+        "repo": "labManager"
+      }
+    ]
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -60,6 +67,7 @@
     "bootstrap": "^4.1.3",
     "bootstrap-vue": "^2.0.0-rc.11",
     "compare-version": "^0.1.2",
+    "electron-log": "^2.2.17",
     "electron-updater": "^4.0.6",
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",

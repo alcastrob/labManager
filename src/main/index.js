@@ -8,7 +8,12 @@ import {
 } from 'electron'
 
 import VueRouter from 'vue-router'
-const {autoUpdater} = require("electron-updater");
+const {autoUpdater} = require("electron-updater")
+const { dialog } = require('electron')
+const log = require("electron-log")
+log.transports.file.level = 'debug'
+autoUpdater.logger = log
+
 
 var path = require('path')
 
@@ -22,6 +27,7 @@ if (process.env.NODE_ENV !== 'development') {
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080` : `file://${__dirname}/index.html`
+
 
 function createWindow () {
   /**
@@ -43,7 +49,7 @@ function createWindow () {
   const mainMenu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(mainMenu)
 
-  autoUpdater.checkForUpdates()
+  autoUpdater.checkForUpdatesAndNotify()
 }
 
 app.on('ready', createWindow)
@@ -140,7 +146,7 @@ const menuTemplate = [{
       click () {}
     }
   ]
-}, 
+},
 {
   label: 'Mantenimientos',
   submenu: [
@@ -162,7 +168,16 @@ const menuTemplate = [{
         mainWindow.webContents.send
         ('navigation:navigateTo', {page: '/about'})
       }
-    }
+    },
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Buscar actualizaciones',
+      click () {
+        autoUpdater.checkForUpdates()
+      }
+    },
   ]
 }]
 

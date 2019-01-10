@@ -16,7 +16,7 @@
     <div class="row">
       <div class="col-md-6 mb-3 mt-3">
         <label for="clinica">Clínica o Dr/a</label>
-        <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" ref="dentist" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" @change="selectPatient()"></dentist-search>
+        <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" ref="dentist" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" @change="this.$refs.paciente.focus()"></dentist-search>
         <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         <!-- <span>{{work.IdDentista}}</span> -->
       </div> <!-- col-md-6 -->
@@ -185,10 +185,6 @@ export default {
     }
   },
   methods: {
-    selectPatient: function() {
-      debugger
-      this.$refs.paciente.focus()
-    },
     save: function() {
       this.saveButtonPressed = true
       this.$v.$touch()
