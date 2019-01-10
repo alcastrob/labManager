@@ -66,8 +66,14 @@ export default {
     hideModal() {
       this.$refs.printLabelModal.hide()
     },
-    printLabel: function() {
-      var ComponentClass = this.mapType(this.printedLabel)
+    printLabel: function(label) {
+      var currentLabel
+      if (label === undefined){
+        currentLabel = this.printedLabel
+      } else {
+        currentLabel = label
+      }
+      var ComponentClass = this.mapType(currentLabel)
       var instance = new ComponentClass({
           propsData: {
             workData: this.work,
@@ -77,8 +83,8 @@ export default {
       })
       instance.$mount()
       this.$refs.labelContainer.appendChild(instance.$el)
-      instance.setName(this.printedLabel)
-      instance.print(this.printedLabel)
+      instance.setName(currentLabel)
+      instance.print(currentLabel)
       this.$refs.labelContainer.removeChild(instance.$el)
     },
     mapType(type) {
@@ -101,7 +107,7 @@ export default {
         case 'Garantia':
           return Vue.extend(labelGarantia)
         default:
-          throw 'Unexpected label type in WorkDetail.printLabel()'
+          throw 'Unexpected label type in WorkDetail.printLabel(): ' + type
       }
     },
     setStartDateToToday: function() {

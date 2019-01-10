@@ -207,7 +207,7 @@ export default {
     printLabels: function() {
       if (this.$refs.cbResina.checked) this.printLabel('Resina')
       if (this.$refs.cbCompostura.checked) this.printLabel('Compostura')
-      if (this.workAdjuncts !== null && this.$refs.cbAditamentos.checked) this.printLabel('Aditamentos')
+      if (this.adjunctsVisible && this.$refs.cbAditamentos.checked) this.printLabel('Aditamentos')
       if (this.$refs.cbEsqueletico.checked) this.printLabel('Esqueléticos')
       if (this.$refs.cbOrtodoncia.checked) this.printLabel('Ortodoncia')
       if (this.$refs.cbZirconio.checked) this.printLabel('Zirconio')
