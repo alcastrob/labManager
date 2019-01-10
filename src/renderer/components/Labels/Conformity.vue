@@ -121,11 +121,8 @@ export default {
     }
   },
   mounted () {
-    // this.cssText = fs.readFileSync(path.resolve(__dirname, '../../assets/css/printed.css'), 'UTF-8')
-    // this.cssText += fs.readFileSync(path.resolve(__dirname, '../../assets/css/bootstrap/css/bootstrap.min.css'), 'UTF-8')
-    debugger
-    this.cssText = require('../../assets/css/printed.css')
-    //  + require('../../assets/css/bootstrap/css/bootstrap.min.css')
+    this.cssText = fs.readFileSync(path.resolve(__static, 'printed.css'), 'UTF-8')
+    this.cssText += fs.readFileSync(path.resolve(__static, 'bootstrap.min.css'), 'UTF-8')
 
     // Check the required parameters (props)
     if (this.conformityDeclaration === undefined || this.conformityDeclaration === null)

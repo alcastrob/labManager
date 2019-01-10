@@ -1,0 +1,88 @@
+@page {
+  size: auto;
+  margin: 2mm 60mm 2mm 60mm;
+}
+body{
+  margin: 0px;
+}
+* {
+  -webkit-print-color-adjust:exact;
+  }
+.box {
+  font-family: sans-serif;
+  font-size: 6pt;
+  text-align: left;
+}
+.labelTitle {
+  line-height: 1.2;
+  text-align: left;
+  font-size: 14pt;
+  padding-left: 10px;
+}
+.labelSubtitle {
+  font-size: 12pt;
+  line-height: 1.2;
+}
+p {
+  text-align: center;
+}
+table {
+  margin: 0 auto;
+  width: 400px;
+}
+tr>td {
+  border: solid 1px #000;
+}
+tr>th {
+  width: 150px;
+  text-align: right;
+}
+.left {
+  text-align:left;
+}
+.right {
+  float:right;
+}
+.noBorder {
+  border: none;
+}
+.textSmall {
+  font-family: sans-serif;
+  font-size: 9pt;
+}
+.float-right {
+  float: right!important;
+  padding-right: 10px;
+}
+.background-Aditamentos {
+  background-color: #C892FB;
+}
+.background-Composite {
+  background-color: #ADBED6;
+}
+.background-Compostura {
+  background-color: #4CFF40;
+}
+.background-E-max {
+  background-color: #F09C60;
+}
+.background-Esqueléticos {
+  background-color: #F70027;
+  color: white;
+}
+.background-Implantes {
+  background-color: #ECD2D2;
+}
+.background-Metal-Cerámica {
+  background-color: #FFFF48;
+}
+.background-Ortodoncia {
+  background-color: #CFFFCE;
+}
+.background-Resina {
+  background-color: #3B5BF9;
+  color: white;
+}
+.background-Zirconio {
+  background-color: #CA787A;
+}

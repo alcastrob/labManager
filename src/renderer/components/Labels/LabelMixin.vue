@@ -44,7 +44,7 @@ export default {
     }
   },
   mounted () {
-    this.cssText = fs.readFileSync(path.resolve(__dirname, '../../assets/css/labelStyle.css'), 'UTF-8')
+    this.cssText = fs.readFileSync(path.resolve(__static, 'labelStyle.css'), 'UTF-8')
     // Check the required parameters (props)
     if (this.workData === undefined || this.workData === null)
       throw 'Missing prop workData in LabelMixin.vue'

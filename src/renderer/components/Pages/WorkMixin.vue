@@ -67,7 +67,6 @@ export default {
       this.$refs.printLabelModal.hide()
     },
     printLabel: function() {
-      debugger
       var ComponentClass = this.mapType(this.printedLabel)
       var instance = new ComponentClass({
           propsData: {

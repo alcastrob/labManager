@@ -29,7 +29,6 @@ export default {
   props: ['value', 'isInvalid'],
   methods: {
     search: function() {
-      debugger
       this.resultsVisible = true
       this.focus = true
       if (this.query.length > 3) {
