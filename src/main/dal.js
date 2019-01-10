@@ -623,6 +623,23 @@ export function getCatalogList (fileName) {
   })
 }
 
+// Config ---------------------------------------------------------------------
+
+//tested
+export function getConfigValue(configKey, fileName){
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM Configuracion WHERE clave = ?'
+  return getAsync(db, query, [configKey]).then((row) => {
+    return row
+  })
+}
+
+export function setConfigValue (configKey, configValue, fileName) {
+  db = new sqlite3.Database(fileName)
+  var query = 'INSERT OR REPLACE INTO Configuracion (clave, valor) VALUES (?, ?)'
+  return runAsync(db, query, [configKey, configValue])
+}
+
 // Generic functions ----------------------------------------------------------
 
 function getAsync (db, sql, params) {

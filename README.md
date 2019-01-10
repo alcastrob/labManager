@@ -1,6 +1,6 @@
 # labManager
 
-A small management software for managing a prosthetic laboratory.
+An electron-vue application for managing a dental prosthetic laboratory.
 
 
 #### Build Setup

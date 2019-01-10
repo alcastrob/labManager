@@ -3,10 +3,12 @@
 import {
   app,
   BrowserWindow,
-  Menu
+  Menu,
+  ipcMain
 } from 'electron'
 
 import VueRouter from 'vue-router'
+const {autoUpdater} = require("electron-updater");
 
 var path = require('path')
 
@@ -40,6 +42,8 @@ function createWindow () {
 
   const mainMenu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(mainMenu)
+
+  autoUpdater.checkForUpdates()
 }
 
 app.on('ready', createWindow)
@@ -54,6 +58,16 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+// when the update has been downloaded and is ready to be installed, notify the BrowserWindow
+autoUpdater.on('update-downloaded', (info) => {
+  mainWindow.webContents.send('updateReady')
+});
+
+// when receiving a quitAndInstall signal, quit and install the new version ;)
+ipcMain.on("quitAndInstall", (event, arg) => {
+  autoUpdater.quitAndInstall();
 })
 
 const menuTemplate = [{

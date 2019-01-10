@@ -20,6 +20,7 @@ import topbar from '../PageElements/TopBar'
 import VueRouter from 'vue-router'
 var { ipcRenderer } = require('electron')
 
+
 export default {
   name: 'mainPage',
   components: {
@@ -35,6 +36,9 @@ export default {
       this.$router.push({
         path: eventData.page
       })
+    })
+    ipcRenderer.on('updateReady', function(event, text) {
+      debugger
     })
   }
 }

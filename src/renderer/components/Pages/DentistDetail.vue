@@ -15,7 +15,7 @@
         </div> <!-- col-md-6 -->
       </div><!-- row -->
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-8" :class="{'col-md-8': isAdmin, 'col-md-12': !isAdmin}">
           <div class="row">
             <div class="col-md-6 mt-3">
               <label for="dentista">Dentista</label>
@@ -96,7 +96,7 @@
             </div>
           </div> <!-- row -->
         </div>
-        <div class="col-md-4 separated-column text-left"> <!-- Columna 2 -->
+        <div class="col-md-4 separated-column text-left" v-if="isAdmin"> <!-- Columna 2 -->
           <h4 class="pt-2">Datos y estadísticas</h4>
           <p class="text-left">Aquí irá toda la información de las estadísticas del dentista.</p>
           <p class="text-justify">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero blanditiis impedit itaque perferendis magnam nesciunt iure deserunt? Perspiciatis nemo fugiat cum officiis et ratione in vel maxime. Ratione, hic consequuntur.</p>
@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import { getDentist, updateDentist } from '../../../main/dal.js'
+import { getDentist, updateDentist, getConfigValue } from '../../../main/dal.js'
 import collapsableLinkButton from '../PageElements/CollapsableButtons/collapsableLinkButton'
 import { required, email, numeric, minLength, maxLength } from 'vuelidate/lib/validators'
 
@@ -137,7 +137,8 @@ export default {
         Poblacion: '',
         Telefono: '',
         Telefono2: ''
-      }
+      },
+      isAdmin: false
     }
   },
   validations: {
@@ -169,6 +170,11 @@ export default {
     canBeSaved: function() {
       return this.isDirty && this.data.NombreClinica !== ''
     }
+  },
+  created() {
+    getConfigValue('isAdmin', 'labManager.sqlite').then((value) => {
+      this.isAdmin = value.valor
+    })
   },
   mounted () {
     this.dentistId = this.$route.params.id

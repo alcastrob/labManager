@@ -35,7 +35,7 @@
           Listado Dentistas
         </router-link>
       </li>
-      <li class="nav-item no-arrow">
+      <li class="nav-item no-arrow" v-if="isAdmin">
         <router-link to="/finances" class="nav-link" role="button">
           <i class="fas fa-fw fa-money-bill-alt"></i>
           Gestión Económica
@@ -59,6 +59,7 @@
 
 <script>
 import VueRouter from 'vue-router'
+import {getConfigValue} from '../../../main/dal.js'
 
 export default {
   name: 'topBar',
@@ -76,7 +77,8 @@ export default {
   data() {
     return {
       to: '',
-      from: ''
+      from: '',
+      isAdmin: false
     }
   },
   watch: {
@@ -84,6 +86,11 @@ export default {
       this.to = to
       this.from = from
     }
+  },
+  created() {
+    getConfigValue('isAdmin', 'labManager.sqlite').then((value) => {
+      this.isAdmin = value.valor
+    })
   }
 }
 </script>

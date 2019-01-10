@@ -25,3 +25,4 @@ dotnet/dataMigration/packages/EntityFramework.6.2.0/.signature.p7s
 dotnet/dataMigration/packages/
 labManager.sqlite
 >>>>>>> migration
+electron-builder.yml
