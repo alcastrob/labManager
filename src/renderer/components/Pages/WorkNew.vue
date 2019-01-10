@@ -16,13 +16,13 @@
     <div class="row">
       <div class="col-md-6 mb-3 mt-3">
         <label for="clinica">Clínica o Dr/a</label>
-        <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" ref="dentist" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed"></dentist-search>
+        <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" ref="dentist" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" @change="selectPatient()"></dentist-search>
         <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         <!-- <span>{{work.IdDentista}}</span> -->
       </div> <!-- col-md-6 -->
       <div class="col-md-6 mt-3">
         <label for="paciente">Paciente</label>
-        <input type="text" class="form-control" v-model="$v.work.Paciente.$model">
+        <input type="text" class="form-control" v-model="$v.work.Paciente.$model" ref="paciente">
       </div> <!-- col-md-6 -->
       <div class="col-md-3">
         <label for="tipoTrabajo">Tipo trabajo</label>
@@ -165,11 +165,12 @@
 
 import { insertWork, getLastId, insertAdjuntsOfWork } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
+import VueRouter from 'vue-router'
 import workMixin from './WorkMixin'
 import _ from 'lodash'
 
 export default {
-  name: 'WorkNew',
+  name: 'workNew',
   mixins: [workMixin],
   validations: {
     work: {
@@ -184,6 +185,10 @@ export default {
     }
   },
   methods: {
+    selectPatient: function() {
+      debugger
+      this.$refs.paciente.focus()
+    },
     save: function() {
       this.saveButtonPressed = true
       this.$v.$touch()
@@ -216,24 +221,13 @@ export default {
       if (this.$refs.cbComposite.checked) this.printLabel('Composite')
       if (this.$refs.cbMetalCeramica.checked) this.printLabel('Metal-Cerámica')
 
-      this.hideModal()
+      // this.hideModal()
+      this.goBack()
     },
     goBack() {
-      this.saveButtonPressed = false
-      this.work.IdDentista = -1
-      this.$refs.dentist.query = ''
-      this.work.IdTipoTrabajo = -1
-      this.$refs.cbResina.checked = false
-      this.$refs.cbCompostura.checked = false
-      if (this.adjunctsVisible) this.$refs.cbAditamentos.checked = false
-      this.$refs.cbEsqueletico.checked = false
-      this.$refs.cbOrtodoncia.checked = false
-      this.$refs.cbZirconio.checked = false
-      this.$refs.cbImplantes.checked = false
-      this.$refs.cbEmax.checked = false
-      this.$refs.cbComposite.checked = false
-      this.$refs.cbMetalCeramica.checked = false
-      this.$router.go(-1)
+      this.$router.push({
+        path: '/works/list'
+      })
     },
     setBtnPrintEnabled(){
       this.$refs.btnPrint.disabled = !(
