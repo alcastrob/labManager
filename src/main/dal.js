@@ -634,6 +634,7 @@ export function getConfigValue(configKey, fileName){
   })
 }
 
+//Tested
 export function getConfigValues(configKeyArray, fileName){
   db = new sqlite3.Database(fileName)
   var query = 'SELECT * FROM Configuracion WHERE clave IN ('
