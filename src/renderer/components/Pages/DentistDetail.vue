@@ -173,7 +173,7 @@ export default {
   },
   created() {
     getConfigValue('isAdmin', 'labManager.sqlite').then((value) => {
-      this.isAdmin = value.valor
+      this.isAdmin = value
     })
   },
   mounted () {

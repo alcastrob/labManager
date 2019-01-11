@@ -26,12 +26,6 @@ export default {
   components: {
     topbar
   },
-  data () {
-    return {
-      // currentPage: 'dashboard'
-      // currentPage: 'workLists'
-    }
-  },
   mounted () {
     ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
       this.$router.push({

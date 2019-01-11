@@ -628,11 +628,24 @@ export function getCatalogList (fileName) {
 //tested
 export function getConfigValue(configKey, fileName){
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT * FROM Configuracion WHERE clave = ?'
+  var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
   return getAsync(db, query, [configKey]).then((row) => {
     return row
   })
 }
+
+export function getConfigValues(configKeyArray, fileName){
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT * FROM Configuracion WHERE clave IN ('
+  for (var value of configKeyArray){
+    query += `"${value}",`
+  }
+  query = query.substring(0, query.length - 1) + ')'
+  return allAsync(db, query, []).then((row) => {
+    return row
+  })
+}
+
 
 export function setConfigValue (configKey, configValue, fileName) {
   db = new sqlite3.Database(fileName)

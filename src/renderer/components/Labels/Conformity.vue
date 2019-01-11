@@ -8,7 +8,7 @@
     </div>
     <div class="col-sm-6">
       Poner el logo aquí<br>
-      Nº de Fabricante: XXXXXXX
+      Nº de Fabricante: {{makerNumber}}
     </div>
   </div> <!-- row -->
   <div class="row">
@@ -42,10 +42,10 @@
   </div> <!-- row -->
   <div class="row">
     <div class="col-sm-6">
-      Fdo: Antonio Aguilar Gómez / Jose Antonio Carrizosa Monterrubio
+      Fdo: {{personInCharge}}
     </div>
     <div class="col-sm-6">
-      Titular responsable de la empresa: LABORATORIO ORMA<br><br>
+      Titular responsable de la empresa: {{companyName}}<br><br>
     </div>
   </div> <!-- row -->
   <div class="row">
@@ -91,13 +91,18 @@
 import moment from 'moment'
 import {Printd} from 'printd'
 var path = require('path')
+import {getConfigValues} from '../../../main/dal.js'
+import _ from 'lodash'
 var fs = require('fs')
 
 export default {
   name: 'conformity',
   data () {
     return {
-      cssText: ''
+      cssText: '',
+      makerNumber: '',
+      personInCharge: '',
+      companyName: ''
     }
   },
   props: {
@@ -111,14 +116,36 @@ export default {
     }
   },
   methods: {
-    print () {
-      this.$forceUpdate()
+    print_companion(values) {
+      debugger
+      this.makerNumber = _.find(values, ['clave', 'makerNumber']).valor
+      this.personInCharge = _.find(values, ['clave', 'personInCharge']).valor
+      this.companyName = _.find(values, ['clave', 'companyName']).valor
+      // this.$forceUpdate()
       const d = new Printd()
       d.print(this.$el, this.cssText)
+    },
+    print () {
+      getConfigValues(['makerNumber', 'personInCharge', 'companyName'], 'labManager.sqlite').then(this.print_companion)
     },
     format(date) {
       return moment(date).format('DD/MM/YYYY')
     }
+  },
+  created () {
+    
+    // var promise1 = getConfigValue('makerNumber', 'labManager.sqlite')
+    // var promise2 = getConfigValue('personInCharge', 'labManager.sqlite')
+    
+    // .then((maker) => {
+    //   this.makerNumber = maker
+    // })
+    // .then((person) => {
+    //   this.personInCharge = person
+    // })
+    // getConfigValue('companyName', 'labManager.sqlite').then((company) => {
+    //   this.companyName = company
+    // })
   },
   mounted () {
     this.cssText = fs.readFileSync(path.resolve(__static, 'printed.css'), 'UTF-8')
