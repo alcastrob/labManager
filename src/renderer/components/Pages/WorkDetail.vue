@@ -34,7 +34,10 @@ npm<template>
       </div> <!-- row -->
       <div class="row" v-if="readOnly">
         <div class="col-md-12">
-          <span><em>Este trabajo está cerrado, por lo que no se puede editar.</em></span>
+          <span><em>Este trabajo está cerrado, por lo que no se puede editar.</em></span><em>
+            <br>
+            Si, excepcionalmente, desea editarlo (bajo su propia responsabilidad) pulse <a href="#" @click="readOnly=false">aquí</a>.
+            </em>
         </div>
       </div>
       <div class="row">

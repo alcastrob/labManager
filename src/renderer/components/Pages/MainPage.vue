@@ -28,7 +28,8 @@ export default {
   },
   data () {
     return {
-      currentPage: 'dashboard',
+      // currentPage: 'dashboard'
+      // currentPage: 'workLists'
     }
   },
   mounted () {

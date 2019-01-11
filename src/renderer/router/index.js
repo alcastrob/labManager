@@ -26,7 +26,8 @@ export default new Router({
       children: [
         {
           path: '',
-          component: dashboard
+          component: worksList
+          // component: dashboard
         },
         {
           path: 'about',
