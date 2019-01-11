@@ -18,7 +18,8 @@
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
     "test": "npm run unit && npm run e2e",
     "unit": "karma start test/unit/karma.conf.js",
-    "rebuild": "electron-rebuild -f -w sqlite3"
+    "rebuild": "electron-rebuild -f -w sqlite3",
+    "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "productName": "labManager",
@@ -73,6 +74,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "popper.js": "^1.14.6",
+    "sqlite": "^3.0.0",
     "sqlite3": "^4.0.4",
     "vue": "^2.5.16",
     "vue-clickaway": "^2.2.2",
@@ -105,8 +107,8 @@
     "css-loader": "^0.28.11",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "^2.0.15",
-    "electron-builder": "^20.38.2",
+    "electron": "^3.0.0",
+    "electron-builder": "^20.38.4",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-prebuilt": "^1.4.13",
@@ -141,7 +143,7 @@
     "vuetable-2": "^1.7.5",
     "webpack": "^4.15.1",
     "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "^3.1.4",
+    "webpack-dev-server": "^3.1.14",
     "webpack-hot-middleware": "^2.22.2",
     "webpack-merge": "^4.1.3"
   }

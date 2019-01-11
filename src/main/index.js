@@ -8,12 +8,6 @@ import {
 } from 'electron'
 
 import VueRouter from 'vue-router'
-const {autoUpdater} = require("electron-updater")
-const { dialog } = require('electron')
-const log = require("electron-log")
-log.transports.file.level = 'debug'
-autoUpdater.logger = log
-
 
 var path = require('path')
 
@@ -49,7 +43,7 @@ function createWindow () {
   const mainMenu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(mainMenu)
 
-  autoUpdater.checkForUpdatesAndNotify()
+  // autoUpdater.checkForUpdatesAndNotify()
 }
 
 app.on('ready', createWindow)
@@ -64,16 +58,6 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
   }
-})
-
-// when the update has been downloaded and is ready to be installed, notify the BrowserWindow
-autoUpdater.on('update-downloaded', (info) => {
-  mainWindow.webContents.send('updateReady')
-});
-
-// when receiving a quitAndInstall signal, quit and install the new version ;)
-ipcMain.on("quitAndInstall", (event, arg) => {
-  autoUpdater.quitAndInstall();
 })
 
 const menuTemplate = [{
@@ -175,7 +159,7 @@ const menuTemplate = [{
     {
       label: 'Buscar actualizaciones',
       click () {
-        autoUpdater.checkForUpdates()
+        // autoUpdater.checkForUpdates()
       }
     },
   ]
@@ -241,14 +225,28 @@ if (process.env.NODE_ENV !== 'production') {
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
  */
 
-/*
+
 import { autoUpdater } from 'electron-updater'
+const log = require("electron-log")
+log.transports.file.level = 'debug'
+autoUpdater.logger = log
 
 autoUpdater.on('update-downloaded', () => {
   autoUpdater.quitAndInstall()
 })
 
+// when the update has been downloaded and is ready to be installed, notify the BrowserWindow
+autoUpdater.on('update-downloaded', (info) => {
+  log.debug('Enter on update-downloaded')
+  mainWindow.webContents.send('updateReady')
+});
+
+// when receiving a quitAndInstall signal, quit and install the new version ;)
+ipcMain.on("quitAndInstall", (event, arg) => {
+  autoUpdater.quitAndInstall();
+})
+
 app.on('ready', () => {
+  log.debug('Enter on ready')
   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 })
- */
