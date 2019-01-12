@@ -49,7 +49,7 @@ function createWindow () {
   const mainMenu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(mainMenu)
 
-  autoUpdater.checkForUpdatesAndNotify()
+  // autoUpdater.checkForUpdatesAndNotify()
 }
 
 app.on('ready', createWindow)

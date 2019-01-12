@@ -43,7 +43,7 @@ npm<template>
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="readOnly" @change="this.$refs.paciente.focus()"></dentist-search>
+          <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="readOnly" @change="$refs.paciente.focus()"></dentist-search>
           <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
