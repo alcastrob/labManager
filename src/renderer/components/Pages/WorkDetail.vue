@@ -153,7 +153,7 @@ npm<template>
 <script>
 
 import Vue from 'vue'
-import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConformityDeclaration, insertConformityDeclaration, getConformityDeclarationDetails, insertConformityDeclarationDetails } from '../../../main/dal.js'
+import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConformityDeclaration, insertConformityDeclaration, getConformityDeclarationDetails, insertConformityDeclarationDetails, getConfigValues } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
 import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
@@ -244,14 +244,32 @@ export default {
     getDeclarationOfConformity: function () {
       var ComponentClass = Vue.extend(conformity)
       var currenDetails = null
-      getConformityDeclaration(this.work.IdTrabajo, 'labManager.sqlite').then((declaration) => {
+      var promise1 = getConformityDeclaration(this.work.IdTrabajo, 'labManager.sqlite')
+      var promise2 = getConfigValues(['makerNumber', 'personInCharge', 'companyName'], 'labManager.sqlite')
+
+      var allPromises = new Promise(function(resolve, reject) {
+        Promise.all([promise1, promise2]).then((rows) => {
+          resolve({
+            declarationData: rows[0],
+            makerNumber:  _.find(rows[1], ['clave', 'makerNumber']).valor,
+            personInCharge: _.find(rows[1], ['clave', 'personInCharge']).valor,
+            companyName: _.find(rows[1], ['clave', 'companyName']).valor
+          })
+        })
+      })
+
+      allPromises.then((dec) => {
+        debugger
         var instance
-        if (declaration.data !== undefined){
+        if (dec.declarationData.data !== undefined){
           //1. Check if the note exists -> Use its data
           instance = new ComponentClass({
           propsData: {
-            conformityDeclaration: declaration.data,
-            conformityDeclarationDetails: declaration.details
+            conformityDeclaration: dec.declarationData.data,
+            conformityDeclarationDetails: dec.declarationData.details,
+            makerNumber: dec.makerNumber,
+            personInCharge: dec.personInCharge,
+            companyName: dec.companyName
           }
         })
         } else {

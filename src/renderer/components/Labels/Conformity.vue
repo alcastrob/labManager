@@ -91,18 +91,13 @@
 import moment from 'moment'
 import {Printd} from 'printd'
 var path = require('path')
-import {getConfigValues} from '../../../main/dal.js'
-import _ from 'lodash'
 var fs = require('fs')
 
 export default {
   name: 'conformity',
   data () {
     return {
-      cssText: '',
-      makerNumber: '',
-      personInCharge: '',
-      companyName: ''
+      cssText: ''
     }
   },
   props: {
@@ -113,39 +108,29 @@ export default {
     conformityDeclarationDetails: {
       type: Array,
       required: true
+    },
+    makerNumber: {
+      type: String,
+      required: true
+    },
+    personInCharge: {
+      type: String,
+      required: true
+    },
+    companyName: {
+      type: String,
+      required: true
     }
   },
   methods: {
-    print_companion(values) {
-      debugger
-      this.makerNumber = _.find(values, ['clave', 'makerNumber']).valor
-      this.personInCharge = _.find(values, ['clave', 'personInCharge']).valor
-      this.companyName = _.find(values, ['clave', 'companyName']).valor
-      // this.$forceUpdate()
+    print () {
+      this.$forceUpdate()
       const d = new Printd()
       d.print(this.$el, this.cssText)
-    },
-    print () {
-      getConfigValues(['makerNumber', 'personInCharge', 'companyName'], 'labManager.sqlite').then(this.print_companion)
     },
     format(date) {
       return moment(date).format('DD/MM/YYYY')
     }
-  },
-  created () {
-    
-    // var promise1 = getConfigValue('makerNumber', 'labManager.sqlite')
-    // var promise2 = getConfigValue('personInCharge', 'labManager.sqlite')
-    
-    // .then((maker) => {
-    //   this.makerNumber = maker
-    // })
-    // .then((person) => {
-    //   this.personInCharge = person
-    // })
-    // getConfigValue('companyName', 'labManager.sqlite').then((company) => {
-    //   this.companyName = company
-    // })
   },
   mounted () {
     this.cssText = fs.readFileSync(path.resolve(__static, 'printed.css'), 'UTF-8')
