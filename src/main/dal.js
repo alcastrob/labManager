@@ -123,7 +123,7 @@ export function updateWork(work, fileName) {
     work.PrecioMetal, work.Nombre, work.IdTrabajo])
 }
 
-// Work Indications------------------------------------------------------------
+// Work Indications -----------------------------------------------------------
 
 //Tested
 export function getWorkIndications (workId, fileName) {
@@ -168,7 +168,7 @@ export function updatePriceSum(workId, fileName){
   return runAsync(db, query, [workId, workId])
 }
 
-// Work Tests------------------------------------------------------------------
+// Work Tests -----------------------------------------------------------------
 
 //Tested
 export function getWorkTestsList (workId, fileName) {
@@ -560,8 +560,8 @@ export function getConformityDeclaration (workId, fileName) {
 export function insertConformityDeclaration(conformity, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses) ' +
-  'VALUES (?, ?, ?) '
-  return runAsync(db, query, [conformity.IdTrabajo, conformity.Fecha, conformity.Meses])
+  'VALUES (?, date("now"), ?) '
+  return runAsync(db, query, [conformity.IdTrabajo, conformity.Meses])
 }
 
 // Conformity Declaration Details ---------------------------------------------
@@ -581,7 +581,7 @@ export function deleteConformityDeclarationDetails(conformityId, productId, file
 
 // Products and batches -------------------------------------------------------
 
-function searchProductByName(productName, fileName){
+export function searchProductByName(productName, fileName){
   db = new sqlite3.Database(fileName)
   var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion LIKE ?'
   return allAsync(db, query, ['%' + productName + '%']).then((rows) => {
@@ -589,7 +589,7 @@ function searchProductByName(productName, fileName){
   })
 }
 
-function getProduct(productId, fileName){
+export function getProduct(productId, fileName){
   db = new sqlite3.Database(fileName)
   var query = 'SELECT * FROM ProductosLotes WHERE IdProductoLote = ?'
   return getAsync(db, query, [productId]).then((row) => {
@@ -597,19 +597,19 @@ function getProduct(productId, fileName){
   })
 }
 
-function insertProduct(product, fileName){
+export function insertProduct(product, fileName){
 
 }
 
-function updateProduct(prodcut, fileName){
+export function updateProduct(prodcut, fileName){
 
 }
 
-function deleteProduct(productId, fileName){
+export function deleteProduct(productId, fileName){
 
 }
 
-function getProductList(fileName){
+export function getProductList(fileName){
 
 }
 
@@ -625,7 +625,7 @@ export function getCatalogList (fileName) {
 
 // Config ---------------------------------------------------------------------
 
-//tested
+//Tested
 export function getConfigValue(configKey, fileName){
   db = new sqlite3.Database(fileName)
   var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'

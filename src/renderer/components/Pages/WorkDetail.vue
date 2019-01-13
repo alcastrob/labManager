@@ -52,7 +52,7 @@ npm<template>
         </div> <!-- col-md-6 -->
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
-          <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="readOnly">
+          <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="readOnly" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
             <option disabled value="">Seleccione una opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
@@ -132,18 +132,18 @@ npm<template>
           Este trabajo no tiene una declaración de conformidad previa, por lo que se va a crear una. Por favor, indique los productos y lotes usados en este trabajo, así como el número de meses que aplica la garantía.
         </span><br>
         <label for="meses" class="pt-2">Número de meses de garantía</label>
-        <input type="number" name="meses" value=12 class="form-control">
+        <input type="number" name="meses" v-model="$v.warrantyPeriod.$model" class="form-control" :class="{'is-invalid': $v.warrantyPeriod.$error}">
+        <small class="text-danger" v-if="$v.warrantyPeriod.$error">Es necesario especificar un número entero y positivo de meses.</small>
         <label for="tablaProductos" class="pt-3">Productos y Lotes incluidos</label>
         <ul>
           <li v-for="batch in batches" v-bind:key="batch.IdProductoLote" class="batchLine">{{batch.Descripcion}} <i class="fas fa-times-circle" @click="deleteBatch(batch.IdProductoLote)"></i></li>
         </ul>
         <label for="nombreProctoABuscar" class="pt-3">Producto y lote a añadir:</label>
-        <productSearch name="nombreProductoABuscar"></productSearch>
-        <!-- <input type="text" name="nombreProductoABuscar" class="form-control"> -->
+        <productSearch name="nombreProductoABuscar" @change="addBatch()" v-model="batchQueryResult"></productSearch>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" @click="$refs.conformityModal.hide()"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
-        <button class="btn btn-secondary" @click=""><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Crear e imprimir</button>
+        <button class="btn btn-secondary" :disabled="warrantyPeriod === '' || $v.warrantyPeriod.$error" @click="createDeclarationOfConformity"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Crear e imprimir</button>
       </div>
     </b-modal>
     <div ref="labelContainer"></div>
@@ -155,7 +155,7 @@ npm<template>
 import Vue from 'vue'
 import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConformityDeclaration, insertConformityDeclaration, getConformityDeclarationDetails, insertConformityDeclarationDetails, getConfigValues } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
-import { decimal } from 'vuelidate/lib/validators'
+import { decimal, integer, minValue } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
 import conformity from '../Labels/Conformity'
 import delivery from '../Labels/Delivery'
@@ -174,7 +174,9 @@ export default {
       printedLabel: '',
       workTests: [],
       readOnly: false,
-      batches: []
+      batches: [],
+      batchQueryResult: '',
+      warrantyPeriod: 12
     }
   },
   validations: {
@@ -189,6 +191,10 @@ export default {
       FechaEntrada: { },
       FechaPrevista: { },
       FechaTerminacion: { }
+    },
+    warrantyPeriod: { 
+      integer, 
+      minValue: minValue(0) 
     }
   },
   methods: {
@@ -259,33 +265,47 @@ export default {
       })
 
       allPromises.then((dec) => {
-        debugger
         var instance
         if (dec.declarationData.data !== undefined){
           //1. Check if the note exists -> Use its data
           instance = new ComponentClass({
-          propsData: {
-            conformityDeclaration: dec.declarationData.data,
-            conformityDeclarationDetails: dec.declarationData.details,
-            makerNumber: dec.makerNumber,
-            personInCharge: dec.personInCharge,
-            companyName: dec.companyName
-          }
-        })
+            propsData: {
+              conformityDeclaration: dec.declarationData.data,
+              conformityDeclarationDetails: dec.declarationData.details,
+              makerNumber: dec.makerNumber,
+              personInCharge: dec.personInCharge,
+              companyName: dec.companyName
+            }
+          })
+          instance.$mount()
+          this.$refs.labelContainer.appendChild(instance.$el)
+          instance.print()
+          this.$refs.labelContainer.removeChild(instance.$el)
         } else {
-          //2. If not, ask the user for the warranty months and create it -> Use its data
+          //2. If not, ask the user for the warranty period and the batches and products, and create the note.
           this.$refs.conformityModal.show()
+          // After the Print button is clicked on the modal, the process will continue
         }
-        instance.$mount()
-        this.$refs.labelContainer.appendChild(instance.$el)
-        instance.print()
-        this.$refs.labelContainer.removeChild(instance.$el)
+      })
+    },
+    createDeclarationOfConformity: function () {
+      debugger
+      insertConformityDeclaration({
+        IdTrabajo: this.work.IdTrabajo,
+        Meses: this.warrantyPeriod}, 'labManager.sqlite').then(() => {
+        //Get the just inserted Id
       })
     },
     deleteBatch(idProductoLote){
       this.batches = _.remove(this.batches, function(element) {
         return element.IdProductoLote !== idProductoLote
       })
+    },
+    addBatch(){
+      debugger
+      if (_.find(this.batches, ['IdProductoLote', this.batchQueryResult.IdProductoLote]) === undefined) {
+        this.batches.push(this.batchQueryResult)
+      }
     }
   },
   created () {
@@ -308,13 +328,6 @@ export default {
     getWorkTestsList(this.work.IdTrabajo, 'labManager.sqlite').then((workTests) => {
       this.workTests = workTests
     })
-    this.batches = [{
-      IdProductoLote: 1,
-      Descripcion: 'Producto 1'
-    }, {
-      IdProductoLote: 2,
-      Descripcion: 'Producto 2'
-    }]
   }
 }
 </script>

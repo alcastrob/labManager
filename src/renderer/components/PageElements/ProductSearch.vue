@@ -1,10 +1,9 @@
 <template>
   <div class="input-group">
-    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica" :class="{'is-invalid': isInvalid}" :disabled="$attrs.disabled === true">
+    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-model="query" v-on-clickaway="hidePopup" ref="producto" :class="{'is-invalid': isInvalid}" :disabled="$attrs.disabled === true">
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
-      <!-- <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo producto y lote</span> -->
-      <div v-for="dentist in candidateDentistsFromQuery" :key='dentist.IdDentista'>
-        <span class="list-group-item clickable" v-on:click="selectDentist(dentist.NombreDentista, dentist.IdDentista)">{{dentist.NombreDentista}}</span>
+      <div v-for="product in candidateProductFromQuery" :key='product.IdProductoLote'>
+        <span class="list-group-item clickable" v-on:click="selectProduct(product.Descripcion, product.IdProductoLote)">{{product.Descripcion}}</span>
       </div>
     </div>
   </div>
@@ -22,7 +21,7 @@ export default {
     return {
       resultsVisible: false,
       query: '',
-      candidateDentistsFromQuery: [],
+      candidateProductFromQuery: [],
       focus: false
     }
   },
@@ -32,32 +31,23 @@ export default {
       this.resultsVisible = true
       this.focus = true
       if (this.query.length > 3) {
-        searchProductByName(this.query, 'labManager.sqlite').then((dentistDetails) => {
-          this.candidateDentistsFromQuery = dentistDetails
+        searchProductByName(this.query, 'labManager.sqlite').then((productDetails) => {
+          this.candidateProductFromQuery = productDetails
         })
       } else {
-        this.candidateDentistsFromQuery = []
+        this.candidateProductFromQuery = []
         this.$emit('input', -1)
       }
     },
-    selectDentist: function(name, id) {
-      this.query = name
+    selectProduct: function(name, id) {
+      this.query = ''
       this.resultsVisible = false
-      this.$emit('input', id)
-    },
-    createNew: function(name) {
-      this.$router.push({
-        path: '/dentists/new',
-        query: {
-          name: name
-        }
-      })
-    },
-    canCreate: function(name) {
-      return !(_.some(this.candidateDentistsFromQuery, {'NombreDentista': name}))
+      this.$emit('input', {IdProductoLote: id, Descripcion: name})
+      this.$emit('change', null)
+      this.hidePopup()
     },
     canDisplayDropdown: function() {
-      this.resultVisible =  (this.query !== '' && this.canCreate(this.query) && this.focus)
+      this.resultVisible =  (this.query !== '' && this.focus)
       return this.resultVisible
     },
     hidePopup: function() {
@@ -65,7 +55,7 @@ export default {
     }
   },
   mounted () {
-    this.$refs.clinica.focus()
+    this.$refs.producto.focus()
     this.$watch('value', function (newVal, oldVal) {
       getProduct(newVal, 'labManager.sqlite').then((dentistDetail) => {
         if (dentistDetail !== undefined) {
