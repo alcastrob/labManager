@@ -46,27 +46,18 @@ export default {
       this.$emit('input', {IdProductoLote: id, Descripcion: name})
       this.$emit('change', null)
       this.hidePopup()
+      this.$refs.producto.focus()
     },
     createNew: function() {
       searchProductByExactName(this.query, 'labManager.sqlite').then((row) => {
-        debugger
         if (row.length === 0) {
           //It's time to create the new product and batch
           insertProduct(this.query, 'labManager.sqlite').then((id) => {
             debugger
             this.selectProduct(this.query, id)
           })
-
-        } else {
-          //It's an existing product and batch. Don't insert a thing on the table.
         }
-        })
-      // this.$router.push({
-      //   path: '/dentists/new',
-      //   query: {
-      //     name: name
-      //   }
-      // })
+      })
     },
     canDisplayDropdown: function() {
       this.resultVisible =  (this.query !== '' && this.focus)
@@ -74,6 +65,9 @@ export default {
     },
     hidePopup: function() {
       this.focus = false
+    },
+    clear: function() {
+      this.query = ''
     }
   },
   mounted () {

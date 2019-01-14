@@ -7,16 +7,17 @@
         </span>
         <span v-else>
         Este trabajo ya tiene una declaración de conformidad previa. Cualquier cambio que haga en esta información se guardará al imprimir de nuevo la declaración.
-        </span>
+        </span><br>
         <label for="meses" class="pt-4">Número de meses de garantía</label>
         <input type="number" name="meses" v-model="$v.warrantyPeriod.$model" class="form-control" :class="{'is-invalid': $v.warrantyPeriod.$error}" @change="isDirty=true">
         <small class="text-danger" v-if="$v.warrantyPeriod.$error">Es necesario especificar un número entero y positivo de meses.</small>
         <label for="tablaProductos" class="pt-3">Productos y Lotes incluidos</label>
-        <ul>
+        <ul v-if="batches.length>0">
           <li v-for="batch in batches" v-bind:key="batch.IdProductoLote" class="batchLine">{{batch.Descripcion}} <i class="fas fa-times-circle" @click="deleteBatch(batch.IdProductoLote)"></i></li>
         </ul>
-        <label for="nombreProductoABuscar" class="pt-3">Producto y lote a añadir:</label>
-        <productSearch name="nombreProductoABuscar" @change="addBatch()" v-model="batchQueryResult"></productSearch>
+        <div v-else class="pl-5 text-danger">Ninguno<br></div>
+        <label for="nombreProductoABuscar" class="pt-3">Producto y lote a añadir</label>
+        <productSearch name="nombreProductoABuscar" @change="addBatch()" v-model="batchQueryResult" ref="productSearch"></productSearch>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" @click="$refs.conformityModal.hide()"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
@@ -24,7 +25,7 @@
         <button v-else class="btn btn-secondary" :disabled="warrantyPeriod === '' || $v.warrantyPeriod.$error" @click="updateDeclarationOfConformity"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir y guardar</button>
       </div>
     </b-modal>
-    <div ref="labelContainer"></div>
+    <div ref="labelContainer" class="invisible"></div>
   </div>
 </template>
 
@@ -32,7 +33,7 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import { decimal, integer, minValue } from 'vuelidate/lib/validators'
-import { getConformityDeclaration, insertConformityDeclaration, insertConformityDeclarationDetails, getConfigValues, updateConformityDeclaration } from '../../../main/dal.js'
+import { getConformityDeclaration, insertConformityDeclaration, updateConformityDeclaration, getConfigValues } from '../../../main/dal.js'
 import conformityLabel from '../Labels/Conformity'
 import bModal from 'bootstrap-vue'
 import productSearch from '../PageElements/ProductSearch'
@@ -53,12 +54,14 @@ export default {
     return {
       batches: [],
       batchQueryResult: '',
+      declarationId: -1,
       warrantyPeriod: 12,
       date: '',
       isDirty: false,
       makerNumber: '',
       personInCharge: '',
       companyName: '',
+      logo: '',
       editing: false
     }
   },
@@ -73,8 +76,11 @@ export default {
       this.date = ''
       this.batches = []
       this.batchQueryResult = ''
+      this.$refs.productSearch.clear()
       this.warrantyPeriod = 12
+      this.declarationId = -1
       this.isDirty = false
+      this.logo = ''
       this.$refs.conformityModal.show()
       this.getDeclarationOfConformity()
     },
@@ -83,7 +89,7 @@ export default {
     },
     getDeclarationOfConformity: function () {
       var promise1 = getConformityDeclaration(this.workId, 'labManager.sqlite')
-      var promise2 = getConfigValues(['makerNumber', 'personInCharge', 'companyName'], 'labManager.sqlite')
+      var promise2 = getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'], 'labManager.sqlite')
 
       var allPromises = new Promise(function(resolve, reject) {
         Promise.all([promise1, promise2]).then((rows) => {
@@ -91,7 +97,8 @@ export default {
             declarationData: rows[0],
             makerNumber:  _.find(rows[1], ['clave', 'makerNumber']).valor,
             personInCharge: _.find(rows[1], ['clave', 'personInCharge']).valor,
-            companyName: _.find(rows[1], ['clave', 'companyName']).valor
+            companyName: _.find(rows[1], ['clave', 'companyName']).valor,
+            logo: _.find(rows[1], ['clave', 'logo']).valor
           })
         })
       })
@@ -101,10 +108,12 @@ export default {
         this.makerNumber = dec.makerNumber
         this.personInCharge = dec.personInCharge
         this.companyName = dec.companyName
+        this.logo = dec.logo
 
         //2. Now check if the note exists -> Use its data
         if (dec.declarationData.data !== undefined){
           this.editing = true
+          this.declarationId = dec.declarationData.data.IdDeclaracion
           this.date = dec.declarationData.data.Fecha
           this.warrantyPeriod = dec.declarationData.data.Meses
           this.batches = _.map(dec.declarationData.details, (value) => {
@@ -136,14 +145,12 @@ export default {
       })
     },
     updateDeclarationOfConformity: function () {
-      debugger
       if (this.isDirty){
-        updateConformityDeclaration(
-          {
-            IdTrabajo: this.workId,
-            Meses: this.warrantyPeriod
-          },
-          _.map(this.batches, 'IdProductoLote'),
+        var dec = {
+          IdDeclaracion: this.declarationId,
+          Meses: this.warrantyPeriod
+        }
+        updateConformityDeclaration(dec,  _.map(this.batches, 'IdProductoLote'),
           'labManager.sqlite')
         .then(() => {
           getConformityDeclaration(this.workId, 'labManager.sqlite').then((row) => {
@@ -161,19 +168,18 @@ export default {
     },
     print(conformity){
       var ComponentClass = Vue.extend(conformityLabel)
-        var instance = new ComponentClass({
-          propsData: {
-            conformityDeclaration: conformity.data,
-            conformityDeclarationDetails: conformity.details,
-            makerNumber: this.makerNumber,
-            personInCharge: this.personInCharge,
-            companyName: this.companyName
-          }
-        })
-        instance.$mount()
-        this.$refs.labelContainer.appendChild(instance.$el)
-        instance.print()
-        this.$refs.labelContainer.removeChild(instance.$el)
+      var instance = new ComponentClass({
+        propsData: {
+          conformityDeclaration: conformity.data,
+          conformityDeclarationDetails: conformity.details,
+          makerNumber: this.makerNumber,
+          personInCharge: this.personInCharge,
+          companyName: this.companyName,
+          logo: 'data:image/png;base64,' + this.logo
+        }
+      })
+      instance.$mount()
+      instance.print(this.$refs.labelContainer)
     },
     deleteBatch(idProductoLote){
       this.batches = _.remove(this.batches, function(element) {

@@ -557,51 +557,41 @@ export function getConformityDeclaration (workId, fileName) {
   })
 }
 
-
+//Tested
 export function insertConformityDeclaration(conformity, productIds, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses) ' +
   'VALUES (?, date("now"), ?) '
   return runAsync(db, query, [conformity.IdTrabajo, conformity.Meses]).then((conformityId) => {
-    insertDeclarationProducts(conformityId, productsIds)
+    return insertDeclarationProducts(conformityId, productIds)
   })
 }
 
+//Tested
 export function updateConformityDeclaration(conformity, productsIds, fileName){
-  debugger
   db = new sqlite3.Database(fileName)
-  var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ? WHERE IdTrabajo = ?'
-  return runAsync(db, query, [conformity.IdTrabajo, conformity.Meses]).then(() => {
-    debugger
+  var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ? WHERE IdDeclaracion = ?'
+  return runAsync(db, query, [conformity.Meses, conformity.IdDeclaracion]).then(() => {
     var query2 = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
-    runAsync(db, query2, [conformity.IdDeclaracion]).then(() => {
-      insertDeclarationProducts(conformity.IdDeclaracion, productsIds)
+    return runAsync(db, query2, [conformity.IdDeclaracion]).then(() => {
+      return insertDeclarationProducts(conformity.IdDeclaracion, productsIds)
     })
   })
 }
 
+//Tested
 function insertDeclarationProducts(conformityId, productsIds){
   var promises = []
-    for (var productId of productsIds){
-      var query2 = 'INSERT INTO DeclaracionProductos (IdDeclaracion, IdProductoLote) VALUES (?, ?)'
-      promises.push(runAsync(db, query2, [conformityId, productId]).then((id) => {return id}))
-    }
-    var bigPromise = new Promise(function(resolve) {
-      Promise.all(promises).then((rows) => {
-        resolve({})
-      })
+  for (var productId of productsIds){
+    var query2 = 'INSERT INTO DeclaracionProductos (IdDeclaracion, IdProductoLote) VALUES (?, ?)'
+    promises.push(runAsync(db, query2, [conformityId, productId]).then((id) => {return id}))
+  }
+  return new Promise(function(resolve) {
+    Promise.all(promises).then((rows) => {
+      resolve({data: rows})
     })
+  })
 }
-
-// Conformity Declaration Details ---------------------------------------------
-
-export function deleteConformityDeclarationDetails(conformityId, productId, fileName) {
-  db = new sqlite3.Database(fileName)
-  var query = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
-  return runAsync(db, query, [conformityId])
-}
-
-
 
 // Products and batches -------------------------------------------------------
 

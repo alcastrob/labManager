@@ -7,7 +7,8 @@
       </span>
     </div>
     <div class="col-sm-6">
-      Poner el logo aquí<br>
+      <img @load="logoLoaded" :src="logo">
+      <br>
       Nº de Fabricante: {{makerNumber}}
     </div>
   </div> <!-- row -->
@@ -77,7 +78,7 @@
     <div class="col-sm-6">
       Instrucciones de uso:
       <ul>
-        <li>No la lave con productos corrosivos (lejía, amoníaco, alcohol, etc)</li>
+        <li>No la lave con productos corrosivos (lejía, amoníaco, alcohol, etc.).</li>
         <li>Este producto no debe ser limpiado nunca ni frotado en la zona de contacto con la encía.</li>
         <li>No puede ser retocado, ni manipulado porque pierde su finalidad prevista.</li>
         <li>No debe ser pegado con ningún tipo de pegamento, ya que altera el producto.</li>
@@ -97,7 +98,9 @@ export default {
   name: 'conformityLabel',
   data () {
     return {
-      cssText: ''
+      cssText: '',
+      imgLoaded: false,
+      container: null
     }
   },
   props: {
@@ -120,13 +123,31 @@ export default {
     companyName: {
       type: String,
       required: true
+    },
+    logo: {
+      type: String,
+      required: true
     }
   },
   methods: {
-    print () {
-      this.$forceUpdate()
-      const d = new Printd()
-      d.print(this.$el, this.cssText)
+    logoLoaded() {
+      this.imgLoaded = true
+    },
+    print (container) {
+      this.container = container
+      this.container.appendChild(this.$el)
+      this.waitLogoAndPrint()
+    },
+    waitLogoAndPrint(){
+      if (!this.imgLoaded) {
+        window.setTimeout(this.waitLogoAndPrint, 1000)
+        return
+      } else {
+        this.$forceUpdate()
+        const d = new Printd()
+        d.print(this.$el, this.cssText)
+        this.container.removeChild(this.$el)
+      }
     },
     format(date) {
       return moment(date).format('DD/MM/YYYY')
