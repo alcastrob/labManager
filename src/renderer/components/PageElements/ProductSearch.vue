@@ -2,6 +2,7 @@
   <div class="input-group">
     <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-model="query" v-on-clickaway="hidePopup" ref="producto" :class="{'is-invalid': isInvalid}" :disabled="$attrs.disabled === true">
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
+      <span class="list-group-item clickable" v-on:click="createNew"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo producto y lote</span>
       <div v-for="product in candidateProductFromQuery" :key='product.IdProductoLote'>
         <span class="list-group-item clickable" v-on:click="selectProduct(product.Descripcion, product.IdProductoLote)">{{product.Descripcion}}</span>
       </div>
@@ -10,7 +11,7 @@
 </template>
 
 <script>
-import { searchProductByName, getProduct } from '../../../main/dal.js'
+import { searchProductsByName, searchProductByExactName, getProduct, insertProduct } from '../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 
@@ -31,7 +32,7 @@ export default {
       this.resultsVisible = true
       this.focus = true
       if (this.query.length > 3) {
-        searchProductByName(this.query, 'labManager.sqlite').then((productDetails) => {
+        searchProductsByName(this.query, 'labManager.sqlite').then((productDetails) => {
           this.candidateProductFromQuery = productDetails
         })
       } else {
@@ -45,6 +46,27 @@ export default {
       this.$emit('input', {IdProductoLote: id, Descripcion: name})
       this.$emit('change', null)
       this.hidePopup()
+    },
+    createNew: function() {
+      searchProductByExactName(this.query, 'labManager.sqlite').then((row) => {
+        debugger
+        if (row.length === 0) {
+          //It's time to create the new product and batch
+          insertProduct(this.query, 'labManager.sqlite').then((id) => {
+            debugger
+            this.selectProduct(this.query, id)
+          })
+
+        } else {
+          //It's an existing product and batch. Don't insert a thing on the table.
+        }
+        })
+      // this.$router.push({
+      //   path: '/dentists/new',
+      //   query: {
+      //     name: name
+      //   }
+      // })
     },
     canDisplayDropdown: function() {
       this.resultVisible =  (this.query !== '' && this.focus)

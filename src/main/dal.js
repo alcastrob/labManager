@@ -557,33 +557,67 @@ export function getConformityDeclaration (workId, fileName) {
   })
 }
 
-export function insertConformityDeclaration(conformity, fileName) {
+
+export function insertConformityDeclaration(conformity, productIds, fileName) {
   db = new sqlite3.Database(fileName)
   var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses) ' +
   'VALUES (?, date("now"), ?) '
-  return runAsync(db, query, [conformity.IdTrabajo, conformity.Meses])
+  return runAsync(db, query, [conformity.IdTrabajo, conformity.Meses]).then((conformityId) => {
+    insertDeclarationProducts(conformityId, productsIds)
+  })
+}
+
+export function updateConformityDeclaration(conformity, productsIds, fileName){
+  debugger
+  db = new sqlite3.Database(fileName)
+  var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ? WHERE IdTrabajo = ?'
+  return runAsync(db, query, [conformity.IdTrabajo, conformity.Meses]).then(() => {
+    debugger
+    var query2 = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
+    runAsync(db, query2, [conformity.IdDeclaracion]).then(() => {
+      insertDeclarationProducts(conformity.IdDeclaracion, productsIds)
+    })
+  })
+}
+
+function insertDeclarationProducts(conformityId, productsIds){
+  var promises = []
+    for (var productId of productsIds){
+      var query2 = 'INSERT INTO DeclaracionProductos (IdDeclaracion, IdProductoLote) VALUES (?, ?)'
+      promises.push(runAsync(db, query2, [conformityId, productId]).then((id) => {return id}))
+    }
+    var bigPromise = new Promise(function(resolve) {
+      Promise.all(promises).then((rows) => {
+        resolve({})
+      })
+    })
 }
 
 // Conformity Declaration Details ---------------------------------------------
 
-export function insertConformityDeclarationDetails(conformityId, productId, fileName) {
-  db = new sqlite3.Database(fileName)
-  var query = 'INSERT INTO DeclaracionConformidad (IdDeclaracion, IdProductoLote) ' +
-  'VALUES (?, ?) '
-  return runAsync(db, query, [conformityId, productId])
-}
-
 export function deleteConformityDeclarationDetails(conformityId, productId, fileName) {
   db = new sqlite3.Database(fileName)
-  var query = 'DELETE FROM DeclaracionConformidad WHERE IdDeclaracion = ? AND IdProductoLote = ?'
-  return runAsync(db, query, [conformityId, productId])
+  var query = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
+  return runAsync(db, query, [conformityId])
 }
+
+
 
 // Products and batches -------------------------------------------------------
 
-export function searchProductByName(productName, fileName){
+//Tested
+export function searchProductsByName(productName, fileName){
   db = new sqlite3.Database(fileName)
-  var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion LIKE ?'
+  var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion LIKE ? AND Activo = true'
+  return allAsync(db, query, ['%' + productName + '%']).then((rows) => {
+    return rows
+  })
+}
+
+//Tested
+export function searchProductByExactName(productName, fileName){
+  db = new sqlite3.Database(fileName)
+  var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion = ? AND Activo = true'
   return allAsync(db, query, ['%' + productName + '%']).then((rows) => {
     return rows
   })
@@ -597,11 +631,14 @@ export function getProduct(productId, fileName){
   })
 }
 
-export function insertProduct(product, fileName){
-
+//Tested
+export function insertProduct(productDescription, fileName){
+  db = new sqlite3.Database(fileName)
+  var query = 'INSERT INTO ProductosLotes (Descripcion, Activo) VALUES (?, true)'
+  return runAsync(db, query, [productDescription])
 }
 
-export function updateProduct(prodcut, fileName){
+export function updateProduct(product, fileName){
 
 }
 
@@ -680,21 +717,15 @@ function allAsync (db, sql, params) {
   })
 }
 
-var id
-
 function runAsync (db, sql, params) {
   return new Promise(function (resolve, reject) {
     db.run(sql, params, function (err, row){
       if (err) {
         reject(err)
       } else {
-        resolve(row)
-        id = this.lastID
+        // resolve(row)
+        resolve(this.lastID)
       }
     })
   })
-}
-
-export function getLastId(){
-  return id
 }

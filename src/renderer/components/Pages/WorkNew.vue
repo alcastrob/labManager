@@ -163,7 +163,7 @@
 
 <script>
 
-import { insertWork, getLastId, insertAdjuntsOfWork } from '../../../main/dal.js'
+import { insertWork, insertAdjuntsOfWork } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
 import VueRouter from 'vue-router'
 import workMixin from './WorkMixin'
@@ -189,8 +189,8 @@ export default {
       this.saveButtonPressed = true
       this.$v.$touch()
       if (!this.$v.$invalid){
-        insertWork(this.work, 'labManager.sqlite').then(() => {
-          this.work.IdTrabajo = getLastId()
+        insertWork(this.work, 'labManager.sqlite').then((id) => {
+          this.work.IdTrabajo = id
           this.$refs.workIndications.save(this.work.IdTrabajo)
         })
         if(this.adjunctsVisible){

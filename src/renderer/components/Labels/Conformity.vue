@@ -94,7 +94,7 @@ var path = require('path')
 var fs = require('fs')
 
 export default {
-  name: 'conformity',
+  name: 'conformityLabel',
   data () {
     return {
       cssText: ''

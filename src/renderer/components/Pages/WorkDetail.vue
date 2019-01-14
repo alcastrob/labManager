@@ -1,4 +1,4 @@
-npm<template>
+<template>
   <div>
     <div class="container">
       <div class="row">
@@ -9,7 +9,7 @@ npm<template>
           <div class="float-right">
             <div>
               <collapsable-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible && !readOnly"></collapsable-action-button>
-              <collapsable-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="getDeclarationOfConformity"></collapsable-action-button>
+              <collapsable-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="showConformity"></collapsable-action-button>
               <collapsable-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote"></collapsable-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
@@ -126,57 +126,32 @@ npm<template>
         <button class="btn btn-secondary" @click="printLabelAndHide"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir</button>
       </div>
     </b-modal>
-    <b-modal ref="conformityModal" title="Declaración de Conformidad" hide-footer>
-      <div class="modal-body">
-        <span>
-          Este trabajo no tiene una declaración de conformidad previa, por lo que se va a crear una. Por favor, indique los productos y lotes usados en este trabajo, así como el número de meses que aplica la garantía.
-        </span><br>
-        <label for="meses" class="pt-2">Número de meses de garantía</label>
-        <input type="number" name="meses" v-model="$v.warrantyPeriod.$model" class="form-control" :class="{'is-invalid': $v.warrantyPeriod.$error}">
-        <small class="text-danger" v-if="$v.warrantyPeriod.$error">Es necesario especificar un número entero y positivo de meses.</small>
-        <label for="tablaProductos" class="pt-3">Productos y Lotes incluidos</label>
-        <ul>
-          <li v-for="batch in batches" v-bind:key="batch.IdProductoLote" class="batchLine">{{batch.Descripcion}} <i class="fas fa-times-circle" @click="deleteBatch(batch.IdProductoLote)"></i></li>
-        </ul>
-        <label for="nombreProctoABuscar" class="pt-3">Producto y lote a añadir:</label>
-        <productSearch name="nombreProductoABuscar" @change="addBatch()" v-model="batchQueryResult"></productSearch>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="$refs.conformityModal.hide()"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
-        <button class="btn btn-secondary" :disabled="warrantyPeriod === '' || $v.warrantyPeriod.$error" @click="createDeclarationOfConformity"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Crear e imprimir</button>
-      </div>
-    </b-modal>
+    <conformityModal ref="conformity" :workId="work.IdTrabajo"></conformityModal>
     <div ref="labelContainer"></div>
   </div>
 </template>
 
 <script>
-
 import Vue from 'vue'
-import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConformityDeclaration, insertConformityDeclaration, getConformityDeclarationDetails, insertConformityDeclarationDetails, getConfigValues } from '../../../main/dal.js'
-import { validId } from '../Validators/validId.js'
-import { decimal, integer, minValue } from 'vuelidate/lib/validators'
-import workMixin from './WorkMixin'
-import conformity from '../Labels/Conformity'
-import delivery from '../Labels/Delivery'
-import productSearch from '../PageElements/ProductSearch'
 import _ from 'lodash'
+import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork } from '../../../main/dal.js'
+import { validId } from '../Validators/validId.js'
+import { decimal } from 'vuelidate/lib/validators'
+import workMixin from './WorkMixin'
+import delivery from '../Labels/Delivery'
+import conformityModal from '../PageElements/ConformityModal'
 
 export default {
   name: 'workDetail',
   mixins: [workMixin],
   components: {
-    conformity,
-    productSearch
+    conformityModal
   },
   data () {
     return {
       printedLabel: '',
       workTests: [],
-      readOnly: false,
-      batches: [],
-      batchQueryResult: '',
-      warrantyPeriod: 12
+      readOnly: false
     }
   },
   validations: {
@@ -191,10 +166,6 @@ export default {
       FechaEntrada: { },
       FechaPrevista: { },
       FechaTerminacion: { }
-    },
-    warrantyPeriod: { 
-      integer, 
-      minValue: minValue(0) 
     }
   },
   methods: {
@@ -247,65 +218,8 @@ export default {
       instance.print()
       this.$refs.labelContainer.removeChild(instance.$el)
     },
-    getDeclarationOfConformity: function () {
-      var ComponentClass = Vue.extend(conformity)
-      var currenDetails = null
-      var promise1 = getConformityDeclaration(this.work.IdTrabajo, 'labManager.sqlite')
-      var promise2 = getConfigValues(['makerNumber', 'personInCharge', 'companyName'], 'labManager.sqlite')
-
-      var allPromises = new Promise(function(resolve, reject) {
-        Promise.all([promise1, promise2]).then((rows) => {
-          resolve({
-            declarationData: rows[0],
-            makerNumber:  _.find(rows[1], ['clave', 'makerNumber']).valor,
-            personInCharge: _.find(rows[1], ['clave', 'personInCharge']).valor,
-            companyName: _.find(rows[1], ['clave', 'companyName']).valor
-          })
-        })
-      })
-
-      allPromises.then((dec) => {
-        var instance
-        if (dec.declarationData.data !== undefined){
-          //1. Check if the note exists -> Use its data
-          instance = new ComponentClass({
-            propsData: {
-              conformityDeclaration: dec.declarationData.data,
-              conformityDeclarationDetails: dec.declarationData.details,
-              makerNumber: dec.makerNumber,
-              personInCharge: dec.personInCharge,
-              companyName: dec.companyName
-            }
-          })
-          instance.$mount()
-          this.$refs.labelContainer.appendChild(instance.$el)
-          instance.print()
-          this.$refs.labelContainer.removeChild(instance.$el)
-        } else {
-          //2. If not, ask the user for the warranty period and the batches and products, and create the note.
-          this.$refs.conformityModal.show()
-          // After the Print button is clicked on the modal, the process will continue
-        }
-      })
-    },
-    createDeclarationOfConformity: function () {
-      debugger
-      insertConformityDeclaration({
-        IdTrabajo: this.work.IdTrabajo,
-        Meses: this.warrantyPeriod}, 'labManager.sqlite').then(() => {
-        //Get the just inserted Id
-      })
-    },
-    deleteBatch(idProductoLote){
-      this.batches = _.remove(this.batches, function(element) {
-        return element.IdProductoLote !== idProductoLote
-      })
-    },
-    addBatch(){
-      debugger
-      if (_.find(this.batches, ['IdProductoLote', this.batchQueryResult.IdProductoLote]) === undefined) {
-        this.batches.push(this.batchQueryResult)
-      }
+    showConformity(){
+      this.$refs.conformity.show()
     }
   },
   created () {
@@ -331,12 +245,3 @@ export default {
   }
 }
 </script>
-<style>
-.batchLine i {
-  visibility: hidden;
-}
-
-.batchLine:hover i {
-  visibility: visible;
-}
-</style>
