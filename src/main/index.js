@@ -8,7 +8,7 @@ import {
 } from 'electron'
 
 import VueRouter from 'vue-router'
-
+const { dialog } = require('electron')
 var path = require('path')
 
 /**
@@ -247,6 +247,16 @@ ipcMain.on("quitAndInstall", (event, arg) => {
 })
 
 app.on('ready', () => {
-  log.debug('Enter on ready')
-  if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
+  // autoUpdater.checkForUpdates()
+  // if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
+})
+
+// when the update has been downloaded and is ready to be installed, notify the BrowserWindow
+autoUpdater.on('update-downloaded', (info) => {
+  mainWindow.webContents.send('updateReady')
+});
+
+// when receiving a quitAndInstall signal, quit and install the new version ;)
+ipcMain.on("quitAndInstall", (event, arg) => {
+  autoUpdater.quitAndInstall();
 })
