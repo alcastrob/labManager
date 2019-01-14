@@ -127,14 +127,14 @@
       </div>
     </b-modal>
     <conformityModal ref="conformity" :workId="work.IdTrabajo"></conformityModal>
-    <div ref="labelContainer"></div>
+    <div ref="labelContainer" class="invisible"></div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
 import _ from 'lodash'
-import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork } from '../../../main/dal.js'
+import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConfigValues } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
 import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
@@ -202,21 +202,26 @@ export default {
       this.hideModal()
     },
     getDeliveryNote: function () {
-      var ComponentClass = Vue.extend(delivery)
-      var instance = new ComponentClass({
-        propsData: {
-          IdTrabajo: this.work.IdTrabajo,
-          NombreDentista: this.work.NombreDentista,
-          Paciente: this.work.Paciente,
-          FechaTerminacion: new Date(this.work.FechaTerminacion),
-          Detalles: this.workIndications,
-          PrecioFinal: this.work.PrecioFinal
-        }
+      getConfigValues(['logo'], 'labManager.sqlite').then((row) => {
+        var ComponentClass = Vue.extend(delivery)
+        var instance = new ComponentClass({
+          propsData: {
+            IdTrabajo: this.work.IdTrabajo,
+            NombreDentista: this.work.NombreDentista,
+            Paciente: this.work.Paciente,
+            FechaTerminacion: new Date(this.work.FechaTerminacion),
+            Detalles: this.workIndications,
+            PrecioFinal: this.work.PrecioFinal,
+            logo: 'data:image/png;base64,' + row[0].valor
+          }
+        })
+
+        instance.$mount()
+        instance.print(this.$refs.labelContainer)
       })
-      instance.$mount()
-      this.$refs.labelContainer.appendChild(instance.$el)
-      instance.print()
-      this.$refs.labelContainer.removeChild(instance.$el)
+      // this.$refs.labelContainer.appendChild(instance.$el)
+      // instance.print()
+      // this.$refs.labelContainer.removeChild(instance.$el)
     },
     showConformity(){
       this.$refs.conformity.show()

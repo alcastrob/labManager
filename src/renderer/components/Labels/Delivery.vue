@@ -6,7 +6,8 @@
       Nº ALBARÁN: {{IdTrabajo}}
     </div>
     <div class="col-sm-6">
-      Poner el logo aquí<br>
+      <img @load="logoLoaded" :src="logo">
+      <br>
     </div>
   </div> <!-- row -->
   <div class="row">
@@ -66,7 +67,9 @@ export default {
       moneyFormatter: new Intl.NumberFormat('es-ES', {
         style: 'currency',
         currency: 'EUR'
-      })
+      }),
+      imgLoaded: false,
+      container: null
     }
   },
   props: {
@@ -93,13 +96,31 @@ export default {
     PrecioFinal: {
       type: Number,
       required: true
+    },
+    logo: {
+      type: String,
+      required: true
     }
   },
   methods: {
-    print () {
-      this.$forceUpdate()
-      const d = new Printd()
-      d.print(this.$el, this.cssText)
+    logoLoaded() {
+      this.imgLoaded = true
+    },
+    print (container) {
+      this.container = container
+      this.container.appendChild(this.$el)
+      this.waitLogoAndPrint()
+    },
+    waitLogoAndPrint () {
+      if (!this.imgLoaded) {
+        window.setTimeout(this.waitLogoAndPrint, 1000)
+        return
+      } else {
+        this.$forceUpdate()
+        const d = new Printd()
+        d.print(this.$el, this.cssText)
+        this.container.removeChild(this.$el)
+      }
     },
     format(FechaTerminacion) {
       return moment(FechaTerminacion).format('DD/MM/YYYY')
