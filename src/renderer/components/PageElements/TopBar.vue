@@ -8,7 +8,7 @@
           Inicio
         </router-link>
       </li>
-      <li class="nav-item no-arrow mx-1">
+      <li class="nav-item no-arrow mx-1" v-if="isBackVisible">
         <a href="#" class="nav-link" role="button" v-on:click="goBack()">
           <i class="fas fa-fw fa-caret-square-left"></i>
           Atrás
@@ -63,17 +63,6 @@ import {getConfigValue} from '../../../main/dal.js'
 
 export default {
   name: 'topBar',
-  methods: {
-    goBack() {
-      var condition1 = (this.from.fullPath === '/finances' && this.to.fullPath.indexOf('/works/list') !== -1)
-      var condition2 = (this.from.fullPath.indexOf('/works/list') !== -1 && this.to.fullPath.indexOf('/works/details/') !== -1 && this.from.query.filter !== undefined)
-      if (condition1 || condition2) {
-        this.$router.go(-2)
-      } else {
-        this.$router.back()
-      }
-    }
-  },
   data() {
     return {
       to: '',
@@ -85,6 +74,34 @@ export default {
     $route(to, from) {
       this.to = to
       this.from = from
+    }
+  },
+  methods: {
+    goBack() {
+      this.$router.push({
+        path: this.from.fullPath
+      })
+    }
+  },
+  computed: {
+    isBackVisible(){
+      switch (this.to.path){
+        case '/works/new':
+        case '/':
+        case '/about':
+        case '/dentists/list':
+        case '/finances':
+        case undefined:
+          return false
+        case '/works/list':
+          if (this.from.path !== '/finances' && ! this.from.path.includes('/dentist/details')){
+            return false
+          } else {
+            return true
+          }
+        default:
+          return true
+      }
     }
   },
   created() {

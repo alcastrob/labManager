@@ -50,8 +50,9 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const https = require('https')
+const { spawn } = require('child_process');
+const remote = require('electron').remote
 import axios from 'axios'
-//const FileDownload = require('js-file-download')
 import _ from 'lodash'
 
 export default {
@@ -110,18 +111,22 @@ export default {
           var request2 = https.get(awsUrl,
             ((response2) => {
               var totalSize = parseInt(response2.headers['content-length'])
-              console.log('Total size: ' + totalSize)
               var currentSize = 0
+              response2.pipe(file)
 
               response2.on('data', (d) => {
                 currentSize += d.length
                 this.downloadedPercentage = Math.round(currentSize*100/totalSize)
-                file.write(d)
-                console.log('Current size: ' + currentSize)
-                //this.$forceUpdate()
               })
               response2.on('end', () => {
                 file.close()
+                //The new process will continue running after the application is shutted down.
+                var installerProcess = spawn(fileName, [], {
+                  detached: true,
+                  stdio: 'ignore'
+                })
+                installerProcess.unref()
+                remote.getCurrentWindow().close()
               })
             })
           )
