@@ -7,15 +7,14 @@ import {
   ipcMain
 } from 'electron'
 
-import VueRouter from 'vue-router'
+// import VueRouter from 'vue-router'
 const {autoUpdater} = require("electron-updater")
-const { dialog } = require('electron')
-const log = require("electron-log")
-log.transports.file.level = 'debug'
-autoUpdater.logger = log
+const path = require('path')
+// const { dialog } = require('electron')
+// const log = require("electron-log")
+// log.transports.file.level = 'debug'
+// autoUpdater.logger = log
 
-
-var path = require('path')
 
 /**
  * Set `__static` path to static files in production
@@ -168,16 +167,7 @@ const menuTemplate = [{
         mainWindow.webContents.send
         ('navigation:navigateTo', {page: '/about'})
       }
-    },
-    {
-      type: 'separator'
-    },
-    {
-      label: 'Buscar actualizaciones',
-      click () {
-        autoUpdater.checkForUpdates()
-      }
-    },
+    }
   ]
 }]
 
