@@ -540,52 +540,11 @@ export async function getConformityDeclaration (workId, fileName) {
   var query2 = 'SELECT * FROM vDeclaracionProductos ' +
     ' WHERE IdTrabajo = ?'
 
-  // var promise1 = getAsync(db, query1, [workId]).then((row) => {
-  //   return row
-  // })
-  // var promise2 = allAsync(db, query2, [workId]).then((row) => {
-  //   return row
-  // })
-
   return {
     data: await getAsync(db, query1, [workId]),
     details: await allAsync(db, query2, [workId])
   }
-
-
-  // return new Promise(function(resolve, reject) {
-  //   Promise.all([promise1, promise2]).then((rows) => {
-  //     resolve({
-  //       data: rows[0],
-  //       details: rows[1]
-  //     })
-  //   })
-  // })
 }
-
-// Tested
-// export function getConformityDeclaration (workId, fileName) {
-//   db = new sqlite3.Database(fileName)
-//   var query1 = 'SELECT * FROM vDeclaracionConformidad WHERE IdTrabajo = ?'
-//   var query2 = 'SELECT * FROM vDeclaracionProductos ' +
-//     ' WHERE IdTrabajo = ?'
-
-//   var promise1 = getAsync(db, query1, [workId]).then((row) => {
-//     return row
-//   })
-//   var promise2 = allAsync(db, query2, [workId]).then((row) => {
-//     return row
-//   })
-
-//   return new Promise(function(resolve, reject) {
-//     Promise.all([promise1, promise2]).then((rows) => {
-//       resolve({
-//         data: rows[0],
-//         details: rows[1]
-//       })
-//     })
-//   })
-// }
 
 //Tested
 export function insertConformityDeclaration(conformity, productIds, fileName) {
@@ -683,33 +642,12 @@ export function getCatalogList (fileName) {
 // Config ---------------------------------------------------------------------
 
 //Tested
-// export function getConfigValue(configKey, fileName){
-//   db = new sqlite3.Database(fileName)
-//   var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
-//   return getAsync(db, query, [configKey]).then((row) => {
-//     return row
-//   })
-// }
-
-//Tested
 export async function getConfigValue(configKey, fileName){
   db = new sqlite3.Database(fileName)
   var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
   return (await getAsync(db, query, [configKey])).valor
 }
 
-//Tested
-// export function getConfigValues(configKeyArray, fileName){
-//   db = new sqlite3.Database(fileName)
-//   var query = 'SELECT * FROM Configuracion WHERE clave IN ('
-//   for (var value of configKeyArray){
-//     query += `"${value}",`
-//   }
-//   query = query.substring(0, query.length - 1) + ')'
-//   return allAsync(db, query, []).then((row) => {
-//     return row
-//   })
-// }
 //Tested
 export async function getConfigValues(configKeyArray, fileName){
   db = new sqlite3.Database(fileName)
@@ -720,7 +658,6 @@ export async function getConfigValues(configKeyArray, fileName){
   query = query.substring(0, query.length - 1) + ')'
   return (await allAsync(db, query, []))
 }
-
 
 export function setConfigValue (configKey, configValue, fileName) {
   db = new sqlite3.Database(fileName)

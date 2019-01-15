@@ -116,48 +116,6 @@ export default {
       this.$refs.conformityModal.show()
 
     },
-    // getDeclarationOfConformity: function () {
-    //   var promise1 = getConformityDeclaration(this.workId, 'labManager.sqlite')
-    //   var promise2 = getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'], 'labManager.sqlite')
-
-    //   var allPromises = new Promise(function(resolve, reject) {
-    //     Promise.all([promise1, promise2]).then((rows) => {
-    //       resolve({
-    //         declarationData: rows[0],
-    //         makerNumber:  _.find(rows[1], ['clave', 'makerNumber']).valor,
-    //         personInCharge: _.find(rows[1], ['clave', 'personInCharge']).valor,
-    //         companyName: _.find(rows[1], ['clave', 'companyName']).valor,
-    //         logo: _.find(rows[1], ['clave', 'logo']).valor
-    //       })
-    //     })
-    //   })
-
-    //   allPromises.then((dec) => {
-    //     //1. Get the config data first
-    //     this.makerNumber = dec.makerNumber
-    //     this.personInCharge = dec.personInCharge
-    //     this.companyName = dec.companyName
-    //     this.logo = dec.logo
-
-    //     //2. Now check if the note exists -> Use its data
-    //     if (dec.declarationData.data !== undefined){
-    //       this.editing = true
-    //       this.declarationId = dec.declarationData.data.IdDeclaracion
-    //       this.date = dec.declarationData.data.Fecha
-    //       this.warrantyPeriod = dec.declarationData.data.Meses
-    //       this.batches = _.map(dec.declarationData.details, (value) => {
-    //         return {
-    //           IdProductoLote: value.IdProductoLote,
-    //           Descripcion: value.Descripcion
-    //         }
-    //       })
-    //     } else {
-    //       //3. If not, ask the user for the warranty period and the batches and products, and create the note.
-    //       this.editing = false
-    //     }
-    //     this.$refs.conformityModal.show()
-    //   })
-    // },
     createDeclarationOfConformity: function () {
       insertConformityDeclaration(
         {
