@@ -65,7 +65,7 @@
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-3">
-        <button class="btn btn-secondary btn-block" v-on:click="save()">
+        <button class="btn btn-secondary btn-block" v-on:click="save">
           <i class="fas fa-save"></i>
           Guardar
         </button>
@@ -223,6 +223,29 @@ export default {
     goBack() {
       this.$router.push({
         path: '/works/list'
+      })
+      this.$toasted.show(`Se ha creado el trabajo ${this.work.IdTrabajo}.`, {
+        position: 'bottom-right',
+        duration: 5000,
+        iconPack: 'fontawesome',
+        icon: {
+          name: 'teeth'
+        },
+        action: [
+          {
+            text: 'Ver',
+            onClick: (e, toastObject) => {
+              this.$router.push({ path: `/works/details/${this.work.IdTrabajo}` })
+              toastObject.goAway(0)
+            }
+          },
+          {
+            text: 'Cerrar',
+            onClick: (e, toastObject) => {
+              toastObject.goAway(0)
+            }
+          }
+        ]
       })
     },
     setBtnPrintEnabled(){

@@ -1,6 +1,6 @@
 <template>
 <div id="table" class="table-editable">
-  <table class="table table-bordered table-responsive-xs table-striped" v-on-clickaway="hidePanel" v-if="data.length>0">
+  <table class="table table-bordered table-responsive-xs table-striped" v-on-clickaway="hidePanel">
     <tr>
       <th style="width: 4%"></th>
       <th class="text-left" style="width: 13%;">Prueba</th>
@@ -97,10 +97,7 @@
         <li>{{deleted.IdPrueba}}|{{deleted.Descripcion}}</li>
       </ul>
     </div> -->
-    <div v-else>
-      <span>No hay pruebas que mostrar</span>
-    </div>
-</div> 
+</div>
 </template>
 
 <script>

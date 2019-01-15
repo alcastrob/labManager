@@ -10,8 +10,10 @@ import 'jquery/dist/jquery.min.js'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import Vue from 'vue'
 import VueSwal from 'vue-swal'
+import VueToasted from 'vue-toasted'
 
 Vue.use(VueSwal)
+Vue.use(VueToasted, { iconPack: 'fontawesome' })
 
 export default {
   name: 'labManager',
