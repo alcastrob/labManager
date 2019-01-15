@@ -6,8 +6,15 @@ var db
 import _ from 'lodash'
 import { configGet } from '../main/store'
 
-export function loadDbFile(){
-  db = new sqlite3.Database(configGet('dataFile'))
+export async function loadDbFile(){
+  try {
+    db = new sqlite3.Database(configGet('dataFile'))
+    var x = await getConfigValue('companyName')
+  } catch (err) {
+    //Looks not to be a good sqlite database. Reject it
+    return false
+  }
+  return true
 }
 
 function createTable () {

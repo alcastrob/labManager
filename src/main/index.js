@@ -4,9 +4,7 @@ import { app, BrowserWindow, Menu, dialog } from 'electron'
 import { checkForUpdates } from './updates'
 const path = require('path')
 const log = require('electron-log')
-// const Store = require('./store')
-import { configGet, configSet } from './store'
-import { loadDbFile } from './dal'
+
 
 /**
  * Set `__static` path to static files in production
@@ -38,8 +36,6 @@ function createWindow () {
 
   const mainMenu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(mainMenu)
-
-  loadDbFile()
 
   checkUpdates()
 }
@@ -196,8 +192,10 @@ function openExistingFile(){
   var filePath = dialog.showOpenDialog({
     properties: ['openFile']
   })
-  configSet('dataFile', filePath[0])
-  loadDbFile()
+  if (filePath !== undefined) {
+    //The user selected a file and did not pressed the Cancel button of the dialog
+    mainWindow.webContents.send('reload:database', filePath[0])
+  }
 }
 
 // const remote = require('remote')

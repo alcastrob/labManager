@@ -6,9 +6,9 @@ var data = {}
 var loaded = false
 
 export function configGet(key){
-  const userDataPath = (electron.app || electron.remote.app).getPath('appData')
-  const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
   if (!loaded){
+    const userDataPath = (electron.app || electron.remote.app).getPath('appData')
+    const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
     data = JSON.parse(fs.readFileSync(filePath))
     loaded = true
   }
