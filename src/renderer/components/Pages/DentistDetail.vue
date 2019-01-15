@@ -169,12 +169,13 @@ export default {
     },
     canBeSaved: function() {
       return this.isDirty && this.data.NombreClinica !== ''
+    },
+    getConfig: async function() {
+      this.isAdmin = await getConfigValue('isAdmin', 'labManager.sqlite')
     }
   },
   created() {
-    getConfigValue('isAdmin', 'labManager.sqlite').then((value) => {
-      this.isAdmin = value
-    })
+    this.getConfig()
   },
   mounted () {
     this.dentistId = this.$route.params.id

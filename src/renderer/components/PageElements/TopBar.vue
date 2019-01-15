@@ -81,6 +81,9 @@ export default {
       this.$router.push({
         path: this.from.fullPath
       })
+    },
+    getConfig: async function() {
+      this.isAdmin = await getConfigValue('isAdmin', 'labManager.sqlite')
     }
   },
   computed: {
@@ -105,9 +108,7 @@ export default {
     }
   },
   created() {
-    getConfigValue('isAdmin', 'labManager.sqlite').then((value) => {
-      this.isAdmin = value
-    })
+    this.getConfig()
   }
 }
 </script>

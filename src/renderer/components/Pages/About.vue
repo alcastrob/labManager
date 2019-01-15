@@ -18,7 +18,7 @@
           Descargar e instalar
         </button>
         <div class="progress mt-4 mb-4" v-else>
-          <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" :style="percentage"></div>
+          <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" :style="downloadedPercentage"></div>
         </div>
 
       </div>
@@ -45,15 +45,7 @@
 </template>
 
 <script>
-const semver = require('semver')
-const path = require('path')
-const os = require('os')
-const fs = require('fs')
-const https = require('https')
-const { spawn } = require('child_process');
-const remote = require('electron').remote
-import axios from 'axios'
-import _ from 'lodash'
+import { checkForUpdates, downloadUpdate } from '../../../main/updates.js'
 
 export default {
   name: 'about',
@@ -67,89 +59,30 @@ export default {
       downloadUrl: '',
       installName: '',
       downloading: false,
-      downloadedPercentage: 0
+      downloadedPercentage: ''
     }
   },
   methods: {
-    getLatestReleaseData(responseReleases){
-      if (responseReleases.status === 200){
-        this.latestVersion = _.map(responseReleases.data, 'tag_name').sort(semver.rcompare)[0]
-        this.newerVersion = semver.gt(this.latestVersion, this.currentVersion)
-        if (this.newerVersion) {
-          var release = _.find(responseReleases.data, ['tag_name', this.latestVersion])
-          var assets = release.assets[0].url
-          this.latestVersionTitle = release.name
-          this.latestVersionDescription = release.body.replace(/\n/g, '<br>')
-
-          axios
-            .get(assets)
-            .then(this.getDownloadLink)
-        } else {
-          this.newerVersion = false
-        }
-      } else {
-        this.newerVersion = false
-      }
-    },
-    getDownloadLink(responseAssets){
-      if (responseAssets.status === 200){
-        this.downloadUrl = responseAssets.data.browser_download_url
-        this.installName = responseAssets.data.name
-      } else {
-        this.newerVersion = false
-      }
-    },
-    download() {
+    download: async function() {
       this.downloading = true
-      var fileName = path.join(os.tmpdir(), this.installName)
-      var file = fs.createWriteStream(fileName, {encoding: 'binary'})
-      //First request is for the 302 to AWS
-      var request = https.get(this.downloadUrl,
-        ((response) => {
-          var awsUrl = response.headers.location
-
-          var request2 = https.get(awsUrl,
-            ((response2) => {
-              var totalSize = parseInt(response2.headers['content-length'])
-              var currentSize = 0
-              response2.pipe(file)
-
-              response2.on('data', (d) => {
-                currentSize += d.length
-                this.downloadedPercentage = Math.round(currentSize*100/totalSize)
-              })
-              response2.on('end', () => {
-                file.close()
-                //The new process will continue running after the application is shutted down.
-                var installerProcess = spawn(fileName, [], {
-                  detached: true,
-                  stdio: 'ignore'
-                })
-                installerProcess.unref()
-                remote.getCurrentWindow().close()
-              })
-            })
-          )
-        })
-      ).on('error', function(err) {
-        debugger
-        fs.unlink(fileName)
-      })
-    }
-  },
-  computed: {
-    percentage: function() {
-      return `width: ${this.downloadedPercentage}%`
+      downloadUpdate(this.downloadUrl, this.installName, this.updatedPercentageCallback)
+    },
+    checkForUpdates: async function() {
+      var updateInfo = await checkForUpdates()
+      this.downloadUrl = updateInfo.downloadUrl
+      this.currentVersion = updateInfo.currentVersion,
+      this.newerVersion = updateInfo.newerVersion,
+      this.latestVersion = updateInfo.latestVersion,
+      this.latestVersionTitle = updateInfo.latestVersionTitle,
+      this.latestVersionDescription = updateInfo.latestVersionDescription,
+      this.installName = updateInfo.fileName
+    },
+    updatedPercentageCallback: function(percentage) {
+      this.downloadedPercentage = `width: ${percentage}%`
     }
   },
   mounted () {
-    this.currentVersion = require('../../../../package.json').version
-    axios
-      .get('https://api.github.com/repos/alcastrob/labManager/releases')
-      .then(this.getLatestReleaseData)
+    this.checkForUpdates()
   }
 }
 </script>
-
-<style>
-</style>

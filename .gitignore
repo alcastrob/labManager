@@ -9,20 +9,11 @@ npm-debug.log
 npm-debug.log.*
 thumbs.db
 !.gitkeep
-<<<<<<< HEAD
 labManager.sqlite
 dotnet/dataMigration/.vs/
-dotnet/dataMigration/dataMigration/bin/Debug/dataMigration.exe
+dotnet/dataMigration/packages/
 dotnet/dataMigration/dataMigration/bin/
 dotnet/dataMigration/dataMigration/obj/
-dotnet/dataMigration/packages/
-=======
-dotnet/dataMigration/.vs/dataMigration/v15/.suo
 dotnet/dataMigration/.vs/dataMigration/v15/
-dotnet/dataMigration/dataMigration/bin/
-dotnet/dataMigration/dataMigration/obj/
-dotnet/dataMigration/packages/EntityFramework.6.2.0/.signature.p7s
-dotnet/dataMigration/packages/
 labManager.sqlite
->>>>>>> migration
 electron-builder.yml

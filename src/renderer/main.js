@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import axios from 'axios'
-import Notifications from 'vue-notification'
 
 import App from './App'
 import router from './router'
@@ -8,7 +7,6 @@ import store from './store'
 import BootstrapVue from 'bootstrap-vue'
 import Vuelidate from 'vuelidate'
 
-Vue.use(Notifications)
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
 

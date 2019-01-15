@@ -1,20 +1,9 @@
 'use strict'
 
-import {
-  app,
-  BrowserWindow,
-  Menu,
-  ipcMain
-} from 'electron'
-
-// import VueRouter from 'vue-router'
-const {autoUpdater} = require("electron-updater")
+import { app, BrowserWindow, Menu, Notification  } from 'electron'
+import { checkForUpdates } from './updates'
 const path = require('path')
-// const { dialog } = require('electron')
-// const log = require("electron-log")
-// log.transports.file.level = 'debug'
-// autoUpdater.logger = log
-
+const log = require('electron-log')
 
 /**
  * Set `__static` path to static files in production
@@ -26,7 +15,6 @@ if (process.env.NODE_ENV !== 'development') {
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080` : `file://${__dirname}/index.html`
-
 
 function createWindow () {
   /**
@@ -48,7 +36,18 @@ function createWindow () {
   const mainMenu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(mainMenu)
 
-  // autoUpdater.checkForUpdatesAndNotify()
+  checkUpdates()
+}
+
+async function checkUpdates(){
+  var updateInfo = await checkForUpdates()
+  if (updateInfo.newerVersion){
+    //Notify to the renderer component (the main window)
+    log.debug('new version available')
+    setTimeout(() => {
+      mainWindow.webContents.send('update:available', updateInfo)
+    }, 5000)
+  }
 }
 
 app.on('ready', createWindow)
@@ -65,10 +64,6 @@ app.on('activate', () => {
   }
 })
 
-// when receiving a quitAndInstall signal, quit and install the new version ;)
-ipcMain.on("quitAndInstall", (event, arg) => {
-  autoUpdater.quitAndInstall();
-})
 
 const menuTemplate = [{
   label: 'Archivo',
@@ -191,12 +186,6 @@ if (process.env.NODE_ENV !== 'production') {
     ]
   })
 }
-
-ipcMain.on('quitAndInstall', () => {
-  debugger
-  mainWindow.close()
-})
-
 
 // const remote = require('remote')
 // const Menu1 = remote.require('menu')

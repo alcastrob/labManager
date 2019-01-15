@@ -87,48 +87,77 @@ export default {
     hide() {
       this.$refs.conformityModal.hide()
     },
-    getDeclarationOfConformity: function () {
-      var promise1 = getConformityDeclaration(this.workId, 'labManager.sqlite')
-      var promise2 = getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'], 'labManager.sqlite')
+    getDeclarationOfConformity: async function () {
+      var declaration = await getConformityDeclaration(this.workId, 'labManager.sqlite')
+      var config = await getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'], 'labManager.sqlite')
 
-      var allPromises = new Promise(function(resolve, reject) {
-        Promise.all([promise1, promise2]).then((rows) => {
-          resolve({
-            declarationData: rows[0],
-            makerNumber:  _.find(rows[1], ['clave', 'makerNumber']).valor,
-            personInCharge: _.find(rows[1], ['clave', 'personInCharge']).valor,
-            companyName: _.find(rows[1], ['clave', 'companyName']).valor,
-            logo: _.find(rows[1], ['clave', 'logo']).valor
-          })
+      //1. Get the config data first
+      this.makerNumber = _.find(config, ['clave', 'makerNumber']).valor,
+      this.personInCharge = _.find(config, ['clave', 'personInCharge']).valor,
+      this.companyName = _.find(config, ['clave', 'companyName']).valor,
+      this.logo = _.find(config, ['clave', 'logo']).valor
+
+      //2. Now check if the note exists -> Use its data
+      if (declaration.data !== undefined){
+        this.editing = true
+        this.declarationId = declaration.data.IdDeclaracion
+        this.date = declaration.data.Fecha
+        this.warrantyPeriod = declaration.data.Meses
+        this.batches = _.map(declaration.details, (value) => {
+          return {
+            IdProductoLote: value.IdProductoLote,
+            Descripcion: value.Descripcion
+          }
         })
-      })
+      } else {
+        //3. If not, ask the user for the warranty period and the batches and products, and create the note.
+        this.editing = false
+      }
+      this.$refs.conformityModal.show()
 
-      allPromises.then((dec) => {
-        //1. Get the config data first
-        this.makerNumber = dec.makerNumber
-        this.personInCharge = dec.personInCharge
-        this.companyName = dec.companyName
-        this.logo = dec.logo
-
-        //2. Now check if the note exists -> Use its data
-        if (dec.declarationData.data !== undefined){
-          this.editing = true
-          this.declarationId = dec.declarationData.data.IdDeclaracion
-          this.date = dec.declarationData.data.Fecha
-          this.warrantyPeriod = dec.declarationData.data.Meses
-          this.batches = _.map(dec.declarationData.details, (value) => {
-            return {
-              IdProductoLote: value.IdProductoLote,
-              Descripcion: value.Descripcion
-            }
-          })
-        } else {
-          //3. If not, ask the user for the warranty period and the batches and products, and create the note.
-          this.editing = false
-        }
-        this.$refs.conformityModal.show()
-      })
     },
+    // getDeclarationOfConformity: function () {
+    //   var promise1 = getConformityDeclaration(this.workId, 'labManager.sqlite')
+    //   var promise2 = getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'], 'labManager.sqlite')
+
+    //   var allPromises = new Promise(function(resolve, reject) {
+    //     Promise.all([promise1, promise2]).then((rows) => {
+    //       resolve({
+    //         declarationData: rows[0],
+    //         makerNumber:  _.find(rows[1], ['clave', 'makerNumber']).valor,
+    //         personInCharge: _.find(rows[1], ['clave', 'personInCharge']).valor,
+    //         companyName: _.find(rows[1], ['clave', 'companyName']).valor,
+    //         logo: _.find(rows[1], ['clave', 'logo']).valor
+    //       })
+    //     })
+    //   })
+
+    //   allPromises.then((dec) => {
+    //     //1. Get the config data first
+    //     this.makerNumber = dec.makerNumber
+    //     this.personInCharge = dec.personInCharge
+    //     this.companyName = dec.companyName
+    //     this.logo = dec.logo
+
+    //     //2. Now check if the note exists -> Use its data
+    //     if (dec.declarationData.data !== undefined){
+    //       this.editing = true
+    //       this.declarationId = dec.declarationData.data.IdDeclaracion
+    //       this.date = dec.declarationData.data.Fecha
+    //       this.warrantyPeriod = dec.declarationData.data.Meses
+    //       this.batches = _.map(dec.declarationData.details, (value) => {
+    //         return {
+    //           IdProductoLote: value.IdProductoLote,
+    //           Descripcion: value.Descripcion
+    //         }
+    //       })
+    //     } else {
+    //       //3. If not, ask the user for the warranty period and the batches and products, and create the note.
+    //       this.editing = false
+    //     }
+    //     this.$refs.conformityModal.show()
+    //   })
+    // },
     createDeclarationOfConformity: function () {
       insertConformityDeclaration(
         {

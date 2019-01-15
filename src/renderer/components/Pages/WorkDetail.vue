@@ -201,27 +201,22 @@ export default {
       this.printLabel()
       this.hideModal()
     },
-    getDeliveryNote: function () {
-      getConfigValues(['logo'], 'labManager.sqlite').then((row) => {
-        var ComponentClass = Vue.extend(delivery)
-        var instance = new ComponentClass({
-          propsData: {
-            IdTrabajo: this.work.IdTrabajo,
-            NombreDentista: this.work.NombreDentista,
-            Paciente: this.work.Paciente,
-            FechaTerminacion: new Date(this.work.FechaTerminacion),
-            Detalles: this.workIndications,
-            PrecioFinal: this.work.PrecioFinal,
-            logo: 'data:image/png;base64,' + row[0].valor
-          }
-        })
-
-        instance.$mount()
-        instance.print(this.$refs.labelContainer)
+    getDeliveryNote: async function () {
+      var row = await getConfigValues(['logo'], 'labManager.sqlite')
+      var ComponentClass = Vue.extend(delivery)
+      var instance = new ComponentClass({
+        propsData: {
+          IdTrabajo: this.work.IdTrabajo,
+          NombreDentista: this.work.NombreDentista,
+          Paciente: this.work.Paciente,
+          FechaTerminacion: new Date(this.work.FechaTerminacion),
+          Detalles: this.workIndications,
+          PrecioFinal: this.work.PrecioFinal,
+          logo: 'data:image/png;base64,' + row[0].valor
+        }
       })
-      // this.$refs.labelContainer.appendChild(instance.$el)
-      // instance.print()
-      // this.$refs.labelContainer.removeChild(instance.$el)
+      instance.$mount()
+      instance.print(this.$refs.labelContainer)
     },
     showConformity(){
       this.$refs.conformity.show()

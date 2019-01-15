@@ -5,15 +5,20 @@
 </template>
 
 <script>
-  import mainPage from './components/pages/mainPage.vue'
-  import 'jquery/dist/jquery.min.js'
-  import 'bootstrap/dist/js/bootstrap.bundle.min.js'
-  export default {
-    name: 'labManager',
-    components: {
-      mainPage
-    }
+import mainPage from './components/pages/mainPage.vue'
+import 'jquery/dist/jquery.min.js'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import Vue from 'vue'
+import VueSwal from 'vue-swal'
+
+Vue.use(VueSwal)
+
+export default {
+  name: 'labManager',
+  components: {
+    mainPage
   }
+}
 </script>
 
 <style>
@@ -88,4 +93,32 @@
     background: #AFA8A1!important;
     color: #fff;
   }
+
+  .swal-button {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    box-shadow: none;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    cursor: pointer;
+}
+.swal-button--ok {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+.swal-button:focus {
+  outline: none;
+  box-shadow: none;
+}
 </style>

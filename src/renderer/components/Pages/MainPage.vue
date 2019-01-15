@@ -18,8 +18,8 @@
 <script>
 import topbar from '../PageElements/TopBar'
 import VueRouter from 'vue-router'
-var { ipcRenderer } = require('electron')
 
+var { ipcRenderer } = require('electron')
 
 export default {
   name: 'mainPage',
@@ -32,8 +32,20 @@ export default {
         path: eventData.page
       })
     })
-    ipcRenderer.on('updateReady', function(event, text) {
-      debugger
+    ipcRenderer.on('update:available', (sender, updateInfo) => {
+      swal({
+        title: "Actualización disponible",
+        text: "Existe una nueva versión de esta aplicación lista para su descarga e instalación.",
+        icon: "success",
+        buttons: {
+          cancel: 'Cancelar',
+          ok: 'Continuar'
+        }
+      }).then((value) =>{
+        if (value === 'ok') {
+          this.$router.push({ path: '/about' })
+        }
+      })
     })
   }
 }
