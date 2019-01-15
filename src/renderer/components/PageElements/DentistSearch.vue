@@ -32,7 +32,7 @@ export default {
       this.resultsVisible = true
       this.focus = true
       if (this.query.length > 3) {
-        searchDentistsByName(this.query, 'labManager.sqlite').then((dentistDetails) => {
+        searchDentistsByName(this.query).then((dentistDetails) => {
           this.candidateDentistsFromQuery = dentistDetails
         })
       } else {
@@ -68,7 +68,7 @@ export default {
   mounted () {
     this.$refs.clinica.focus()
     this.$watch('value', function (newVal, oldVal) {
-      getDentist(newVal, 'labManager.sqlite').then((dentistDetail) => {
+      getDentist(newVal).then((dentistDetail) => {
         if (dentistDetail !== undefined) {
           this.query = dentistDetail.NombreDentista
           this.hidePopup()

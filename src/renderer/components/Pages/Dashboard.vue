@@ -438,7 +438,7 @@ export default {
     }
   },
   mounted () {
-    getInboundWorksToday('labManager.sqlite').then((count) => {
+    getInboundWorksToday().then((count) => {
       this.inboundWorksToday = count.Count
       })
   },
@@ -450,7 +450,7 @@ export default {
         return this.inboundWorksToday + ' trabajo nuevo hoy'
       }
     },
-    worksSentTodayCopy : function() {
+    worksSentTodayCopy: function() {
       if (this.inboundWorksToday > 1) {
         return this.inboundWorksToday + ' trabajos enviados hoy'
       } else {

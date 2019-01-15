@@ -189,13 +189,13 @@ export default {
       this.saveButtonPressed = true
       this.$v.$touch()
       if (!this.$v.$invalid){
-        insertWork(this.work, 'labManager.sqlite').then((id) => {
+        insertWork(this.work).then((id) => {
           this.work.IdTrabajo = id
           this.$refs.workIndications.save(this.work.IdTrabajo)
         })
         if(this.adjunctsVisible){
           this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
-          insertAdjuntsOfWork(this.workAdjuncts, 'labManager.sqlite')
+          insertAdjuntsOfWork(this.workAdjuncts)
         }
         this.showModal()
       }

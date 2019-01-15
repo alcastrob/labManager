@@ -97,7 +97,7 @@ export default {
       }
     },
     updateDatasetWithFilters (eventData) {
-      getWorksList('labManager.sqlite', eventData).then((works) => {
+      getWorksList(eventData).then((works) => {
         this.$children[0].setDataset(works)
       })
     },

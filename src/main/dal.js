@@ -4,6 +4,11 @@ var sqlite3 = require('sqlite3').verbose()
 var db
 
 import _ from 'lodash'
+import { configGet } from '../main/store'
+
+export function loadDbFile(){
+  db = new sqlite3.Database(configGet('dataFile'))
+}
 
 function createTable () {
   db.run('CREATE TABLE TipoTrabajos (' +
@@ -24,15 +29,14 @@ function insertValueObjects () {
   db.close()
 }
 
-export function createNewDatabase (fileName) {
-  db = new sqlite3.Database(fileName, createTable)
+export function createNewDatabase () {
+  db = new sqlite3.Database(configGet('dataFile'), createTable)
 }
 
 // Works ----------------------------------------------------------------------
 
 //Tested
-export function getWorksList (fileName, customFilters) {
-  db = new sqlite3.Database(fileName)
+export function getWorksList (customFilters) {
   var query = 'SELECT * FROM vTrabajos WHERE 1=1'
   if (customFilters !== undefined){
     if (customFilters.fEntrada !== undefined){
@@ -89,8 +93,7 @@ function processDateQuery(field, value){
 }
 
 //Tested
-export function getWork (workId, fileName) {
-  db = new sqlite3.Database(fileName)
+export function getWork (workId) {
   var query = 'SELECT * FROM vTrabajos ' +
   'WHERE IdTrabajo = ?'
   return getAsync(db, query, [workId]).then((row) => {
@@ -99,8 +102,7 @@ export function getWork (workId, fileName) {
 }
 
 //Tested
-export function insertWork(work, fileName) {
-  db = new sqlite3.Database(fileName)
+export function insertWork(work) {
   var query = 'INSERT INTO Trabajos (IdDentista, IdTipoTrabajo, ' +
     'Paciente, Color, FechaTerminacion, FechaEntrada, ' +
     'FechaPrevista, PrecioFinal, PrecioMetal) ' +
@@ -111,8 +113,7 @@ export function insertWork(work, fileName) {
   }
 
 //Tested
-export function updateWork(work, fileName) {
-  db = new sqlite3.Database(fileName)
+export function updateWork(work) {
   var query = 'UPDATE Trabajos SET IdDentista = ?, IdTipoTrabajo = ?, ' +
   'Paciente = ?, Color = ?, FechaTerminacion = ?, ' +
   'FechaEntrada = ?, FechaPrevista = ?, ' +
@@ -126,8 +127,7 @@ export function updateWork(work, fileName) {
 // Work Indications -----------------------------------------------------------
 
 //Tested
-export function getWorkIndications (workId, fileName) {
-  db = new sqlite3.Database(fileName)
+export function getWorkIndications (workId) {
   var query = 'SELECT IdTrabajoDetalle, IdTrabajo, Descripcion, Precio ' +
   'FROM TrabajosDetalle ' +
   'WHERE IdTrabajo = ?'
@@ -137,8 +137,7 @@ export function getWorkIndications (workId, fileName) {
 }
 
 //Tested
-export function insertWorkIndications(workIndication, fileName) {
-  db = new sqlite3.Database(fileName)
+export function insertWorkIndications(workIndication) {
   var query = 'INSERT INTO TrabajosDetalle (IdTrabajo, ' +
   'Descripcion, Precio) ' +
   'VALUES (?, ?, ?)'
@@ -147,8 +146,7 @@ export function insertWorkIndications(workIndication, fileName) {
   }
 
 //Tested
-export function updateWorkIndications(workIndication, fileName) {
-  db = new sqlite3.Database(fileName)
+export function updateWorkIndications(workIndication) {
   var query = 'UPDATE TrabajosDetalle ' +
   'SET Descripcion = ?, Precio = ? ' +
   'WHERE IdTrabajoDetalle = ?'
@@ -156,14 +154,12 @@ export function updateWorkIndications(workIndication, fileName) {
 }
 
 //Tested
-export function deleteWorkIndications(workIndication, fileName){
-  db = new sqlite3.Database(fileName)
+export function deleteWorkIndications(workIndication){
   var query = 'DELETE FROM TrabajosDetalle WHERE IdTrabajoDetalle = ?'
   return runAsync(db, query, [workIndication.IdTrabajoDetalle])
 }
 
-export function updatePriceSum(workId, fileName){
-  db = new sqlite3.Database(fileName)
+export function updatePriceSum(workId){
   var query = 'UPDATE Trabajos SET PrecioFinal = (SELECT SUM(Precio) FROM TrabajosDetalle WHERE IdTrabajo = ?) WHERE IdTrabajo = ?'
   return runAsync(db, query, [workId, workId])
 }
@@ -171,8 +167,7 @@ export function updatePriceSum(workId, fileName){
 // Work Tests -----------------------------------------------------------------
 
 //Tested
-export function getWorkTestsList (workId, fileName) {
-  db = new sqlite3.Database(fileName)
+export function getWorkTestsList (workId) {
   var query = 'SELECT * FROM vPruebas ' +
   'WHERE IdTrabajo = ?'
   return allAsync(db, query, [workId]).then((rows) => {
@@ -181,8 +176,7 @@ export function getWorkTestsList (workId, fileName) {
 }
 
 //Tested
-export function getDeliveryShifts(fileName) {
-  db = new sqlite3.Database(fileName)
+export function getDeliveryShifts() {
   var query = 'SELECT IdTurno, Descripcion FROM Turnos'
   return allAsync(db, query, []).then((rows) => {
     return rows
@@ -190,8 +184,7 @@ export function getDeliveryShifts(fileName) {
 }
 
 //Tested
-export function insertWorkTest(workTest, fileName) {
-  db = new sqlite3.Database(fileName)
+export function insertWorkTest(workTest) {
   var query = 'INSERT INTO Pruebas (IdTrabajo, Descripcion, FechaSalida, ' +
   'FechaEntrada, Comentario, IdTurnoFechaSalida, IdTurnoFechaEntrada) ' +
   'VALUES (?, ?, ?, ?, ?, ?, ?)'
@@ -201,8 +194,7 @@ export function insertWorkTest(workTest, fileName) {
 }
 
 //Tested
-export function updateWorkTest(workTest, fileName) {
-  db = new sqlite3.Database(fileName)
+export function updateWorkTest(workTest) {
   var query = 'UPDATE Pruebas SET IdTrabajo = ?, Descripcion = ?, FechaSalida = ?, ' +
     'FechaEntrada = ?, Comentario = ?, IdTurnoFechaSalida = ?, ' +
     'IdTurnoFechaEntrada = ? ' +
@@ -213,8 +205,7 @@ export function updateWorkTest(workTest, fileName) {
 }
 
 //Tested
-export function deleteWorkTest(workTestId, fileName){
-  db = new sqlite3.Database(fileName)
+export function deleteWorkTest(workTestId){
   var query = 'DELETE FROM Pruebas WHERE IdPrueba = ?'
   return runAsync(db, query, [workTestId])
 }
@@ -222,8 +213,7 @@ export function deleteWorkTest(workTestId, fileName){
 // Custom queries for Work (KPIs)----------------------------------------------
 
 //Tested
-export function getInboundWorksToday(fileName) {
-  db = new sqlite3.Database(fileName)
+export function getInboundWorksToday() {
   var query = 'SELECT COUNT(1) AS Count FROM Trabajos ' +
   'WHERE FechaEntrada >= date("now","localtime") AND FechaEntrada < date("now", "localtime", "+1 day")'
   return getAsync(db, query, []).then((row) => {
@@ -232,8 +222,7 @@ export function getInboundWorksToday(fileName) {
 }
 
 //Tested
-export function getWorkInExecution (fileName) {
-  db = new sqlite3.Database(fileName)
+export function getWorkInExecution () {
   var query = 'SELECT COUNT(1) AS Count ' +
   'FROM Trabajos ' +
   'WHERE FechaTerminacion is NULL OR FechaTerminacion >= date("now", "localtime")'
@@ -243,20 +232,18 @@ export function getWorkInExecution (fileName) {
 }
 
 //Tested
-export function getWorksEndedThisMonth(fileName) {
-db = new sqlite3.Database(fileName)
-var query = 'SELECT COUNT(1) AS Count ' +
-'FROM Trabajos t ' +
-'WHERE FechaTerminacion >= date("now", "localtime", "start of month") ' +
-'AND FechaTerminacion <= date("now", "localtime", "start of month", "+1 month", "-1 day")'
-return getAsync(db, query, []).then((row) => {
-  return row
-})
+export function getWorksEndedThisMonth() {
+  var query = 'SELECT COUNT(1) AS Count ' +
+  'FROM Trabajos t ' +
+  'WHERE FechaTerminacion >= date("now", "localtime", "start of month") ' +
+  'AND FechaTerminacion <= date("now", "localtime", "start of month", "+1 month", "-1 day")'
+  return getAsync(db, query, []).then((row) => {
+    return row
+  })
 }
 
 //Tested
-export function getWorksEndedLast30days(fileName) {
-  db = new sqlite3.Database(fileName)
+export function getWorksEndedLast30days() {
   var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
   'FROM Trabajos ' +
   'WHERE FechaTerminacion >= date("now", "localtime", "-30 days")'
@@ -266,23 +253,21 @@ export function getWorksEndedLast30days(fileName) {
   }
 
   //Tested
-  export function getWorksEndedPrevious30days(fileName) {
-    db = new sqlite3.Database(fileName)
+  export function getWorksEndedPrevious30days() {
     var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
-  'FROM Trabajos ' +
+    'FROM Trabajos ' +
     'WHERE FechaTerminacion >= date("now", "localtime", "-60 days") '+
     'AND FechaTerminacion <= date("now", "localtime", "-30 days")'
     return getAsync(db, query, []).then((row) => {
       return row
     })
-    }
+  }
 
 
 // Work Types -----------------------------------------------------------------
 
 //Tested
-export function getWorkTypes (fileName) {
-  db = new sqlite3.Database(fileName)
+export function getWorkTypes () {
   var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
 
   return allAsync(db, query, []).then((row) => {
@@ -293,8 +278,7 @@ export function getWorkTypes (fileName) {
 // Adjuncts -------------------------------------------------------------------
 
 //Tested
-export function getAdjuntsOfWork (workId, fileName) {
-  db = new sqlite3.Database(fileName)
+export function getAdjuntsOfWork (workId) {
   var query = 'SELECT IdAditamento, Caja, Cubeta, Articulador, ' +
   'Pletinas, Tornillos, Analogos, PosteImpresion, ' +
   'Interface, Otros ' +
@@ -307,8 +291,7 @@ export function getAdjuntsOfWork (workId, fileName) {
 }
 
 //Tested
-export function insertAdjuntsOfWork(adjunt, fileName) {
-  db = new sqlite3.Database(fileName)
+export function insertAdjuntsOfWork(adjunt) {
   var query = 'INSERT INTO Aditamentos ( ' +
   'IdTrabajo, Caja, Cubeta, Articulador, ' +
   'Pletinas, Tornillos, Analogos, PosteImpresion, ' +
@@ -321,8 +304,7 @@ export function insertAdjuntsOfWork(adjunt, fileName) {
 }
 
 //Tested
-export function updateAdjuntsOfWork(adjunt, fileName) {
-  db = new sqlite3.Database(fileName)
+export function updateAdjuntsOfWork(adjunt) {
   var query = 'UPDATE Aditamentos ' +
     'SET Caja = ?, Cubeta = ?, ' +
     'Articulador = ?, Pletinas = ?, Tornillos = ?,' +
@@ -337,8 +319,7 @@ export function updateAdjuntsOfWork(adjunt, fileName) {
 // Dentists -------------------------------------------------------------------
 
 //Tested
-export function getDentistList (fileName) {
-  db = new sqlite3.Database(fileName)
+export function getDentistList () {
   var query = 'SELECT * ' +
   'FROM vDentistas'
   return allAsync(db, query, []).then((row) => {
@@ -347,8 +328,7 @@ export function getDentistList (fileName) {
 }
 
 //Tested
-export function getDentist (dentistId, fileName) {
-  db = new sqlite3.Database(fileName)
+export function getDentist (dentistId) {
   var query = 'SELECT * FROM vDentistas WHERE IdDentista = ?'
   return getAsync(db, query, [dentistId]).then((row) => {
     return row
@@ -356,8 +336,7 @@ export function getDentist (dentistId, fileName) {
 }
 
 //Tested
-export function insertDentist(dentist, fileName) {
-  db = new sqlite3.Database(fileName)
+export function insertDentist(dentist) {
   var query = 'INSERT INTO Dentistas (NombreDentista, NombreClinica, ' +
     'DatosFiscales, Direccion, DatosBancarios, DatosInteres, ' +
     'CorreoElectronico, CP, Poblacion, Telefono, Telefono2) ' +
@@ -369,8 +348,7 @@ export function insertDentist(dentist, fileName) {
 }
 
 //Tested
-export function updateDentist(dentist, fileName) {
-  db = new sqlite3.Database(fileName)
+export function updateDentist(dentist) {
   var query = 'UPDATE Dentistas ' +
     'SET NombreDentista = ?, NombreClinica = ?, ' +
     'DatosFiscales = ?, Direccion = ?, DatosBancarios = ?, ' +
@@ -383,8 +361,7 @@ export function updateDentist(dentist, fileName) {
 }
 
 //Tested
-export function searchDentistsByName (dentistName, fileName) {
-  db = new sqlite3.Database(fileName)
+export function searchDentistsByName (dentistName) {
   var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
   'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
   'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE NombreDentista LIKE ?'
@@ -396,8 +373,7 @@ export function searchDentistsByName (dentistName, fileName) {
 // Work Month Check -----------------------------------------------------------
 
 //Tested
-export function getWorksAggregatedByDentist (year, month, fileName) {
-  db = new sqlite3.Database(fileName)
+export function getWorksAggregatedByDentist (year, month) {
   var query = 'SELECT d.IdDentista AS Key, d.IdDentista AS IdDentista, d.NombreDentista, ' +
     '  sum(t.PrecioFinal) AS SumaPrecioFinal, ' +
     '  ifnull(sum(t.PrecioMetal), 0) AS SumaAditamentos, ' +
@@ -434,8 +410,7 @@ export function getWorksAggregatedByDentist (year, month, fileName) {
 }
 
 //Tested
-export function getWorksDeaggregatedByDentist (year, month, idDentist, fileName) {
-  db = new sqlite3.Database(fileName)
+export function getWorksDeaggregatedByDentist (year, month, idDentist) {
   var sMonth = ('00' + month).substr(-2)
   var query = 'SELECT * FROM vTrabajosPorDentista WHERE ' +
   'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
@@ -446,16 +421,14 @@ export function getWorksDeaggregatedByDentist (year, month, idDentist, fileName)
 }
 
 //Tested
-export function setCheckToWork (idTrabajo, check, fileName) {
-  db = new sqlite3.Database(fileName)
+export function setCheckToWork (idTrabajo, check) {
   var query = 'INSERT OR REPLACE INTO TrabajosChequeados (IdTrabajo, Chequeado) VALUES (?, ?)'
   return runAsync(db, query, [idTrabajo, check])
 }
 
 // Invoices ------------------------------------------------------------------
 
-  export function getInvoicesList (fileName, customFilters) {
-    db = new sqlite3.Database(fileName)
+  export function getInvoicesList (customFilters) {
     var query = 'SELECT * FROM vFacturas WHERE 1=1'
     if (customFilters !== undefined){
     }
@@ -464,8 +437,7 @@ export function setCheckToWork (idTrabajo, check, fileName) {
     })
   }
 
-  export function insertInvoice(invoice, fileName) {
-    db = new sqlite3.Database(fileName)
+  export function insertInvoice(invoice) {
     var query = 'INSERT INTO Facturas (IdDentista, ' +
     'Fecha, Total, Descuento, Banco, Efectivo) ' +
     'VALUES (?, ?, ?, ?, ?, ?)'
@@ -473,8 +445,7 @@ export function setCheckToWork (idTrabajo, check, fileName) {
       invoice.Total, invoice.Descuento, invoice.Banco, invoice.Efectivo])
   }
 
-  export function getInvoice (invoiceId, fileName) {
-    db = new sqlite3.Database(fileName)
+  export function getInvoice (invoiceId) {
     var query = 'SELECT * FROM vFacturas WHERE IdFactura = ?'
     if (customFilters !== undefined){
     }
@@ -483,8 +454,7 @@ export function setCheckToWork (idTrabajo, check, fileName) {
     })
   }
 
-  export function updateInvoice(invoice, fileName) {
-    db = new sqlite3.Database(fileName)
+  export function updateInvoice(invoice) {
     var query = 'UPDATE Facturas SET IdDentista = ?, ' +
     'Fecha = ?, Total = ?, Descuento = ?, '+
     'Banco = ?, Efectivo = ? ' +
@@ -493,16 +463,14 @@ export function setCheckToWork (idTrabajo, check, fileName) {
       invoice.Total, invoice.Descuento, invoice.Banco, invoice.Efectivo])
   }
 
-  export function deleteInvoice(invoiceId, fileName) {
-    db = new sqlite3.Database(fileName)
+  export function deleteInvoice(invoiceId) {
     var query = 'DELETE FROM Facturas WHERE IdFactura = ?'
     return runAsync(db, query, [invoiceId])
   }
 
 // Invoice details ------------------------------------------------------------
 
-export function getInvoiceDetails (invoiceId, fileName) {
-  db = new sqlite3.Database(fileName)
+export function getInvoiceDetails (invoiceId) {
   var query = 'SELECT * FROM FacturasDetalle WEHRE IdFactura = ?'
   if (customFilters !== undefined){
   }
@@ -511,22 +479,19 @@ export function getInvoiceDetails (invoiceId, fileName) {
   })
 }
 
-export function insertInvoiceDetail(invoiceDetail, fileName) {
-  db = new sqlite3.Database(fileName)
+export function insertInvoiceDetail(invoiceDetail) {
   var query = 'INSERT INTO FacturasDetalle (IdFactura, Descripcion, Precio) VALUES (?, ?, ?)'
   return runAsync(db, query, [invoiceDetail.IdFacturaDetalle, invoiceDetail.Descripcion, invoiceDetail.Precio])
 }
 
-export function updateInvoiceDetail(invoiceDetail, fileName) {
-  db = new sqlite3.Database(fileName)
+export function updateInvoiceDetail(invoiceDetail) {
   var query = 'UPDATE FacturasDetalle SET IdFactura = ?, Descripcion = ?, Precio = ? ' +
   'WHERE IdFacturaDetalle = ?'
   return runAsync(db, query, [invoiceDetail.IdFactura, invoiceDetail.Descripcion,
     invoiceDetail.Precio, invoiceDetail.IdFacturaDetalle])
 }
 
-export function deleteInvoiceDetail(invoiceDetailId, fileName) {
-  db = new sqlite3.Database(fileName)
+export function deleteInvoiceDetail(invoiceDetailId) {
   var query = 'DELETE FROM FacturasDetalle WHERE IdFacturaDetalle = ?'
   return runAsync(db, query, [invoiceDetailId])
 }
@@ -534,8 +499,7 @@ export function deleteInvoiceDetail(invoiceDetailId, fileName) {
 // Conformity Declarations ----------------------------------------------------
 
 //Tested
-export async function getConformityDeclaration (workId, fileName) {
-  db = new sqlite3.Database(fileName)
+export async function getConformityDeclaration (workId) {
   var query1 = 'SELECT * FROM vDeclaracionConformidad WHERE IdTrabajo = ?'
   var query2 = 'SELECT * FROM vDeclaracionProductos ' +
     ' WHERE IdTrabajo = ?'
@@ -547,8 +511,7 @@ export async function getConformityDeclaration (workId, fileName) {
 }
 
 //Tested
-export function insertConformityDeclaration(conformity, productIds, fileName) {
-  db = new sqlite3.Database(fileName)
+export function insertConformityDeclaration(conformity, productIds) {
   var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses) ' +
   'VALUES (?, date("now"), ?) '
   return runAsync(db, query, [conformity.IdTrabajo, conformity.Meses]).then((conformityId) => {
@@ -557,8 +520,7 @@ export function insertConformityDeclaration(conformity, productIds, fileName) {
 }
 
 //Tested
-export function updateConformityDeclaration(conformity, productsIds, fileName){
-  db = new sqlite3.Database(fileName)
+export function updateConformityDeclaration(conformity, productsIds){
   var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ? WHERE IdDeclaracion = ?'
   return runAsync(db, query, [conformity.Meses, conformity.IdDeclaracion]).then(() => {
     var query2 = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
@@ -585,8 +547,7 @@ function insertDeclarationProducts(conformityId, productsIds){
 // Products and batches -------------------------------------------------------
 
 //Tested
-export function searchProductsByName(productName, fileName){
-  db = new sqlite3.Database(fileName)
+export function searchProductsByName(productName){
   var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion LIKE ? AND Activo = true'
   return allAsync(db, query, ['%' + productName + '%']).then((rows) => {
     return rows
@@ -594,16 +555,14 @@ export function searchProductsByName(productName, fileName){
 }
 
 //Tested
-export function searchProductByExactName(productName, fileName){
-  db = new sqlite3.Database(fileName)
+export function searchProductByExactName(productName){
   var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion = ? AND Activo = true'
   return allAsync(db, query, ['%' + productName + '%']).then((rows) => {
     return rows
   })
 }
 
-export function getProduct(productId, fileName){
-  db = new sqlite3.Database(fileName)
+export function getProduct(productId){
   var query = 'SELECT * FROM ProductosLotes WHERE IdProductoLote = ?'
   return getAsync(db, query, [productId]).then((row) => {
     return row
@@ -611,28 +570,26 @@ export function getProduct(productId, fileName){
 }
 
 //Tested
-export function insertProduct(productDescription, fileName){
-  db = new sqlite3.Database(fileName)
+export function insertProduct(productDescription){
   var query = 'INSERT INTO ProductosLotes (Descripcion, Activo) VALUES (?, true)'
   return runAsync(db, query, [productDescription])
 }
 
-export function updateProduct(product, fileName){
+export function updateProduct(product){
 
 }
 
-export function deleteProduct(productId, fileName){
+export function deleteProduct(productId){
 
 }
 
-export function getProductList(fileName){
+export function getProductList(){
 
 }
 
 // Catalog --------------------------------------------------------------------
 
-export function getCatalogList (fileName) {
-  db = new sqlite3.Database(fileName)
+export function getCatalogList () {
   var query = 'SELECT * FROM vCatalogo'
   return allAsync(db, query, []).then((row) => {
     return row
@@ -642,15 +599,13 @@ export function getCatalogList (fileName) {
 // Config ---------------------------------------------------------------------
 
 //Tested
-export async function getConfigValue(configKey, fileName){
-  db = new sqlite3.Database(fileName)
+export async function getConfigValue(configKey){
   var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
   return (await getAsync(db, query, [configKey])).valor
 }
 
 //Tested
-export async function getConfigValues(configKeyArray, fileName){
-  db = new sqlite3.Database(fileName)
+export async function getConfigValues(configKeyArray){
   var query = 'SELECT * FROM Configuracion WHERE clave IN ('
   for (var value of configKeyArray){
     query += `"${value}",`
@@ -659,8 +614,7 @@ export async function getConfigValues(configKeyArray, fileName){
   return (await allAsync(db, query, []))
 }
 
-export function setConfigValue (configKey, configValue, fileName) {
-  db = new sqlite3.Database(fileName)
+export function setConfigValue (configKey, configValue) {
   var query = 'INSERT OR REPLACE INTO Configuracion (clave, valor) VALUES (?, ?)'
   return runAsync(db, query, [configKey, configValue])
 }

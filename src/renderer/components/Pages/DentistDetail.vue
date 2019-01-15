@@ -164,14 +164,14 @@ export default {
     save: function() {
       this.$v.touch()
       if(!this.$v.$invalid){
-        updateDentist(this.data, 'labManager.sqlite')
+        updateDentist(this.data)
       }
     },
     canBeSaved: function() {
       return this.isDirty && this.data.NombreClinica !== ''
     },
     getConfig: async function() {
-      this.isAdmin = await getConfigValue('isAdmin', 'labManager.sqlite')
+      this.isAdmin = await getConfigValue('isAdmin')
     }
   },
   created() {
@@ -180,7 +180,7 @@ export default {
   mounted () {
     this.dentistId = this.$route.params.id
 
-    getDentist(this.dentistId, 'labManager.sqlite').then((dentistDetail) => {
+    getDentist(this.dentistId).then((dentistDetail) => {
       this.data = dentistDetail
     })
   }

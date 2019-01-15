@@ -147,7 +147,7 @@ export default {
     }
   },
   mounted () {
-    getWorkTypes('labManager.sqlite').then((types) => {
+    getWorkTypes().then((types) => {
       this.workTypes = types
     })
   }

@@ -1,9 +1,12 @@
 'use strict'
 
-import { app, BrowserWindow, Menu, Notification  } from 'electron'
+import { app, BrowserWindow, Menu, dialog } from 'electron'
 import { checkForUpdates } from './updates'
 const path = require('path')
 const log = require('electron-log')
+// const Store = require('./store')
+import { configGet, configSet } from './store'
+import { loadDbFile } from './dal'
 
 /**
  * Set `__static` path to static files in production
@@ -35,6 +38,8 @@ function createWindow () {
 
   const mainMenu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(mainMenu)
+
+  loadDbFile()
 
   checkUpdates()
 }
@@ -77,7 +82,7 @@ const menuTemplate = [{
     {
       label: 'Abrir archivo',
       click () {
-        // mainWindow.webContents.send('todo:clear')
+        openExistingFile()
       }
     },
     {
@@ -185,6 +190,14 @@ if (process.env.NODE_ENV !== 'production') {
       }
     ]
   })
+}
+
+function openExistingFile(){
+  var filePath = dialog.showOpenDialog({
+    properties: ['openFile']
+  })
+  configSet('dataFile', filePath[0])
+  loadDbFile()
 }
 
 // const remote = require('remote')

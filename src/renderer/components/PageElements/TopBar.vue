@@ -83,7 +83,7 @@ export default {
       })
     },
     getConfig: async function() {
-      this.isAdmin = await getConfigValue('isAdmin', 'labManager.sqlite')
+      this.isAdmin = await getConfigValue('isAdmin')
     }
   },
   computed: {

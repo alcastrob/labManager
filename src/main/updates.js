@@ -15,7 +15,7 @@ const RELEASES_URL = 'https://api.github.cam/repos/alcastrob/labManager/releases
 
 export async function checkForUpdates () {
   var currentVersion = require('../../package.json').version
-  var token = await getConfigValue('githubToken', 'labManager.sqlite')
+  var token = await getConfigValue('githubToken')
   var responseReleases = await axios
     .get(RELEASES_URL, {
       headers: {

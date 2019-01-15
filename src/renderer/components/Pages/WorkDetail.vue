@@ -173,7 +173,7 @@ export default {
       this.saveButtonPressed = true
       this.$v.$touch()
       if (!this.$v.$invalid){
-        updateWork(this.work, 'labManager.sqlite').then(() => {
+        updateWork(this.work).then(() => {
           this.$refs.workIndications.save(this.work.IdTrabajo)
           this.$refs.workTests.save(this.work.IdTrabajo)
         })
@@ -181,9 +181,9 @@ export default {
         if(this.adjunctsVisible){
           this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
           if(this.workAdjunctsJustAdded){
-            insertAdjuntsOfWork(this.workAdjuncts, 'labManager.sqlite')
+            insertAdjuntsOfWork(this.workAdjuncts)
           } else {
-            updateAdjuntsOfWork(this.workAdjuncts, 'labManager.sqlite')
+            updateAdjuntsOfWork(this.workAdjuncts)
           }
         }
       }
@@ -202,7 +202,7 @@ export default {
       this.hideModal()
     },
     getDeliveryNote: async function () {
-      var row = await getConfigValues(['logo'], 'labManager.sqlite')
+      var row = await getConfigValues(['logo'])
       var ComponentClass = Vue.extend(delivery)
       var instance = new ComponentClass({
         propsData: {
@@ -226,20 +226,20 @@ export default {
     this.work.IdTrabajo = parseInt(this.$route.params.id)
   },
   mounted () {
-    getWork(this.work.IdTrabajo, 'labManager.sqlite').then((workDetails) => {
+    getWork(this.work.IdTrabajo).then((workDetails) => {
       this.work = workDetails
       this.readOnly = workDetails.FechaTerminacion !== null
     })
-    getWorkIndications(this.work.IdTrabajo, 'labManager.sqlite').then((workIndicat) => {
+    getWorkIndications(this.work.IdTrabajo).then((workIndicat) => {
       this.workIndications = workIndicat
     })
-    getAdjuntsOfWork(this.work.IdTrabajo, 'labManager.sqlite').then((workAdjuncts) => {
+    getAdjuntsOfWork(this.work.IdTrabajo).then((workAdjuncts) => {
       this.workAdjuncts = workAdjuncts
       if (this.workAdjuncts !== undefined){
         this.showAdjunts(false)
       }
     })
-    getWorkTestsList(this.work.IdTrabajo, 'labManager.sqlite').then((workTests) => {
+    getWorkTestsList(this.work.IdTrabajo).then((workTests) => {
       this.workTests = workTests
     })
   }

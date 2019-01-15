@@ -187,13 +187,13 @@ export default {
     save(masterId){
       _.forEach(this.insertedRows, function(row){
         row.IdTrabajo = masterId
-        insertWorkTest(row, 'labManager.sqlite')
+        insertWorkTest(row)
       })
       _.forEach(this.deletedRows, function(row){
-        deleteWorkTest(row.IdPrueba, 'labManager.sqlite')
+        deleteWorkTest(row.IdPrueba)
       })
       _.forEach(this.updatedRows, function(row){
-        updateWorkTest(row, 'labManager.sqlite')
+        updateWorkTest(row)
       })
       this.insertedRows = []
       this.deletedRows = []
@@ -238,7 +238,7 @@ export default {
     // Check the required parameters (props)
     if (this.workId === undefined || this.workId === null)
       throw 'Missing prop workId in WorkTestTable.vue'
-    getDeliveryShifts('labManager.sqlite').then((shifts) => {
+    getDeliveryShifts().then((shifts) => {
       this.deliveryShifts = shifts
     })
   }

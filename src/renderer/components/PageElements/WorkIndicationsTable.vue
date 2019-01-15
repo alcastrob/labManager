@@ -124,15 +124,15 @@ export default {
     save(masterId){
       _.forEach(this.insertedRows, function(row){
         row.IdTrabajo = masterId
-        insertWorkIndications(row, 'labManager.sqlite')
+        insertWorkIndications(row)
       })
       _.forEach(this.deletedRows, function(row){
-        deleteWorkIndications(row, 'labManager.sqlite')
+        deleteWorkIndications(row)
       })
       _.forEach(this.updatedRows, function(row){
-        updateWorkIndications(row, 'labManager.sqlite')
+        updateWorkIndications(row)
       })
-      updatePriceSum(masterId, 'labManager.sqlite')
+      updatePriceSum(masterId)
       this.insertedRows = []
       this.deletedRows = []
       this.updatedRows = []

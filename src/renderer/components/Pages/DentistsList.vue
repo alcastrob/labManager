@@ -84,7 +84,7 @@ export default {
   },
   methods: {},
   mounted () {
-    getDentistList('labManager.sqlite').then((dentists) => {
+    getDentistList().then((dentists) => {
       this.$refs.dentistTable.setDataset(dentists)
     })
   }

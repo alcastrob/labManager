@@ -29,7 +29,7 @@ export default {
   },
   methods: {},
   mounted () {
-    getCatalogList('labManager.sqlite').then((catalog) => {
+    getCatalogList().then((catalog) => {
       //this.$refs.catalogTable.setDataset(catalog)
     })
   }

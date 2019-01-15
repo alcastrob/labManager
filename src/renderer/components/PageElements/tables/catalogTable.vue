@@ -190,13 +190,13 @@ export default {
     save(masterId){
       _.forEach(this.insertedRows, function(row){
         row.IdTrabajo = masterId
-        insertWorkTest(row, 'labManager.sqlite')
+        insertWorkTest(row)
       })
       _.forEach(this.deletedRows, function(row){
-        deleteWorkTest(row.IdPrueba, 'labManager.sqlite')
+        deleteWorkTest(row.IdPrueba)
       })
       _.forEach(this.updatedRows, function(row){
-        updateWorkTest(row, 'labManager.sqlite')
+        updateWorkTest(row)
       })
       this.insertedRows = []
       this.deletedRows = []

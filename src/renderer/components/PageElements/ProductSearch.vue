@@ -32,7 +32,7 @@ export default {
       this.resultsVisible = true
       this.focus = true
       if (this.query.length > 3) {
-        searchProductsByName(this.query, 'labManager.sqlite').then((productDetails) => {
+        searchProductsByName(this.query).then((productDetails) => {
           this.candidateProductFromQuery = productDetails
         })
       } else {
@@ -49,10 +49,10 @@ export default {
       this.$refs.producto.focus()
     },
     createNew: function() {
-      searchProductByExactName(this.query, 'labManager.sqlite').then((row) => {
+      searchProductByExactName(this.query).then((row) => {
         if (row.length === 0) {
           //It's time to create the new product and batch
-          insertProduct(this.query, 'labManager.sqlite').then((id) => {
+          insertProduct(this.query).then((id) => {
             debugger
             this.selectProduct(this.query, id)
           })
@@ -73,7 +73,7 @@ export default {
   mounted () {
     this.$refs.producto.focus()
     this.$watch('value', function (newVal, oldVal) {
-      getProduct(newVal, 'labManager.sqlite').then((dentistDetail) => {
+      getProduct(newVal).then((dentistDetail) => {
         if (dentistDetail !== undefined) {
           this.query = dentistDetail.NombreDentista
           this.hidePopup()

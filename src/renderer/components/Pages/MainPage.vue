@@ -18,6 +18,7 @@
 <script>
 import topbar from '../PageElements/TopBar'
 import VueRouter from 'vue-router'
+import { loadDbFile } from '../../../main/dal.js'
 
 var { ipcRenderer } = require('electron')
 
@@ -25,6 +26,9 @@ export default {
   name: 'mainPage',
   components: {
     topbar
+  },
+  created () {
+    loadDbFile()
   },
   mounted () {
     ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {

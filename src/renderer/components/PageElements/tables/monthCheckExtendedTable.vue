@@ -195,10 +195,10 @@ export default {
       if (event.srcElement.localName !== 'input' && event.srcElement.localName !== 'a'){
         var work = _.find(works, ['IdTrabajo', idTrabajo])
         work.Chequeado = !work.Chequeado
-        setCheckToWork(idTrabajo, work.Chequeado, 'labManager.sqlite')
+        setCheckToWork(idTrabajo, work.Chequeado)
       }
       else {
-        setCheckToWork(idTrabajo, event.srcElement.checked, 'labManager.sqlite')
+        setCheckToWork(idTrabajo, event.srcElement.checked)
       }
       //Updates the count of the badge
       this.remainingWorks[idDentist] = this.calculateRemainingWorks(works)
@@ -330,7 +330,7 @@ export default {
 
     //Persistence--------------------------------
     getWorksOfDentist(idDentist) {
-      getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, 'labManager.sqlite').then(this.getWorksOfDentist_Companion)
+      getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist).then(this.getWorksOfDentist_Companion)
     },
     getWorksOfDentist_Companion(works) {
       if (works.length > 0) {
@@ -346,7 +346,7 @@ export default {
       }
     },
     getWorkIndications(idTrabajo) {
-      getWorkIndications(idTrabajo, 'labManager.sqlite').then(this.getWorkIndications_Companion)
+      getWorkIndications(idTrabajo).then(this.getWorkIndications_Companion)
     },
     getWorkIndications_Companion(workIndications){
       if (workIndications.length > 0) {
@@ -362,7 +362,7 @@ export default {
     if (this.month === undefined || this.month === null)
       throw 'Missing prop month in monthCheckExtendedTable.vue'
 
-    getWorksAggregatedByDentist(parseInt(this.year), parseInt(this.month), 'labManager.sqlite').then((dentistGroup) => {
+    getWorksAggregatedByDentist(parseInt(this.year), parseInt(this.month)).then((dentistGroup) => {
       this.rawDataset = dentistGroup
       this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
 

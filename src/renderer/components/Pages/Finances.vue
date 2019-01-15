@@ -58,17 +58,17 @@ export default {
     }
   },
   mounted () {
-    getWorkInExecution('labManager.sqlite').then((works) => {
+    getWorkInExecution().then((works) => {
       this.worksInProgressCount = works.Count
       })
-    getWorksEndedThisMonth('labManager.sqlite').then((works) => {
+    getWorksEndedThisMonth().then((works) => {
       this.worksEndedThisMonthCount = works.Count
       })
-    getWorksEndedLast30days('labManager.sqlite').then((works) => {
+    getWorksEndedLast30days().then((works) => {
       this.worksEndedLast30daysCount = works.Count
       this.worksEndedLast30daysSum = works.Sum
       })
-    getWorksEndedPrevious30days('labManager.sqlite').then((works) => {
+    getWorksEndedPrevious30days().then((works) => {
       this.worksEndedPrevious30daysCount = works.Count
       this.worksEndedPrevious30daysSum = works.Sum
       })

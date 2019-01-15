@@ -88,8 +88,8 @@ export default {
       this.$refs.conformityModal.hide()
     },
     getDeclarationOfConformity: async function () {
-      var declaration = await getConformityDeclaration(this.workId, 'labManager.sqlite')
-      var config = await getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'], 'labManager.sqlite')
+      var declaration = await getConformityDeclaration(this.workId)
+      var config = await getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'])
 
       //1. Get the config data first
       this.makerNumber = _.find(config, ['clave', 'makerNumber']).valor,
@@ -122,10 +122,9 @@ export default {
           IdTrabajo: this.workId,
           Meses: this.warrantyPeriod
         },
-        _.map(this.batches, 'IdProductoLote'),
-        'labManager.sqlite')
+        _.map(this.batches, 'IdProductoLote'))
       .then(() => {
-        getConformityDeclaration(this.workId, 'labManager.sqlite').then((row) => {
+        getConformityDeclaration(this.workId).then((row) => {
           this.print(row)
           this.hide()
         })
@@ -137,17 +136,16 @@ export default {
           IdDeclaracion: this.declarationId,
           Meses: this.warrantyPeriod
         }
-        updateConformityDeclaration(dec,  _.map(this.batches, 'IdProductoLote'),
-          'labManager.sqlite')
+        updateConformityDeclaration(dec,  _.map(this.batches, 'IdProductoLote'))
         .then(() => {
-          getConformityDeclaration(this.workId, 'labManager.sqlite').then((row) => {
+          getConformityDeclaration(this.workId).then((row) => {
           this.print(row)
           this.hide()
           })
         })
       } else {
         //No real updates, just print
-        getConformityDeclaration(this.workId, 'labManager.sqlite').then((row) => {
+        getConformityDeclaration(this.workId).then((row) => {
           this.print(row)
           this.hide()
         })

@@ -133,7 +133,7 @@ export default {
     save: function() {
       this.$v.$touch()
       if (!this.$v.$invalid){
-        insertDentist(this.data, 'labManager.sqlite')
+        insertDentist(this.data)
       }
     }
   },
