@@ -50,7 +50,15 @@ export default {
           }
         })
         configSet('dataFile', '')
+      } else {
+        //Everything is ok.
       }
+    },
+    reloadDb: async function(file){
+      configSet('dataFile', file)
+      await this.loadDb()
+      //Reload everything.
+      this.$router.go(0)
     }
   },
   created () {
@@ -78,8 +86,7 @@ export default {
       })
     })
     ipcRenderer.on('reload:database', (event, file) => {
-      configSet('dataFile', file)
-      this.loadDb()
+      this.reloadDb(file)
     })
   }
 }

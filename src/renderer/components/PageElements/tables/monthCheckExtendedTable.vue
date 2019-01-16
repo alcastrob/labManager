@@ -18,7 +18,7 @@
 
                 <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" v-model="row.percentage.$model"  @change="updateTotal($event, row.IdDentista.$model)" :class="{'bg-danger text-white animated shake': row.percentage.$error}">
 
-                <input type="checkbox" v-else-if="isButton(column.dataField)" @change="forceAllWorksChechedBeforCheckingTheDentist($event, row.IdDentista.$model)" :id="'chkDentist-' + row.IdDentista.$model">
+                <input type="checkbox" v-else-if="isButton(column.dataField)" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, row.IdDentista.$model)" :id="'chkDentist-' + row.IdDentista.$model">
 
                 <span v-else :value="row[column.dataField].$model">
                   {{formatRow(row[column.dataField].$model, column.formatter)}}
@@ -93,6 +93,8 @@
   </div>
 </template>
 <script>
+'use strict'
+
 import Vue from 'vue'
 import FloatThead from 'vue-floatthead'
 import _ from 'lodash'
@@ -253,8 +255,10 @@ export default {
     },
 
     //Verifications------------------------------
-    areAllWorksOfDentistChecked(idDentist){
-      return this.calculateRemainingWorks(this.worksPerDentist[idDentist]) === ''
+    isAnyWorkOfDentistChecked(idDentist){
+      return _.some(this.worksPerDentist[idDentist], function(w) {
+        return w.Chequeado !== 0 && w.Chequeado !== false
+      })
     },
     isEditable: function(field) {
       return field === 'percentage'
@@ -264,10 +268,10 @@ export default {
     },
 
     //Updates and manipulation of the UI---------
-    forceAllWorksChechedBeforCheckingTheDentist(event, idDentist){
+    forceSomeWorksChechedBeforCheckingTheDentist(event, idDentist){
       this.selectedDentist = idDentist
       this.$forceUpdate()
-      if (!this.areAllWorksOfDentistChecked(idDentist)) {
+      if (!this.isAnyWorkOfDentistChecked(idDentist)) {
         event.srcElement.checked = false
       }
       if (event.srcElement.checked) {
@@ -281,7 +285,7 @@ export default {
       this.emitDataBack()
     },
     updateDentistCheckbox(idDentist) {
-      var areChecked = this.areAllWorksOfDentistChecked(idDentist)
+      var areChecked = this.isAnyWorkOfDentistChecked(idDentist)
       document.getElementById('chkDentist-' + idDentist).checked = areChecked
       if (areChecked){
         this.dentistsChecked.push(idDentist)
