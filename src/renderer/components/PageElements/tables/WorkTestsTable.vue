@@ -237,7 +237,7 @@ export default {
   mounted () {
     // Check the required parameters (props)
     if (this.workId === undefined || this.workId === null)
-      throw 'Missing prop workId in WorkTestTable.vue'
+      throw 'Missing prop workId in WorkTestsTable.vue'
     getDeliveryShifts().then((shifts) => {
       this.deliveryShifts = shifts
     })

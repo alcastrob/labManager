@@ -3,8 +3,8 @@
 
 <script>
 import Vue from 'Vue'
-import workIndicationsTable from '../PageElements/WorkIndicationsTable'
-import workTestsTable from '../PageElements/workTestsTable'
+import workIndicationsTable from '../PageElements/tables/WorkIndicationsTable'
+import workTestsTable from '../PageElements/tables/workTestsTable'
 import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
 import dentistSearch from '../PageElements/DentistSearch'
 import workAdjuncts from '../PageElements/WorkAdjuncts'
