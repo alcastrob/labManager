@@ -13,7 +13,7 @@ import VueSwal from 'vue-swal'
 import VueToasted from 'vue-toasted'
 
 Vue.use(VueSwal)
-Vue.use(VueToasted, { iconPack: 'fontawesome' })
+Vue.use(VueToasted, { iconPack: 'fontawesome', singleton: true })
 
 export default {
   name: 'labManager',

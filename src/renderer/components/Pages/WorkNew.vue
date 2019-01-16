@@ -225,8 +225,9 @@ export default {
         path: '/works/list'
       })
       this.$toasted.show(`Se ha creado el trabajo ${this.work.IdTrabajo}.`, {
-        position: 'bottom-right',
-        duration: 5000,
+        position: 'top-right',
+        duration: null,
+        singleton: true,
         iconPack: 'fontawesome',
         icon: {
           name: 'teeth'
