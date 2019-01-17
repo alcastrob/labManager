@@ -14,6 +14,7 @@ import monthCheck from '../components/Pages/MonthCheck.vue'
 import dashboard from '../components/Pages/Dashboard.vue'
 import dentistNew from '../components/Pages/DentistNew.vue'
 import catalog from '../components/Pages/Catalog.vue'
+import testPage from '../components/Pages/TestPage.vue'
 
 Vue.use(Router)
 
@@ -27,7 +28,8 @@ export default new Router({
         {
           path: '',
           // component: worksList
-          component: dashboard
+          // component: dashboard
+          component: testPage
         },
         {
           path: 'about',

@@ -191,21 +191,19 @@ namespace dataMigration
             }
         }
 
-        public void WriteFacturas(List<FacturaTemp> facturas)
+        public void WriteFacturas(List<Factura> facturas)
         {
             Console.WriteLine("Inserting on Facturas table");
             try
             {
                 connection.Open();
-                foreach (FacturaTemp factura in facturas)
+                foreach (Factura factura in facturas)
                 {
                     var query = new System.Text.StringBuilder();
                     query.AppendLine(@"INSERT INTO Facturas (");
-                    query.AppendLine(@"IdFactura, IdDentista, Fecha, Total, ");
-                    query.AppendLine(@"Descuento, Banco, Efectivo)");
+                    query.AppendLine(@"IdFactura, IdDentista, Fecha, Total)");
                     query.AppendLine(@"VALUES (");
-                    query.AppendLine(@"@IdFactura, @IdDentista, @Fecha, @Total,");
-                    query.AppendLine(@"@Descuento, @Banco, @Efectivo");
+                    query.AppendLine(@"@IdFactura, @IdDentista, @Fecha, @Total");
                     query.AppendLine(@");");
 
                     SQLiteCommand command = new SQLiteCommand(query.ToString(), connection);
@@ -214,9 +212,6 @@ namespace dataMigration
                     command.Parameters.Add(new SQLiteParameter("@IdDentista", factura.IdDentista));
                     command.Parameters.Add(new SQLiteParameter("@Fecha", factura.Fecha));
                     command.Parameters.Add(new SQLiteParameter("@Total", factura.Total));
-                    command.Parameters.Add(new SQLiteParameter("@Descuento", factura.Descuento));
-                    command.Parameters.Add(new SQLiteParameter("@Banco", factura.Banco));
-                    command.Parameters.Add(new SQLiteParameter("@Efectivo", factura.Efectivo));                    
                     command.ExecuteNonQuery();
                 }
             }

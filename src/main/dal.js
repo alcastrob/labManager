@@ -380,7 +380,7 @@ export function searchDentistsByName (dentistName) {
 // Work Month Check -----------------------------------------------------------
 
 //Tested
-export function getWorksAggregatedByDentist (year, month) {
+export async function getWorksAggregatedByDentist (year, month) {
   var query = 'SELECT d.IdDentista AS Key, d.IdDentista AS IdDentista, d.NombreDentista, ' +
     '  sum(t.PrecioFinal) AS SumaPrecioFinal, ' +
     '  ifnull(sum(t.PrecioMetal), 0) AS SumaAditamentos, ' +
@@ -411,9 +411,11 @@ export function getWorksAggregatedByDentist (year, month) {
     'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
     'GROUP BY t.IdDentista, d.NombreDentista ' +
     'ORDER BY d.NombreDentista'
-  return allAsync(db, query, []).then((rows) => {
-    return rows
-  })
+    debugger
+    return allAsync(db, query, [])
+  // return allAsync(db, query, []).then((rows) => {
+  //   return rows
+  // })
 }
 
 //Tested
@@ -435,73 +437,95 @@ export function setCheckToWork (idTrabajo, check) {
 
 // Invoices ------------------------------------------------------------------
 
-  export function getInvoicesList (customFilters) {
-    var query = 'SELECT * FROM vFacturas WHERE 1=1'
-    if (customFilters !== undefined){
-    }
-    return allAsync(db, query, []).then((row) => {
-      return row
-    })
-  }
-
-  export function insertInvoice(invoice) {
-    var query = 'INSERT INTO Facturas (IdDentista, ' +
-    'Fecha, Total, Descuento, Banco, Efectivo) ' +
-    'VALUES (?, ?, ?, ?, ?, ?)'
-    return runAsync(db, query, [invoice.IdFactura, invoice.IdDentista, invoice.Fecha,
-      invoice.Total, invoice.Descuento, invoice.Banco, invoice.Efectivo])
-  }
-
-  export function getInvoice (invoiceId) {
-    var query = 'SELECT * FROM vFacturas WHERE IdFactura = ?'
-    if (customFilters !== undefined){
-    }
-    return getAsync(db, query, [invoiceId]).then((row) => {
-      return row
-    })
-  }
-
-  export function updateInvoice(invoice) {
-    var query = 'UPDATE Facturas SET IdDentista = ?, ' +
-    'Fecha = ?, Total = ?, Descuento = ?, '+
-    'Banco = ?, Efectivo = ? ' +
-    'WHERE IdFactura = ?'
-    return runAsync(db, query, [invoice.IdDentista, invoice.Fecha,
-      invoice.Total, invoice.Descuento, invoice.Banco, invoice.Efectivo])
-  }
-
-  export function deleteInvoice(invoiceId) {
-    var query = 'DELETE FROM Facturas WHERE IdFactura = ?'
-    return runAsync(db, query, [invoiceId])
-  }
-
-// Invoice details ------------------------------------------------------------
-
-export function getInvoiceDetails (invoiceId) {
-  var query = 'SELECT * FROM FacturasDetalle WEHRE IdFactura = ?'
+//Tested
+export async function getInvoicesList (customFilters) {
+  debugger
+  var query = 'SELECT * FROM vFacturas WHERE 1=1'
+  var params = []
   if (customFilters !== undefined){
+    if (customFilters.month !== undefined && customFilters.year !== undefined) {
+      query += ' AND Fecha BETWEEN date("' + customFilters.year + '-' + ('00' + customFilters.month).substr(-2) + '-01") AND date("' + customFilters.year + '-' + ('00' + customFilters.month).substr(-2) + '-01", "+1 month")'
+    }
+    if (customFilters.dentistId !== undefined) {
+      query += ' AND IdDentista = ?'
+      params.push(customFilters.dentistId)
+    }
   }
-  return getAsync(db, query, [invoiceId]).then((row) => {
-    return row
-  })
+  return await allAsync(db, query, params)
 }
 
-export function insertInvoiceDetail(invoiceDetail) {
-  var query = 'INSERT INTO FacturasDetalle (IdFactura, Descripcion, Precio) VALUES (?, ?, ?)'
-  return runAsync(db, query, [invoiceDetail.IdFacturaDetalle, invoiceDetail.Descripcion, invoiceDetail.Precio])
-}
+  //Tested
+  export async function insertInvoice(idDentist, works) {
+    var worksString = ''
+    for (var value of works) {
+      worksString += `${value.idTrabajo},`
+    }
+    worksString =  worksString.substr(0, worksString.length - 1)
 
-export function updateInvoiceDetail(invoiceDetail) {
-  var query = 'UPDATE FacturasDetalle SET IdFactura = ?, Descripcion = ?, Precio = ? ' +
-  'WHERE IdFacturaDetalle = ?'
-  return runAsync(db, query, [invoiceDetail.IdFactura, invoiceDetail.Descripcion,
-    invoiceDetail.Precio, invoiceDetail.IdFacturaDetalle])
-}
+    var query1 = 'INSERT INTO Facturas(NumFactura, IdDentista, Fecha, Total) ' +
+    'VALUES ( ' +
+    '  (SELECT CASE WHEN ( ' +
+    '    SELECT EXISTS( ' +
+    '      SELECT max(IdFactura) AS IdFactura, strftime("%Y", Fecha) as year ' +
+    '      FROM Facturas WHERE year = strftime("%Y", date("now")) GROUP BY year ' +
+    '      ) ' +
+    '    ) == 0 ' +
+    '  THEN 1 ' +
+    '  ELSE ' +
+    '    (SELECT NumFactura + 1 FROM ' +
+    '      (SELECT max(NumFactura) AS NumFactura, strftime("%Y", Fecha) as year FROM Facturas WHERE year = strftime("%Y", date("now")) GROUP BY year ' +
+    '      ) ' +
+    '    ) ' +
+    '  END), ' +
+    '  ?, ' +
+    '  date("now"), ' +
+    `  (SELECT SUM(PrecioFinal) FROM Trabajos WHERE IdTrabajo IN (${worksString})) ` +
+    ')'
+    var idInvoice = await runAsync(db, query1, [idDentist])
+    for (var value of works) {
+      var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo, EsDescuento) VALUES (?, ?, ?)'
+      await runAsync(db, query2, [idInvoice, value.idTrabajo, value.esDescuento])
+    }
+    return idInvoice
+  }
 
-export function deleteInvoiceDetail(invoiceDetailId) {
-  var query = 'DELETE FROM FacturasDetalle WHERE IdFacturaDetalle = ?'
-  return runAsync(db, query, [invoiceDetailId])
-}
+  //Tested
+  export async function getInvoice (invoiceId) {
+    var query1 = 'SELECT * FROM vFacturas WHERE IdFactura = ?'
+    var query2 = 'SELECT * FROM vFacturasTrabajos WHERE IdFactura = ?'
+    var invoice = await getAsync(db, query1, [invoiceId])
+    var invoiceWorks = await getAsync(db, query2, [invoiceId])
+    return {
+      invoice: invoice,
+      invoiceWorks: invoiceWorks
+    }
+  }
+
+  // export function updateInvoice(invoice) {
+  //   var query = 'UPDATE Facturas SET IdDentista = ?, ' +
+  //   'Fecha = ?, Total = ? ' +
+  //   'WHERE IdFactura = ?'
+  //   return runAsync(db, query, [invoice.IdDentista, invoice.Fecha,
+  //     invoice.Total, invoice.Descuento, invoice.Banco, invoice.Efectivo])
+  // }
+
+  // export function deleteInvoice(invoiceId) {
+  //   var query = 'DELETE FROM Facturas WHERE IdFactura = ?'
+  //   return runAsync(db, query, [invoiceId])
+  // }
+
+// SELECT max(IdFactura), strftime('%Y', Fecha) as year
+// FROM Facturas
+// WHERE year='2018'
+// GROUP BY year
+
+// CREATE TABLE FacturasTrabajos (
+//   IdFactura   INTEGER REFERENCES Facturas (IdFactura),
+//   IdTrabajo   INTEGER REFERENCES Trabajos (IdTrabajo),
+//   EsDescuento BOOLEAN NOT NULL DEFAULT (false) ,
+//   PRIMARY KEY (IdFactura, IdTrabajo)
+// );
+
 
 // Conformity Declarations ----------------------------------------------------
 
@@ -538,7 +562,7 @@ export function updateConformityDeclaration(conformity, productsIds){
 }
 
 //Tested
-function insertDeclarationProducts(conformityId, productsIds){
+export function insertDeclarationProducts(conformityId, productsIds){
   var promises = []
   for (var productId of productsIds){
     var query2 = 'INSERT INTO DeclaracionProductos (IdDeclaracion, IdProductoLote) VALUES (?, ?)'

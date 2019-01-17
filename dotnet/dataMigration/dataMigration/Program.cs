@@ -40,10 +40,10 @@ namespace dataMigration
             List<TipoTrabajo> listTiposTrabajo = transformer.GetTipoTrabajoDataObject();
             listFichasTemp = transformer.AdaptTipoTrabajoInFichaTrabajoTemp(listFichasTemp);
 
-            Tuple<List<FacturaDetalle>, List<FacturaTemp>> tupleFact = transformer.TransformFacturas(facturasBruto, listDentistas);
+            Tuple<List<FacturaDetalle>, List<Factura>> tupleFact = transformer.TransformFacturas(facturasBruto, listDentistas);
 
             List<FacturaDetalle> listFacturasDetalle = tupleFact.Item1;
-            List<FacturaTemp> listFactura = tupleFact.Item2;
+            List<Factura> listFactura = tupleFact.Item2;
 
             List<Trabajo> listTrabajos = transformer.TransformFichas2(listFichasTemp);
 

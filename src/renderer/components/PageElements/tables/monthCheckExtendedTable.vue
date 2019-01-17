@@ -333,47 +333,50 @@ export default {
     },
 
     //Persistence--------------------------------
-    getWorksOfDentist(idDentist) {
-      getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist).then(this.getWorksOfDentist_Companion)
-    },
-    getWorksOfDentist_Companion(works) {
+    getWorksOfDentist: async function(idDentist) {
+      var works = await getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist)
       if (works.length > 0) {
         var idDentista = works[0].IdDentista
         this.worksPerDentist[idDentista] = works
-
         this.remainingWorks[idDentista] = this.calculateRemainingWorks(works)
-
         for (var work of works){
           this.getWorkIndications(work.IdTrabajo)
         }
         this.$forceUpdate()
       }
     },
-    getWorkIndications(idTrabajo) {
-      getWorkIndications(idTrabajo).then(this.getWorkIndications_Companion)
-    },
-    getWorkIndications_Companion(workIndications){
+    getWorkIndications: async function(idTrabajo) {
+      var workIndications = getWorkIndications(idTrabajo)
       if (workIndications.length > 0) {
         var idTrabajo = workIndications[0].IdTrabajo
         this.workIndications[idTrabajo] = workIndications
       }
+    },
+    getWorksAggregated: async function(year, month){
+      this.rawDataset = await getWorksAggregatedByDentist(parseInt(year), parseInt(month))
+      this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
+
+      for(var dentist of this.rawDataset) {
+        await this.getWorksOfDentist(dentist.IdDentista)
+      }
     }
   },
-  created() {
+  mounted() {
     // Check the required parameters (props)
     if (this.year === undefined || this.year === null)
       throw 'Missing prop year in monthCheckExtendedTable.vue'
     if (this.month === undefined || this.month === null)
       throw 'Missing prop month in monthCheckExtendedTable.vue'
 
-    getWorksAggregatedByDentist(parseInt(this.year), parseInt(this.month)).then((dentistGroup) => {
-      this.rawDataset = dentistGroup
-      this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
+    this.getWorksAggregated(this.year, this.month)
+    // getWorksAggregatedByDentist(parseInt(this.year), parseInt(this.month)).then((dentistGroup) => {
+    //   this.rawDataset = dentistGroup
+    //   this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
 
-      for(var dentist of this.rawDataset) {
-        this.getWorksOfDentist(dentist.IdDentista)
-      }
-    })
+    //   for(var dentist of this.rawDataset) {
+    //     this.getWorksOfDentist(dentist.IdDentista)
+    //   }
+    // })
   },
   computed: {
   }

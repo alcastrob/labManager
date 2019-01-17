@@ -339,10 +339,10 @@ namespace dataMigration
         #endregion
 
         #region "Facturas"
-        public Tuple<List<FacturaDetalle>, List<FacturaTemp>> TransformFacturas(List<FacturaAccess> facturasBruto, List<Dentista> dentistas)
+        public Tuple<List<FacturaDetalle>, List<Factura>> TransformFacturas(List<FacturaAccess> facturasBruto, List<Dentista> dentistas)
         {
             List<FacturaDetalle> detallesFacturas = new List<FacturaDetalle>();
-            List<FacturaTemp> facturas = new List<FacturaTemp>();
+            List<Factura> facturas = new List<Factura>();
 
             foreach (FacturaAccess factura in facturasBruto)
             {
@@ -365,7 +365,7 @@ namespace dataMigration
                 facturas.Add(MapFacturaAccess(factura, query.First().IdDentista));
             }
 
-            return new Tuple<List<FacturaDetalle>, List<FacturaTemp>>(detallesFacturas, facturas);
+            return new Tuple<List<FacturaDetalle>, List<Factura>>(detallesFacturas, facturas);
         }
 
         private void ProcessFactura(List<FacturaDetalle> detalles, FacturaAccess factura)
@@ -462,11 +462,11 @@ namespace dataMigration
             }
         }
 
-        private FacturaTemp MapFacturaAccess(FacturaAccess factura, int IdDentista)
+        private Factura MapFacturaAccess(FacturaAccess factura, int IdDentista)
         {
             // Probably using automapper would be a better idea. But this
             // implementation is good enough for this tiny case.
-            FacturaTemp returnedValue = new FacturaTemp
+            Factura returnedValue = new Factura
             {
                 IdFactura = factura.IdFactura,
                 IdDentista = IdDentista,

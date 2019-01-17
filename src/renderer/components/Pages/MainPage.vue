@@ -30,7 +30,7 @@ export default {
   methods: {
     loadDb: async function(){
       if (configGet('dataFile') === ''){
-        // No selectec file for running the application
+        // No selected file for running the application
         swal({
           title: "Datos nos cargados",
           text: "La aplicación debe cargar un fichero de datos para poder trabajar correctamente. Por favor, seleccione el fichero apropiado en el menú Archivo > Abrir archivo.",
@@ -51,13 +51,13 @@ export default {
         })
         configSet('dataFile', '')
       } else {
-        //Everything is ok.
+        //Everything is OK
       }
     },
     reloadDb: async function(file){
       configSet('dataFile', file)
       await this.loadDb()
-      //Reload everything.
+      //Reload everything
       this.$router.go(0)
     }
   },

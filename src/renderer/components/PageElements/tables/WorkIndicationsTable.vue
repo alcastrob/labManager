@@ -72,8 +72,8 @@
 
 <script>
 
-import tableMixin from './tables/TablesWithEmptyRowsMixin'
-import { insertWorkIndications, updateWorkIndications, deleteWorkIndications, updatePriceSum } from '../../../main/dal.js'
+import tableMixin from './TablesWithEmptyRowsMixin'
+import { insertWorkIndications, updateWorkIndications, deleteWorkIndications, updatePriceSum } from '../../../../main/dal.js'
 import _ from 'lodash'
 
 export default {

@@ -101,8 +101,8 @@
 </template>
 
 <script>
-import tableMixin from './tables/TablesWithEmptyRowsMixin'
-import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../main/dal.js'
+import tableMixin from './TablesWithEmptyRowsMixin'
+import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 

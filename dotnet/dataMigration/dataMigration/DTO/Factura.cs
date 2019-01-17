@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dataMigration.DTO
 {
-    class FacturaTemp
+    class Factura
     {
         public int IdFactura { get; set; }
         public int IdDentista { get; set; }
