@@ -346,7 +346,7 @@ export default {
       }
     },
     getWorkIndications: async function(idTrabajo) {
-      var workIndications = getWorkIndications(idTrabajo)
+      var workIndications = await getWorkIndications(idTrabajo)
       if (workIndications.length > 0) {
         var idTrabajo = workIndications[0].IdTrabajo
         this.workIndications[idTrabajo] = workIndications

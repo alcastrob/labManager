@@ -92,9 +92,9 @@ export default {
       var config = await getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'])
 
       //1. Get the config data first
-      this.makerNumber = _.find(config, ['clave', 'makerNumber']).valor,
-      this.personInCharge = _.find(config, ['clave', 'personInCharge']).valor,
-      this.companyName = _.find(config, ['clave', 'companyName']).valor,
+      this.makerNumber = _.find(config, ['clave', 'makerNumber']).valor
+      this.personInCharge = _.find(config, ['clave', 'personInCharge']).valor
+      this.companyName = _.find(config, ['clave', 'companyName']).valor
       this.logo = _.find(config, ['clave', 'logo']).valor
 
       //2. Now check if the note exists -> Use its data

@@ -220,28 +220,24 @@ export default {
     },
     showConformity(){
       this.$refs.conformity.show()
+    },
+    getData: async function(){
+      debugger
+      this.work = await getWork(this.work.IdTrabajo)
+      this.readOnly = this.work.FechaTerminacion !== null
+      this.workIndications = await getWorkIndications(this.work.IdTrabajo)
+      this.workAdjuncts = await getAdjuntsOfWork(this.work.IdTrabajo)
+      if (this.workAdjuncts !== undefined){
+        this.showAdjunts(false)
+      }
+      this.workTests = await getWorkTestsList(this.work.IdTrabajo)
     }
   },
   created () {
     this.work.IdTrabajo = parseInt(this.$route.params.id)
   },
   mounted () {
-    getWork(this.work.IdTrabajo).then((workDetails) => {
-      this.work = workDetails
-      this.readOnly = workDetails.FechaTerminacion !== null
-    })
-    getWorkIndications(this.work.IdTrabajo).then((workIndicat) => {
-      this.workIndications = workIndicat
-    })
-    getAdjuntsOfWork(this.work.IdTrabajo).then((workAdjuncts) => {
-      this.workAdjuncts = workAdjuncts
-      if (this.workAdjuncts !== undefined){
-        this.showAdjunts(false)
-      }
-    })
-    getWorkTestsList(this.work.IdTrabajo).then((workTests) => {
-      this.workTests = workTests
-    })
+    this.getData()
   }
 }
 </script>

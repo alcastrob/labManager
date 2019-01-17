@@ -100,12 +100,12 @@ function processDateQuery(field, value){
 }
 
 //Tested
-export function getWork (workId) {
+export async function getWork(workId) {
   var query = 'SELECT * FROM vTrabajos ' +
   'WHERE IdTrabajo = ?'
-  return getAsync(db, query, [workId]).then((row) => {
-    return row
-  })
+  return getAsync(db, query, [workId])//.then((row) => {
+  //   return row
+  // })
 }
 
 //Tested
@@ -134,13 +134,13 @@ export function updateWork(work) {
 // Work Indications -----------------------------------------------------------
 
 //Tested
-export function getWorkIndications (workId) {
+export async function getWorkIndications (workId) {
   var query = 'SELECT IdTrabajoDetalle, IdTrabajo, Descripcion, Precio ' +
   'FROM TrabajosDetalle ' +
   'WHERE IdTrabajo = ?'
-  return allAsync(db, query, [workId]).then((rows) => {
-    return rows
-  })
+  return await allAsync(db, query, [workId])//.then((rows) => {
+  //   return rows
+  // })
 }
 
 //Tested
@@ -174,12 +174,12 @@ export function updatePriceSum(workId){
 // Work Tests -----------------------------------------------------------------
 
 //Tested
-export function getWorkTestsList (workId) {
+export async function getWorkTestsList (workId) {
   var query = 'SELECT * FROM vPruebas ' +
   'WHERE IdTrabajo = ?'
-  return allAsync(db, query, [workId]).then((rows) => {
-    return rows
-  })
+  return await allAsync(db, query, [workId])//.then((rows) => {
+  //   return rows
+  // })
 }
 
 //Tested
@@ -285,16 +285,16 @@ export function getWorkTypes () {
 // Adjuncts -------------------------------------------------------------------
 
 //Tested
-export function getAdjuntsOfWork (workId) {
+export async function getAdjuntsOfWork (workId) {
   var query = 'SELECT IdAditamento, Caja, Cubeta, Articulador, ' +
   'Pletinas, Tornillos, Analogos, PosteImpresion, ' +
   'Interface, Otros ' +
   'FROM Aditamentos ' +
   'WHERE IdTrabajo = ?'
 
-  return getAsync(db, query, [workId]).then((row) => {
-    return row
-  })
+  return await getAsync(db, query, [workId])//.then((row) => {
+  //   return row
+  // })
 }
 
 //Tested
@@ -411,11 +411,7 @@ export async function getWorksAggregatedByDentist (year, month) {
     'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
     'GROUP BY t.IdDentista, d.NombreDentista ' +
     'ORDER BY d.NombreDentista'
-    debugger
     return allAsync(db, query, [])
-  // return allAsync(db, query, []).then((rows) => {
-  //   return rows
-  // })
 }
 
 //Tested
@@ -494,7 +490,7 @@ export async function getInvoicesList (customFilters) {
     var query1 = 'SELECT * FROM vFacturas WHERE IdFactura = ?'
     var query2 = 'SELECT * FROM vFacturasTrabajos WHERE IdFactura = ?'
     var invoice = await getAsync(db, query1, [invoiceId])
-    var invoiceWorks = await getAsync(db, query2, [invoiceId])
+    var invoiceWorks = await allAsync(db, query2, [invoiceId])
     return {
       invoice: invoice,
       invoiceWorks: invoiceWorks

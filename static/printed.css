@@ -3,6 +3,10 @@
   margin: 10mm 10mm 10mm 10mm;
 }
 
+footer {
+  font-size: 11px;
+}
+
 @media print {
 
   [class*="col-sm-"] {
@@ -121,13 +125,33 @@
     display:none !important;
   }
 
+  table { page-break-after:auto }
+  tr    { page-break-inside:avoid; page-break-after:auto }
+  td    { page-break-inside:avoid; page-break-after:auto }
+  thead { display:table-header-group }
+  tfoot { display:table-footer-group }
+
+
   table.table-bordered,
   table.table-bordered th {
     border: 0px!important;
   }
-
   table.table-bordered td {
     border: 1px solid black!important;
+  }
+
+  .pagebreak {
+    page-break-before: always;
+  }
+
+  .dontBreakHere {
+    page-break-before: avoid;
+    page-break-after: avoid;
+  }
+
+  footer {
+    position: fixed;
+    bottom: 0;
   }
 }
 
@@ -139,3 +163,31 @@
   font-size: 18px;
 }
 
+.clientBox {
+  border: 1px solid #C9C9C9;
+  padding: 4px 4px 4px 4px;
+  background-color: #EFEFEF;
+  -webkit-print-color-adjust: exact;
+}
+
+table.table-invoice {
+  border-bottom: 1px solid #C9C9C9;
+}
+table.table-invoice th {
+  border: 0px;
+}
+table.table-invoice tbody tr:not(.leapTr){
+  border-top: 1px solid #C9C9C9;
+}
+table.table-invoice tbody tr:not(.leapTr) td{
+  padding-bottom: 0.1rem;
+}
+
+table.table-invoice tbody tr.leapTr td{
+  padding: 0.1rem 0rem 0.1rem 2.5rem;
+  border-top: 0px;
+  border-bottom: 0px;
+}
+table.table-invoice td {
+  border: 0px;
+}
