@@ -29,7 +29,7 @@
               Se van a emitir facturas para los siguientes clientes. Por favor, verifique que los datos de los posibles descuentos aplicados son correctos. Una vez emitidas las facturas, se podrán consultar y volver a imprimir desde la sección Facturas del área de Gestión Económica.
             </span>
             <ul class="pt-3">
-              <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{moneyFormatter.format(dentist.ImporteBase)}} | Dto. {{dentist.Dto}}% ({{moneyFormatter.format(dentist.ImporteDto)}}) | Total factura: {{moneyFormatter.format(dentist.Total)}}</li>
+              <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{moneyFormatter.format(dentist.ImporteBase)}} | Dto. {{dentist.Dto}}% ({{moneyFormatter.format(dentist.ImporteDto)}}) | Total albarán: {{moneyFormatter.format(dentist.Total)}}</li>
             </ul>
           </div> <!-- col-md-12 -->
         </div> <!-- row -->
@@ -55,8 +55,9 @@
     <div class="modal-footer">
       <button class="btn btn-secondary" @click="hideModal"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
       <button class="btn btn-secondary " @click="confirmGeneration" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
-      <button class="btn btn-secondary " @click="confirmGeneration" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-print mr-2"></i>Generar e imprimir facturas</button>
+      <button class="btn btn-secondary " @click="confirmGeneration(true)" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-print mr-2"></i>Generar e imprimir facturas</button>
     </div>
+    <invoice ref="invoice"></invoice>
   </b-modal>
 </div>
 </template>
@@ -171,8 +172,9 @@ export default {
     generateInvoice() {
       this.showModal()
     },
-    confirmGeneration() {
+    confirmGeneration(haveToPrint) {
       this.inProgress = true
+      this.$refs.invoice.print()
     },
     showModal() {
       this.$refs.modal.show()

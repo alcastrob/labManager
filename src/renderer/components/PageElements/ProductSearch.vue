@@ -53,7 +53,6 @@ export default {
         if (row.length === 0) {
           //It's time to create the new product and batch
           insertProduct(this.query).then((id) => {
-            debugger
             this.selectProduct(this.query, id)
           })
         }

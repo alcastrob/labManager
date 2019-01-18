@@ -157,7 +157,7 @@
       <button class="btn btn-secondary" @click="printLabels" disabled ref="btnPrint"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir</button>
     </div>
   </b-modal>
-  <div ref="labelContainer"></div>
+  <div ref="labelContainer" class="visuallyhidden"></div>
 </div>
 </template>
 

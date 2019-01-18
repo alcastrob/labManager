@@ -4,7 +4,9 @@ import { app, BrowserWindow, Menu, dialog } from 'electron'
 import { checkForUpdates } from './updates'
 const path = require('path')
 const log = require('electron-log')
-
+const electron = require('electron')
+const ipc = electron.ipcMain
+const fs = require('fs')
 
 /**
  * Set `__static` path to static files in production
@@ -64,6 +66,22 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+ipc.on('print-to-pdf', function (event, content) {
+  const pdfPath = path.join(__dirname, '/print.pdf')
+  const win = BrowserWindow.fromWebContents(event.sender)
+  win.webContents.printToPDF({printBackground: true, landscape: true}, function (error, data) {
+    if (error) throw error
+    fs.writeFile(pdfPath, data, function (error) {
+      if (error) {
+        throw error
+      }
+      //shell.openExternal('file://' + pdfPath)
+      //event.sender.send('wrote-pdf', pdfPath)
+    })
+  })
+})
+
 
 
 const menuTemplate = [{

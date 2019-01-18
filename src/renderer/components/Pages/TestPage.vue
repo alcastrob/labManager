@@ -8,8 +8,7 @@
     {{list}}
     <button @click="print">Print</button>
 
-    <invoice :invoiceId="595" ref="invoice"></invoice>
-    <!-- class="invisible" -->
+    <invoice ref="invoice"></invoice>
   </div>
 </template>
 
@@ -40,10 +39,6 @@ export default {
       var idTrabajo2 = 498
       var esDescuento2 = false
 
-      // this.idInvoice = await insertInvoice(idDentista, [
-      //   {idTrabajo: idTrabajo1, esDescuento: esDescuento1},
-      //   {idTrabajo: idTrabajo2, esDescuento: esDescuento2}
-      // ])
       this.idInvoice = await insertInvoice(46, [
         {idTrabajo: 288, esDescuento: false},
         {idTrabajo: 313, esDescuento: false},
@@ -72,7 +67,9 @@ export default {
       )
     },
     print: function() {
-      this.$refs.invoice.print()
+      // const ipc = require('electron').ipcRenderer
+      // ipc.send('print-to-pdf', this.$refs.invoice)
+      this.$refs.invoice.print(595)
     }
   }
 }

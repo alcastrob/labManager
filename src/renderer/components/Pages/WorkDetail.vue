@@ -127,7 +127,7 @@
       </div>
     </b-modal>
     <conformityModal ref="conformity" :workId="work.IdTrabajo"></conformityModal>
-    <div ref="labelContainer" class="invisible"></div>
+    <div ref="labelContainer" class="visuallyhidden"></div>
   </div>
 </template>
 
@@ -222,7 +222,6 @@ export default {
       this.$refs.conformity.show()
     },
     getData: async function(){
-      debugger
       this.work = await getWork(this.work.IdTrabajo)
       this.readOnly = this.work.FechaTerminacion !== null
       this.workIndications = await getWorkIndications(this.work.IdTrabajo)

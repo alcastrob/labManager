@@ -1,5 +1,5 @@
 <template>
-  <div ref="container"></div>
+  <div ref="container" class="visuallyhidden"></div>
 </template>
 
 <script>
@@ -32,17 +32,17 @@ export default {
       vatNumber: '',
       footer: '',
       pageLogosLoaded: {},
-      instances: []
-    }
-  },
-  props: {
-    invoiceId: {
-      type: Number,
-      required: true
+      instances: [],
+      invoiceId: -1
     }
   },
   methods: {
-    print: async function () {
+    print: async function (invoiceId, toPDF) {
+      if (invoiceId === undefined || invoiceId === null){
+        throw 'Missing required parameter invoiceId on call to print method of Invoice.vue'
+      }
+
+      this.invoiceId = invoiceId
       var x = await getInvoice(this.invoiceId)
       this.invoice = x.invoice
       this.invoiceWorks = x.invoiceWorks
@@ -51,7 +51,7 @@ export default {
       }
 
       this.pageLogosLoaded = {}
-      var ComponentClass = Vue.extend(invoicePage)
+
       this.instances = []
       var currentPageLines = 0
       var currentPage = 1
@@ -67,27 +67,9 @@ export default {
           currentPageLines += toAdd
         }
         else {
-          this.pageLogosLoaded[currentPage] = false
-          var instance = new ComponentClass({
-            propsData: {
-              invoice: this.invoice,
-              //The array must be cloned for this specific page
-              works: worksToPrint.slice(0),
-              indications: indicationsToPrint.slice(0),
-              isFirstPage: currentPage === 1,
-              isLastPage: false,
-              pageNumber: currentPage++,
-              cssText: this.cssText,
-              logo: this.logo,
-              vatNumber: this.vatNumber,
-              footer: this.footer
-            }
-          })
-          this.instances.push(instance)
-          instance.$mount()
-          instance.waitLogo(this.waitLogoCallback)
-          this.$refs.container.appendChild(instance.$el)
+          this.insertInstance(worksToPrint, indicationsToPrint, currentPage, false)
           // Now we reset the arrays and include the current work in the next page
+          currentPage++
           worksToPrint = [currentWork]
           indicationsToPrint = []
           indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
@@ -97,33 +79,44 @@ export default {
 
       if (indicationsToPrint.length !== 0){
         //We have something to print on the last page
-        this.pageLogosLoaded[currentPage] = false
-        var instance = new ComponentClass({
-            propsData: {
-              invoice: this.invoice,
-              //The array must be cloned for this specific page
-              works: worksToPrint.slice(0),
-              indications: indicationsToPrint.slice(0),
-              isFirstPage: currentPage === 1,
-              isLastPage: true,
-              pageNumber: currentPage++,
-              cssText: this.cssText,
-              logo: this.logo,
-              vatNumber: this.vatNumber,
-              footer: this.footer
-            }
-          })
-          this.instances.push(instance)
-          instance.$mount()
-          instance.waitLogo(this.waitLogoCallback)
-          this.$refs.container.appendChild(instance.$el)
+        this.insertInstance(worksToPrint, indicationsToPrint, currentPage, true)
+        currentPage++
       }
-      this.realPrint()
+      if (toPDF === undefined || toPDF == false){
+        this.realPrint()
+      } else {
+        const ipc = require('electron').ipcRenderer
+        ipc.send('print-to-pdf')
+      }
+    },
+    insertInstance(worksToPrint, indicationsToPrint, currentPage, isLastPage){
+      var ComponentClass = Vue.extend(invoicePage)
+      this.pageLogosLoaded[currentPage] = false
+      var instance = new ComponentClass({
+        propsData: {
+          invoice: this.invoice,
+          //The array must be cloned for this specific page
+          works: worksToPrint.slice(0),
+          indications: indicationsToPrint.slice(0),
+          isFirstPage: currentPage === 1,
+          isLastPage: isLastPage,
+          pageNumber: currentPage,
+          cssText: this.cssText,
+          logo: this.logo,
+          vatNumber: this.vatNumber,
+          footer: this.footer
+        }
+      })
+      this.instances.push(instance)
+      instance.$mount()
+      instance.waitLogo(this.waitLogoCallback)
+      this.$refs.container.appendChild(instance.$el)
     },
     waitLogoCallback(pageNumber) {
       this.pageLogosLoaded[pageNumber] = true
     },
     realPrint() {
+      //This method is intended to be used only when all the logos of the invoicePage components are fully loaded
       if (! _.every(Object.values(this.pageLogosLoaded), (val) => {return val})) {
         window.setTimeout(this.realPrint, 500)
         return
@@ -135,6 +128,10 @@ export default {
           this.$refs.container.removeChild(currentInstance.$el)
         }
       }
+    },
+    printPdf(){
+      const ipc = require('electron').ipcRenderer
+      ipc.send('print-to-pdf')
     },
     loadData: async function() {
       var config = await getConfigValues(['logo', 'vatNumber', 'invoiceFooter'])
@@ -152,4 +149,19 @@ export default {
 </script>
 
 <style>
+.visuallyhidden:not(:focus):not(:active) {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+
+  white-space: nowrap;
+
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
 </style>

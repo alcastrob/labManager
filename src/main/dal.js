@@ -435,7 +435,6 @@ export function setCheckToWork (idTrabajo, check) {
 
 //Tested
 export async function getInvoicesList (customFilters) {
-  debugger
   var query = 'SELECT * FROM vFacturas WHERE 1=1'
   var params = []
   if (customFilters !== undefined){

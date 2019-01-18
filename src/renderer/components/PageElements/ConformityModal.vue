@@ -25,7 +25,7 @@
         <button v-else class="btn btn-secondary" :disabled="warrantyPeriod === '' || $v.warrantyPeriod.$error" @click="updateDeclarationOfConformity"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir y guardar</button>
       </div>
     </b-modal>
-    <div ref="labelContainer" class="invisible"></div>
+    <div ref="labelContainer" class="visuallyhidden"></div>
   </div>
 </template>
 
