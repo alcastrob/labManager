@@ -7,17 +7,18 @@
     <button @click="getList">Get List</button>
     {{list}}
     <button @click="print">Print</button>
-    <invoice :invoiceId="595"></invoice>
-    <div ref="labelContainer"></div>
+
+    <invoice :invoiceId="595" ref="invoice"></invoice>
     <!-- class="invisible" -->
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import {insertInvoice, getInvoice, getInvoicesList, getConfigValues} from '../../../main/dal.js'
 import _ from 'lodash'
+import {Printd} from 'printd'
 import invoice from '../Labels/Invoice'
+import {insertInvoice, getInvoice, getInvoicesList, getConfigValues} from '../../../main/dal.js'
 
 export default {
   name: 'testPage',
@@ -70,15 +71,8 @@ export default {
         }
       )
     },
-    print: async function() {
-      var ComponentClass = Vue.extend(invoice)
-      var instance = new ComponentClass({
-        propsData: {
-          invoiceId: 595
-        }
-      })
-      instance.$mount()
-      instance.print(this.$refs.labelContainer)
+    print: function() {
+      this.$refs.invoice.print()
     }
   }
 }
