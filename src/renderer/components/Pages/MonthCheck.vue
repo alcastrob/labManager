@@ -1,17 +1,17 @@
 <template>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-6">
-      <h1>Cierre mensual - {{monthName}} {{year}}</h1>
-    </div> <!-- col-md-6 -->
-    <div class="col-md-6 mt-2">
+    <div class="col-md-5">
+      <h1>Cierre - {{monthName}} {{year}}</h1>
+    </div> <!-- col-md-5 -->
+    <div class="col-md-7 mt-2">
       <div class="float-right">
         <collapsable-action-button iconCss="fas fa-clipboard-list" text="Modo verificación (sólo lectura)" :callback="setReadOnly" v-if="!readOnly" ></collapsable-action-button>
         <collapsable-action-button iconCss="fas fa-check" text="Modo normal" :callback="unsetReadOnly" v-else></collapsable-action-button>
         <collapsable-action-button iconCss="fas fa-file-invoice" text="Generar Resumen Mensual" :callback="unsetReadOnly" ></collapsable-action-button>
         <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()" v-if="!readOnly"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       </div>
-    </div> <!-- col-md-6 -->
+    </div> <!-- col-md-7 -->
   </div> <!-- row -->
   <div class="row">
     <div class="col-md-12">

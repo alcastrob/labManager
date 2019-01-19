@@ -1,6 +1,6 @@
 <template>
   <div class="table-responsive">
-    
+
     <float-thead-table class="table table-bordered" :top="56" ref="table" :autoReflow="true" >
       <thead>
         <tr>
@@ -12,83 +12,101 @@
       </thead>
       <tbody>
         <!-- The rows of the dentists -->
-        <template v-for="row in $v.rawDataset.$each.$iter">
-          <tr v-bind:key="'dentist-' + row.IdDentista.$model" v-on:click="toggleExtraData($event, row.IdDentista.$model)">
+        <template v-for="row in rawDataset">
+          <tr v-bind:key="'dentist-' + row.IdDentista" v-on:click="toggleWorksRows($event, row.IdDentista)">
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
 
-                <input type="text" v-if="isEditable(column.dataField)" class="inputInTd small-text text-right" v-model="row.percentage.$model"  @change="updateTotal($event, row.IdDentista.$model)" :class="{'bg-danger text-white animated shake': row.percentage.$error}">
-
-                <input type="checkbox" v-else-if="isButton(column.dataField)" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, row.IdDentista.$model)" :id="'chkDentist-' + row.IdDentista.$model">
+                <input type="checkbox" v-if="isButton(column.dataField)" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, row.IdDentista)" :id="'chkDentist-' + row.IdDentista">
 
                 <div v-else>
-                  <span :value="row[column.dataField].$model">
-                  {{formatRow(row[column.dataField].$model, column.formatter)}}</span>
-                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[row.IdDentista.$model]}}</b-badge>
-                  <span v-if="column.dataField === 'NombreDentista' && isReadOnly && (invoicesPerDentist[row.IdDentista.$model] !== undefined && invoicesPerDentist[row.IdDentista.$model] !== [])">
-                    <span v-for="invoice in invoiceIdsOfDentist(invoicesPerDentist[row.IdDentista.$model])" v-bind:key="invoice.IdTrabajo">
+                  <span v-if="column.dataField === 'percentage'"></span>
+                  <span v-else :value="row[column.dataField]">
+                  {{formatRow(row[column.dataField], column.formatter)}}</span>
+
+                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[row.IdDentista]}}</b-badge>
+
+                  <span v-if="column.dataField === 'NombreDentista' && isReadOnly && (invoicesPerDentist[row.IdDentista] !== undefined && invoicesPerDentist[row.IdDentista] !== [])">
+
+                    <span v-for="invoice in invoiceIdsOfDentist(invoicesPerDentist[row.IdDentista])" v-bind:key="invoice.IdTrabajo">
                       - <router-link :to="'/finances/invoices/' + invoice.IdFactura">{{invoice.NumFactura}}</router-link>
                     </span>
+
                   </span>
+
                 </div>
               </td>
             </template>
           </tr>
           <!-- The rows of the works -->
-          <template v-for="work in worksPerDentist[row.IdDentista.$model]">
-            <transition name="fade" v-bind:key="'work-' + work.IdTrabajo">
-              <tr v-if="selectedDentist === row.IdDentista.$model" class="deaggregated" @click="clickedWork($event, row.IdDentista.$model, work.IdTrabajo)">
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{work.IdTrabajo}}&nbsp;
-                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(row.IdDentista.$model)">
+          <!-- <template v-for="work in $v.worksPerDentist[row.IdDentista].$each.$iter"> -->
+          <template v-for="work in $v.worksValidated.$each.$iter">
+            
+            <transition name="fade" v-bind:key="'work-' + work.IdTrabajo.$model">
+
+              <tr v-if="selectedDentist === row.IdDentista" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo.$model)">
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{work.IdTrabajo.$model}}&nbsp;
+                  <input type="checkbox" v-model="work.Chequeado.$model" @change="updateDentistCheckbox(row.IdDentista)">
                 </td>
-                <td class="dentist-text column-20" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;<router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
-                  <span v-if="isReadOnly && invoicesPerDentist[row.IdDentista.$model].length !== 0">&nbsp;|&nbsp;<router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[row.IdDentista.$model], work.IdTrabajo)">{{invoiceIdOfWork(invoicesPerDentist[row.IdDentista.$model], work.IdTrabajo)}}</router-link></span>
+
+                <td class="dentist-text column-20" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+
+                  {{work.Paciente.$model}}&nbsp;|&nbsp;{{formatDate(work.$model, 'FechaTerminacion')}}&nbsp;|&nbsp;
+                  
+                  <router-link :to="'/works/details/' + work.IdTrabajo.$model" role="button" :id="'tooltipTarget' + work.IdTrabajo.$model">Ver</router-link>
+
+                  <span v-if="isReadOnly && invoicesPerDentist[row.IdDentista].length !== 0">&nbsp;|&nbsp;
+                    <router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[row.IdDentista], work.IdTrabajo.$model)">{{invoiceIdOfWork(invoicesPerDentist[row.IdDentista], work.IdTrabajo.$model)}}</router-link>
+                  </span>
                 </td>
-                <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
+
+                <b-tooltip :target="'tooltipTarget' + work.IdTrabajo.$model" placement="right" delay="500">
                   <div class="text-left">
-                    Tipo: <i class="fas fa-bookmark " :class="work.TipoTrabajo.toLowerCase() + '-color'"></i> {{work.TipoTrabajo}} <br>
-                    Color: {{work.Color}}<br>
-                    Fecha Entrada: {{formatDate(work, 'FechaEntrada')}}<br>
+                    Tipo: <i class="fas fa-bookmark " :class="work.TipoTrabajo.$model.toLowerCase() + '-color'"></i> {{work.TipoTrabajo.$model}} <br>
+                    Color: {{work.Color.$model}}<br>
+                    Fecha Entrada: {{formatDate(work.$model, 'FechaEntrada')}}<br>
                     Indicaciones:<br>
-                    <ul v-for="indication in workIndications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
+                    <ul v-for="indication in workIndications[work.IdTrabajo.$model]" v-bind:key="indication.IdTrabajoDetalle">
                       <li>{{indication.Descripcion}} | {{moneyFormatter.format(indication.Precio)}}</li>
                     </ul>
                   </div>
                 </b-tooltip>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaPrecioFinal)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaPrecioFinal.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaAditamentos)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaAditamentos.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaCeramica)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaCeramica.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaResina)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaResina.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaOrtodoncia)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaOrtodoncia.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaEsqueletico)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaEsqueletico.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaZirconio)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaZirconio.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaFija)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaFija.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  {{moneyFormatter.format(work.SumaTotalMetal)}}
+                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  {{moneyFormatter.format(work.SumaTotalMetal.$model)}}
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                <td class="noMargins" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  <textarea class="inputInTd small-text text-right" :class="{'bg-danger text-white animated shake': work.PorcentajeDescuento.$error}" v-model="work.PorcentajeDescuento.$model"></textarea>
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                <td class="noMargins" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
+                  <input type="text" class="inputInTd small-text text-right" :class="{'bg-danger text-white animated shake': work.TotalDescuento.$error}" @change="setDiscount(work.$model, $event.target.value)">
+                  <!-- <textarea class="inputInTd small-text text-right" :class="{'bg-danger text-white animated shake': work.TotalDescuento.$error}" v-model="work.TotalDescuento.$model"></textarea> -->
                 </td>
-                <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"> ---
+                <td class="small-text text-right noMargins" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
                 </td>
               </tr>
             </transition>
@@ -108,7 +126,8 @@ import moment from 'moment'
 import tableMixin from './tableMixin'
 import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork, getWorkIndications, getInvoicesPerDentist } from '../../../../main/dal.js'
 import bBadge from 'bootstrap-vue'
-import { decimal } from 'vuelidate/lib/validators'
+import { decimal, minValue } from 'vuelidate/lib/validators'
+import { myDecimal } from '../../Validators/validId.js'
 import Router from 'vue-router'
 
 Vue.use(FloatThead)
@@ -169,15 +188,23 @@ export default {
       dentistsChecked: [],
 
       //If true, the table will show ALL the dentists and works, regardless they where associated to an invoice or not
-      isReadOnly: false
+      isReadOnly: false,
+
+      //Due to vuelidate limitations, we need to "cursor" the workPerDentist[dentistId] into one single collection-object to attach the validation
+      worksValidated: []
     }
   },
   validations: {
-    rawDataset: {
+    worksValidated: {
       $each: {
+        Chequeado: {},
+        Color: {},
+        FechaEntrada: {},
+        FechaTerminacion: {},
+        IdTipoTrabajo: {},
+        IdTrabajo: {},
         Key: {},
-        IdDentista: {},
-        NombreDentista: {},
+        Paciente: {},
         SumaAditamentos: {},
         SumaCeramica: {},
         SumaEsqueletico: {},
@@ -187,21 +214,23 @@ export default {
         SumaResina: {},
         SumaTotalMetal: {},
         SumaZirconio: {},
-        percentage: { decimal },
-        SumaDescuento: {},
-        SumaGranTotal: {}
+        TipoTrabajo: {},
+        PorcentajeDescuento: { decimal, minValue: minValue(0) },
+        TotalDescuento: { decimal }
       }
     }
   },
   methods: {
     //Event responses----------------------------
-    toggleExtraData(event, idDentist) {
+    toggleWorksRows(event, idDentist) {
       this.$forceUpdate()
       if (event.srcElement.localName !== 'input'){
         if (this.selectedDentist !== idDentist){
           this.selectedDentist = idDentist
+          this.worksValidated = this.worksPerDentist[idDentist]
         } else {
           this.selectedDentist = 0
+          this.worksValidated = []
         }
       }
     },
@@ -217,6 +246,16 @@ export default {
       }
 
       this.updateDentistCheckbox(idDentist)
+    },
+    setDiscount(work, discount){
+      debugger
+      work.TotalDescuento = discount
+      //this.$v.worksValidated.$each.TotalDescuento.$touch()
+      var x = _.find(this.$v.worksValidated.$each, (o) => {
+        return o.IdTrabajo.$model === work.IdTrabajo
+      })
+      this.$v.$reset()
+      this.$v.$touch()
     },
 
     //Calculations-------------------------------
@@ -269,9 +308,6 @@ export default {
       return _.some(this.worksPerDentist[idDentist], function(w) {
         return w.Chequeado !== 0 && w.Chequeado !== false
       })
-    },
-    isEditable: function(field) {
-      return field === 'percentage'
     },
     isButton: function(field) {
       return field === 'estado'
@@ -380,10 +416,11 @@ export default {
     //Persistence--------------------------------
     getWorksOfDentist: async function(idDentist) {
       var works = await getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, this.isReadOnly)
+      //debugger
       if (works.length > 0) {
-        var idDentista = works[0].IdDentista
-        this.worksPerDentist[idDentista] = works
-        this.remainingWorks[idDentista] = this.calculateRemainingWorks(works)
+        var idDentist = works[0].IdDentista
+        this.worksPerDentist[idDentist] = works
+        this.remainingWorks[idDentist] = this.calculateRemainingWorks(works)
         for (var work of works){
           this.getWorkIndications(work.IdTrabajo)
         }
@@ -445,6 +482,10 @@ export default {
   padding-right: 2px!important;
   padding-top: 5px!important;
   padding-bottom: 5px!important;
+  vertical-align: text-top;
+  resize: none;
+  overflow: hidden;
+  
 }
 .dentist-text {
   font-size: .8em;
