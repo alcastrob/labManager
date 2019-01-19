@@ -476,13 +476,13 @@ export async function getInvoicesList (customFilters) {
     '  (SELECT CASE WHEN ( ' +
     '    SELECT EXISTS( ' +
     '      SELECT max(IdFactura) AS IdFactura, strftime("%Y", Fecha) as year ' +
-    '      FROM Facturas WHERE year = strftime("%Y", date("now")) GROUP BY year ' +
+    '      FROM Facturas WHERE year = strftime("%Y", date(?)) GROUP BY year ' +
     '      ) ' +
     '    ) == 0 ' +
     '  THEN 1 ' +
     '  ELSE ' +
     '    (SELECT NumFactura + 1 FROM ' +
-    '      (SELECT max(NumFactura) AS NumFactura, strftime("%Y", Fecha) as year FROM Facturas WHERE year = strftime("%Y", date("now")) GROUP BY year ' +
+    '      (SELECT max(NumFactura) AS NumFactura, strftime("%Y", Fecha) as year FROM Facturas WHERE year = strftime("%Y", date(?)) GROUP BY year ' +
     '      ) ' +
     '    ) ' +
     '  END), ' +
@@ -490,7 +490,8 @@ export async function getInvoicesList (customFilters) {
     '  date(?), ' +
     `  (SELECT SUM(PrecioFinal) FROM Trabajos WHERE IdTrabajo IN (${worksString})) ` +
     ')'
-    var idInvoice = await runAsync(db, query1, [ idDentist, invoiceDate ])
+    debugger
+    var idInvoice = await runAsync(db, query1, [ invoiceDate, invoiceDate, idDentist, invoiceDate ])
     for (var value of works) {
       var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo, EsDescuento) VALUES (?, ?, ?)'
       await runAsync(db, query2, [idInvoice, value.idTrabajo, value.esDescuento])

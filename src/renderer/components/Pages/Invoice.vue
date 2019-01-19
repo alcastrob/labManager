@@ -6,7 +6,7 @@
     </div> <!-- col-md-6 -->
     <div class="col-md-6 mt-2">
       <div class="float-right">
-        <collapsable-action-button iconCss="fas fa-print" text="Imprimir factura" :callback="printInvoice" v-if="!adjunctsVisible"></collapsable-action-button>
+        <collapsable-action-button iconCss="fas fa-print" text="Imprimir factura" :callback="printInvoice"></collapsable-action-button>
       </div>
     </div> <!-- col-md-6 -->
   </div> <!-- row -->

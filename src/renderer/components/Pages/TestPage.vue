@@ -33,11 +33,11 @@ export default {
   },
   methods: {
     insert: async function() {
-      var idDentista = 113
-      var idTrabajo1 = 400
-      var esDescuento1 = false
-      var idTrabajo2 = 498
-      var esDescuento2 = false
+      // var idDentista = 113
+      // var idTrabajo1 = 400
+      // var esDescuento1 = false
+      // var idTrabajo2 = 498
+      // var esDescuento2 = false
 
       this.idInvoice = await insertInvoice(46, [
         {idTrabajo: 288, esDescuento: false},
@@ -52,7 +52,7 @@ export default {
         {idTrabajo: 666, esDescuento: false},
         {idTrabajo: 735, esDescuento: false},
         {idTrabajo: 736, esDescuento: false}
-      ])
+      ], '2019-01-19')
     },
     get: async function() {
       this.invoice = await getInvoice(this.idInvoice)
