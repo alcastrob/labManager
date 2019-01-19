@@ -5,6 +5,7 @@ var db
 
 import _ from 'lodash'
 import { configGet } from '../main/store'
+import { read } from 'fs-extra-p';
 
 export async function loadDbFile(){
   try {
@@ -380,7 +381,7 @@ export function searchDentistsByName (dentistName) {
 // Work Month Check -----------------------------------------------------------
 
 //Tested
-export async function getWorksAggregatedByDentist (year, month) {
+export async function getWorksAggregatedByDentist (year, month, readOnly) {
   var query = 'SELECT d.IdDentista AS Key, d.IdDentista AS IdDentista, d.NombreDentista, ' +
     '  sum(t.PrecioFinal) AS SumaPrecioFinal, ' +
     '  ifnull(sum(t.PrecioMetal), 0) AS SumaAditamentos, ' +
@@ -407,28 +408,39 @@ export async function getWorksAggregatedByDentist (year, month) {
     ' sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) -  ' +
     ' ifnull(sum(t.PrecioMetal), 0) - 0 AS SumaGranTotal ' +
     'FROM Trabajos t ' +
-    'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
-    'LEFT JOIN FacturasTrabajos ft ON ft.IdTrabajo = t.IdTrabajo ' +
-    'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
-    'AND ft.IdFactura IS NULL ' +
-    'GROUP BY t.IdDentista, d.NombreDentista ' +
+    'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista '
+
+    if (!readOnly){
+      query += 'LEFT JOIN FacturasTrabajos ft ON ft.IdTrabajo = t.IdTrabajo '
+    }
+    
+    query += 'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") '
+    if (!readOnly){
+      query += 'AND ft.IdFactura IS NULL '
+    }
+    query += 'GROUP BY t.IdDentista, d.NombreDentista ' +
     'ORDER BY d.NombreDentista'
     return allAsync(db, query, [])
 }
 
 //Tested
-export function getWorksDeaggregatedByDentist (year, month, idDentist) {
+export async function getWorksDeaggregatedByDentist (year, month, idDentist, isReadOnly = false) {
   var sMonth = ('00' + month).substr(-2)
-  var query = 'SELECT * FROM vTrabajosPorDentista WHERE ' +
-  'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
-  'AND IdDentista = ' + idDentist
-  return allAsync(db, query, []).then((rows) => {
-    return rows
-  })
+  if (!isReadOnly){
+    var query = 'SELECT * FROM vTrabajosPorDentista WHERE ' +
+    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+    'AND IdDentista = ' + idDentist
+    return await allAsync(db, query, [])
+  } else {
+    var query = 'SELECT * FROM vTodosTrabajosPorDentista WHERE ' +
+    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+    'AND IdDentista = ' + idDentist
+    return await allAsync(db, query, [])
+  }
 }
 
 //Tested
-export function setCheckToWork (idTrabajo, check) {
+export async function setCheckToWork (idTrabajo, check) {
   var query = 'INSERT OR REPLACE INTO TrabajosChequeados (IdTrabajo, Chequeado) VALUES (?, ?)'
   return runAsync(db, query, [idTrabajo, check])
 }
@@ -452,7 +464,7 @@ export async function getInvoicesList (customFilters) {
 }
 
   //Tested
-  export async function insertInvoice(idDentist, works) {
+  export async function insertInvoice(idDentist, works, invoiceDate) {
     var worksString = ''
     for (var value of works) {
       worksString += `${value.idTrabajo},`
@@ -475,10 +487,10 @@ export async function getInvoicesList (customFilters) {
     '    ) ' +
     '  END), ' +
     '  ?, ' +
-    '  date("now"), ' +
+    '  date(?), ' +
     `  (SELECT SUM(PrecioFinal) FROM Trabajos WHERE IdTrabajo IN (${worksString})) ` +
     ')'
-    var idInvoice = await runAsync(db, query1, [idDentist])
+    var idInvoice = await runAsync(db, query1, [ idDentist, invoiceDate ])
     for (var value of works) {
       var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo, EsDescuento) VALUES (?, ?, ?)'
       await runAsync(db, query2, [idInvoice, value.idTrabajo, value.esDescuento])
@@ -496,6 +508,14 @@ export async function getInvoicesList (customFilters) {
       invoice: invoice,
       invoiceWorks: invoiceWorks
     }
+  }
+
+  //Tested
+  export async function getInvoicesPerDentist(year, month, idDentist) {
+    var query = 'SELECT * FROM vFacturasTrabajosPorDentista WHERE IdDentista = ? ' +
+    `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month")`
+
+    return await allAsync(db, query, [idDentist])
   }
 
   // export function updateInvoice(invoice) {

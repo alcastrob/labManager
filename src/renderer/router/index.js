@@ -14,6 +14,7 @@ import dashboard from '../components/Pages/Dashboard.vue'
 import dentistNew from '../components/Pages/DentistNew.vue'
 import catalog from '../components/Pages/Catalog.vue'
 import testPage from '../components/Pages/TestPage.vue'
+import invoice from '../components/Pages/Invoice.vue'
 
 Vue.use(Router)
 
@@ -69,6 +70,10 @@ export default new Router({
         {
           path: 'finances/monthCheck/:year/:month',
           component: monthCheck
+        },
+        {
+          path: 'finances/invoices/:id',
+          component: invoice
         },
         {
           path: 'maintenace/catalog',

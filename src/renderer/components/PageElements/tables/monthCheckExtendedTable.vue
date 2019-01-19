@@ -1,5 +1,6 @@
 <template>
   <div class="table-responsive">
+    
     <float-thead-table class="table table-bordered" :top="56" ref="table" :autoReflow="true" >
       <thead>
         <tr>
@@ -20,10 +21,16 @@
 
                 <input type="checkbox" v-else-if="isButton(column.dataField)" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, row.IdDentista.$model)" :id="'chkDentist-' + row.IdDentista.$model">
 
-                <span v-else :value="row[column.dataField].$model">
-                  {{formatRow(row[column.dataField].$model, column.formatter)}}
+                <div v-else>
+                  <span :value="row[column.dataField].$model">
+                  {{formatRow(row[column.dataField].$model, column.formatter)}}</span>
                   <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[row.IdDentista.$model]}}</b-badge>
-                </span>
+                  <span v-if="column.dataField === 'NombreDentista' && isReadOnly">
+                    <span v-for="invoice in invoiceIdsOfDentist(invoicesPerDentist[row.IdDentista.$model])" v-bind:key="invoice.IdTrabajo">
+                      - <router-link :to="'/finances/invoices/' + invoice.IdFactura">{{invoice.IdFactura}}</router-link>
+                    </span>
+                  </span>
+                </div>
 
               </td>
             </template>
@@ -38,6 +45,7 @@
                 </td>
                 <td class="dentist-text column-20" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;<router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
+                  <span v-if="isReadOnly">&nbsp;|&nbsp;<router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[row.IdDentista.$model], work.IdTrabajo)">{{invoiceIdOfWork(invoicesPerDentist[row.IdDentista.$model], work.IdTrabajo)}}</router-link></span>
                 </td>
                 <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
                   <div class="text-left">
@@ -85,9 +93,8 @@
                 </td>
               </tr>
             </transition>
-
           </template>
-         </template>
+        </template>
       </tbody>
     </float-thead-table>
   </div>
@@ -100,9 +107,10 @@ import FloatThead from 'vue-floatthead'
 import _ from 'lodash'
 import moment from 'moment'
 import tableMixin from './tableMixin'
-import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork, getWorkIndications } from '../../../../main/dal.js'
+import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork, getWorkIndications, getInvoicesPerDentist } from '../../../../main/dal.js'
 import bBadge from 'bootstrap-vue'
 import { decimal } from 'vuelidate/lib/validators'
+import Router from 'vue-router'
 
 Vue.use(FloatThead)
 
@@ -146,6 +154,9 @@ export default {
       //The all work entities, grouped by dentistId
       worksPerDentist: {},
 
+      //All the invoices related with this month, grouped by dentistId
+      invoicesPerDentist: {},
+
       //The count of works without the check, grouped by dentist (used by the badges)
       remainingWorks: {},
 
@@ -156,7 +167,10 @@ export default {
       workIndications: {},
 
       //The dentistId of the dentists with the checkbox set
-      dentistsChecked: []
+      dentistsChecked: [],
+
+      //If true, the table will show ALL the dentists and works, regardless they where associated to an invoice or not
+      isReadOnly: false
     }
   },
   validations: {
@@ -328,6 +342,18 @@ export default {
       this.getWorksAggregated(this.year, this.month)
       this.uncheckAllDentistCheckbox()
     },
+    forceTableHeaderReflow() {
+      this.$refs.table.reflow()
+    },
+    setReadOnlyMode(isReadOnly) {
+      this.isReadOnly = isReadOnly
+    },
+    invoiceIdsOfDentist(invoice) {
+      return _.uniqBy(invoice, 'IdFactura')
+    },
+    invoiceIdOfWork(invoice, workId){
+      return _.find(invoice, ['IdTrabajo', workId]).IdFactura
+    },
     setCellValue(position, currentElement, value) {
       currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
       currentElement.parentNode.parentNode.children[position].children[0].innerText = moneyFormatter.format(value)
@@ -346,7 +372,7 @@ export default {
 
     //Persistence--------------------------------
     getWorksOfDentist: async function(idDentist) {
-      var works = await getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist)
+      var works = await getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, this.isReadOnly)
       if (works.length > 0) {
         var idDentista = works[0].IdDentista
         this.worksPerDentist[idDentista] = works
@@ -365,11 +391,14 @@ export default {
       }
     },
     getWorksAggregated: async function(year, month){
-      this.rawDataset = await getWorksAggregatedByDentist(parseInt(year), parseInt(month))
+      this.rawDataset = await getWorksAggregatedByDentist(parseInt(year), parseInt(month), this.isReadOnly)
       this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
 
       for(var dentist of this.rawDataset) {
         await this.getWorksOfDentist(dentist.IdDentista)
+        if (this.isReadOnly) {
+          this.invoicesPerDentist[dentist.IdDentista] = await getInvoicesPerDentist(year, month, dentist.IdDentista)
+        }
       }
     }
   },

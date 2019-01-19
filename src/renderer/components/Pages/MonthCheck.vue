@@ -3,17 +3,20 @@
   <div class="row">
     <div class="col-md-6">
       <h1>Cierre mensual - {{monthName}} {{year}}</h1>
-    </div> <!-- col-md-8 -->
+    </div> <!-- col-md-6 -->
     <div class="col-md-6 mt-2">
       <div class="float-right">
-        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar Resumen Mensual</button>
-        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
+        <collapsable-action-button iconCss="fas fa-clipboard-list" text="Modo verificación (sólo lectura)" :callback="setReadOnly" v-if="!readOnly" ></collapsable-action-button>
+        <collapsable-action-button iconCss="fas fa-check" text="Modo normal" :callback="unsetReadOnly" v-else></collapsable-action-button>
+        <collapsable-action-button iconCss="fas fa-file-invoice" text="Generar Resumen Mensual" :callback="unsetReadOnly" ></collapsable-action-button>
+        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()" v-if="!readOnly"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       </div>
-    </div> <!-- col-md-4 -->
+    </div> <!-- col-md-6 -->
   </div> <!-- row -->
   <div class="row">
     <div class="col-md-12">
-      <p class="text-justify">Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Generar facturas. Para poder marcar un dentista hay que marcar previamente todos sus trabajos. </p>
+      <p class="text-justify" v-if="!readOnly">Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Generar facturas. Para poder marcar un dentista hay que marcar previamente alguno sus trabajos. Una vez generada la correspondiente factura, los trabajos ya no aparecerán en esta lista. Si todos los trabajos de un dentista ya estuvieran incorporados a una factura, tampoco aparecería el propio dentista en este listado.</p>
+      <p class="text-justify" v-else>Aquí figuran todos los datos de los trabajos del mes agrupados por dentista. Este modo de verificación permite comprobar la asignación de trabajos y facturas, agrupadas por dentista. Sin embargo, en este modo no se pueden asignar trabajos a nuevas facturas.</p>
       <!-- {{selectedDentists}} -->
     </div> <!-- col-md-12 -->
   </div> <!-- row -->
@@ -65,6 +68,7 @@
 
 <script>
 import monthCheckExtendedTable from '../PageElements/tables/monthCheckExtendedTable'
+import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
 import invoice from '../Labels/Invoice'
 import { bTooltip, bModal} from 'bootstrap-vue'
 import _ from 'lodash'
@@ -74,6 +78,7 @@ export default {
   name: 'monthCheck',
   components: {
     monthCheckExtendedTable,
+    collapsableActionButton,
     invoice
   },
   data () {
@@ -171,7 +176,8 @@ export default {
       moneyFormatter : new Intl.NumberFormat('es-ES', {
         style: 'currency',
         currency: 'EUR'
-      })
+      }),
+      readOnly: false
     }
   },
   methods: {
@@ -184,12 +190,15 @@ export default {
       var percentageStep = 100 / this.selectedDentists.length
       for (var work of this.selectedDentists)
       {
-        var idInvoice = await (insertInvoice(work.IdDentista, _.map(work.selectedWorks, (work) => {
-          return {
-            idTrabajo: work.IdTrabajo,
-            esDescuento: false
-          }
-        })))
+        var idInvoice = await insertInvoice(work.IdDentista,
+          _.map(work.selectedWorks, (work) => {
+            return {
+              idTrabajo: work.IdTrabajo,
+              esDescuento: false
+            }
+          }), this.invoiceDate
+        )
+
         if (haveToPrint){
           this.$refs.invoice.print(idInvoice)
         }
@@ -206,6 +215,18 @@ export default {
     },
     hideModal() {
       this.$refs.modal.hide()
+    },
+    setReadOnly() {
+      this.readOnly = true
+      this.$refs.theTable.setReadOnlyMode(true)
+      this.$refs.theTable.forceFullReload()
+      this.$refs.theTable.forceTableHeaderReflow()
+    },
+    unsetReadOnly() {
+      this.readOnly = false
+      this.$refs.theTable.setReadOnlyMode(false)
+      this.$refs.theTable.forceFullReload()
+      this.$refs.theTable.forceTableHeaderReflow()
     },
     setStartDateToToday: function() {
       var today = new Date()
