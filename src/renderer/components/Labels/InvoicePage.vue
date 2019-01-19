@@ -1,5 +1,5 @@
 <template>
-<div class="container printed pagebreak">
+<div class="container printed pagebreak" :class="{'pageBorder': !forPrinter}">
   <div class="row">
     <div class="col-sm-6">
       <img @load="logoLoaded" :src="logo" class="mt-3">
@@ -27,53 +27,93 @@
     </div> <!-- col-sm-6 -->
   </div> <!-- row -->
   <div class="row mt-5">
-    <div class="col-sm-12" style="height: 1075px;">
-      <div v-if="!isFirstPage" class="text-right font-italic">       ...continúa desde la página anterior.
-      </div>
-      <table class="table table-invoice" width="100%" cellspacing="0">
-        <thead>
-          <tr>
-            <th class="text-left" style="width: 60%;">Concepto</th>
-            <th class="text-right" style="width: 10%;">Cantidad</th>
-            <th class="text-right" style="width: 10%;">Dto.</th>
-            <th class="text-right" style="width: 10%;">P. Unidad</th>
-            <th class="text-right" style="width: 10%;">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="work in works">
-            <tr v-bind:key="work.IdTrabajo" class="pagebreak">
-              <td class="text-left">
-                <span class="font-weight-bold">Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaEntrada)}}</span><br>
-                <span class="">{{work.Paciente}}</span>
-              </td>
-              <td class="text-right">1</td>
-              <td class="text-right">-</td>
-              <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
-              <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
+    <div class="col-sm-12">
+      <div style="height: 1075px;" v-if="forPrinter">
+        <div v-if="!isFirstPage" class="text-right font-italic">       ...continúa desde la página anterior.
+        </div>
+        <table class="table table-invoice" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th class="text-left" style="width: 60%;">Concepto</th>
+              <th class="text-right" style="width: 10%;">Cantidad</th>
+              <th class="text-right" style="width: 10%;">Dto.</th>
+              <th class="text-right" style="width: 10%;">P. Unidad</th>
+              <th class="text-right" style="width: 10%;">Subtotal</th>
             </tr>
-            <tr class="leapTr dontBreakHere" v-for="indication in indications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
-              <td class="text-left">
-                <span class="text-monospace">{{indication.Descripcion}}</span>
-              </td>
-              <td class="text-right"></td>
-              <td class="text-right"></td>
-              <td class="text-right"></td>
-              <td class="text-right"></td>
+          </thead>
+          <tbody>
+            <template v-for="work in works">
+              <tr v-bind:key="work.IdTrabajo" class="pagebreak">
+                <td class="text-left">
+                  <span class="font-weight-bold">Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaEntrada)}}</span><br>
+                  <span class="">{{work.Paciente}}</span>
+                </td>
+                <td class="text-right">1</td>
+                <td class="text-right">-</td>
+                <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
+                <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
+              </tr>
+              <tr class="leapTr dontBreakHere" v-for="indication in indications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
+                <td class="text-left">
+                  <span class="text-monospace">{{indication.Descripcion}}</span>
+                </td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+        <div class="text-right font-weight-bold" v-if="isLastPage">Total: {{moneyFormatter.format(invoice.Total)}}</div>
+        <div class="text-right font-italic" v-else>...suma y sigue.</div>
+      </div> <!-- height forPrinter -->
+
+      <div v-else>
+        <table class="table table-invoice" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th class="text-left" style="width: 60%;">Concepto</th>
+              <th class="text-right" style="width: 10%;">Cantidad</th>
+              <th class="text-right" style="width: 10%;">Dto.</th>
+              <th class="text-right" style="width: 10%;">P. Unidad</th>
+              <th class="text-right" style="width: 10%;">Subtotal</th>
             </tr>
-          </template>
-        </tbody>
-      </table>
-      <div class="text-right font-weight-bold" v-if="isLastPage">Total: {{moneyFormatter.format(invoice.Total)}}</div>
-      <div class="text-right font-italic" v-else>...suma y sigue.</div>
+          </thead>
+          <tbody>
+            <template v-for="work in works">
+              <tr v-bind:key="work.IdTrabajo" class="pagebreak">
+                <td class="text-left">
+                  <span class="font-weight-bold">Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaEntrada)}}</span><br>
+                  <span class="">{{work.Paciente}}</span>
+                </td>
+                <td class="text-right">1</td>
+                <td class="text-right">-</td>
+                <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
+                <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
+              </tr>
+              <tr class="leapTr dontBreakHere" v-for="indication in indications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
+                <td class="text-left">
+                  <span class="text-monospace">{{indication.Descripcion}}</span>
+                </td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+        <div class="text-right font-weight-bold" >Total: {{moneyFormatter.format(invoice.Total)}}</div>
+      </div> <!-- !forPrinter -->
+
     </div> <!-- col-sm-12 -->
   </div> <!-- row -->
-  <div class="text-right">Página {{pageNumber}}</div>
-  <div class="fixed-bottom printed-1">
+  <div class="text-right" v-if="forPrinter">Página {{pageNumber}}</div>
+  <div class="fixed-bottom printed-1" v-if="forPrinter">
     <div class="text-justify printed">{{footer}}</div>
   </div>
-  <!-- <footer>
-  </footer> -->
+
 </div>
 </template>
 
@@ -132,6 +172,10 @@ export default {
     },
     footer: {
       type: String,
+      required: true
+    },
+    forPrinter: {
+      type: Boolean,
       required: true
     }
   },

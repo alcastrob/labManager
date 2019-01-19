@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="visuallyhidden"></div>
+  <div ref="container" :class="{'visuallyhidden': forPrinter}"></div>
 </template>
 
 <script>
@@ -14,7 +14,7 @@ import { getConfigValues, getInvoice, getWorkIndications } from '../../../main/d
 const MAX_NUMBER_OF_LINES_PER_PAGE = 35
 
 export default {
-  name: 'invoice',
+  name: 'invoicePrint',
   components: {
     invoicePage
   },
@@ -33,13 +33,14 @@ export default {
       footer: '',
       pageLogosLoaded: {},
       instances: [],
-      invoiceId: -1
+      invoiceId: -1,
+      forPrinter: true
     }
   },
   methods: {
-    print: async function (invoiceId, toPDF) {
+    renderContent: async function (invoiceId) {
       if (invoiceId === undefined || invoiceId === null){
-        throw 'Missing required parameter invoiceId on call to print method of Invoice.vue'
+        throw 'Missing required parameter invoiceId on call to print method of InvoicePrint.vue'
       }
 
       this.invoiceId = invoiceId
@@ -60,34 +61,47 @@ export default {
       var indicationsToPrint = []
 
       for (var currentWork of this.invoiceWorks){
-        var toAdd = 2 + this.indications[currentWork.IdTrabajo].length
-        if (currentPageLines + toAdd <= MAX_NUMBER_OF_LINES_PER_PAGE) {
+        if (this.forPrinter){
+          var toAdd = 2 + this.indications[currentWork.IdTrabajo].length
+          if (currentPageLines + toAdd <= MAX_NUMBER_OF_LINES_PER_PAGE) {
+            worksToPrint.push(currentWork)
+            indicationsToPrint[currentWork.IdTrabajo]=this.indications[currentWork.IdTrabajo]
+            currentPageLines += toAdd
+          }
+          else {
+            this.insertInstance(worksToPrint, indicationsToPrint, currentPage, false)
+            // Now we reset the arrays and include the current work in the next page
+            currentPage++
+            worksToPrint = [currentWork]
+            indicationsToPrint = []
+            indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
+            currentPageLines = 2 + this.indications[currentWork.IdTrabajo].length
+          }
+        } else {
           worksToPrint.push(currentWork)
           indicationsToPrint[currentWork.IdTrabajo]=this.indications[currentWork.IdTrabajo]
-          currentPageLines += toAdd
-        }
-        else {
-          this.insertInstance(worksToPrint, indicationsToPrint, currentPage, false)
-          // Now we reset the arrays and include the current work in the next page
-          currentPage++
-          worksToPrint = [currentWork]
-          indicationsToPrint = []
-          indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
-          currentPageLines = 2 + this.indications[currentWork.IdTrabajo].length
         }
       }
 
       if (indicationsToPrint.length !== 0){
         //We have something to print on the last page
         this.insertInstance(worksToPrint, indicationsToPrint, currentPage, true)
-        currentPage++
+        //currentPage++
       }
+    },
+    print: async function (invoiceId, toPDF) {
+      this.forPrinter = true
+      await this.renderContent(invoiceId)
       if (toPDF === undefined || toPDF == false){
         this.realPrint()
       } else {
         const ipc = require('electron').ipcRenderer
         ipc.send('print-to-pdf')
       }
+    },
+    show: async function(invoiceId){
+      this.forPrinter = false
+      this.renderContent(invoiceId)
     },
     insertInstance(worksToPrint, indicationsToPrint, currentPage, isLastPage){
       var ComponentClass = Vue.extend(invoicePage)
@@ -104,7 +118,8 @@ export default {
           cssText: this.cssText,
           logo: this.logo,
           vatNumber: this.vatNumber,
-          footer: this.footer
+          footer: this.footer,
+          forPrinter: this.forPrinter
         }
       })
       this.instances.push(instance)
@@ -149,19 +164,6 @@ export default {
 </script>
 
 <style>
-.visuallyhidden:not(:focus):not(:active) {
-  position: absolute;
-
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  border: 0;
-  padding: 0;
-
-  white-space: nowrap;
-
-  clip-path: inset(100%);
-  clip: rect(0 0 0 0);
-  overflow: hidden;
-}
+  @import url('~@/assets/css/printed.css');
+  @import url('~@/assets/css/bootstrap/css/bootstrap.min.css');
 </style>

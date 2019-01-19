@@ -149,40 +149,49 @@ footer {
     bottom: 0px;
   }
 
-  .printed {
-    font-size: 15px;
-  }
+}
 
-  .printed-1 {
-    font-size: 18px;
-  }
+.printed {
+  font-size: 15px;
+}
 
-  .clientBox {
-    border: 1px solid #C9C9C9;
-    padding: 4px 4px 4px 4px;
-    background-color: #EFEFEF;
-    -webkit-print-color-adjust: exact;
-  }
+.printed-1 {
+  font-size: 18px;
+}
 
-  table.table-invoice {
-    border-bottom: 1px solid #C9C9C9;
-  }
-  table.table-invoice th {
-    border: 0px;
-  }
-  table.table-invoice tbody tr:not(.leapTr){
-    border-top: 1px solid #C9C9C9;
-  }
-  table.table-invoice tbody tr:not(.leapTr) td{
-    padding-bottom: 0.1rem;
-  }
+.clientBox {
+  border: 1px solid #C9C9C9;
+  padding: 4px 4px 4px 4px;
+  background-color: #EFEFEF;
+  -webkit-print-color-adjust: exact;
+}
 
-  table.table-invoice tbody tr.leapTr td{
-    padding: 0.1rem 0rem 0.1rem 2.5rem;
-    border-top: 0px;
-    border-bottom: 0px;
-  }
-  table.table-invoice td {
-    border: 0px;
-  }
+table.table-invoice {
+  border-bottom: 1px solid #C9C9C9;
+}
+table.table-invoice th {
+  border: 0px;
+}
+table.table-invoice tbody tr:not(.leapTr){
+  border-top: 1px solid #C9C9C9;
+}
+table.table-invoice tbody tr:not(.leapTr) td{
+  padding-bottom: 0.1rem;
+}
+
+table.table-invoice tbody tr.leapTr td{
+  padding: 0.1rem 0rem 0.1rem 2.5rem;
+  border-top: 0px;
+  border-bottom: 0px;
+}
+table.table-invoice td {
+  border: 0px;
+}
+
+.pageBorder {
+  background-color: white;
+  border: 1px solid #c9c9c9;
+  height: 100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
 }

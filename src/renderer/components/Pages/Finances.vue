@@ -3,7 +3,7 @@
   <h1>
     Finanzas
   </h1>
-<div>
+  <div>
     <div class="row">
       <myIconCard :message="worksInProgress()"
         filter="inProgress"

@@ -1,28 +1,45 @@
 <template>
-  <div class="container-fluid">
-    <h1>Hola</h1>
-    <div class="row">
-      <div class="col-md-12">
-        <h1>Factura {{$route.params.id}}</h1>
-      </div> <!-- col-md-12 -->
-    </div> <!-- row -->
-    <div>
-     <!-- <catalogTable v´model="xxxx" ref="catalog"></catalogTable> -->
-    </div> <!-- row -->
-  </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <h1>Ver Factura</h1>
+    </div> <!-- col-md-6 -->
+    <div class="col-md-6 mt-2">
+      <div class="float-right">
+        <collapsable-action-button iconCss="fas fa-print" text="Imprimir factura" :callback="printInvoice" v-if="!adjunctsVisible"></collapsable-action-button>
+      </div>
+    </div> <!-- col-md-6 -->
+  </div> <!-- row -->
+  <div class="row">
+    <div class="col-md-12">
+      <invoicePrint ref="invoiceShow"></invoicePrint>
+      <invoicePrint ref="invoicePrint"></invoicePrint>
+    </div> <!-- col-md-12 -->
+  </div> <!-- row -->
+</div>
 </template>
 
 <script>
 import _ from 'lodash'
+import invoicePrint from '../Labels/InvoicePrint'
+import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
 
 export default {
   name: 'invoice',
+  components: {
+    collapsableActionButton,
+    invoicePrint
+  },
   data () {
     return { }
   },
-  methods: {},
+  methods: {
+    printInvoice: async function() {
+      this.$refs.invoicePrint.print(this.$route.params.id)
+    }
+  },
   mounted () {
-    debugger
+    this.$refs.invoiceShow.show(this.$route.params.id)
   }
 }
 </script>

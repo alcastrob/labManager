@@ -16,7 +16,7 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import {Printd} from 'printd'
-import invoice from '../Labels/Invoice'
+import invoice from '../Labels/InvoicePrint'
 import {insertInvoice, getInvoice, getInvoicesList, getConfigValues} from '../../../main/dal.js'
 
 export default {

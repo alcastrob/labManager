@@ -69,7 +69,7 @@
 <script>
 import monthCheckExtendedTable from '../PageElements/tables/monthCheckExtendedTable'
 import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
-import invoice from '../Labels/Invoice'
+import invoice from '../Labels/InvoicePrint'
 import { bTooltip, bModal} from 'bootstrap-vue'
 import _ from 'lodash'
 import { insertInvoice } from '../../../main/dal.js'

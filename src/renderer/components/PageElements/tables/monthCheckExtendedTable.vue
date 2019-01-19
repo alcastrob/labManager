@@ -25,13 +25,12 @@
                   <span :value="row[column.dataField].$model">
                   {{formatRow(row[column.dataField].$model, column.formatter)}}</span>
                   <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[row.IdDentista.$model]}}</b-badge>
-                  <span v-if="column.dataField === 'NombreDentista' && isReadOnly">
+                  <span v-if="column.dataField === 'NombreDentista' && isReadOnly && (invoicesPerDentist[row.IdDentista.$model] !== undefined && invoicesPerDentist[row.IdDentista.$model] !== [])">
                     <span v-for="invoice in invoiceIdsOfDentist(invoicesPerDentist[row.IdDentista.$model])" v-bind:key="invoice.IdTrabajo">
-                      - <router-link :to="'/finances/invoices/' + invoice.IdFactura">{{invoice.IdFactura}}</router-link>
+                      - <router-link :to="'/finances/invoices/' + invoice.IdFactura">{{invoice.NumFactura}}</router-link>
                     </span>
                   </span>
                 </div>
-
               </td>
             </template>
           </tr>
@@ -45,7 +44,7 @@
                 </td>
                 <td class="dentist-text column-20" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;<router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
-                  <span v-if="isReadOnly">&nbsp;|&nbsp;<router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[row.IdDentista.$model], work.IdTrabajo)">{{invoiceIdOfWork(invoicesPerDentist[row.IdDentista.$model], work.IdTrabajo)}}</router-link></span>
+                  <span v-if="isReadOnly && invoicesPerDentist[row.IdDentista.$model].length !== 0">&nbsp;|&nbsp;<router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[row.IdDentista.$model], work.IdTrabajo)">{{invoiceIdOfWork(invoicesPerDentist[row.IdDentista.$model], work.IdTrabajo)}}</router-link></span>
                 </td>
                 <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
                   <div class="text-left">
@@ -349,10 +348,18 @@ export default {
       this.isReadOnly = isReadOnly
     },
     invoiceIdsOfDentist(invoice) {
-      return _.uniqBy(invoice, 'IdFactura')
+      if (invoice.length === 0 || invoice === undefined) {
+        return []
+      } else {
+        return _.uniqBy(invoice, 'NumFactura')
+      }
     },
     invoiceIdOfWork(invoice, workId){
-      return _.find(invoice, ['IdTrabajo', workId]).IdFactura
+      if (invoice.length === 0) {
+        return ''
+      } else {
+        return _.find(invoice, ['IdTrabajo', workId]).NumFactura
+      }
     },
     setCellValue(position, currentElement, value) {
       currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
