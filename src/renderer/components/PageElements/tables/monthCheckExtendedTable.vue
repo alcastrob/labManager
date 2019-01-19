@@ -12,7 +12,7 @@
       <tbody>
         <!-- The rows of the dentists -->
         <template v-for="row in $v.rawDataset.$each.$iter">
-          <tr v-bind:key="'a' + row.IdDentista.$model" v-on:click="toggleExtraData($event, row.IdDentista.$model)">
+          <tr v-bind:key="'dentist-' + row.IdDentista.$model" v-on:click="toggleExtraData($event, row.IdDentista.$model)">
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
 
@@ -30,8 +30,8 @@
           </tr>
           <!-- The rows of the works -->
           <template v-for="work in worksPerDentist[row.IdDentista.$model]">
-            <transition name="fade">
-              <tr v-if="selectedDentist === row.IdDentista.$model" v-bind:key="'c' + work.IdTrabajo" class="deaggregated" @click="clickedWork($event, row.IdDentista.$model, work.IdTrabajo)">
+            <transition name="fade" v-bind:key="'work-' + work.IdTrabajo">
+              <tr v-if="selectedDentist === row.IdDentista.$model" class="deaggregated" @click="clickedWork($event, row.IdDentista.$model, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.IdTrabajo}}&nbsp;
                   <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(row.IdDentista.$model)">
@@ -202,11 +202,8 @@ export default {
       else {
         setCheckToWork(idTrabajo, event.srcElement.checked)
       }
-      //Updates the count of the badge
-      this.remainingWorks[idDentist] = this.calculateRemainingWorks(works)
 
       this.updateDentistCheckbox(idDentist)
-      this.$forceUpdate()
     },
 
     //Calculations-------------------------------
@@ -275,7 +272,9 @@ export default {
         event.srcElement.checked = false
       }
       if (event.srcElement.checked) {
-        this.dentistsChecked.push(idDentist)
+        if (_.find(this.dentistsChecked, (d) => { return d === idDentist}) === undefined) {
+          this.dentistsChecked.push(idDentist)
+        }
       } else {
         this.dentistsChecked = _.remove(this.dentistsChecked, function(d) {
           return d !== idDentist
@@ -287,10 +286,12 @@ export default {
     updateDentistCheckbox(idDentist) {
       var areChecked = this.isAnyWorkOfDentistChecked(idDentist)
       document.getElementById('chkDentist-' + idDentist).checked = areChecked
-      if (areChecked){
-        this.dentistsChecked.push(idDentist)
+      if (areChecked) {
+        if (_.find(this.dentistsChecked, (d) => { return d === idDentist}) === undefined) {
+          this.dentistsChecked.push(idDentist)
+        }
       } else {
-        this.dentistsChecked = _.remove(this.dentistsChecked, function(d) {
+        this.dentistsChecked = _.remove(this.dentistsChecked, (d) => {
           return d !== idDentist
         })
       }
@@ -301,20 +302,31 @@ export default {
       //Send the data to the v-model of the container
       this.emitDataBack()
     },
+    uncheckAllDentistCheckbox(){
+      for(var dentist of this.dentistsChecked){
+        document.getElementById('chkDentist-' + dentist).checked = false
+      }
+      this.dentistsChecked = []
+    },
     emitDataBack(){
       var returnedValue = []
-      for (var dentistId  of this.dentistsChecked) {
+      for (var dentistId of this.dentistsChecked) {
         var dentistData = _.find(this.rawDataset, ['IdDentista', dentistId])
+        var dentistWorks = _.filter(this.worksPerDentist[dentistId], (o) => {
+          return o.Chequeado === true || o.Chequeado === 1
+          })
+
         returnedValue.push({
-          'IdDentista': dentistId,
-          'NombreDentista': dentistData.NombreDentista,
-          'ImporteBase': dentistData.SumaPrecioFinal,
-          'Dto': dentistData.percentage,
-          'ImporteDto': dentistData.SumaDescuento,
-          'Total': dentistData.SumaGranTotal
+          IdDentista: dentistId,
+          NombreDentista: dentistData.NombreDentista,
+          selectedWorks: dentistWorks
          })
       }
       this.$emit('input', returnedValue)
+    },
+    forceFullReload() {
+      this.getWorksAggregated(this.year, this.month)
+      this.uncheckAllDentistCheckbox()
     },
     setCellValue(position, currentElement, value) {
       currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
@@ -369,16 +381,6 @@ export default {
       throw 'Missing prop month in monthCheckExtendedTable.vue'
 
     this.getWorksAggregated(this.year, this.month)
-    // getWorksAggregatedByDentist(parseInt(this.year), parseInt(this.month)).then((dentistGroup) => {
-    //   this.rawDataset = dentistGroup
-    //   this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
-
-    //   for(var dentist of this.rawDataset) {
-    //     this.getWorksOfDentist(dentist.IdDentista)
-    //   }
-    // })
-  },
-  computed: {
   }
 }
 </script>

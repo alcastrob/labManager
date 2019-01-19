@@ -408,7 +408,9 @@ export async function getWorksAggregatedByDentist (year, month) {
     ' ifnull(sum(t.PrecioMetal), 0) - 0 AS SumaGranTotal ' +
     'FROM Trabajos t ' +
     'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+    'LEFT JOIN FacturasTrabajos ft ON ft.IdTrabajo = t.IdTrabajo ' +
     'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") ' +
+    'AND ft.IdFactura IS NULL ' +
     'GROUP BY t.IdDentista, d.NombreDentista ' +
     'ORDER BY d.NombreDentista'
     return allAsync(db, query, [])

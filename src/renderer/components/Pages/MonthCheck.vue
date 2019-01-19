@@ -29,11 +29,11 @@
               Se van a emitir facturas para los siguientes clientes. Por favor, verifique que los datos de los posibles descuentos aplicados son correctos. Una vez emitidas las facturas, se podrán consultar y volver a imprimir desde la sección Facturas del área de Gestión Económica.
             </span>
             <ul class="pt-3">
-              <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{moneyFormatter.format(dentist.ImporteBase)}} | Dto. {{dentist.Dto}}% ({{moneyFormatter.format(dentist.ImporteDto)}}) | Total albarán: {{moneyFormatter.format(dentist.Total)}}</li>
+              <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto. ({{sumDiscounts(dentist)}}) | Total factura: {{sumTotals(dentist)}}</li>
             </ul>
           </div> <!-- col-md-12 -->
         </div> <!-- row -->
-        <div class="row">
+        <div class="row" v-if="!inProgress">
           <div class="col-md-6">
             <label for="fechaFacturas">Establezca la fecha de las facturas a emitir:</label>
             <input type="date" class="form-control" id="fechaFacturas" placeholder="dd/mm/aaaa" v-model="invoiceDate">
@@ -44,9 +44,10 @@
           </div> <!-- col-md-6 -->
         </div> <!-- row -->
         <div class="row" v-if="inProgress">
-          <div class="col-md-12 pt-5 pb-3">
+          <div class="col-md-12 pt-2 pb-3">
+            Procesando...
             <div class="progress">
-              <div class="progress-bar bg-info" style="width:33%">33%</div>
+              <div class="progress-bar bg-info" :style="'width:' + currentProgress +'%'">{{currentProgress}}%</div>
             </div>
           </div> <!-- col-md-12 -->
         </div> <!-- row -->
@@ -54,7 +55,7 @@
     </div> <!-- modal-body -->
     <div class="modal-footer">
       <button class="btn btn-secondary" @click="hideModal"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
-      <button class="btn btn-secondary " @click="confirmGeneration" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
+      <button class="btn btn-secondary " @click="confirmGeneration(false)" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       <button class="btn btn-secondary " @click="confirmGeneration(true)" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-print mr-2"></i>Generar e imprimir facturas</button>
     </div>
     <invoice ref="invoice"></invoice>
@@ -64,12 +65,16 @@
 
 <script>
 import monthCheckExtendedTable from '../PageElements/tables/monthCheckExtendedTable'
+import invoice from '../Labels/Invoice'
 import { bTooltip, bModal} from 'bootstrap-vue'
+import _ from 'lodash'
+import { insertInvoice } from '../../../main/dal.js'
 
 export default {
   name: 'monthCheck',
   components: {
     monthCheckExtendedTable,
+    invoice
   },
   data () {
     return {
@@ -162,6 +167,7 @@ export default {
       selectedDentists: [],
       invoiceDate: '',
       inProgress: false,
+      currentProgress: 0,
       moneyFormatter : new Intl.NumberFormat('es-ES', {
         style: 'currency',
         currency: 'EUR'
@@ -172,11 +178,30 @@ export default {
     generateInvoice() {
       this.showModal()
     },
-    confirmGeneration(haveToPrint) {
+    confirmGeneration: async function(haveToPrint) {
       this.inProgress = true
-      this.$refs.invoice.print()
+      this.currentProgress = 0
+      var percentageStep = 100 / this.selectedDentists.length
+      for (var work of this.selectedDentists)
+      {
+        var idInvoice = await (insertInvoice(work.IdDentista, _.map(work.selectedWorks, (work) => {
+          return {
+            idTrabajo: work.IdTrabajo,
+            esDescuento: false
+          }
+        })))
+        if (haveToPrint){
+          this.$refs.invoice.print(idInvoice)
+        }
+        this.currentProgress = Math.round(this.currentProgress + percentageStep)
+      }
+      this.hideModal()
+      this.$refs.theTable.forceFullReload()
     },
     showModal() {
+      this.inProgress = false
+      this.currentProgress = 0
+      this.invoiceDate = ''
       this.$refs.modal.show()
     },
     hideModal() {
@@ -198,6 +223,28 @@ export default {
 
       this.invoiceDate = yyyy + '-' + mm + '-' + dd
     },
+    sumBasePrice: function(dentistData){
+      var total = 0
+      for (var work of dentistData.selectedWorks){
+        total += work.SumaPrecioFinal
+      }
+      return this.moneyFormatter.format(total)
+    },
+    sumDiscounts: function(dentistData){
+      var total = 0
+      for (var work of dentistData.selectedWorks){
+        total += work.SumaDescuento
+      }
+      return this.moneyFormatter.format(total)
+    },
+    sumTotals: function(dentistData){
+      var total = 0
+      for (var work of dentistData.selectedWorks){
+        total += work.SumaPrecioFinal - work.SumaDescuento
+      }
+
+      return this.moneyFormatter.format(total)
+    }
   },
   computed: {
     monthName: function() {
