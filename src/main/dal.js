@@ -471,6 +471,8 @@ export async function getInvoicesList (customFilters) {
     }
     worksString =  worksString.substr(0, worksString.length - 1)
 
+    var totalDiscount = _.sum(_.map(works, 'totalDescuento'))
+
     var query1 = 'INSERT INTO Facturas(NumFactura, IdDentista, Fecha, Total) ' +
     'VALUES ( ' +
     '  (SELECT CASE WHEN ( ' +
@@ -488,13 +490,12 @@ export async function getInvoicesList (customFilters) {
     '  END), ' +
     '  ?, ' +
     '  date(?), ' +
-    `  (SELECT SUM(PrecioFinal) FROM Trabajos WHERE IdTrabajo IN (${worksString})) ` +
+    `  (SELECT SUM(PrecioFinal) - ${totalDiscount} FROM Trabajos WHERE IdTrabajo IN (${worksString})) ` +
     ')'
-    debugger
     var idInvoice = await runAsync(db, query1, [ invoiceDate, invoiceDate, idDentist, invoiceDate ])
     for (var value of works) {
-      var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo, EsDescuento) VALUES (?, ?, ?)'
-      await runAsync(db, query2, [idInvoice, value.idTrabajo, value.esDescuento])
+      var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo, PorcentajeDescuento, TotalDescuento) VALUES (?, ?, ?, ?)'
+      await runAsync(db, query2, [idInvoice, value.idTrabajo, value.porcentajeDescuento, value.totalDescuento])
     }
     return idInvoice
   }

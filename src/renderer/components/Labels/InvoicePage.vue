@@ -36,8 +36,8 @@
             <tr>
               <th class="text-left" style="width: 60%;">Concepto</th>
               <th class="text-right" style="width: 10%;">Cantidad</th>
-              <th class="text-right" style="width: 10%;">Dto.</th>
               <th class="text-right" style="width: 10%;">P. Unidad</th>
+              <th class="text-right" style="width: 10%;">Dto.</th>
               <th class="text-right" style="width: 10%;">Subtotal</th>
             </tr>
           </thead>
@@ -49,9 +49,9 @@
                   <span class="">{{work.Paciente}}</span>
                 </td>
                 <td class="text-right">1</td>
-                <td class="text-right">-</td>
-                <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
-                <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
+                <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
+                <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
+                <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
               </tr>
               <tr class="leapTr dontBreakHere" v-for="indication in indications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
                 <td class="text-left">
@@ -75,8 +75,8 @@
             <tr>
               <th class="text-left" style="width: 60%;">Concepto</th>
               <th class="text-right" style="width: 10%;">Cantidad</th>
-              <th class="text-right" style="width: 10%;">Dto.</th>
               <th class="text-right" style="width: 10%;">P. Unidad</th>
+              <th class="text-right" style="width: 10%;">Dto.</th>
               <th class="text-right" style="width: 10%;">Subtotal</th>
             </tr>
           </thead>
@@ -88,9 +88,9 @@
                   <span class="">{{work.Paciente}}</span>
                 </td>
                 <td class="text-right">1</td>
-                <td class="text-right">-</td>
-                <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
-                <td class="text-right">{{moneyFormatter.format(work.PrecioFinal)}}</td>
+                <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
+                <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
+                <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
               </tr>
               <tr class="leapTr dontBreakHere" v-for="indication in indications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
                 <td class="text-left">

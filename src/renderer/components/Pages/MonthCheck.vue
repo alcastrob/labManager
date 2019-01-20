@@ -33,7 +33,7 @@
               Se van a emitir facturas para los siguientes clientes. Por favor, verifique que los datos de los posibles descuentos aplicados son correctos. Una vez emitidas las facturas, se podrán consultar y volver a imprimir desde la sección Facturas del área de Gestión Económica.
             </span>
             <ul class="pt-3">
-              <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto. ({{sumDiscounts(dentist)}}) | Total factura: {{sumTotals(dentist)}}</li>
+              <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto.: {{sumDiscounts(dentist)}} | Total factura: {{sumTotals(dentist)}}</li>
             </ul>
           </div> <!-- col-md-12 -->
         </div> <!-- row -->
@@ -190,13 +190,14 @@ export default {
       this.inProgress = true
       this.currentProgress = 0
       var percentageStep = 100 / this.selectedDentists.length
-      for (var work of this.selectedDentists)
+      for (var dentist of this.selectedDentists)
       {
-        var idInvoice = await insertInvoice(work.IdDentista,
-          _.map(work.selectedWorks, (work) => {
+        var idInvoice = await insertInvoice(dentist.IdDentista,
+          _.map(dentist.selectedWorks, (work) => {
             return {
               idTrabajo: work.IdTrabajo,
-              esDescuento: false
+              totalDescuento: work.TotalDescuento,
+              porcentajeDescuento: work.PorcentajeDescuento
             }
           }), this.invoiceDate
         )
@@ -256,16 +257,15 @@ export default {
     sumDiscounts: function(dentistData){
       var total = 0
       for (var work of dentistData.selectedWorks){
-        total += work.SumaDescuento
+        total += work.TotalDescuento
       }
       return this.moneyFormatter.format(total)
     },
     sumTotals: function(dentistData){
       var total = 0
       for (var work of dentistData.selectedWorks){
-        total += work.SumaPrecioFinal - work.SumaDescuento
+        total += work.SumaPrecioFinal - work.TotalDescuento
       }
-
       return this.moneyFormatter.format(total)
     }
   },

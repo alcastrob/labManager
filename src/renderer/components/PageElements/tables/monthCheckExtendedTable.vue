@@ -20,9 +20,6 @@
                 <input type="checkbox" v-if="isButton(column.dataField)" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, dentist.IdDentista)" :id="'chkDentist-' + dentist.IdDentista">
 
                 <div v-else>
-                  <!-- <span v-if="column.dataField === 'percentage'"></span> -->
-                  <!-- <span v-else :value="dentist[column.dataField]">
-                  {{formatRow(dentist[column.dataField], column.formatter)}}</span> -->
                   <span :value="dentist[column.dataField]">
                   {{formatRow(dentist[column.dataField], column.formatter)}}</span>
 
@@ -56,22 +53,22 @@
                   
                   <router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
 
-                  <span v-if="isReadOnly && invoicesPerDentist[dentist.IdDentista].length !== 0">&nbsp;|&nbsp;
+                  <span v-if="isReadOnly && invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista].length !== 0">&nbsp;|&nbsp;
                     <router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo)">{{invoiceIdOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo)}}</router-link>
                   </span>
+                  <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
+                    <div class="text-left">
+                      Tipo: <i class="fas fa-bookmark " :class="work.TipoTrabajo.toLowerCase() + '-color'"></i> {{work.TipoTrabajo}} <br>
+                      Color: {{work.Color}}<br>
+                      Fecha Entrada: {{formatDate(work, 'FechaEntrada')}}<br>
+                      Indicaciones:<br>
+                      <ul v-for="indication in workIndications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
+                        <li>{{indication.Descripcion}} | {{moneyFormatter.format(indication.Precio)}}</li>
+                      </ul>
+                    </div>
+                  </b-tooltip>
                 </td>
 
-                <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
-                  <div class="text-left">
-                    Tipo: <i class="fas fa-bookmark " :class="work.TipoTrabajo.toLowerCase() + '-color'"></i> {{work.TipoTrabajo}} <br>
-                    Color: {{work.Color}}<br>
-                    Fecha Entrada: {{formatDate(work, 'FechaEntrada')}}<br>
-                    Indicaciones:<br>
-                    <ul v-for="indication in workIndications[work.IdTrabajo]" v-bind:key="indication.IdTrabajoDetalle">
-                      <li>{{indication.Descripcion}} | {{moneyFormatter.format(indication.Precio)}}</li>
-                    </ul>
-                  </div>
-                </b-tooltip>
                 <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{moneyFormatter.format(work.SumaPrecioFinal)}}
                 </td>
@@ -271,23 +268,7 @@ export default {
       this.$forceUpdate()
 
     },
-    // updateTotal: function(a, key) {
-    //   var totalMetal = this.getCellValue(this.columnIndex['SumaTotalMetal'], event.srcElement)
-    //   var precioMetal = this.getCellValue(this.columnIndex['SumaAditamentos'], event.srcElement)
-    //   var percentage = parseFloat(event.target.value)
-    //   if (isNaN(percentage)){
-    //     percentage = 0
-    //   }
-    //   var dto = totalMetal * (percentage / 100)
-    //   var grandTotal = totalMetal - dto + precioMetal
-    //   var row = _.find(this.rawDataset, ['IdDentista', key])
-    //   row['SumaDescuento'] = dto
-    //   row['SumaGranTotal'] = grandTotal
-    //   this.setCellValue(this.columnIndex['SumaDescuento'], event.srcElement, dto)
-    //   this.setCellValue(this.columnIndex['SumaGranTotal'], event.srcElement, grandTotal)
-    //   this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
-    // },
-
+    
     //Verifications------------------------------
     isAnyWorkOfDentistChecked(idDentist){
       return _.some(this.worksPerDentist[idDentist], function(w) {
@@ -429,6 +410,7 @@ export default {
           this.invoicesPerDentist[dentist.IdDentista] = await getInvoicesPerDentist(year, month, dentist.IdDentista)
         }
       }
+      this.$forceUpdate()
     }
   },
   mounted() {
