@@ -54,7 +54,7 @@
                   <router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
 
                   <span v-if="isReadOnly && invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista].length !== 0">&nbsp;|&nbsp;
-                    <router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo)">{{invoiceIdOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo)}}</router-link>
+                    <router-link :to="'/finances/invoices/' + invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo).IdFactura">{{invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo).NumFactura}}</router-link>
                   </span>
                   <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
                     <div class="text-left">
@@ -204,16 +204,16 @@ export default {
     },
     clickedWork(event, idDentist, idTrabajo){
       var works = this.worksPerDentist[idDentist]
-      if (event.srcElement.localName !== 'input' && event.srcElement.localName !== 'a'){
+      if (event.srcElement.localName !== 'textarea' && event.srcElement.localName !== 'a'){
         var work = _.find(works, ['IdTrabajo', idTrabajo])
         work.Chequeado = !work.Chequeado
         setCheckToWork(idTrabajo, work.Chequeado)
+        this.updateDentistCheckbox(idDentist)
       }
-      else {
-        setCheckToWork(idTrabajo, event.srcElement.checked)
-      }
+      // else {
+      //   setCheckToWork(idTrabajo, event.srcElement.checked)
+      // }
 
-      this.updateDentistCheckbox(idDentist)
     },
     percentageDiscountChanged(work, dentist) {
       work.TotalDescuento = parseFloat(work.SumaPrecioFinal * work.PorcentajeDescuento / 100).toFixed(2)
@@ -356,11 +356,11 @@ export default {
         return _.uniqBy(invoice, 'NumFactura')
       }
     },
-    invoiceIdOfWork(invoice, workId){
-      if (invoice.length === 0) {
+    invoiceOfWork(invoices, workId){
+      if (invoices.length === 0) {
         return ''
       } else {
-        return _.find(invoice, ['IdTrabajo', workId]).NumFactura
+        return _.find(invoices, ['IdTrabajo', workId])
       }
     },
     setCellValue(position, currentElement, value) {
