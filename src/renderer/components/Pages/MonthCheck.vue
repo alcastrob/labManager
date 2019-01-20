@@ -150,7 +150,7 @@ export default {
         }, {
           title: '% Dto.',
           dataField: 'percentage',
-          titleClass: 'text-right small-text column3 align-top',
+          titleClass: 'text-right small-text column5 align-top',
           rowClass: 'noMargins'
         }, {
           title: 'Dto.',
