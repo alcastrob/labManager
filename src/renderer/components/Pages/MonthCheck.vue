@@ -16,6 +16,7 @@
   <div class="row">
     <div class="col-md-12">
       <p class="text-justify" v-if="!readOnly">Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Generar facturas. Para poder marcar un dentista hay que marcar previamente alguno sus trabajos. Una vez generada la correspondiente factura, los trabajos ya no aparecerán en esta lista. Si todos los trabajos de un dentista ya estuvieran incorporados a una factura, tampoco aparecería el propio dentista en este listado.</p>
+      <p class="text-justify" v-if="!readOnly"><b>Nota: </b>Los descuentos que se introduzcan en esta tabla no serán permanentes hasta que se usen para generar una factura.</p>
       <p class="text-justify" v-else>Aquí figuran todos los datos de los trabajos del mes agrupados por dentista. Este modo de verificación permite comprobar la asignación de trabajos y facturas, agrupadas por dentista. Sin embargo, en este modo no se pueden asignar trabajos a nuevas facturas.</p>
       <!-- {{selectedDentists}} -->
     </div> <!-- col-md-12 -->
@@ -151,7 +152,8 @@ export default {
           title: '% Dto.',
           dataField: 'percentage',
           titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'noMargins'
+          rowClass: 'text-right small-text',
+          formatter: 'percentage'
         }, {
           title: 'Dto.',
           dataField: 'SumaDescuento',

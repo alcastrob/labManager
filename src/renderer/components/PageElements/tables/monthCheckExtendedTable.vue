@@ -12,23 +12,25 @@
       </thead>
       <tbody>
         <!-- The rows of the dentists -->
-        <template v-for="row in rawDataset">
-          <tr v-bind:key="'dentist-' + row.IdDentista" v-on:click="toggleWorksRows($event, row.IdDentista)">
+        <template v-for="dentist in rawDataset">
+          <tr v-bind:key="'dentist-' + dentist.IdDentista" v-on:click="toggleWorksRows($event, dentist.IdDentista)">
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
 
-                <input type="checkbox" v-if="isButton(column.dataField)" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, row.IdDentista)" :id="'chkDentist-' + row.IdDentista">
+                <input type="checkbox" v-if="isButton(column.dataField)" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, dentist.IdDentista)" :id="'chkDentist-' + dentist.IdDentista">
 
                 <div v-else>
-                  <span v-if="column.dataField === 'percentage'"></span>
-                  <span v-else :value="row[column.dataField]">
-                  {{formatRow(row[column.dataField], column.formatter)}}</span>
+                  <!-- <span v-if="column.dataField === 'percentage'"></span> -->
+                  <!-- <span v-else :value="dentist[column.dataField]">
+                  {{formatRow(dentist[column.dataField], column.formatter)}}</span> -->
+                  <span :value="dentist[column.dataField]">
+                  {{formatRow(dentist[column.dataField], column.formatter)}}</span>
 
-                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[row.IdDentista]}}</b-badge>
+                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[dentist.IdDentista]}}</b-badge>
 
-                  <span v-if="column.dataField === 'NombreDentista' && isReadOnly && (invoicesPerDentist[row.IdDentista] !== undefined && invoicesPerDentist[row.IdDentista] !== [])">
+                  <span v-if="column.dataField === 'NombreDentista' && isReadOnly && (invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista] !== [])">
 
-                    <span v-for="invoice in invoiceIdsOfDentist(invoicesPerDentist[row.IdDentista])" v-bind:key="invoice.IdTrabajo">
+                    <span v-for="invoice in invoiceIdsOfDentist(invoicesPerDentist[dentist.IdDentista])" v-bind:key="invoice.IdTrabajo">
                       - <router-link :to="'/finances/invoices/' + invoice.IdFactura">{{invoice.NumFactura}}</router-link>
                     </span>
 
@@ -39,13 +41,13 @@
             </template>
           </tr>
           <!-- The rows of the works -->
-          <template v-for="work in worksPerDentist[row.IdDentista]">
+          <template v-for="work in worksPerDentist[dentist.IdDentista]">
             <transition name="fade">
 
-              <tr v-bind:key="'work-' + work.IdTrabajo" v-if="selectedDentist === row.IdDentista" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo)">
+              <tr v-bind:key="'work-' + work.IdTrabajo" v-if="selectedDentist === dentist.IdDentista" class="deaggregated" @click="clickedWork($event, dentist.IdDentista, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.IdTrabajo}}&nbsp;
-                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(row.IdDentista)">
+                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(dentist.IdDentista)">
                 </td>
 
                 <td class="dentist-text column-20" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
@@ -54,8 +56,8 @@
                   
                   <router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
 
-                  <span v-if="isReadOnly && invoicesPerDentist[row.IdDentista].length !== 0">&nbsp;|&nbsp;
-                    <router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[row.IdDentista], work.IdTrabajo)">{{invoiceIdOfWork(invoicesPerDentist[row.IdDentista], work.IdTrabajo)}}</router-link>
+                  <span v-if="isReadOnly && invoicesPerDentist[dentist.IdDentista].length !== 0">&nbsp;|&nbsp;
+                    <router-link :to="'/finances/invoices/' + invoiceIdOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo)">{{invoiceIdOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo)}}</router-link>
                   </span>
                 </td>
 
@@ -98,10 +100,10 @@
                   {{moneyFormatter.format(work.SumaTotalMetal)}}
                 </td>
                 <td class="noMargins" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  <percentageInput class="inputInTd small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}" v-model="work.PorcentajeDescuento" @change="percentageDiscountChanged(work, row.IdDentista)"></percentageInput>
+                  <percentageInput class="inputInTd small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}" v-model="work.PorcentajeDescuento" @change="percentageDiscountChanged(work, dentist)"></percentageInput>
                 </td>
                 <td class="noMargins" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
-                  <euroInput v-model="work.TotalDescuento" class="inputInTd small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}" @change="totalDiscountChanged(work, row.IdDentista)"></euroInput>
+                  <euroInput v-model="work.TotalDescuento" class="inputInTd small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}" @change="totalDiscountChanged(work, dentist)"></euroInput>
                 </td>
                 <td class="small-text text-right noMargins" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{calcProductTotal(work)}}
@@ -216,13 +218,13 @@ export default {
 
       this.updateDentistCheckbox(idDentist)
     },
-    percentageDiscountChanged(work, idDentista) {
+    percentageDiscountChanged(work, dentist) {
       work.TotalDescuento = parseFloat(work.SumaPrecioFinal * work.PorcentajeDescuento / 100).toFixed(2)
-      this.applyDiscount(work)
+      this.applyDiscount(work, dentist)
     },
-    totalDiscountChanged(work, idDentista) {
+    totalDiscountChanged(work, dentist) {
       work.PorcentajeDescuento = parseFloat( work.TotalDescuento * 100 / work.SumaPrecioFinal).toFixed(2)
-      this.applyDiscount(work)
+      this.applyDiscount(work, dentist)
     },
 
     //Calculations-------------------------------
@@ -256,8 +258,18 @@ export default {
         }
       }
     },
-    applyDiscount: function(work){
+    applyDiscount: function(work, dentist){
+      dentist.SumaDescuento = 0
+      dentist.SumaGranTotal = 0
+
+      for (var currentWork of this.worksPerDentist[dentist.IdDentista]){
+        dentist.SumaDescuento += currentWork.TotalDescuento
+        dentist.SumaGranTotal += currentWork.SumaPrecioFinal - currentWork.TotalDescuento
+      }
+
+      dentist.percentage = parseFloat(100-(dentist.SumaGranTotal*100/dentist.SumaPrecioFinal)).toFixed(2)
       this.$forceUpdate()
+
     },
     // updateTotal: function(a, key) {
     //   var totalMetal = this.getCellValue(this.columnIndex['SumaTotalMetal'], event.srcElement)

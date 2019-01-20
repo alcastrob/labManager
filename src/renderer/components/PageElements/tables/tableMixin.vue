@@ -52,6 +52,8 @@ export default {
         return moment(row).format('DD/MM/YYYY')
       } else if(formatter === 'money' && row !== null && row !== undefined) {
         return this.moneyFormatter.format(row)
+      } else if(formatter === 'percentage' && row !== null && row !== undefined) {
+        return row + ' %'
       } else {
       return row
       }
