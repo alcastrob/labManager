@@ -5,7 +5,6 @@ var db
 
 import _ from 'lodash'
 import { configGet } from '../main/store'
-import { read } from 'fs-extra-p';
 
 export async function loadDbFile(){
   try {
@@ -15,6 +14,7 @@ export async function loadDbFile(){
     //Looks not to be a good sqlite database. Reject it
     return false
   }
+  require('electron').ipcRenderer.send('file:opened', db.filename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, ''))
   return true
 }
 

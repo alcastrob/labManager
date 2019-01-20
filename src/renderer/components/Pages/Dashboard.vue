@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-4 mt-2">
-          <div class="card" mb-3>
+          <div class="card">
             <div class="card-header">
               <i class="fas fa-sign-in-alt"></i>
               Trabajos a la espera de entrada de prueba

@@ -1,9 +1,8 @@
 <template>
 <div>
-  <h1>
-    Finanzas
-  </h1>
-  <div>
+  <h1>Finanzas</h1>
+  <div class="container-fluid">
+    Pulse en cualquiera de estas tarjetas para obtener más detalles.
     <div class="row">
       <myIconCard :message="worksInProgress()"
         filter="inProgress"
@@ -26,12 +25,72 @@
         listHeading="Trabajos cerrados en los últimos 30 días"
         cssClass="bg-success"
         icon="fas fa-euro-sign" />
-    </div>
+    </div> <!-- row -->
     <div class="row">
-      <router-link to="/finances/monthCheck/2018/2" class="nav-link" role="button">
-      Cierre de mes
-      </router-link>
-    </div>
+      <div class="col-md-8">
+        <div class="card mt-3">
+          <div class="card-header">
+            <h3 class="pt-2">Facturas</h3>
+          </div>
+          <div class="card-body">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto inventore et fugit exercitationem vero asperiores molestiae voluptate ducimus natus! Atque nemo placeat ipsum unde facilis nulla itaque perferendis quos omnis?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus, at! Repudiandae similique distinctio adipisci repellat voluptas voluptate aut reiciendis ex ullam magnam, optio omnis atque aspernatur non voluptatem. Nostrum, sint?
+          </div> <!-- card-body -->
+        </div> <!-- card -->
+
+      </div> <!-- col-md-8 -->
+      <div class="col-md-4">
+        <div class="card mt-3">
+          <div class="card-header">
+            <h3 class="pt-2">Evolución de XXX</h3>
+          </div>
+          <div class="card-body">
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quam nihil neque possimus. Illum voluptatibus et, neque laudantium ratione quasi molestias, possimus consectetur placeat aliquid sit! Ut vitae est facere quasi?
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Porro eveniet commodi quis debitis asperiores placeat labore quidem! Eligendi numquam blanditiis ipsum. Quas, dolorum ab nulla vero fuga repudiandae totam provident.
+          </div> <!-- card-body -->
+        </div> <!-- card -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h3 class="pt-2">Cierre de mes</h3>
+          </div>
+          <div class="card-body">
+            Para realizar el cierre de un mes contable, seleccione la fecha y pulse el botón para ir a la página de cierre.
+            <div class="row">
+              <div class="col-md-6">
+                <select class="form-control mt-3" ref="month">
+                  <option disabled value="">Seleccione un mes</option>
+                  <option value="1">enero</option>
+                  <option value="2">febrero</option>
+                  <option value="3">marzo</option>
+                  <option value="4">abril</option>
+                  <option value="5">mayo</option>
+                  <option value="6">junio</option>
+                  <option value="7">julio</option>
+                  <option value="8">agosto</option>
+                  <option value="9">septiembre</option>
+                  <option value="10">octubre</option>
+                  <option value="11">noviembre</option>
+                  <option value="12">diciembre</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <select class="form-control mt-3" ref="year">
+                  <option disabled value="">Seleccione un año</option>
+                  <option value="2019">2019</option>
+                  <option value="2020">2020</option>
+                  <option value="2021">2021</option>
+                  <option value="2022">2022</option>
+                  <option value="2023">2023</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                </select>
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-block mt-4" @click="gotoMonthCheck" >Ir a página de cierre</button>
+          </div> <!-- card-body -->
+        </div> <!-- card -->
+      </div> <!-- col-md-4 -->
+    </div> <!-- row -->
   </div>
 </div>
 </template>
@@ -91,6 +150,13 @@ export default {
     },
     worksSumEndedPrevious30Days: function() {
       return this.moneyFormatter.format(this.worksEndedPrevious30daysSum) + ' por trabajos cerrados en los 30 días previos'
+    },
+    gotoMonthCheck: function() {
+      var path = `/finances/monthCheck/${this.$refs.year.selectedOptions[0].value}/${this.$refs.month.selectedOptions[0].value}`
+      console.log(path)
+      this.$router.push({
+        path: path
+      })
     }
   }
 }

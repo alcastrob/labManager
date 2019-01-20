@@ -1,20 +1,14 @@
 <template>
 <div class="col-xl-3 col-sm-6 mb-3">
-    <div class="card text-white o-hidden h-100" :class="cssClass">
-    <div class="card-body">
+  <div class="card text-white o-hidden h-100" :class="cssClass">
+    <div class="card-body" @click="showDetails">
         <div class="card-body-icon">
           <i :class="icon" ></i>
         </div>
-        <div class="mr-5"><h5>{{message}}</h5></div>
-        <div class="mr-5 font-italic text-gray">{{secondMessage}}</div>
+        <div class="mr-5 main-text">{{message}}</div>
+        <div class="mr-5 font-italic text-gray secondary-text">{{secondMessage}}</div>
     </div>
-    <a class="card-footer text-white clearfix small z-1" href="#" v-on:click="showDetails()">
-        <span class="float-left">Ver detalles</span>
-        <span class="float-right">
-        <i class="fas fa-angle-right"></i>
-        </span>
-    </a>
-    </div>
+  </div>
 </div>
 </template>
 
@@ -98,4 +92,13 @@ export default {
 .text-gray {
   color: #E4DFDA;
 }
+
+.main-text {
+  font-size: 15px;
+}
+
+.secondary-text {
+  font-size: 13px;
+}
+
 </style>

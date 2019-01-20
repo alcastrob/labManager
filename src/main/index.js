@@ -82,6 +82,10 @@ ipc.on('print-to-pdf', function (event, content) {
   })
 })
 
+ipc.on('file:opened', function (event, content) {
+  mainWindow.setTitle(`labManager - ${content}`)
+})
+
 
 
 const menuTemplate = [{
