@@ -413,7 +413,7 @@ export async function getWorksAggregatedByDentist (year, month, readOnly) {
     if (!readOnly){
       query += 'LEFT JOIN FacturasTrabajos ft ON ft.IdTrabajo = t.IdTrabajo '
     }
-    
+
     query += 'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") '
     if (!readOnly){
       query += 'AND ft.IdFactura IS NULL '

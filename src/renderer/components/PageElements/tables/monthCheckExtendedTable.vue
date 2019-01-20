@@ -39,12 +39,11 @@
             </template>
           </tr>
           <!-- The rows of the works -->
-          <!-- <template v-for="work in $v.worksPerDentist[row.IdDentista].$each.$iter"> -->
           <template v-for="work in $v.worksValidated.$each.$iter">
-            
-            <transition name="fade" v-bind:key="'work-' + work.IdTrabajo.$model">
+          <!-- <template v-for="work in $v.worksValidated.$each.$iter"> -->
+            <transition name="fade">
 
-              <tr v-if="selectedDentist === row.IdDentista" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo.$model)">
+              <tr v-bind:key="'work-' + work.IdTrabajo.$model" v-if="selectedDentist === row.IdDentista" class="deaggregated" @click="clickedWork($event, row.IdDentista, work.IdTrabajo.$model)">
                 <td class="small-text text-right" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
                   {{work.IdTrabajo.$model}}&nbsp;
                   <input type="checkbox" v-model="work.Chequeado.$model" @change="updateDentistCheckbox(row.IdDentista)">
@@ -100,11 +99,10 @@
                   {{moneyFormatter.format(work.SumaTotalMetal.$model)}}
                 </td>
                 <td class="noMargins" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
-                  <textarea class="inputInTd small-text text-right" :class="{'bg-danger text-white animated shake': work.PorcentajeDescuento.$error}" v-model="work.PorcentajeDescuento.$model"></textarea>
+                  <textarea class="inputInTd small-text text-right" :class="{'bg-danger text-white animated shake': work.PorcentajeDescuento.$error}" v-model="work.PorcentajeDescuento.$model" @change="percentageDiscountChanged($event, work.IdTrabajo.$model)"></textarea>
                 </td>
                 <td class="noMargins" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
-                  <input type="text" class="inputInTd small-text text-right" :class="{'bg-danger text-white animated shake': work.TotalDescuento.$error}" @change="setDiscount(work.$model, $event.target.value)">
-                  <!-- <textarea class="inputInTd small-text text-right" :class="{'bg-danger text-white animated shake': work.TotalDescuento.$error}" v-model="work.TotalDescuento.$model"></textarea> -->
+                  <textarea class="inputInTd small-text text-right" :class="{'bg-danger text-white animated shake': work.TotalDescuento.$error}" v-model="work.TotalDescuento.$model" @change="totalDiscountChanged($event, work.IdTrabajo.$model)" ></textarea>
                 </td>
                 <td class="small-text text-right noMargins" :class="{'strikethrough': work.Chequeado.$model, 'bold': !work.Chequeado.$model}">
                 </td>
@@ -126,8 +124,9 @@ import moment from 'moment'
 import tableMixin from './tableMixin'
 import { getWorksAggregatedByDentist, getWorksDeaggregatedByDentist, setCheckToWork, getWorkIndications, getInvoicesPerDentist } from '../../../../main/dal.js'
 import bBadge from 'bootstrap-vue'
-import { decimal, minValue } from 'vuelidate/lib/validators'
-import { myDecimal } from '../../Validators/validId.js'
+import { decimal } from 'vuelidate/lib/validators'
+
+import { money } from '../../Validators/money.js'
 import Router from 'vue-router'
 
 Vue.use(FloatThead)
@@ -215,8 +214,8 @@ export default {
         SumaTotalMetal: {},
         SumaZirconio: {},
         TipoTrabajo: {},
-        PorcentajeDescuento: { decimal, minValue: minValue(0) },
-        TotalDescuento: { decimal }
+        PorcentajeDescuento: { decimal },
+        TotalDescuento: { money }
       }
     }
   },
@@ -247,15 +246,17 @@ export default {
 
       this.updateDentistCheckbox(idDentist)
     },
-    setDiscount(work, discount){
-      debugger
-      work.TotalDescuento = discount
-      //this.$v.worksValidated.$each.TotalDescuento.$touch()
-      var x = _.find(this.$v.worksValidated.$each, (o) => {
-        return o.IdTrabajo.$model === work.IdTrabajo
-      })
-      this.$v.$reset()
-      this.$v.$touch()
+    percentageDiscountChanged(event, idTrabajo){
+      var work = _.find(this.worksValidated, ['IdTrabajo', idTrabajo])
+
+      work.TotalDescuento = moneyFormatter.format(parseFloat(work.SumaPrecioFinal * work.PorcentajeDescuento / 100).toFixed(2))
+
+    },
+    totalDiscountChanged(event, idTrabajo)
+    {
+      var work = _.find(this.worksValidated, ['IdTrabajo', idTrabajo])
+
+      work.PorcentajeDescuento = parseFloat( parseFloat( work.TotalDescuento.replace(' €', '').replace('€', '')) * 100 / work.SumaPrecioFinal).toFixed(2)
     },
 
     //Calculations-------------------------------
@@ -266,6 +267,7 @@ export default {
       return remainingCandidates.length===0?'':remainingCandidates.length
     },
     calcColumnSums: function(includedColumns){
+      debugger
       for (var column of this.headers){
         var columnName = column.dataField
         if (includedColumns.includes(columnName)){
@@ -286,22 +288,22 @@ export default {
         }
       }
     },
-    updateTotal: function(a, key) {
-      var totalMetal = this.getCellValue(this.columnIndex['SumaTotalMetal'], event.srcElement)
-      var precioMetal = this.getCellValue(this.columnIndex['SumaAditamentos'], event.srcElement)
-      var percentage = parseFloat(event.target.value)
-      if (isNaN(percentage)){
-        percentage = 0
-      }
-      var dto = totalMetal * (percentage / 100)
-      var grandTotal = totalMetal - dto + precioMetal
-      var row = _.find(this.rawDataset, ['IdDentista', key])
-      row['SumaDescuento'] = dto
-      row['SumaGranTotal'] = grandTotal
-      this.setCellValue(this.columnIndex['SumaDescuento'], event.srcElement, dto)
-      this.setCellValue(this.columnIndex['SumaGranTotal'], event.srcElement, grandTotal)
-      this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
-    },
+    // updateTotal: function(a, key) {
+    //   var totalMetal = this.getCellValue(this.columnIndex['SumaTotalMetal'], event.srcElement)
+    //   var precioMetal = this.getCellValue(this.columnIndex['SumaAditamentos'], event.srcElement)
+    //   var percentage = parseFloat(event.target.value)
+    //   if (isNaN(percentage)){
+    //     percentage = 0
+    //   }
+    //   var dto = totalMetal * (percentage / 100)
+    //   var grandTotal = totalMetal - dto + precioMetal
+    //   var row = _.find(this.rawDataset, ['IdDentista', key])
+    //   row['SumaDescuento'] = dto
+    //   row['SumaGranTotal'] = grandTotal
+    //   this.setCellValue(this.columnIndex['SumaDescuento'], event.srcElement, dto)
+    //   this.setCellValue(this.columnIndex['SumaGranTotal'], event.srcElement, grandTotal)
+    //   this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
+    // },
 
     //Verifications------------------------------
     isAnyWorkOfDentistChecked(idDentist){
@@ -416,12 +418,12 @@ export default {
     //Persistence--------------------------------
     getWorksOfDentist: async function(idDentist) {
       var works = await getWorksDeaggregatedByDentist(parseInt(this.year), parseInt(this.month), idDentist, this.isReadOnly)
-      //debugger
       if (works.length > 0) {
         var idDentist = works[0].IdDentista
         this.worksPerDentist[idDentist] = works
         this.remainingWorks[idDentist] = this.calculateRemainingWorks(works)
         for (var work of works){
+          work.TotalDescuento = moneyFormatter.format(work.TotalDescuento)
           this.getWorkIndications(work.IdTrabajo)
         }
         this.$forceUpdate()
