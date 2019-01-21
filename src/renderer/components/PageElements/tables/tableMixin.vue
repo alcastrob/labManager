@@ -111,7 +111,7 @@ export default {
     },
     // Filter
     applyTextFilter: function (searchCriteria) {
-      if (searchCriteria !== '' && this.searchFields.length > 0) {
+      if (searchCriteria !== '' && searchCriteria !== undefined && searchCriteria !== null && this.searchFields.length > 0) {
         this.currentSeachCriteria = searchCriteria
         var lowercaseFilter = searchCriteria.toString().toLowerCase()
         this.filteredDataset = []

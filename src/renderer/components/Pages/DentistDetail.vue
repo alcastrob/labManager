@@ -8,7 +8,7 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <collapsable-link-button iconCss="fas fa-file-invoice-dollar mr-2" text="Ver sus facturas" :pathTo="getWorkListUrl()"></collapsable-link-button>
+              <collapsable-link-button iconCss="fas fa-file-invoice-dollar mr-2" text="Ver sus facturas" :pathTo="getInvoiceListUrl()"></collapsable-link-button>
               <collapsable-link-button iconCss="fa fa-fw fa-list" text="Ver sus trabajos" :pathTo="getWorkListUrl()"></collapsable-link-button>
             </div>
           </div>
@@ -160,6 +160,10 @@ export default {
   methods: {
     getWorkListUrl : function() {
       return `/works/list/dentist/${this.dentistId}?title=Lista de Trabajos de ${this.data.NombreDentista}`
+    },
+    getInvoiceListUrl: function() {
+
+      return `/finances?dentistName=${encodeURIComponent(this.data.NombreDentista)}`
     },
     save: function() {
       this.$v.touch()

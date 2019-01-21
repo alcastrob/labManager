@@ -45,20 +45,10 @@ export default {
     doFilter () {
       this.$parent.applyTextFilter(this.filterText)
     },
-    // setFilterName (name) {
-    //   switch (name){
-    //     case 'receivedToday':
-    //       this.$refs.fFactura.clear()
-    //       break
-    //     case null:
-    //     case '':
-    //     case undefined:
-    //       this.$refs.fFactura.clear()
-    //       break
-    //     default:
-    //       throw 'Not recognized filter name: ' + this.filterName
-    //   }
-    // },
+    setFilter (query) {
+      this.filterText = query
+      this.doFilter()
+    },
     resetFilter () {
       this.filterText = ''
       this.$refs.fInicio.value = ''

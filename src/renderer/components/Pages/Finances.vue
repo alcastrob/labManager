@@ -142,7 +142,7 @@ export default {
           formatter: 'money'
         } ],
       searchFields: ['NumFactura', 'NombreDentista'],
-      filterChanged: false,
+      //filterChanged: false,
     }
   },
   methods: {
@@ -175,9 +175,9 @@ export default {
     },
     processFilterChange(filterData){
       this.updateDatasetWithFilters(filterData)
-      this.filterChanged = true
     },
     loadData: async function(){
+      this.updateDatasetWithFilters()
       this.worksInProgressCount = (await getWorkInExecution()).Count
       this.worksEndedThisMonthCount = (await getWorksEndedThisMonth()).Count
       var works = await getWorksEndedLast30days()
@@ -186,12 +186,10 @@ export default {
       works = await getWorksEndedPrevious30days()
       this.worksEndedPrevious30daysCount = works.Count
       this.worksEndedPrevious30daysSum = works.Sum
+      this.$refs.table.setFilter(this.$route.query.dentistName)
     }
   },
-  mounted () {
-  },
   activated () {
-    this.updateDatasetWithFilters()
     this.loadData()
   }
 }

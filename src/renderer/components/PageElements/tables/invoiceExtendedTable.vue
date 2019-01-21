@@ -34,10 +34,9 @@ export default {
     invoiceFilterBar
   },
   methods: {
-    // setFilters: function(filterName) {
-    //   debugger
-    //   this.$refs.filterBar.setFilterName(filterName)
-    // },
+    setFilter: function(query) {
+      this.$refs.filterBar.setFilter(query)
+    },
     processFilterChange(filterData) {
       this.$parent.processFilterChange(filterData)
     }
