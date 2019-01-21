@@ -97,10 +97,8 @@ export default {
           return {IdDentista: idDentist}
       }
     },
-    updateDatasetWithFilters (eventData) {
-      getWorksList(eventData).then((works) => {
-        this.$children[0].setDataset(works)
-      })
+    updateDatasetWithFilters: async function (eventData) {
+      this.$refs.table.setDataset(await getWorksList(eventData))
     },
     processFilterChange(filterData){
       this.updateDatasetWithFilters(filterData)

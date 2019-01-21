@@ -1,6 +1,6 @@
 <template>
 <div>
-  <h1>Finanzas</h1>
+  <h1>Gestión Económica</h1>
   <div class="container-fluid">
     Pulse en cualquiera de estas tarjetas para obtener más detalles.
     <div class="row">
@@ -33,8 +33,8 @@
             <h3 class="pt-2">Facturas</h3>
           </div>
           <div class="card-body">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto inventore et fugit exercitationem vero asperiores molestiae voluptate ducimus natus! Atque nemo placeat ipsum unde facilis nulla itaque perferendis quos omnis?
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus, at! Repudiandae similique distinctio adipisci repellat voluptas voluptate aut reiciendis ex ullam magnam, optio omnis atque aspernatur non voluptatem. Nostrum, sint?
+            <invoiceExtendedTable :headers="headers" :searchFields="searchFields" ref="table" urlBase="/finances/invoices/" masterKey="IdFactura">
+            </invoiceExtendedTable>
           </div> <!-- card-body -->
         </div> <!-- card -->
 
@@ -97,11 +97,15 @@
 
 <script>
 import myIconCard from '../PageElements/iconCards/myIconCard'
-import { getWorkInExecution, getWorksEndedThisMonth, getWorksEndedLast30days, getWorksEndedPrevious30days } from '../../../main/dal.js'
+import { getWorkInExecution, getWorksEndedThisMonth, getWorksEndedLast30days, getWorksEndedPrevious30days, getInvoicesList } from '../../../main/dal.js'
+import invoiceExtendedTable from '../PageElements/tables/invoiceExtendedTable'
 
 export default {
   name: 'finances',
-  components: { myIconCard },
+  components: {
+    myIconCard,
+    invoiceExtendedTable
+  },
   data () {
     return {
       worksInProgressCount: 0,
@@ -113,24 +117,33 @@ export default {
       moneyFormatter: new Intl.NumberFormat('es-ES', {
         style: 'currency',
         currency: 'EUR'
-      })
+      }),
+      headers: [ {
+          title: 'Nº Factura',
+          dataField: 'NumFactura',
+          titleClass: 'text-left',
+          rowClass: ''
+        }, {
+          title: 'Dentista',
+          dataField: 'NombreDentista',
+          titleClass: 'text-left',
+          rowClass: ''
+        }, {
+          title: 'Fecha Factura',
+          dataField: 'Fecha',
+          titleClass: 'text-right',
+          rowClass: 'text-right',
+          formatter: 'date'
+        }, {
+          title: 'Total',
+          dataField: 'Total',
+          titleClass: 'text-right',
+          rowClass: 'text-right',
+          formatter: 'money'
+        } ],
+      searchFields: ['NumFactura', 'NombreDentista'],
+      filterChanged: false,
     }
-  },
-  mounted () {
-    getWorkInExecution().then((works) => {
-      this.worksInProgressCount = works.Count
-      })
-    getWorksEndedThisMonth().then((works) => {
-      this.worksEndedThisMonthCount = works.Count
-      })
-    getWorksEndedLast30days().then((works) => {
-      this.worksEndedLast30daysCount = works.Count
-      this.worksEndedLast30daysSum = works.Sum
-      })
-    getWorksEndedPrevious30days().then((works) => {
-      this.worksEndedPrevious30daysCount = works.Count
-      this.worksEndedPrevious30daysSum = works.Sum
-      })
   },
   methods: {
     worksInProgress: function() {
@@ -153,11 +166,33 @@ export default {
     },
     gotoMonthCheck: function() {
       var path = `/finances/monthCheck/${this.$refs.year.selectedOptions[0].value}/${this.$refs.month.selectedOptions[0].value}`
-      console.log(path)
       this.$router.push({
         path: path
       })
+    },
+    updateDatasetWithFilters: async function (eventData) {
+      this.$refs.table.setDataset(await getInvoicesList(eventData))
+    },
+    processFilterChange(filterData){
+      this.updateDatasetWithFilters(filterData)
+      this.filterChanged = true
+    },
+    loadData: async function(){
+      this.worksInProgressCount = (await getWorkInExecution()).Count
+      this.worksEndedThisMonthCount = (await getWorksEndedThisMonth()).Count
+      var works = await getWorksEndedLast30days()
+      this.worksEndedLast30daysCount = works.Count
+      this.worksEndedLast30daysSum = works.Sum
+      works = await getWorksEndedPrevious30days()
+      this.worksEndedPrevious30daysCount = works.Count
+      this.worksEndedPrevious30daysSum = works.Sum
     }
+  },
+  mounted () {
+  },
+  activated () {
+    this.updateDatasetWithFilters()
+    this.loadData()
   }
 }
 </script>

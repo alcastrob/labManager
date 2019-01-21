@@ -1,76 +1,68 @@
 <template>
   <div>
-    <button @click="insert">Insert</button>
-    {{idInvoice}}
-    <button @click="get">Get</button>
-    {{invoice}}
-    <button @click="getList">Get List</button>
-    {{list}}
-    <button @click="print">Print</button>
-
-    <invoice ref="invoice"></invoice>
+    <invoiceExtendedTable :headers="headers" :searchFields="searchFields" ref="table" urlBase="/finances/invoices/" masterKey="IdFactura">
+    </invoiceExtendedTable>
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import _ from 'lodash'
-import {Printd} from 'printd'
-import invoice from '../Labels/InvoicePrint'
-import {insertInvoice, getInvoice, getInvoicesList, getConfigValues} from '../../../main/dal.js'
-
+import { getInvoicesList } from '../../../main/dal.js'
+import invoiceExtendedTable from '../PageElements/tables/invoiceExtendedTable'
 export default {
-  name: 'testPage',
+  name: 'test',
   components: {
-    invoice
+    invoiceExtendedTable
   },
   data () {
     return {
-      idInvoice: '',
-      invoice: {},
-      list: [],
+      headers: [ {
+          title: 'Nº Factura',
+          dataField: 'NumFactura',
+          titleClass: 'text-left',
+          rowClass: ''
+        }, {
+          title: 'Dentista',
+          dataField: 'NombreDentista',
+          titleClass: 'text-left',
+          rowClass: ''
+        }, {
+          title: 'Dirección',
+          dataField: 'Direccion',
+          titleClass: 'text-left',
+          rowClass: ''
+        }, {
+          title: 'Población',
+          dataField: 'Poblacion',
+          titleClass: 'text-left',
+          rowClass: ''
+        }, {
+          title: 'CP',
+          dataField: 'CP',
+          titleClass: 'text-left',
+          rowClass: ''
+        }, {
+          title: 'Fecha Factura',
+          dataField: 'Fecha',
+          titleClass: 'text-left',
+          rowClass: '',
+          formatter: 'date'
+        }, {
+          title: 'Total',
+          dataField: 'Total',
+          titleClass: 'text-left',
+          rowClass: '',
+          formatter: 'money'
+        } ],
+      searchFields: ['NumFactura', 'NombreDentista', 'Direccion', 'Pablacion', 'CP']
     }
   },
   methods: {
-    insert: async function() {
-      // var idDentista = 113
-      // var idTrabajo1 = 400
-      // var esDescuento1 = false
-      // var idTrabajo2 = 498
-      // var esDescuento2 = false
-
-      this.idInvoice = await insertInvoice(46, [
-        {idTrabajo: 288, esDescuento: false},
-        {idTrabajo: 313, esDescuento: false},
-        {idTrabajo: 394, esDescuento: false},
-        {idTrabajo: 419, esDescuento: false},
-        {idTrabajo: 509, esDescuento: false},
-        {idTrabajo: 565, esDescuento: false},
-        {idTrabajo: 600, esDescuento: false},
-        {idTrabajo: 657, esDescuento: false},
-        {idTrabajo: 665, esDescuento: false},
-        {idTrabajo: 666, esDescuento: false},
-        {idTrabajo: 735, esDescuento: false},
-        {idTrabajo: 736, esDescuento: false}
-      ], '2019-01-19')
+    updateDatasetWithFilters: async function (eventData) {
+      this.$refs.table.setDataset(await getInvoicesList(eventData))
     },
-    get: async function() {
-      this.invoice = await getInvoice(this.idInvoice)
-    },
-    getList: async function() {
-      this.list = await getInvoicesList (
-        {
-          year: 2018,
-          month: 2,
-          dentistId: 46
-        }
-      )
-    },
-    print: function() {
-      // const ipc = require('electron').ipcRenderer
-      // ipc.send('print-to-pdf', this.$refs.invoice)
-      this.$refs.invoice.print(595)
-    }
+  },
+  mounted () {
+    this.updateDatasetWithFilters()
   }
 }
 </script>

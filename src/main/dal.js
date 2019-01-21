@@ -44,7 +44,7 @@ export function createNewDatabase () {
 // Works ----------------------------------------------------------------------
 
 //Tested
-export function getWorksList (customFilters) {
+export async function getWorksList (customFilters) {
   var query = 'SELECT * FROM vTrabajos WHERE 1=1'
   if (customFilters !== undefined){
     if (customFilters.fEntrada !== undefined){
@@ -64,9 +64,7 @@ export function getWorksList (customFilters) {
     }
   }
 
-  return allAsync(db, query, []).then((row) => {
-    return row
-  })
+  return allAsync(db, query, [])
 }
 
 function processTypeQuery(field, values){
@@ -89,8 +87,15 @@ function processDateQuery(field, value){
     case 'Últimos 30 días':
     return ` AND (${field} BETWEEN date("now", "localtime", "-30 day") AND date("now", "localtime", "+1 day"))`
     case 'Este mes':
-      return ` AND (${field} BETWEEN date("now", "localtime", "start of month")
-      AND date("now", "localtime", "start of month", "+1 month", "-1 day"))`
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month") AND date("now", "localtime", "start of month", "+1 month", "-1 day"))`
+    case 'Mes pasado':
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-1 month") AND date("now", "localtime"))`
+    case 'Hace dos meses':
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-2 month") AND date("now", "localtime"))`
+    case 'Hace tres meses':
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-3 month") AND date("now", "localtime"))`
+    case 'Hace seis meses':
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-6 month") AND date("now", "localtime"))`
     case 'Ninguna':
       return ` AND (${field} is null)`
     case 'Ninguna o en el futuro':
@@ -230,45 +235,37 @@ export function getInboundWorksToday() {
 }
 
 //Tested
-export function getWorkInExecution () {
+export async function getWorkInExecution () {
   var query = 'SELECT COUNT(1) AS Count ' +
   'FROM Trabajos ' +
   'WHERE FechaTerminacion is NULL OR FechaTerminacion >= date("now", "localtime")'
-  return getAsync(db, query, []).then((row) => {
-    return row
-  })
+  return await getAsync(db, query, [])
 }
 
 //Tested
-export function getWorksEndedThisMonth() {
+export async function getWorksEndedThisMonth() {
   var query = 'SELECT COUNT(1) AS Count ' +
   'FROM Trabajos t ' +
   'WHERE FechaTerminacion >= date("now", "localtime", "start of month") ' +
-  'AND FechaTerminacion <= date("now", "localtime", "start of month", "+1 month", "-1 day")'
-  return getAsync(db, query, []).then((row) => {
-    return row
-  })
+  'AND FechaTerminacion <= date("now", "localtime")'
+  return await getAsync(db, query, [])
 }
 
 //Tested
-export function getWorksEndedLast30days() {
+export async function getWorksEndedLast30days() {
   var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
   'FROM Trabajos ' +
   'WHERE FechaTerminacion >= date("now", "localtime", "-30 days")'
-  return getAsync(db, query, []).then((row) => {
-    return row
-  })
+  return await getAsync(db, query, [])
   }
 
   //Tested
-  export function getWorksEndedPrevious30days() {
+  export async function getWorksEndedPrevious30days() {
     var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
     'FROM Trabajos ' +
     'WHERE FechaTerminacion >= date("now", "localtime", "-60 days") '+
     'AND FechaTerminacion <= date("now", "localtime", "-30 days")'
-    return getAsync(db, query, []).then((row) => {
-      return row
-    })
+    return await getAsync(db, query, [])
   }
 
 
@@ -447,20 +444,21 @@ export async function setCheckToWork (idTrabajo, check) {
 
 // Invoices ------------------------------------------------------------------
 
-//Tested
+
 export async function getInvoicesList (customFilters) {
   var query = 'SELECT * FROM vFacturas WHERE 1=1'
-  var params = []
   if (customFilters !== undefined){
-    if (customFilters.month !== undefined && customFilters.year !== undefined) {
-      query += ' AND Fecha BETWEEN date("' + customFilters.year + '-' + ('00' + customFilters.month).substr(-2) + '-01") AND date("' + customFilters.year + '-' + ('00' + customFilters.month).substr(-2) + '-01", "+1 month")'
-    }
-    if (customFilters.dentistId !== undefined) {
-      query += ' AND IdDentista = ?'
-      params.push(customFilters.dentistId)
+    if (customFilters.fFactura !== undefined) {
+      query += processDateQuery('Fecha', customFilters.fFactura)
+    } else if (customFilters.fInicio !== undefined && customFilters.fFin !== undefined) {
+      query += ` AND Fecha BETWEEN date("${customFilters.fInicio}") AND date("${customFilters.fFin}")`
+    } else if(customFilters.fInicio !== undefined && customFilters.fFin === undefined){
+      query += ` AND Fecha >= date("${customFilters.fInicio}")`
+    } else if(customFilters.fInicio === undefined && customFilters.fFin !== undefined){
+      query += ` AND Fecha <= date("${customFilters.fFin}")`
     }
   }
-  return await allAsync(db, query, params)
+  return await allAsync(db, query, [])
 }
 
   //Tested
