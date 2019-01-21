@@ -444,7 +444,7 @@ export async function setCheckToWork (idTrabajo, check) {
 
 // Invoices ------------------------------------------------------------------
 
-
+//Tested
 export async function getInvoicesList (customFilters) {
   var query = 'SELECT * FROM vFacturas WHERE 1=1'
   if (customFilters !== undefined){
@@ -516,6 +516,17 @@ export async function getInvoicesList (customFilters) {
     `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month")`
 
     return await allAsync(db, query, [idDentist])
+  }
+
+  //Tested
+  export async function getInvoicePerWork(idWork) {
+    var query = 'SELECT ft.IdFactura, ' +
+      'strftime("%Y", f.Fecha) || "/" || (substr("00000" || f.NumFactura, -5, 5)) AS NumFactura ' +
+      'FROM Facturas f ' +
+      'INNER JOIN FacturasTrabajos ft ON f.IdFactura = ft.IdFactura ' +
+      'WHERE ft.IdTrabajo = ?'
+
+      return await getAsync(db, query, [idWork])
   }
 
   // export function updateInvoice(invoice) {

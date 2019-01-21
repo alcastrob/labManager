@@ -32,6 +32,11 @@
           </div>
         </div>
       </div> <!-- row -->
+      <div class="row" v-if="invoice !== null && invoice !== undefined">
+        <div class="col-md-12">
+          <span>Este trabajo está incluido en la factura <router-link :to="'/finances/invoices/' + invoice.IdFactura">{{invoice.NumFactura}}</router-link>.</span>
+        </div>
+      </div>
       <div class="row" v-if="readOnly">
         <div class="col-md-12">
           <span><em>Este trabajo está cerrado, por lo que no se puede editar.</em></span><em>
@@ -134,12 +139,13 @@
 <script>
 import Vue from 'vue'
 import _ from 'lodash'
-import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConfigValues } from '../../../main/dal.js'
+import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConfigValues, getInvoicePerWork } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
 import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
 import conformityModal from '../PageElements/ConformityModal'
+import VueRouter from 'vue-router'
 
 export default {
   name: 'workDetail',
@@ -151,7 +157,8 @@ export default {
     return {
       printedLabel: '',
       workTests: [],
-      readOnly: false
+      readOnly: false,
+      invoice: undefined
     }
   },
   validations: {
@@ -230,6 +237,7 @@ export default {
         this.showAdjunts(false)
       }
       this.workTests = await getWorkTestsList(this.work.IdTrabajo)
+      this.invoice = await getInvoicePerWork(this.work.IdTrabajo)
     }
   },
   created () {
