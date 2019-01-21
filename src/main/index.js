@@ -69,26 +69,6 @@ app.on('activate', () => {
   }
 })
 
-ipc.on('print-to-pdf', function (event, content) {
-  console.log('content')
-  console.log(content)
-  const pdfPath = path.join(__dirname, '/print.pdf')
-  // event.sender.send('wrote-pdf', event.sender)
-  const win = BrowserWindow.fromWebContents(event.sender)
-  //const win = BrowserWindow.fromWebContents(content)
-  win.webContents.printToPDF({printBackground: true, landscape: false, marginsType: 1, pageSize: 'A4'}, function (error, data) {
-    if (error) throw error
-
-    fs.writeFile(pdfPath, data, function (error) {
-      if (error) {
-        throw error
-      }
-      shell.openExternal('file://' + pdfPath)
-      event.sender.send('wrote-pdf', pdfPath)
-    })
-  })
-})
-
 ipc.on('file:opened', function (event, content) {
   mainWindow.setTitle(`labManager (${require('../../package.json').version}) - [${content}]`)
 })

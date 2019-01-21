@@ -62,7 +62,7 @@
       <button class="btn btn-secondary " @click="confirmGeneration(false)" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       <button class="btn btn-secondary " @click="confirmGeneration(true)" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-print mr-2"></i>Generar e imprimir facturas</button>
     </div>
-    <invoice ref="invoice"></invoice>
+    <invoicePrint ref="invoice"></invoicePrint>
   </b-modal>
 </div>
 </template>
@@ -70,7 +70,7 @@
 <script>
 import monthCheckExtendedTable from '../PageElements/tables/monthCheckExtendedTable'
 import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
-import invoice from '../Labels/InvoicePrint'
+import invoicePrint from '../Labels/InvoicePrint'
 import { bTooltip, bModal} from 'bootstrap-vue'
 import _ from 'lodash'
 import { insertInvoice } from '../../../main/dal.js'
@@ -80,7 +80,7 @@ export default {
   components: {
     monthCheckExtendedTable,
     collapsableActionButton,
-    invoice
+    invoicePrint
   },
   data () {
     return {

@@ -1,6 +1,5 @@
 <template>
-  <invoicePagesWrapper ref="container" :class="{'visuallyhidden': forPrinter}"></invoicePagesWrapper>
-  <!-- <div ref="container" :class="{'visuallyhidden': forPrinter}"></div> -->
+  <div ref="container" :class="{'visuallyhidden': forPrinter}"></div>
 </template>
 
 <script>
@@ -11,15 +10,13 @@ var path = require('path')
 var fs = require('fs')
 import invoicePage from './invoicePage'
 import { getConfigValues, getInvoice, getWorkIndications } from '../../../main/dal.js'
-import invoicePagesWrapper from './InvoicePagesWrapper'
 
 const MAX_NUMBER_OF_LINES_PER_PAGE = 35
 
 export default {
   name: 'invoicePrint',
   components: {
-    invoicePage,
-    invoicePagesWrapper
+    invoicePage
   },
   data () {
     return {
@@ -89,17 +86,12 @@ export default {
       if (indicationsToPrint.length !== 0){
         //We have something to print on the last page
         this.insertInstance(worksToPrint, indicationsToPrint, currentPage, true)
-        //currentPage++
       }
     },
-    print: async function (invoiceId, toPDF = false) {
+    print: async function (invoiceId) {
       this.forPrinter = true
       await this.renderContent(invoiceId)
-      if (toPDF === undefined || toPDF == false){
-        this.realPrint()
-      } else {
-        this.$refs.container.printPDF()
-      }
+      this.realPrint()
     },
     show: async function(invoiceId){
       this.forPrinter = false
@@ -127,8 +119,7 @@ export default {
       this.instances.push(instance)
       instance.$mount()
       instance.waitLogo(this.waitLogoCallback)
-      this.$refs.container.append(instance.$el)
-      //this.$refs.container.appendChild(instance.$el)
+      this.$refs.container.appendChild(instance.$el)
 
     },
     waitLogoCallback(pageNumber) {
@@ -144,8 +135,7 @@ export default {
         d.print(this.$el, this.cssText)
 
         for (var currentInstance of this.instances) {
-          this.$refs.container.remove(currentInstance.$el)
-          //this.$refs.container.removeChild(currentInstance.$el)
+          this.$refs.container.removeChild(currentInstance.$el)
         }
       }
     },

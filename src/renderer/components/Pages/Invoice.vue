@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     printInvoice: async function() {
-      this.$refs.invoicePrint.print(this.$route.params.id, true)
+      this.$refs.invoicePrint.print(this.$route.params.id)
     }
   },
   mounted () {
