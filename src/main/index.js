@@ -83,7 +83,7 @@ ipc.on('print-to-pdf', function (event, content) {
 })
 
 ipc.on('file:opened', function (event, content) {
-  mainWindow.setTitle(`labManager - ${content}`)
+  mainWindow.setTitle(`labManager (${require('../../package.json').version}) - [${content}]`)
 })
 
 

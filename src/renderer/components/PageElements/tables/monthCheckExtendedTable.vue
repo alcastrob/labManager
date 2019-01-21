@@ -50,7 +50,7 @@
                 <td class="dentist-text column-20" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
 
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;
-                  
+
                   <router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
 
                   <span v-if="isReadOnly && invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista].length !== 0">&nbsp;|&nbsp;
@@ -260,8 +260,8 @@ export default {
       dentist.SumaGranTotal = 0
 
       for (var currentWork of this.worksPerDentist[dentist.IdDentista]){
-        dentist.SumaDescuento += currentWork.TotalDescuento
-        dentist.SumaGranTotal += currentWork.SumaPrecioFinal - currentWork.TotalDescuento
+        dentist.SumaDescuento += parseFloat(currentWork.TotalDescuento)
+        dentist.SumaGranTotal += parseFloat(currentWork.SumaPrecioFinal) - parseFloat(currentWork.TotalDescuento)
       }
 
       dentist.percentage = parseFloat(100-(dentist.SumaGranTotal*100/dentist.SumaPrecioFinal)).toFixed(2)

@@ -8,6 +8,7 @@
 import mainPage from './components/pages/mainPage.vue'
 import 'jquery/dist/jquery.min.js'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import 'chart.js/dist/Chart.min.js'
 import Vue from 'vue'
 import VueSwal from 'vue-swal'
 import VueToasted from 'vue-toasted'

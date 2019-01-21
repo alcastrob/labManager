@@ -42,11 +42,19 @@
       <div class="col-md-4">
         <div class="card mt-3">
           <div class="card-header">
-            <h3 class="pt-2">Evolución de XXX</h3>
+            <h3 class="pt-2">Evolución de ingresos</h3>
           </div>
           <div class="card-body">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quam nihil neque possimus. Illum voluptatibus et, neque laudantium ratione quasi molestias, possimus consectetur placeat aliquid sit! Ut vitae est facere quasi?
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Porro eveniet commodi quis debitis asperiores placeat labore quidem! Eligendi numquam blanditiis ipsum. Quas, dolorum ab nulla vero fuga repudiandae totam provident.
+            <canvas ref="incomeEvolution"></canvas>
+          </div> <!-- card-body -->
+        </div> <!-- card -->
+        <div class="card mt-3">
+          <div class="card-header">
+            <h3 class="pt-2">Top 20 <span class="small">(Últimos 12 meses)</span></h3>
+            
+          </div>
+          <div class="card-body" style="position: relative; height:420px;">
+            <canvas ref="top20"></canvas>
           </div> <!-- card-body -->
         </div> <!-- card -->
         <div class="card mt-4">
@@ -97,8 +105,9 @@
 
 <script>
 import myIconCard from '../PageElements/iconCards/myIconCard'
-import { getWorkInExecution, getWorksEndedThisMonth, getWorksEndedLast30days, getWorksEndedPrevious30days, getInvoicesList } from '../../../main/dal.js'
+import { getWorkInExecution, getWorksEndedThisMonth, getWorksEndedLast30days, getWorksEndedPrevious30days, getInvoicesList, getMonthTotals, getLeaderboard } from '../../../main/dal.js'
 import invoiceExtendedTable from '../PageElements/tables/invoiceExtendedTable'
+import _ from 'lodash'
 
 export default {
   name: 'finances',
@@ -142,7 +151,9 @@ export default {
           formatter: 'money'
         } ],
       searchFields: ['NumFactura', 'NombreDentista'],
-      //filterChanged: false,
+      expenseEvolutionChart: {},
+      yearsExpenseEvolutionChart: [],
+      top20Chart: {}
     }
   },
   methods: {
@@ -173,10 +184,10 @@ export default {
     updateDatasetWithFilters: async function (eventData) {
       this.$refs.table.setDataset(await getInvoicesList(eventData))
     },
-    processFilterChange(filterData){
+    processFilterChange(filterData) {
       this.updateDatasetWithFilters(filterData)
     },
-    loadData: async function(){
+    loadData: async function() {
       this.updateDatasetWithFilters()
       this.worksInProgressCount = (await getWorkInExecution()).Count
       this.worksEndedThisMonthCount = (await getWorksEndedThisMonth()).Count
@@ -187,10 +198,101 @@ export default {
       this.worksEndedPrevious30daysCount = works.Count
       this.worksEndedPrevious30daysSum = works.Sum
       this.$refs.table.setFilter(this.$route.query.dentistName)
+    },
+    loadGraph: async function() {
+      var dataMonths = await getMonthTotals()
+      var leaderboardData = await getLeaderboard(20)
+
+      this.yearsExpenseEvolutionChart = [new Date().getFullYear(), new Date().getFullYear() - 1]
+
+      var barChartData = {
+        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto','Septiembre', 'Octobre', 'Noviembre', 'Diciembre'],
+        datasets: [{
+          label: this.yearsExpenseEvolutionChart[0],
+          backgroundColor: 'rgba(247, 146, 86, .8)',
+          borderColor: 'rgba(247, 146, 86, 1)',
+          borderWidth: 1,
+          data: dataMonths.thisYear
+        }, {
+          label: this.yearsExpenseEvolutionChart[1],
+          backgroundColor: 'rgba(93, 169, 233, .8)',
+          borderColor: 'rgba(93, 169, 233, 1)',
+          borderWidth: 1,
+          data: dataMonths.lastYear
+        }]
+      }
+
+      var leaderboardChartData = {
+        labels: _.map(leaderboardData, 'NombreDentista'),
+        datasets: [{
+          label: new Date().getFullYear(),
+          backgroundColor: 'rgba(23, 162, 184, .8)',
+          borderColor: 'rgba(23, 162, 184, 1)',
+          borderWidth: 1,
+          data: _.map(leaderboardData, 'Sum')
+        }]
+      }
+
+      var ctxIncomeEvolution = this.$refs.incomeEvolution.getContext('2d')
+      var ctxLeaderboard = this.$refs.top20.getContext('2d')
+
+      this.expenseEvolutionChart = new Chart(ctxIncomeEvolution, {
+        type: 'bar',
+        data: barChartData,
+        options: {
+          responsive: true,
+          legend: {
+            position: 'bottom',
+          },
+          title: {
+            display: false,
+          },
+          tooltips: {
+            callbacks: {
+              label: this.setExpenseEvolutionTooltip
+            }
+          }
+        }
+      })
+      this.top20Chart = new Chart(ctxLeaderboard, {
+        type: 'horizontalBar',
+        data: leaderboardChartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: false
+          },
+          title: {
+            display: false,
+          },
+          tooltips: {
+            callbacks: {
+              label: this.setLeaderboardTooltip
+            }
+          }
+        }
+      })
+    },
+    setExpenseEvolutionTooltip(tooltipItem) {
+      return `${tooltipItem.xLabel} ${this.yearsExpenseEvolutionChart[tooltipItem.datasetIndex]}: ${this.moneyFormatter.format(tooltipItem.yLabel)}`
+    },
+    setLeaderboardTooltip(tooltipItem){
+      return `${tooltipItem.yLabel}: ${this.moneyFormatter.format(tooltipItem.xLabel)}`
     }
   },
-  activated () {
+  activated() {
     this.loadData()
+  },
+  mounted() {
+    this.loadGraph()
   }
 }
 </script>
+<style>
+  canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
+</style>

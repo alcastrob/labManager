@@ -104,8 +104,8 @@
             </template>
           </tbody>
         </table>
-        <div class="text-right font-weight-bold" >Total: {{moneyFormatter.format(invoice.Total)}}</div>
-      </div> <!-- !forPrinter -->
+        <div class="text-right font-weight-bold pb-5" >Total: {{moneyFormatter.format(invoice.Total)}}</div>
+      </div> <!-- forScreen -->
 
     </div> <!-- col-sm-12 -->
   </div> <!-- row -->

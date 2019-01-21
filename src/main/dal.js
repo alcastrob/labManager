@@ -109,9 +109,7 @@ function processDateQuery(field, value){
 export async function getWork(workId) {
   var query = 'SELECT * FROM vTrabajos ' +
   'WHERE IdTrabajo = ?'
-  return getAsync(db, query, [workId])//.then((row) => {
-  //   return row
-  // })
+  return await getAsync(db, query, [workId])
 }
 
 //Tested
@@ -268,6 +266,39 @@ export async function getWorksEndedLast30days() {
     return await getAsync(db, query, [])
   }
 
+  //Tested
+  export async function getMonthTotals() {
+    var query = 'SELECT strftime("%m", FechaTerminacion) AS Month, ' +
+    'strftime("%Y", FechaTerminacion) AS Year, SUM(PrecioFinal) AS Sum ' +
+    'FROM Trabajos ' +
+    'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" ' +
+    'GROUP BY Month, Year'
+    var data = await allAsync(db, query, [])
+    var thisYearData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    var previousYearData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    _.forEach(_.filter(data, ['Year', new Date().getFullYear().toString()]), (v) => { thisYearData[parseInt(v.Month) - 1] = parseFloat(v.Sum).toFixed(2)})
+    _.forEach(_.filter(data, ['Year', (new Date().getFullYear() - 1).toString()]), (v) => { previousYearData[parseInt(v.Month) - 1] = parseFloat(v.Sum).toFixed(2)})
+    return {
+      thisYear: thisYearData,
+      lastYear: previousYearData
+    }
+  }
+
+  export async function getLeaderboard(limit) {
+    var query = 'SELECT d.NombreDentista, ' +
+      'SUM(t.PrecioFinal) AS Sum ' +
+      'FROM Trabajos t ' +
+      'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
+      'WHERE FechaTerminacion >= date("now", "localtime", "-1 year") ' +
+      'GROUP BY d.NombreDentista ' +
+      'ORDER BY Sum DESC '
+    if (limit !== undefined){
+      query += 'LIMIT ' + limit
+    }
+
+    return await allAsync(db, query, [])
+  }
+
 
 // Work Types -----------------------------------------------------------------
 
@@ -290,9 +321,7 @@ export async function getAdjuntsOfWork (workId) {
   'FROM Aditamentos ' +
   'WHERE IdTrabajo = ?'
 
-  return await getAsync(db, query, [workId])//.then((row) => {
-  //   return row
-  // })
+  return await getAsync(db, query, [workId])
 }
 
 //Tested
