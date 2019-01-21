@@ -44,7 +44,7 @@
     </ul>
 
     <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-1 mr-0 mr-md-3 my-2 my-md-0">
+    <!-- <form class="d-none d-md-inline-block form-inline ml-1 mr-0 mr-md-3 my-2 my-md-0">
       <div class="input-group">
         <input type="text" class="form-control" placeholder="Buscar..." >
         <div class="input-group-append">
@@ -53,7 +53,7 @@
           </button>
         </div>
       </div>
-    </form>
+    </form> -->
   </nav>
 </template>
 

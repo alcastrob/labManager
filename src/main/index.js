@@ -7,6 +7,8 @@ const log = require('electron-log')
 const electron = require('electron')
 const ipc = electron.ipcMain
 const fs = require('fs')
+const os = require('os')
+const shell = electron.shell
 
 /**
  * Set `__static` path to static files in production
@@ -68,16 +70,21 @@ app.on('activate', () => {
 })
 
 ipc.on('print-to-pdf', function (event, content) {
+  console.log('content')
+  console.log(content)
   const pdfPath = path.join(__dirname, '/print.pdf')
+  // event.sender.send('wrote-pdf', event.sender)
   const win = BrowserWindow.fromWebContents(event.sender)
-  win.webContents.printToPDF({printBackground: true, landscape: true}, function (error, data) {
+  //const win = BrowserWindow.fromWebContents(content)
+  win.webContents.printToPDF({printBackground: true, landscape: false, marginsType: 1, pageSize: 'A4'}, function (error, data) {
     if (error) throw error
+
     fs.writeFile(pdfPath, data, function (error) {
       if (error) {
         throw error
       }
-      //shell.openExternal('file://' + pdfPath)
-      //event.sender.send('wrote-pdf', pdfPath)
+      shell.openExternal('file://' + pdfPath)
+      event.sender.send('wrote-pdf', pdfPath)
     })
   })
 })

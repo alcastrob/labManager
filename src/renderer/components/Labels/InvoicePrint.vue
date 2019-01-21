@@ -1,5 +1,6 @@
 <template>
-  <div ref="container" :class="{'visuallyhidden': forPrinter}"></div>
+  <invoicePagesWrapper ref="container" :class="{'visuallyhidden': forPrinter}"></invoicePagesWrapper>
+  <!-- <div ref="container" :class="{'visuallyhidden': forPrinter}"></div> -->
 </template>
 
 <script>
@@ -10,13 +11,15 @@ var path = require('path')
 var fs = require('fs')
 import invoicePage from './invoicePage'
 import { getConfigValues, getInvoice, getWorkIndications } from '../../../main/dal.js'
+import invoicePagesWrapper from './InvoicePagesWrapper'
 
 const MAX_NUMBER_OF_LINES_PER_PAGE = 35
 
 export default {
   name: 'invoicePrint',
   components: {
-    invoicePage
+    invoicePage,
+    invoicePagesWrapper
   },
   data () {
     return {
@@ -89,14 +92,13 @@ export default {
         //currentPage++
       }
     },
-    print: async function (invoiceId, toPDF) {
+    print: async function (invoiceId, toPDF = false) {
       this.forPrinter = true
       await this.renderContent(invoiceId)
       if (toPDF === undefined || toPDF == false){
         this.realPrint()
       } else {
-        const ipc = require('electron').ipcRenderer
-        ipc.send('print-to-pdf')
+        this.$refs.container.printPDF()
       }
     },
     show: async function(invoiceId){
@@ -125,7 +127,9 @@ export default {
       this.instances.push(instance)
       instance.$mount()
       instance.waitLogo(this.waitLogoCallback)
-      this.$refs.container.appendChild(instance.$el)
+      this.$refs.container.append(instance.$el)
+      //this.$refs.container.appendChild(instance.$el)
+
     },
     waitLogoCallback(pageNumber) {
       this.pageLogosLoaded[pageNumber] = true
@@ -140,13 +144,10 @@ export default {
         d.print(this.$el, this.cssText)
 
         for (var currentInstance of this.instances) {
-          this.$refs.container.removeChild(currentInstance.$el)
+          this.$refs.container.remove(currentInstance.$el)
+          //this.$refs.container.removeChild(currentInstance.$el)
         }
       }
-    },
-    printPdf(){
-      const ipc = require('electron').ipcRenderer
-      ipc.send('print-to-pdf')
     },
     loadData: async function() {
       var config = await getConfigValues(['logo', 'vatNumber', 'invoiceFooter'])
@@ -159,6 +160,12 @@ export default {
     this.loadData()
     this.cssText = fs.readFileSync(path.resolve(__static, 'printed.css'), 'UTF-8')
     this.cssText += fs.readFileSync(path.resolve(__static, 'bootstrap.min.css'), 'UTF-8')
+  },
+  mounter () {
+    const ipc = require('electron').ipcRenderer
+    ipc.on('wrote-pdf', (event, path) => {
+      debugger
+    })
   }
 }
 </script>

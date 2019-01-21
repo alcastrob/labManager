@@ -191,13 +191,16 @@ export default {
         window.setTimeout(this.waitLogo, 500)
         return
       } else {
-        //this.$forceUpdate()
         this.parentCallback(this.pageNumber)
       }
     },
     format(date) {
       return moment(date).format('DD/MM/YYYY')
-    }
+    },
+    printPdf(){
+      const ipc = require('electron').ipcRenderer
+      ipc.send('print-to-pdf')
+    },
   }
 }
 </script>
