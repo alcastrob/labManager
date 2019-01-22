@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import mainPage from './components/pages/mainPage.vue'
+import mainPage from './components/Pages/MainPage.vue'
 import 'jquery/dist/jquery.min.js'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'chart.js/dist/Chart.min.js'
