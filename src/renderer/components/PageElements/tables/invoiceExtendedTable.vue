@@ -32,7 +32,7 @@
       </tbody>
     </table>
     <pagination></pagination>
-    <button id="toExcel" @click="toExcel">Excel</button>
+    <button type="button" @click="toExcel" class="btn btn-secondary btn-sm"><i class="fas fa-file-excel mr-2"></i>a Excel</button>
   </div>
 </template>
 
@@ -52,12 +52,6 @@ export default {
     pagination,
     invoiceFilterBar
   },
-  data() {
-    return {
-      instance: null,
-      exportData: null
-    };
-  },
   methods: {
     setFilter: function(query) {
       this.$refs.filterBar.setFilter(query);
@@ -66,26 +60,21 @@ export default {
       this.$parent.processFilterChange(filterData);
     },
     toExcel() {
-      debugger;
-      this.instance.export2file(
-        this.exportData.data,
-        this.exportData.mimeType,
-        this.exportData.filename,
-        this.exportData.fileExtension
+       var instance = new TableExport(this.$refs.theTable, {
+        formats: ["xlsx", "csv"],
+        filename: "Facturas",
+        sheetname: 'Facturas',
+        exportButtons: false
+      });
+      var exportData = instance.getExportData()["theTable"]["xlsx"];
+
+      instance.export2file(
+        exportData.data,
+        exportData.mimeType,
+        exportData.filename,
+        exportData.fileExtension
       );
     }
-  },
-  mounted() {
-    this.instance = new TableExport(this.$refs.theTable, {
-      formats: ["xlsx", "csv"],
-      filename: "pepe",
-      sheetname: 'Facturas'
-      //bootstrap: true,
-      //exportButtons: false
-    });
-    debugger;
-    var x = this.instance.getExportData()
-    this.exportData = this.instance.getExportData()["theTable"]["csv"];
   }
 };
 </script>
