@@ -2,7 +2,8 @@
 import moment from 'moment'
 import _ from 'lodash'
 
-const pageSize = 10
+const PAGESIZE = 10
+const MAXROWSTOEXCEL = 500
 
 export default {
   props: {
@@ -35,7 +36,7 @@ export default {
     return {
       rawDataset: [],
       filteredDataset: [],
-      pageSize: pageSize,
+      pageSize: PAGESIZE,
       currentPage: 1,
       currentSortCriteria: '',
       currentSortDesc: '',
@@ -43,7 +44,8 @@ export default {
       moneyFormatter: new Intl.NumberFormat('es-ES', {
         style: 'currency',
         currency: 'EUR'
-      })
+      }),
+      paginationDisabled: false
     }
   },
   methods: {
@@ -62,7 +64,7 @@ export default {
       this.rawDataset = dataset
       //Let's check if the dataset contains the required Key column
       if (_.some(dataset, ['Key', undefined])) {
-        throw 'Missing Key column in passed dataset in MyTable.vue'
+        throw 'Missing Key column in passed dataset in tableXXX.vue'
       }
 
       this.applyTextFilter('') // Just to load all the data
@@ -72,7 +74,8 @@ export default {
         path: this.urlBase + index
       })
     },
-    // Pagination
+
+    // Pagination -------------------------------------------------------------
     loadPage: function (page) {
       this.currentPage = page
     },
@@ -80,11 +83,16 @@ export default {
       if (this.rawDataset.length === 0){
         return []
       }
-      var arraySize = this.rawDataset.length - 1
-      var left = (this.currentPage - 1) * this.pageSize
-      var right = (this.currentPage * this.pageSize)
-      if (right > arraySize) {
-        right = arraySize + 1
+      if (!this.paginationDisabled) {
+        var arraySize = this.rawDataset.length - 1
+        var left = (this.currentPage - 1) * this.pageSize
+        var right = (this.currentPage * this.pageSize)
+        if (right > arraySize) {
+          right = arraySize + 1
+        }
+      } else {
+        var left = 0
+        var right = arraySize
       }
 
       if (left < 0 || left > arraySize)
@@ -93,7 +101,17 @@ export default {
         return _.slice(this.filteredDataset, left, right)
       }
     },
-    // Sorting
+    enablePagination: function() {
+      this.paginationDisabled = false
+    },
+    disablePagination: function(callback) {
+      this.paginationDisabled = true
+      setTimeout(() => {
+        callback()
+      }, 3000)
+    },
+
+    // Sorting ----------------------------------------------------------------
     sortByExpression: function(expression) {
       if (expression === this.currentSortCriteria) {
         this.currentSortDesc = !this.currentSortDesc
@@ -109,7 +127,8 @@ export default {
         this.filteredDataset = _.reverse(this.filteredDataset)
       }
     },
-    // Filter
+
+    // Filter -----------------------------------------------------------------
     applyTextFilter: function (searchCriteria) {
       if (searchCriteria !== '' && searchCriteria !== undefined && searchCriteria !== null && this.searchFields.length > 0) {
         this.currentSeachCriteria = searchCriteria
@@ -133,14 +152,6 @@ export default {
     }
   },
   mounted () {
-    // Check the required parameters (props)
-    if (this.headers === undefined || this.headers === null)
-      throw 'Missing prop headers in myTable.vue'
-    if (this.urlBase === undefined || this.urlBase === null)
-      throw 'Missing prop urlBase in myTable.vue'
-    if (this.masterKey === undefined || this.masterKey === null)
-      throw 'Missing prop masterKey in myTable.vue'
-
     moment.locale('es')
   }
 }

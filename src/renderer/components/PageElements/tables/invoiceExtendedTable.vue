@@ -1,7 +1,7 @@
 <template>
   <div class="table-responsive noOverflow">
     <invoiceFilterBar ref="filterBar"></invoiceFilterBar>
-    <table class="table table-bordered" width="100%" cellspacing="0" id="invoicesTable">
+    <table class="table table-bordered" width="100%" cellspacing="0" ref="invoicesTable">
       <thead>
         <tr>
           <th
@@ -32,7 +32,6 @@
       </tbody>
     </table>
     <pagination></pagination>
-    <excelButton fileName="facturas" tableId="invoicesTable"></excelButton>
   </div>
 </template>
 
@@ -41,15 +40,13 @@ import pagination from "./pagination"
 import Vue from "vue"
 import invoiceFilterBar from "./invoiceFilterBar"
 import tableMixin from "./tableMixin"
-import excelButton from '../CollapsableButtons/excelButton'
 
 export default {
   name: "invoiceExtendedTable",
   mixins: [tableMixin],
   components: {
     pagination,
-    invoiceFilterBar,
-    excelButton
+    invoiceFilterBar
   },
   methods: {
     setFilter: function(query) {
@@ -57,7 +54,7 @@ export default {
     },
     processFilterChange(filterData) {
       this.$parent.processFilterChange(filterData);
-    }
+    },
   }
 };
 </script>

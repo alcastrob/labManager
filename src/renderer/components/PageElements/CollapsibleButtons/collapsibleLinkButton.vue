@@ -1,15 +1,15 @@
 <template>
-  <a href="#" class="btn btn-warning btn-collapsible" @click="callback">
+  <router-link :to="pathTo" class="btn btn-warning btn-collapsible">
     <i v-bind:class="this.iconCss"></i>
     <span>{{text}}</span>
-  </a>
+  </router-link>
 </template>
 
 <script>
 import VueRouter from 'vue-router'
 
 export default {
-  name: 'collapsableActionButton',
+  name: 'collapsibleLinkButton',
   data () {
     return {}
   },
@@ -22,8 +22,8 @@ export default {
       type: String,
       required: true
     },
-    callback: {
-      type: Function,
+    pathTo: {
+      type: String,
       required: true
     }
   },
@@ -33,8 +33,8 @@ export default {
       throw 'Missing prop value text in WorkDetail.vue'
     if (this.iconCss === undefined || this.iconCss === null)
       throw 'Missing prop value iconCss in WorkDetail.vue'
-    if (this.callback === undefined || this.callback === null)
-      throw 'Missing prop value callback in WorkDetail.vue'
+    if (this.pathTo === undefined || this.pathTo === null)
+      throw 'Missing prop value pathTo in WorkDetail.vue'
   }
 }
 </script>

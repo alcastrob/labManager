@@ -5,7 +5,7 @@
 import Vue from 'Vue'
 import workIndicationsTable from '../PageElements/tables/WorkIndicationsTable'
 import workTestsTable from '../PageElements/tables/workTestsTable'
-import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
+import collapsibleActionButton from '../PageElements/CollapsibleButtons/collapsibleActionButton'
 import dentistSearch from '../PageElements/DentistSearch'
 import workAdjuncts from '../PageElements/WorkAdjuncts'
 import labelEsqueleticos from '../Labels/LabelEsqueleticos'
@@ -21,7 +21,7 @@ export default {
   components: {
     workIndicationsTable,
     workTestsTable,
-    collapsableActionButton,
+    collapsibleActionButton,
     workAdjuncts,
     dentistSearch
   },

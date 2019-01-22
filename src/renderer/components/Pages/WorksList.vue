@@ -1,13 +1,18 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-6">
         <h1 v-if="showCustomHeader">{{listHeading}}</h1>
         <h1 v-else>Listado de Trabajos</h1>
-      </div>
+      </div> <!-- col-md-6 -->
+      <div class="col-md-6 mt-2">
+        <div class="float-right">
+          <collapsibleExcelButton fileName="trabajos" :isCollapsible="true" :collapsed="false" :isDark="false" class="float-right mt-2" ref="excelButton"></collapsibleExcelButton>
+        </div>
+      </div> <!-- col-md-6 -->
     </div> <!-- row -->
     <div>
-      <workExtendedTable :headers="headers" :searchFields="searchFields" ref="table" urlBase="/works/details/" masterKey="IdTrabajo" />
+      <workExtendedTable :headers="headers" :searchFields="searchFields" ref="workExtendedTable" urlBase="/works/details/" masterKey="IdTrabajo" />
     </div>
   </div>
 </template>
@@ -15,11 +20,13 @@
 <script>
 import { getWorksList } from '../../../main/dal.js'
 import workExtendedTable from '../PageElements/tables/workExtendedTable'
+import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 
 export default {
   name: 'worksList',
   components: {
-    workExtendedTable
+    workExtendedTable,
+    collapsibleExcelButton
   },
   data () {
     return {
@@ -98,7 +105,7 @@ export default {
       }
     },
     updateDatasetWithFilters: async function (eventData) {
-      this.$refs.table.setDataset(await getWorksList(eventData))
+      this.$refs.workExtendedTable.setDataset(await getWorksList(eventData))
     },
     processFilterChange(filterData){
       this.updateDatasetWithFilters(filterData)
@@ -114,15 +121,19 @@ export default {
     this.listHeading = this.$route.query.title
   },
   mounted () {
-    this.$refs.table.setFilters(this.$route.query.filter)
+    this.$refs.workExtendedTable.setFilters(this.$route.query.filter)
     this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter, this.$route.params.id))
 
     this.$root.$on('workList:ReloadRequest', () => {
-      this.$refs.table.setFilters(this.$route.query.filter)
+      this.$refs.workExtendedTable.setFilters(this.$route.query.filter)
       this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
       this.filterChanged = false
       this.listHeading = this.$route.query.title
     })
+
+    this.$refs.excelButton.setTable(this.$refs.workExtendedTable)
+    // this.$refs.excelButton.setEnablePaginationCallback(this.$refs.workExtendedTable.enablePagination)
+    // this.$refs.excelButton.setDisablePaginationCallback(this.$refs.workExtendedTable.disablePagination)
   }
 }
 </script>

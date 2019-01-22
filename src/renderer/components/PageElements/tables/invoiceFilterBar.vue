@@ -6,7 +6,7 @@
         <input type="text" v-model="filterText" @keyup.enter="doFilter">
         <button class="ml-1 btn btn-secondary" @click="doFilter">Filtrar</button>
         <button class="ml-1 btn btn-outline-secondary" @click="resetFilter">Cancelar filtrado</button>
-        <a href="#" data-toggle="collapse" data-target="#filter-options" class="pl-4 text-info"><i class="fas fa-filter"></i>Otros filtros</a>
+        <a href="#" data-toggle="collapse" data-target="#filter-options" class="pl-2 text-info"><i class="fas fa-filter"></i>Otros filtros</a>
       </div>
       <div id="filter-options" class="collapse mt-2">
         <option-line id="fFactura" :isMultiple="false" :options="['Hoy', 'Este mes', 'Mes pasado', 'Hace dos meses', 'Hace tres meses', 'Hace seis meses']" description="Fecha factura: " ref="fFactura">

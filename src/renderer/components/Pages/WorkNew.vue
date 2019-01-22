@@ -8,7 +8,7 @@
       <div class="col-md-6 mt-2">
         <div class="float-right">
           <div>
-            <collapsable-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible"></collapsable-action-button>
+            <collapsible-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible"></collapsible-action-button>
           </div>
         </div>
       </div>

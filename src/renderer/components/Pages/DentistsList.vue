@@ -4,29 +4,31 @@
       <div class="col-md-6">
         <h1>Listado de dentistas</h1>
       </div>
-      <div class="col-md-6 mt-2">
+      <div class="col-md-6 mt-3">
         <div class="float-right">
-          <collapsable-link-button iconCss="fas fa-plus-circle" text="Nuevo dentista" pathTo="/dentists/new"></collapsable-link-button>
+          <collapsible-link-button iconCss="fas fa-plus-circle" text="Nuevo dentista" pathTo="/dentists/new"></collapsible-link-button>
+          <collapsibleExcelButton fileName="dentistas" :isCollapsible="true" :collapsed="false" :isDark="false" ref="excelButton"></collapsibleExcelButton>
         </div>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
     <div>
-      <myTable :headers="headers" :searchFields="searchFields" ref="dentistTable"  urlBase="/dentists/details/" masterKey="IdDentista"/>
+      <dentistTable :headers="headers" :searchFields="searchFields" ref="dentistTable"  urlBase="/dentists/details/" masterKey="IdDentista"/>
     </div> <!-- row -->
   </div>
-
 </template>
 
 <script>
-import myTable from '../PageElements/tables/myTable'
+import dentistTable from '../PageElements/tables/dentistExtendedTable'
 import { getDentistList } from '../../../main/dal.js'
-import collapsableLinkButton from '../PageElements/CollapsableButtons/collapsableLinkButton'
+import collapsibleLinkButton from '../PageElements/CollapsibleButtons/collapsibleLinkButton'
+import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 
 export default {
   name: 'dentistslist',
   components: {
-    myTable,
-    collapsableLinkButton
+    dentistTable,
+    collapsibleLinkButton,
+    collapsibleExcelButton
   },
   data () {
     return {
@@ -64,7 +66,7 @@ export default {
         }, {
           title: 'Tlf. 2',
           dataField: 'Telefono2',
-          titleClass: 'text-left',
+          titleClass: 'text-left tableexport-string target',
           rowClass: ''
         }, {
           title: 'Primer trabajo',
@@ -87,6 +89,7 @@ export default {
     getDentistList().then((dentists) => {
       this.$refs.dentistTable.setDataset(dentists)
     })
+    this.$refs.excelButton.setTable(this.$refs.dentistTable)
   }
 }
 </script>

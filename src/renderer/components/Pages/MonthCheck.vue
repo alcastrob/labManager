@@ -6,9 +6,9 @@
     </div> <!-- col-md-5 -->
     <div class="col-md-7 mt-2">
       <div class="float-right">
-        <collapsable-action-button iconCss="fas fa-clipboard-list" text="Modo verificación (sólo lectura)" :callback="setReadOnly" v-if="!readOnly" ></collapsable-action-button>
-        <collapsable-action-button iconCss="fas fa-check" text="Modo normal" :callback="unsetReadOnly" v-else></collapsable-action-button>
-        <collapsable-action-button iconCss="fas fa-file-invoice" text="Generar Resumen Mensual" :callback="unsetReadOnly" ></collapsable-action-button>
+        <collapsible-action-button iconCss="fas fa-clipboard-list" text="Modo verificación (sólo lectura)" :callback="setReadOnly" v-if="!readOnly" ></collapsible-action-button>
+        <collapsible-action-button iconCss="fas fa-check" text="Modo normal" :callback="unsetReadOnly" v-else></collapsible-action-button>
+        <collapsibleExcelButton fileName="cierreMensual" :isCollapsible="true" :collapsed="false" :isDark="false" ref="excelButton"></collapsibleExcelButton>
         <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()" v-if="!readOnly"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       </div>
     </div> <!-- col-md-7 -->
@@ -69,17 +69,19 @@
 
 <script>
 import monthCheckExtendedTable from '../PageElements/tables/monthCheckExtendedTable'
-import collapsableActionButton from '../PageElements/CollapsableButtons/collapsableActionButton'
+import collapsibleActionButton from '../PageElements/CollapsibleButtons/collapsibleActionButton'
 import invoicePrint from '../Labels/InvoicePrint'
 import { bTooltip, bModal} from 'bootstrap-vue'
 import _ from 'lodash'
 import { insertInvoice } from '../../../main/dal.js'
+import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 
 export default {
   name: 'monthCheck',
   components: {
     monthCheckExtendedTable,
-    collapsableActionButton,
+    collapsibleActionButton,
+    collapsibleExcelButton,
     invoicePrint
   },
   data () {
@@ -279,6 +281,9 @@ export default {
   created () {
     this.year = this.$route.params.year
     this.month = this.$route.params.month
+  },
+  mounted () {
+    this.$refs.excelButton.setTable(this.$refs.theTable)
   }
 }
 </script>

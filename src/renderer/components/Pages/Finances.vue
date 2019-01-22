@@ -30,10 +30,17 @@
       <div class="col-md-8">
         <div class="card mt-3">
           <div class="card-header">
-            <h3 class="pt-2">Facturas</h3>
+            <div class="row">
+              <div class="col-md-6">
+                <h3 class="pt-2">Facturas</h3>
+              </div>
+              <div class="col-md-6">
+                <collapsibleExcelButton fileName="facturas" :isCollapsible="true" :collapsed="false" :isDark="true" class="float-right mt-2" ref="excelButton"></collapsibleExcelButton>
+              </div>
+            </div>
           </div>
           <div class="card-body">
-            <invoiceExtendedTable :headers="headers" :searchFields="searchFields" ref="table" urlBase="/finances/invoices/" masterKey="IdFactura">
+            <invoiceExtendedTable :headers="headers" :searchFields="searchFields" ref="invoiceExtendedTable" urlBase="/finances/invoices/" masterKey="IdFactura">
             </invoiceExtendedTable>
           </div> <!-- card-body -->
         </div> <!-- card -->
@@ -107,12 +114,14 @@ import myIconCard from '../PageElements/iconCards/myIconCard'
 import { getWorkInExecution, getWorksEndedThisMonth, getWorksEndedLast30days, getWorksEndedPrevious30days, getInvoicesList, getMonthTotals, getLeaderboard } from '../../../main/dal.js'
 import invoiceExtendedTable from '../PageElements/tables/invoiceExtendedTable'
 import _ from 'lodash'
+import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 
 export default {
   name: 'finances',
   components: {
     myIconCard,
-    invoiceExtendedTable
+    invoiceExtendedTable,
+    collapsibleExcelButton
   },
   data () {
     return {
@@ -181,7 +190,7 @@ export default {
       })
     },
     updateDatasetWithFilters: async function (eventData) {
-      this.$refs.table.setDataset(await getInvoicesList(eventData))
+      this.$refs.invoiceExtendedTable.setDataset(await getInvoicesList(eventData))
     },
     processFilterChange(filterData) {
       this.updateDatasetWithFilters(filterData)
@@ -196,7 +205,7 @@ export default {
       works = await getWorksEndedPrevious30days()
       this.worksEndedPrevious30daysCount = works.Count
       this.worksEndedPrevious30daysSum = works.Sum
-      this.$refs.table.setFilter(this.$route.query.dentistName)
+      this.$refs.invoiceExtendedTable.setFilter(this.$route.query.dentistName)
     },
     loadGraph: async function() {
       var dataMonths = await getMonthTotals()
@@ -285,6 +294,9 @@ export default {
   },
   mounted() {
     this.loadGraph()
+    this.$refs.excelButton.setTable(this.$refs.invoiceExtendedTable)
+    // this.$refs.excelButton.setEnablePaginationCallback(this.$refs.invoiceExtendedTable.enablePagination)
+    // this.$refs.excelButton.setDisablePaginationCallback(this.$refs.invoiceExtendedTable.disablePagination)
   }
 }
 </script>

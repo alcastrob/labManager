@@ -8,8 +8,8 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <collapsable-link-button iconCss="fas fa-file-invoice-dollar mr-2" text="Ver sus facturas" :pathTo="getInvoiceListUrl()"></collapsable-link-button>
-              <collapsable-link-button iconCss="fa fa-fw fa-list" text="Ver sus trabajos" :pathTo="getWorkListUrl()"></collapsable-link-button>
+              <collapsible-link-button iconCss="fas fa-file-invoice-dollar mr-2" text="Ver sus facturas" :pathTo="getInvoiceListUrl()"></collapsible-link-button>
+              <collapsible-link-button iconCss="fa fa-fw fa-list" text="Ver sus trabajos" :pathTo="getWorkListUrl()"></collapsible-link-button>
             </div>
           </div>
         </div> <!-- col-md-6 -->
@@ -111,13 +111,13 @@
 
 <script>
 import { getDentist, updateDentist, getConfigValue } from '../../../main/dal.js'
-import collapsableLinkButton from '../PageElements/CollapsableButtons/collapsableLinkButton'
+import collapsibleLinkButton from '../PageElements/CollapsibleButtons/collapsibleLinkButton'
 import { required, email, numeric, minLength, maxLength } from 'vuelidate/lib/validators'
 
 export default {
   name: 'dentistDetail',
   components: {
-    collapsableLinkButton
+    collapsibleLinkButton
   },
   data () {
     return {

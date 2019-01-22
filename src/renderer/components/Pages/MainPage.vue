@@ -32,9 +32,9 @@ export default {
       if (configGet('dataFile') === ''){
         // No selected file for running the application
         swal({
-          title: "Datos nos cargados",
-          text: "La aplicación debe cargar un fichero de datos para poder trabajar correctamente. Por favor, seleccione el fichero apropiado en el menú Archivo > Abrir archivo.",
-          icon: "error",
+          title: 'Datos nos cargados',
+          text: 'La aplicación debe cargar un fichero de datos para poder trabajar correctamente. Por favor, seleccione el fichero apropiado en el menú Archivo > Abrir archivo.',
+          icon: 'error',
           buttons: {
             ok: 'OK'
           }
@@ -42,9 +42,9 @@ export default {
       } else if (!await loadDbFile()){
         //Something went wrong with that file
         swal({
-          title: "Fichero no reconocido",
-          text: "El fichero que se ha seleccionado no tiene un formato válido para la aplicación. Por favor, seleccione otro.",
-          icon: "error",
+          title: 'Fichero no reconocido',
+          text: 'El fichero que se ha seleccionado no tiene un formato válido para la aplicación. Por favor, seleccione otro.',
+          icon: 'error',
           buttons: {
             ok: 'OK'
           }
