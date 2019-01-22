@@ -1,7 +1,7 @@
 <template>
   <div class="table-responsive noOverflow">
     <invoiceFilterBar ref="filterBar"></invoiceFilterBar>
-    <table class="table table-bordered" width="100%" cellspacing="0" ref="theTable" id="theTable">
+    <table class="table table-bordered" width="100%" cellspacing="0" id="invoicesTable">
       <thead>
         <tr>
           <th
@@ -32,25 +32,24 @@
       </tbody>
     </table>
     <pagination></pagination>
-    <button type="button" @click="toExcel" class="btn btn-secondary btn-sm"><i class="fas fa-file-excel mr-2"></i>a Excel</button>
+    <excelButton fileName="facturas" tableId="invoicesTable"></excelButton>
   </div>
 </template>
 
 <script>
-import pagination from "./pagination";
-import Vue from "vue";
-import invoiceFilterBar from "./invoiceFilterBar";
-import tableMixin from "./tableMixin";
-import "xlsx/dist/xlsx.core.min.js";
-import "file-saverjs/FileSaver.min.js";
-import TableExport from "tableexport";
+import pagination from "./pagination"
+import Vue from "vue"
+import invoiceFilterBar from "./invoiceFilterBar"
+import tableMixin from "./tableMixin"
+import excelButton from '../CollapsableButtons/excelButton'
 
 export default {
   name: "invoiceExtendedTable",
   mixins: [tableMixin],
   components: {
     pagination,
-    invoiceFilterBar
+    invoiceFilterBar,
+    excelButton
   },
   methods: {
     setFilter: function(query) {
@@ -58,22 +57,6 @@ export default {
     },
     processFilterChange(filterData) {
       this.$parent.processFilterChange(filterData);
-    },
-    toExcel() {
-       var instance = new TableExport(this.$refs.theTable, {
-        formats: ["xlsx", "csv"],
-        filename: "Facturas",
-        sheetname: 'Facturas',
-        exportButtons: false
-      });
-      var exportData = instance.getExportData()["theTable"]["xlsx"];
-
-      instance.export2file(
-        exportData.data,
-        exportData.mimeType,
-        exportData.filename,
-        exportData.fileExtension
-      );
     }
   }
 };

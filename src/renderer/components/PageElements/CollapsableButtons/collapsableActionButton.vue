@@ -1,5 +1,5 @@
 <template>
-  <a href="#" class="btn btn-warning btn-collapsible" @click="callback()">
+  <a href="#" class="btn btn-warning btn-collapsible" @click="callback">
     <i v-bind:class="this.iconCss"></i>
     <span>{{text}}</span>
   </a>
