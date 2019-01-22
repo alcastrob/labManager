@@ -51,7 +51,6 @@
         <div class="card mt-3">
           <div class="card-header">
             <h3 class="pt-2">Top 20 <span class="small">(Últimos 12 meses)</span></h3>
-            
           </div>
           <div class="card-body" style="position: relative; height:420px;">
             <canvas ref="top20"></canvas>
