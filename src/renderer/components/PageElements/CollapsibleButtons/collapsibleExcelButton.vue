@@ -43,9 +43,14 @@ export default {
       type: Boolean,
       required: true
     }
+    // table: {
+    //   type: Object,
+    //   required: true
+    // }
   },
   methods: {
     toExcel() {
+      this.$emit('click')
       this.$refs.exportingModal.show()
       this.disablePagination(this.toExcelCallback)
     },
@@ -64,6 +69,7 @@ export default {
       );
       this.$refs.exportingModal.hide()
       this.enablePagination()
+      this.table.endExporting()
     },
     setEnablePaginationCallback(enablePagination){
       this.enablePagination = enablePagination

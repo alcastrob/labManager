@@ -8,7 +8,7 @@
       <div class="float-right">
         <collapsible-action-button iconCss="fas fa-clipboard-list" text="Modo verificación (sólo lectura)" :callback="setReadOnly" v-if="!readOnly" ></collapsible-action-button>
         <collapsible-action-button iconCss="fas fa-check" text="Modo normal" :callback="unsetReadOnly" v-else></collapsible-action-button>
-        <collapsibleExcelButton fileName="cierreMensual" :isCollapsible="true" :collapsed="false" :isDark="false" ref="excelButton"></collapsibleExcelButton>
+        <collapsibleExcelButton fileName="cierreMensual" :isCollapsible="true" :collapsed="false" :isDark="false"  ref="excelButton" :class="{'displayNone': !readOnly}" @click="beginExporting"></collapsibleExcelButton>
         <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()" v-if="!readOnly"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       </div>
     </div> <!-- col-md-7 -->
@@ -94,79 +94,79 @@ export default {
         }, {
           title: 'Dentista',
           dataField: 'NombreDentista',
-          titleClass: 'text-left small-text column20 align-top',
-          rowClass: 'small-text'
+          titleClass: 'text-left small-text column20 align-top tableexport-string target',
+          rowClass: 'small-text tableexport-string target'
         }, {
           title: 'P. Final',
           dataField: 'SumaPrecioFinal',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'P. Metal',
           dataField: 'SumaAditamentos',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'Cerámica',
           dataField: 'SumaCeramica',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'Resina',
           dataField: 'SumaResina',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'Ortodoncia',
           dataField: 'SumaOrtodoncia',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'Esquelético',
           dataField: 'SumaEsqueletico',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'Zirconio',
           dataField: 'SumaZirconio',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'Fija Metal',
           dataField: 'SumaFija',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'Total Metal',
           dataField: 'SumaTotalMetal',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: '% Dto.',
           dataField: 'percentage',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'percentage'
         }, {
           title: 'Dto.',
           dataField: 'SumaDescuento',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         }, {
           title: 'Total',
           dataField: 'SumaGranTotal',
-          titleClass: 'text-right small-text column5 align-top',
-          rowClass: 'text-right small-text',
+          titleClass: 'text-right small-text column5 align-top tableexport-string target',
+          rowClass: 'text-right small-text tableexport-number target',
           formatter: 'money'
         },
       ],
@@ -220,6 +220,12 @@ export default {
     },
     hideModal() {
       this.$refs.modal.hide()
+    },
+    beginExporting(){
+      this.$refs.theTable.beginExporting(this.endExporting)
+    },
+    endExporting() {
+      this.$refs.theTable.forceFullReload()
     },
     setReadOnly() {
       this.readOnly = true
@@ -287,8 +293,6 @@ export default {
   }
 }
 </script>
-<style>
 
-</style>
 
 

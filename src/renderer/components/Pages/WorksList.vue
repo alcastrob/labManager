@@ -7,7 +7,7 @@
       </div> <!-- col-md-6 -->
       <div class="col-md-6 mt-2">
         <div class="float-right">
-          <collapsibleExcelButton fileName="trabajos" :isCollapsible="true" :collapsed="false" :isDark="false" class="float-right mt-2" ref="excelButton"></collapsibleExcelButton>
+          <collapsibleExcelButton fileName="trabajos" :isCollapsible="true" :collapsed="false" :isDark="false" class="float-right mt-2" ref="excelButton" :class="{'displayNone': !isAdmin}" @click="beginExporting"></collapsibleExcelButton>
         </div>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
@@ -21,6 +21,7 @@
 import { getWorksList } from '../../../main/dal.js'
 import workExtendedTable from '../PageElements/tables/workExtendedTable'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
+import { configGet } from '../../../main/store'
 
 export default {
   name: 'worksList',
@@ -82,7 +83,8 @@ export default {
         } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
       filterChanged: false,
-      listHeading: ''
+      listHeading: '',
+      isAdmin : false
     }
   },
   methods: {
@@ -110,7 +112,10 @@ export default {
     processFilterChange(filterData){
       this.updateDatasetWithFilters(filterData)
       this.filterChanged = true
-    }
+    },
+    beginExporting(){
+      this.$refs.workExtendedTable.beginExporting()
+    },
   },
   computed: {
     showCustomHeader: function() {
@@ -131,10 +136,8 @@ export default {
       this.listHeading = this.$route.query.title
     })
 
+    this.isAdmin = configGet('isAdmin')
     this.$refs.excelButton.setTable(this.$refs.workExtendedTable)
-    // this.$refs.excelButton.setEnablePaginationCallback(this.$refs.workExtendedTable.enablePagination)
-    // this.$refs.excelButton.setDisablePaginationCallback(this.$refs.workExtendedTable.disablePagination)
   }
 }
 </script>
-

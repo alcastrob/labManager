@@ -45,16 +45,18 @@ export default {
         style: 'currency',
         currency: 'EUR'
       }),
-      paginationDisabled: false
+      paginationDisabled: false,
+      isExporting: false,
+      endExportingCallback: {}
     }
   },
   methods: {
     formatRow(row, formatter) {
       if(formatter === 'date' && row !== null && row !== undefined) {
         return moment(row).format('DD/MM/YYYY')
-      } else if(formatter === 'money' && row !== null && row !== undefined) {
+      } else if(formatter === 'money' && row !== null && row !== undefined && !this.isExporting) {
         return this.moneyFormatter.format(row)
-      } else if(formatter === 'percentage' && row !== null && row !== undefined) {
+      } else if(formatter === 'percentage' && row !== null && row !== undefined && !this.isExporting) {
         return row + ' %'
       } else {
       return row
@@ -73,6 +75,19 @@ export default {
       this.$router.push({
         path: this.urlBase + index
       })
+    },
+    //Called by MonthCheck (or other containing page)
+    beginExporting(callback) {
+      this.selectedDentist = 0
+      this.isExporting = true
+      this.endExportingCallback = callback
+    },
+    //Called by the excel button
+    endExporting (){
+      this.isExporting = false
+      if (this.endExportingCallback !== undefined){
+        this.endExportingCallback()
+      }
     },
 
     // Pagination -------------------------------------------------------------
@@ -156,3 +171,8 @@ export default {
   }
 }
 </script>
+<style>
+  .displayNone {
+    display: none;
+  }
+</style>

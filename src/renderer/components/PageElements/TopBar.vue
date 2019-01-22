@@ -59,7 +59,7 @@
 
 <script>
 import VueRouter from 'vue-router'
-import {getConfigValue} from '../../../main/dal.js'
+import { configGet } from '../../../main/store'
 
 export default {
   name: 'topBar',
@@ -83,7 +83,7 @@ export default {
       })
     },
     getConfig: async function() {
-      this.isAdmin = await getConfigValue('isAdmin')
+      this.isAdmin = configGet('isAdmin')
     }
   },
   computed: {

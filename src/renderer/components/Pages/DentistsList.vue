@@ -7,7 +7,7 @@
       <div class="col-md-6 mt-3">
         <div class="float-right">
           <collapsible-link-button iconCss="fas fa-plus-circle" text="Nuevo dentista" pathTo="/dentists/new"></collapsible-link-button>
-          <collapsibleExcelButton fileName="dentistas" :isCollapsible="true" :collapsed="false" :isDark="false" ref="excelButton"></collapsibleExcelButton>
+          <collapsibleExcelButton fileName="dentistas" :isCollapsible="true" :collapsed="false" :isDark="false" ref="excelButton" :class="{'displayNone': !isAdmin}" @click="beginExporting"></collapsibleExcelButton>
         </div>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
@@ -22,6 +22,7 @@ import dentistTable from '../PageElements/tables/dentistExtendedTable'
 import { getDentistList } from '../../../main/dal.js'
 import collapsibleLinkButton from '../PageElements/CollapsibleButtons/collapsibleLinkButton'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
+import { configGet } from '../../../main/store'
 
 export default {
   name: 'dentistslist',
@@ -81,17 +82,24 @@ export default {
           rowClass: '',
           formatter: 'date'
         }],
-      searchFields: ['NombreDentista', 'NombreClinica', 'Direccion', 'Poblacion', 'CorreoElectronico', 'Telefono', 'Telefono2']
+      searchFields: ['NombreDentista', 'NombreClinica', 'Direccion', 'Poblacion', 'CorreoElectronico', 'Telefono', 'Telefono2'],
+      isAdmin: false
     }
   },
-  methods: {},
+  methods: {
+    beginExporting(){
+      this.$refs.dentistTable.beginExporting()
+    }
+  },
   mounted () {
     getDentistList().then((dentists) => {
       this.$refs.dentistTable.setDataset(dentists)
     })
+    this.isAdmin = configGet('isAdmin')
     this.$refs.excelButton.setTable(this.$refs.dentistTable)
   }
 }
+
 </script>
 
 <style>

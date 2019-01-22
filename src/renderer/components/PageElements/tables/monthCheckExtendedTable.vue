@@ -3,10 +3,16 @@
 
     <float-thead-table class="table table-bordered" :top="56" ref="table" :autoReflow="true" >
       <thead>
-        <tr>
+        <tr v-if="!isExporting">
           <th v-for="header in headers" v-bind:key="header.dataField"
             v-bind:class="header.titleClass">
             {{header.title}}<br>{{subheaders[header.dataField]}}
+          </th>
+        </tr>
+        <tr v-else>
+          <th v-for="header in headers" v-bind:key="header.dataField"
+            v-bind:class="header.titleClass">
+            {{header.title}} - {{subheaders[header.dataField]}}
           </th>
         </tr>
       </thead>
@@ -15,15 +21,15 @@
         <template v-for="dentist in rawDataset">
           <tr v-bind:key="'dentist-' + dentist.IdDentista" v-on:click="toggleWorksRows($event, dentist.IdDentista)">
             <template v-for="column in headers">
-              <td v-bind:key="'b' + column.dataField" v-bind:class="column.rowClass">
+              <td v-bind:key="'b' + column.dataField" :class="column.rowClass" class="tableexport-string target">
 
-                <input type="checkbox" v-if="isButton(column.dataField)" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, dentist.IdDentista)" :id="'chkDentist-' + dentist.IdDentista">
+                <input type="checkbox" v-if="isButton(column.dataField) && !isExporting" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, dentist.IdDentista)" :id="'chkDentist-' + dentist.IdDentista">
 
-                <div v-else>
-                  <span :value="dentist[column.dataField]">
+                <div v-else-if="!isExporting">
+                  <span>
                   {{formatRow(dentist[column.dataField], column.formatter)}}</span>
 
-                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista'">{{remainingWorks[dentist.IdDentista]}}</b-badge>
+                  <b-badge variant="secondary" class="position-relative" style="top:-7px" v-if="column.dataField === 'NombreDentista' && !isExporting">{{remainingWorks[dentist.IdDentista]}}</b-badge>
 
                   <span v-if="column.dataField === 'NombreDentista' && isReadOnly && (invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista] !== [])">
 
@@ -32,14 +38,17 @@
                     </span>
 
                   </span>
-
+                </div>
+                <div v-else>
+                  {{formatForExcel(dentist, column)}}
+                  <!-- {{formatRow(dentist[column.dataField], column.formatter)}} -->
                 </div>
               </td>
             </template>
           </tr>
           <!-- The rows of the works -->
           <template v-for="work in worksPerDentist[dentist.IdDentista]">
-            <transition name="fade">
+            <transition name="fade" v-bind:key="'trans-' + work.IdTrabajo">
 
               <tr v-bind:key="'work-' + work.IdTrabajo" v-if="selectedDentist === dentist.IdDentista" class="deaggregated" @click="clickedWork($event, dentist.IdDentista, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
@@ -47,7 +56,7 @@
                   <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(dentist.IdDentista)">
                 </td>
 
-                <td class="dentist-text column-20" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
+                <td class="dentist-text column-20 tableexport-string target" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
 
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;
 
@@ -187,7 +196,7 @@ export default {
       dentistsChecked: [],
 
       //If true, the table will show ALL the dentists and works, regardless they where associated to an invoice or not
-      isReadOnly: false,
+      isReadOnly: false
     }
   },
   methods: {
@@ -210,10 +219,6 @@ export default {
         setCheckToWork(idTrabajo, work.Chequeado)
         this.updateDentistCheckbox(idDentist)
       }
-      // else {
-      //   setCheckToWork(idTrabajo, event.srcElement.checked)
-      // }
-
     },
     percentageDiscountChanged(work, dentist) {
       work.TotalDescuento = parseFloat(work.SumaPrecioFinal * work.PorcentajeDescuento / 100).toFixed(2)
@@ -268,7 +273,7 @@ export default {
       this.$forceUpdate()
 
     },
-    
+
     //Verifications------------------------------
     isAnyWorkOfDentistChecked(idDentist){
       return _.some(this.worksPerDentist[idDentist], function(w) {
@@ -363,19 +368,23 @@ export default {
         return _.find(invoices, ['IdTrabajo', workId])
       }
     },
-    setCellValue(position, currentElement, value) {
-      currentElement.parentNode.parentNode.children[position].children[0].setAttribute('value', value)
-      currentElement.parentNode.parentNode.children[position].children[0].innerText = moneyFormatter.format(value)
-    },
-    getCellValue(position, currentElement) {
-      return parseFloat(currentElement.parentNode.parentNode.children[position].children[0].attributes["value"].value)
-    },
     formatDate(row, field) {
       var returnedValue = moment(row[field]).format('DD/MM/YYYY')
       if (returnedValue !== 'Invalid date') {
         return returnedValue
       } else {
         return ''
+      }
+    },
+    formatForExcel(dentist, column){
+      if(column.dataField === 'NombreDentista') {
+        var dentistName = dentist[column.dataField]
+        for(var invoice of this.invoiceIdsOfDentist(this.invoicesPerDentist[dentist.IdDentista])){
+          dentistName += ` | ${invoice.NumFactura}`
+        }
+        return dentistName
+      } else {
+        return dentist[column.dataField]
       }
     },
 
