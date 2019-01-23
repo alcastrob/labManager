@@ -58,9 +58,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.noOverflow {
-  overflow-x: hidden;
-}
-</style>

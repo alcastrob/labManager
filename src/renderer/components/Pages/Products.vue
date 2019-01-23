@@ -28,7 +28,7 @@ import tableMixin from '../PageElements/tables/TablesWithEmptyRowsMixin'
 import _ from 'lodash'
 
 export default {
-  name: 'catalog',
+  name: 'products',
   mixins: [ clickaway, tableMixin ],
   components: {
     catalogTable

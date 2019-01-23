@@ -101,14 +101,14 @@
 </template>
 
 <script>
-import tableMixin from './TablesWithEmptyRowsMixin'
+import tablesWithEmptyRowMixin from './TablesWithEmptyRowsMixin'
 import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 
 export default {
   name: 'workTestsTable',
-  mixins: [ clickaway, tableMixin ],
+  mixins: [ clickaway, tablesWithEmptyRowMixin ],
   props: {
     workId: Number
   },

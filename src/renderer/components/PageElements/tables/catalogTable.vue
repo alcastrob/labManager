@@ -1,235 +1,214 @@
 <template>
 <div id="table" class="table-editable">
-  <table class="table table-bordered table-responsive-xs table-striped" v-on-clickaway="hidePanel" v-if="data.length>0">
-    <tr>
-      <th style="width: 4%"></th>
-      <th class="text-left" style="width: 13%;">Prueba</th>
-      <th class="text-left" style="width: 14%;">F. salida</th>
-      <th class="text-left" style="width: 13%;">Reparto salida</th>
-      <th class="text-left" style="width: 14%;">F. entrada</th>
-      <th class="text-left" style="width: 13%;">Reparto entrada</th>
-      <th class="text-left" style="width: 29%;">Comentario</th>
-    </tr>
-    <tr v-for="test in data" v-bind:key="test.IdPrueba">
-      <td class="pt-3-half" @focus="hidePanel">
-        <i class="fa fa-times-circle" v-on:click="deleteRow(test.IdPrueba)" v-if="$attrs.disabled !== true"></i>
-      </td>
-      <td class="noMargins">
-        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" :id="test.IdPrueba" v-on:focus="showPanel($event)" :disabled="$attrs.disabled === true">
-        <div v-if="canShow(test.IdPrueba)" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
-          <span class="list-group-item clickable" @click="click">Truwa</span>
-          <span class="list-group-item clickable" @click="click">Fri</span>
-          <span class="list-group-item clickable" @click="click">Cubeta</span>
-          <span class="list-group-item clickable" @click="click">Prueba de cliente</span>
-          <span class="list-group-item clickable" @click="click">Prueba de estructura</span>
-          <span class="list-group-item clickable" @click="click">Prueba de plástico</span>
-        </div>
-      </td>
-      <td class="noMargins">
-        <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
-      </td>
-      <td class="noMargins">
-        <select class="inputInTd" v-model="test.IdTurnoFechaSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
-          <option value=""></option>
-          <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
-        </select>
-      </td>
-      <td class="noMargins">
-        <input type="date" class="inputInTd" v-model="test.FechaEntrada" @change="trackChanges($event, test.IdPrueba, 'FechaEntrada')" @focus="hidePanel" :disabled="$attrs.disabled === true">
-      </td>
-      <td class="noMargins">
-        <select class="inputInTd" v-model="test.IdTurnoFechaEntrada" @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaEntrada')" @focus="hidePanel" :disabled="$attrs.disabled === true">
-          <option value=""></option>
-          <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
-        </select>
-      </td>
-      <td class="noMargins">
-        <input type="text" v-model="test.Comentario" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Comentario')" @focus="hidePanel" :disabled="$attrs.disabled === true">
-      </td>
-    </tr>
-    <tr v-if="$attrs.disabled !== true">
-      <td class="pt-3-half"></td>
-      <td class="noMargins">
-        <input type="text" class="inputInTd" ref="newDescripcion" id="newDescripcion" v-on:focus="showPanel($event)">
-        <div v-if="canShow('newDescripcion')" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
-          <span class="list-group-item clickable" @click="click">Truwa</span>
-          <span class="list-group-item clickable" @click="click">Fri</span>
-          <span class="list-group-item clickable" @click="click">Cubeta</span>
-          <span class="list-group-item clickable" @click="click">Prueba de cliente</span>
-          <span class="list-group-item clickable" @click="click">Prueba de estructura</span>
-          <span class="list-group-item clickable" @click="click">Prueba de plástico</span>
-        </div>
-      </td>
-      <td class="noMargins">
-        <input type="date" class="inputInTd" ref="newFechaSalida" @focus="hidePanel">
-      </td>
-      <td class="noMargins">
-        <select class="inputInTd" ref="newTurnoSalida">
-          <option selected="selected"></option>
-          <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
-        </select>
-      </td>
-      <td class="noMargins">
-        <input type="date" class="inputInTd" ref="newFechaEntrada">
-      </td>
-      <td class="noMargins">
-        <select class="inputInTd" ref="newTurnoEntrada">
-          <option selected="selected"></option>
-          <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
-        </select>
-      </td>
-      <td class="noMargins">
-        <input type="text" class="inputInTd" ref="newComentario" @blur="addLastRow()">
-      </td>
-    </tr>
-  </table>
-  <!-- <div>
+  <div>
+    <filterBar></filterBar>
+    <table class="table table-bordered table-responsive-xs table-striped" >
+      <thead>
+        <tr>
+          <th style="width: 4%;"></th>
+          <th class="text-left" style="width: 50%;">Descripción</th>
+          <th class="text-right" style="">Precio</th>
+          <th style="width: 16%;" class="text-right">Desde</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="indication in getPaginatedData()" :key="indication.IdElementoCatalogo">
+          <td class="pt-3-half">
+            <i class="fa fa-times-circle" v-on:click="deleteRow(indication.IdElementoCatalogo)" v-if="$attrs.disabled !== true"></i>
+          </td>
+          <td class="noMargins">
+            <input type="text" v-model="indication.Descripcion" class="inputInTd" @change="trackChanges($event, indication.IdElementoCatalogo, 'Descripcion')" :disabled="$attrs.disabled === true">
+          </td>
+          <td class="noMargins">
+            <euroInput class="inputInTd text-right" @blur="updatePrice($event, indication.IdElementoCatalogo)" v-model="indication.Precio" @change="trackChanges($event, indication.IdElementoCatalogo, 'Precio')"></euroInput>
+          </td>
+          <td class="noMargins">
+            <input type="text" class="inputInTd text-right" :value="format(indication.FechaInicio)" disabled>
+          </td>
+        </tr>
+        <!-- the blanck line -->
+        <tr v-if="$attrs.disabled !== true">
+          <td class="pt-3-half"></td>
+          <td class="noMargins">
+            <input type="text" class="inputInTd" ref="newDescripcion">
+          </td>
+          <td class="noMargins" >
+            <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
+          </td>
+          <td class="noMargins">
+            <input type="text" class="inputInTd" disabled>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <pagination></pagination>
+    <!-- <div>
       <h3>Inserted</h3>
-      <ul v-for="inserted in insertedRows" :key="inserted.IdPrueba">
-        <li>{{inserted.IdPrueba}}|{{inserted.Descripcion}}</li>
+      <ul v-for="inserted in insertedRows" :key="inserted.IdElementoCatalogo">
+        <li>{{inserted.IdElementoCatalogo}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
       </ul>
       <h3>Updated</h3>
-      <ul v-for="updated in updatedRows" :key="updated.IdPrueba">
-        <li>{{updated.IdPrueba}}|{{updated.Descripcion}}</li>
+      <ul v-for="updated in updatedRows" :key="updated.IdElementoCatalogo">
+        <li>{{updated.IdElementoCatalogo}}|{{updated.Descripcion}}|{{updated.Precio}}</li>
       </ul>
       <h3>Deleted</h3>
-      <ul v-for="deleted in deletedRows" :key="deleted.IdPrueba">
-        <li>{{deleted.IdPrueba}}|{{deleted.Descripcion}}</li>
+      <ul v-for="deleted in deletedRows" :key="deleted.IdElementoCatalogo">
+        <li>{{deleted.IdElementoCatalogo}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
       </ul>
     </div> -->
-    <div v-else>
-      <span>No hay pruebas que mostrar</span>
-    </div>
-</div> 
+  </div>
+</div>
 </template>
 
 <script>
-import tableMixin from './TablesWithEmptyRowsMixin'
-import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../../main/dal.js'
-import { mixin as clickaway } from 'vue-clickaway'
+import tablesWithEmptyRowMixin from './TablesWithEmptyRowsMixin'
+// import tableMixin from './tableMixin'
+import { getCatalogList, insertCatalogEntry, updateCatalogEntry, deleteCatalogEntry } from '../../../../main/dal.js'
+import euroInput from '../tables/euroInput'
+import filterBar from '../tables/filterBar'
+import pagination from '../tables/pagination'
 import _ from 'lodash'
+import moment from 'moment'
+
+const PAGESIZE = 10
 
 export default {
   name: 'catalogTable',
-  mixins: [ clickaway, tableMixin ],
-  props: {
-    workId: Number
+  mixins: [tablesWithEmptyRowMixin],
+  components: {
+    euroInput,
+    pagination,
+    filterBar
   },
   data () {
     return {
-      deliveryShifts: [],
-      panels: {}
+      rawDataset: [],
+      filteredDataset: [],
+      pageSize: PAGESIZE,
+      currentPage: 1,
     }
   },
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
-      if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newComentario.value) || this.isNotEmpty(this.$refs.newFechaSalida.value) || this.isNotEmpty(this.$refs.newFechaEntrada.value) || this.isNotEmpty(this.$refs.newTurnoSalida.value)|| this.isNotEmpty(this.$refs.newTurnoEntrada.value)) {
+      if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
         var newRow = {
-          IdPrueba: this.newIds++,
-          IdTrabajo: this.workId,
+          IdElementoCatalogo: this.newIds++,
           Descripcion: this.$refs.newDescripcion.value,
-          FechaSalida: this.$refs.newFechaSalida.value,
-          IdTurnoFechaSalida: this.$refs.newTurnoSalida.value,
-          FechaEntrada: this.$refs.newFechaEntrada.value,
-          IdTurnoFechaEntrada: this.$refs.newTurnoEntrada.value,
-          Comentario: this.$refs.newComentario.value
-        }
+          Precio: this.$refs.newPrecio.value
+          }
         this.data.push(newRow)
         this.insertedRows.push(newRow)
         this.$refs.newDescripcion.value = ''
-        this.$refs.newFechaSalida.value = ''
-        this.$refs.newTurnoSalida.value = ''
-        this.$refs.newFechaEntrada.value = ''
-        this.$refs.newTurnoEntrada.value = ''
-        this.$refs.newComentario.value = ''
-        this.$emit('input', this.tests)
+        this.$refs.newPrecio.value = ''
+        this.$emit('input', this.data)
         this.$refs.newDescripcion.focus()
       }
     },
     deleteRow: function (rowId) {
       this.data = _.remove(this.data, function (n) {
-        return n.IdPrueba !== rowId
+        return n.IdElementoCatalogo !== rowId
       })
       this.$emit('input', this.data)
-      if (_.some(this.insertedRows, ['IdPrueba', rowId])){
-        _.remove(this.insertedRows, ['IdPrueba', rowId])
-      } else if (_.some(this.updatedRows, ['IdPrueba', rowId])){
-        _.remove(this.updatedRows, ['IdPrueba', rowId])
-        this.deletedRows.push({IdPrueba: rowId})
+      if (_.some(this.insertedRows, ['IdElementoCatalogo', rowId])){
+        _.remove(this.insertedRows, ['IdElementoCatalogo', rowId])
+      } else if (_.some(this.updatedRows, ['IdElementoCatalogo', rowId])){
+        _.remove(this.updatedRows, ['IdElementoCatalogo', rowId])
+        this.deletedRows.push({IdElementoCatalogo: rowId})
       } else {
-        this.deletedRows.push({IdPrueba: rowId})
+        this.deletedRows.push({IdElementoCatalogo: rowId})
       }
     },
     trackChanges(event, rowId, field) {
       //Let's start looking if the changed row is already on the inserted list
-      var temp = _.find(this.insertedRows, ['IdPrueba', rowId])
+      var temp = _.find(this.insertedRows, ['IdElementoCatalogo', rowId])
       if (this.isNotEmpty(temp)){
         //Just update the inssert with the new value. No more action required.
         temp[field] = event.currentTarget.value
       } else {
         //OK, so we have to update. But maybe this field was already updated. Let's check.
-        temp = _.find(this.updatedRows, ['IdPrueba', rowId])
+        temp = _.find(this.updatedRows, ['IdElementoCatalogo', rowId])
         if (this.isNotEmpty(temp)){
           //The row was already updated. Make a cumulative update
-          var original = _.find(this.data, ['IdPrueba', rowId])
-          temp.IdTrabajo = original.IdTrabajo
+          var original = _.find(this.data, ['IdElementoCatalogo', rowId])
+          temp.Precio = original.Precio
           temp.Descripcion = original.Descripcion
-          temp.FechaSalida = original.FechaSalida
-          temp.IdTurnoFechaSalida = original.IdTurnoFechaSalida
-          temp.FechaEntrada = original.FechaEntrada
-          temp.IdTurnoFechaEntrada = original.IdTurnoFechaEntrada
         } else {
           //First time updated. So jot it down.
-          var original = _.find(this.data, ['IdPrueba', rowId])
+          var original = _.find(this.data, ['IdElementoCatalogo', rowId])
           this.updatedRows.push(original)
         }
       }
       this.$emit('input', this.data)
     },
-    save(masterId){
+    save(){
       _.forEach(this.insertedRows, function(row){
-        row.IdTrabajo = masterId
-        insertWorkTest(row)
+        // row.IdElementoCatalogo = masterId
+        insertCatalogEntry(row)
       })
       _.forEach(this.deletedRows, function(row){
-        deleteWorkTest(row.IdPrueba)
+        deleteCatalogEntry(row)
       })
       _.forEach(this.updatedRows, function(row){
-        updateWorkTest(row)
+        updateCatalogEntry(row)
       })
       this.insertedRows = []
       this.deletedRows = []
       this.updatedRows = []
     },
-    click: function(event) {
-      var id = event.currentTarget.parentElement.previousElementSibling.id
-      if (id === 'newDescripcion'){
-        this.$refs.newDescripcion.value = event.currentTarget.innerText
-        this.$refs.newFechaSalida.focus()
+    // Other methods (specific)------------------------------------------------
+    updatePrice(event, id) {
+      var elementInArray = _.find(this.data, ['IdElementoCatalogo', id])
+      if (this.isEmpty(event.srcElement.value)) {
+        elementInArray.Precio = 0
       } else {
-        id = parseInt(id)
-        var element = _.find(this.data, ['IdPrueba', id])
-        element.Descripcion = event.currentTarget.innerText
-        this.trackChanges({currentTarget: { value: element.Descripcion}}, id, 'Descripcion')
-        event.currentTarget.parentElement.parentElement.nextElementSibling.children[0].focus()
+        elementInArray.Precio =  event.srcElement.value
       }
-      this.hidePanel()
-    }
+      this.$emit('input', this.data)
+    },
+    filterJustNumberKeystrokes(event){
+      if (!(event.key === '0' || event.key === '1' || event.key === '2' ||
+        event.key === '3' || event.key === '4' || event.key === '5' ||
+        event.key === '6' || event.key === '7' || event.key === '8' ||
+        event.key === '9' || event.key === '.' || event.key === 'ArrowLeft' ||
+        event.key === 'ArrowRight' || event.key === 'Home' || event.key === 'End' ||
+        event.key === '-' || (event.key === 'c' && event.ctrlKey === true) ||
+        event.key === 'Delete' || (event.key === 'v' && event.ctrlKey === true) ||
+        event.key === 'Backspace' || event.key === 'Tab' || event.key === 'Enter'
+      ))
+        event.preventDefault()
+    },
+    format(date) {
+      return moment(date).format('DD/MM/YYYY')
+    },
+    applyTextFilter: async function(text){
+      this.filteredDataset = await getCatalogList(text)
+    },
+    getPaginatedData: function () {
+      if (this.rawDataset.length === 0){
+        return []
+      }
+
+      var arraySize = this.rawDataset.length - 1
+      var left = (this.currentPage - 1) * this.pageSize
+      var right = (this.currentPage * this.pageSize)
+      if (right > arraySize) {
+        right = arraySize + 1
+      }
+
+      if (left < 0 || left > arraySize)
+        return []
+      else {
+        return _.slice(this.filteredDataset, left, right)
+      }
+    },
+    getData: async function(){
+      this.rawDataset = await getCatalogList()
+      this.filteredDataset = this.rawDataset
+    },
   },
   mounted () {
-    // Check the required parameters (props)
-    if (this.workId === undefined || this.workId === null)
-      throw 'Missing prop workId in WorkTestTable.vue'
+    this.getData()
   }
 }
 </script>
-
-<style>
-.pt-3-half {
-    padding-top: 1.4rem;
-}
-input[type="date"]::-webkit-inner-spin-button{
-    display: none;
-}
-</style>

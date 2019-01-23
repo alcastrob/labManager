@@ -72,13 +72,13 @@
 
 <script>
 
-import tableMixin from './TablesWithEmptyRowsMixin'
+import tablesWithEmptyRowMixin from './TablesWithEmptyRowsMixin'
 import { insertWorkIndications, updateWorkIndications, deleteWorkIndications, updatePriceSum } from '../../../../main/dal.js'
 import _ from 'lodash'
 
 export default {
   name: 'workIndicationsTable',
-  mixins: [tableMixin],
+  mixins: [tablesWithEmptyRowMixin],
   data () {
     return {
       sumError: false

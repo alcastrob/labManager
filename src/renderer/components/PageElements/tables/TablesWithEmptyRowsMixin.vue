@@ -1,12 +1,7 @@
 <script>
 
 export default {
-  props: {
-    value: {
-      type: Array,
-      required: true
-    }
-  },
+  props: ['value'],
   data () {
     return {
       newIds: 10000000,

@@ -171,8 +171,3 @@ export default {
   }
 }
 </script>
-<style>
-  .displayNone {
-    display: none;
-  }
-</style>

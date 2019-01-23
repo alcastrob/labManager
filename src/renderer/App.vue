@@ -141,4 +141,11 @@ export default {
   clip: rect(0 0 0 0);
   overflow: hidden;
 }
+
+.noOverflow {
+  overflow-x: hidden;
+}
+.displayNone {
+    display: none;
+  }
 </style>

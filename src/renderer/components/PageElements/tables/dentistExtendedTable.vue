@@ -1,7 +1,7 @@
 <template>
-  <div class="table-responsive">
-    <div ref="filterContainer"></div>
-    <table class="table table-bordered" width="100%" cellspacing="0">
+  <div class="">
+    <filterBar></filterBar>
+    <table class="table table-bordered table-responsive" width="100%" cellspacing="0">
       <thead>
         <tr>
           <th v-for="header in headers" v-bind:key="header.dataField"
@@ -28,7 +28,6 @@
 import pagination from './pagination'
 import Vue from 'vue'
 import filterBar from './filterBar'
-import workFilterBar from '../../PageElements/tables/workFilterBar'
 import tableMixin from './tableMixin'
 
 export default {
@@ -41,26 +40,6 @@ export default {
   mounted () {
     this.currentSortCriteria = this.searchFields[0]
     this.currentSortDesc = true
-
-    if (this.searchFields !== undefined){
-      // Loading the filter component based on configuration
-      var ComponentClass, instance
-      if (this.filterType === 'WorkFilterBar'){
-        ComponentClass = Vue.extend(workFilterBar)
-        instance = new ComponentClass({
-          propsData: {
-            filterName: this.filterName
-          }
-        })
-      } else {
-        ComponentClass = Vue.extend(filterBar)
-        instance = new ComponentClass()
-      }
-      instance.$parent = this
-      instance.$root = this.$root
-      instance.$mount()
-      this.$refs.filterContainer.appendChild(instance.$el)
-      }
   }
 }
 </script>

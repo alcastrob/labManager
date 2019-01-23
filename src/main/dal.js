@@ -677,11 +677,34 @@ export function getProductList(){
 
 // Catalog --------------------------------------------------------------------
 
-export function getCatalogList () {
-  var query = 'SELECT * FROM vCatalogo'
-  return allAsync(db, query, []).then((row) => {
-    return row
-  })
+//Tested
+export async function getCatalogList (customFilters) {
+  var query = 'SELECT * FROM vCatalogo WHERE 1=1'
+  if (customFilters !== undefined){
+    query += ` AND Descripcion LIKE "%${customFilters}%"`
+  }
+  return await allAsync(db, query, [])
+}
+
+//Tested
+export async function insertCatalogEntry(catalogEntry) {
+  var query = 'INSERT INTO Catalogo (Descripcion, Precio, FechaInicio, FechaFin, Activo) ' +
+  'VALUES (?, ?, date("now", "localtime"), NULL, -1)'
+  return await runAsync(db, query, [catalogEntry.Descripcion, catalogEntry.Precio])
+}
+
+//Tested
+export async function updateCatalogEntry(catalogEntry) {
+  var query = 'UPDATE Catalogo SET Descripcion = ?, Precio = ?' +
+  'WHERE IdElementoCatalogo = ?'
+  return await runAsync(db, query, [catalogEntry.Descripcion, catalogEntry.Precio, catalogEntry.IdElementoCatalogo])
+}
+
+//Tested
+export async function deleteCatalogEntry(catalogEntry) {
+  var query = 'UPDATE Catalogo SET FechaFin = date("now", "localtime"), Activo = 0 ' +
+  'WHERE IdElementoCatalogo = ?'
+  return await runAsync(db, query, [catalogEntry.IdElementoCatalogo])
 }
 
 // Config ---------------------------------------------------------------------

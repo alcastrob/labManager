@@ -6,9 +6,7 @@ const path = require('path')
 const log = require('electron-log')
 const electron = require('electron')
 const ipc = electron.ipcMain
-const fs = require('fs')
-const os = require('os')
-const shell = electron.shell
+import { configGet } from '../main/store'
 
 /**
  * Set `__static` path to static files in production
@@ -75,7 +73,7 @@ ipc.on('file:opened', function (event, content) {
 
 
 
-const menuTemplate = [{
+var menuTemplate = [{
   label: 'Archivo',
   submenu: [
     {
@@ -145,20 +143,29 @@ const menuTemplate = [{
       click () {}
     }
   ]
-},
-{
-  label: 'Mantenimientos',
-  submenu: [
-    {
-      label: 'Catálogo',
-      click () {
-        mainWindow.webContents.send
-        ('navigation:navigateTo', {page: '/maintenace/catalog'})
+}]
+if (configGet('isAdmin')){
+  menuTemplate.push({
+    label: 'Mantenimientos',
+    submenu: [
+      {
+        label: 'Catálogo',
+        click () {
+          mainWindow.webContents.send
+          ('navigation:navigateTo', {page: '/maintenace/catalog'})
+        }
+      },
+      {
+        label: 'Productos y Lotes',
+        click () {
+          mainWindow.webContents.send
+          ('navigation:navigateTo', {page: '/maintenace/products'})
+        }
       }
-    }
-  ]
-},
-{
+    ]
+  })
+}
+menuTemplate.push({
   label: 'Ayuda',
   submenu: [
     {
@@ -169,7 +176,8 @@ const menuTemplate = [{
       }
     }
   ]
-}]
+})
+
 
 // due to OSX way of render menus, you must leave an empty element to make your app interoperable
 if (process.platform === 'darwin') {

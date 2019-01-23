@@ -13,6 +13,7 @@ import monthCheck from '../components/Pages/MonthCheck.vue'
 import dashboard from '../components/Pages/Dashboard.vue'
 import dentistNew from '../components/Pages/DentistNew.vue'
 import catalog from '../components/Pages/Catalog.vue'
+import products from '../components/Pages/Products.vue'
 import testPage from '../components/Pages/TestPage.vue'
 import invoice from '../components/Pages/Invoice.vue'
 
@@ -78,6 +79,10 @@ export default new Router({
         {
           path: 'maintenace/catalog',
           component: catalog
+        },
+        {
+          path: 'maintenace/products',
+          component: products
         }
       ]
     }

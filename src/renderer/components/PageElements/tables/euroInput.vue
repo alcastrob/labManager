@@ -1,5 +1,5 @@
 <template>
-  <textarea v-model="displayValue" @blur="isInputActive = false" @focus="isInputActive = true" ref="textArea"></textarea>
+  <textarea v-model="displayValue" @blur="isInputActive = false" @focus="isInputActive = true" class="noCornerTextArea" ref="textArea"></textarea>
 </template>
 
 <script>
@@ -45,3 +45,10 @@ export default {
   }
 }
 </script>
+<style>
+.noCornerTextArea {
+  vertical-align: text-top;
+  resize: none;
+  overflow: hidden;
+}
+</style>
