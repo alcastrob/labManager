@@ -154,7 +154,6 @@ export default {
   mounter () {
     const ipc = require('electron').ipcRenderer
     ipc.on('wrote-pdf', (event, path) => {
-      debugger
     })
   }
 }

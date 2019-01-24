@@ -52,7 +52,7 @@
       <div>
         <p class="float-right text-right pr-1" :class="{'d-inline-block text-danger animated shake': sumError}">{{getSum()}}</p>
       </div>
-      <!-- <div>
+      <div>
         <h3>Inserted</h3>
         <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
           <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
@@ -65,7 +65,7 @@
         <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
           <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
         </ul>
-      </div> -->
+      </div>
     </div>
 </div>
 </template>
@@ -119,7 +119,7 @@ export default {
       //Let's start looking if the changed row is already on the inserted list
       var temp = _.find(this.insertedRows, ['IdTrabajoDetalle', rowId])
       if (this.isNotEmpty(temp)){
-        //Just update the inssert with the new value. No more action required.
+        //Just update the insert with the new value. No more action required.
         temp[field] = event.currentTarget.value
       } else {
         //OK, so we have to update. But maybe this field was already updated. Let's check.

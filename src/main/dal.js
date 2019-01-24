@@ -650,6 +650,7 @@ export function searchProductByExactName(productName){
   })
 }
 
+//Tested
 export function getProduct(productId){
   var query = 'SELECT * FROM ProductosLotes WHERE IdProductoLote = ?'
   return getAsync(db, query, [productId]).then((row) => {
@@ -658,21 +659,32 @@ export function getProduct(productId){
 }
 
 //Tested
-export function insertProduct(productDescription){
+export async function insertProduct(product){
   var query = 'INSERT INTO ProductosLotes (Descripcion, Activo) VALUES (?, true)'
-  return runAsync(db, query, [productDescription])
+  return await runAsync(db, query, [product.Descripcion])
 }
 
-export function updateProduct(product){
-
+export async function updateProduct(product){
+  var query = 'UPDATE ProductosLotes SET Descripcion = ? ' +
+  'WHERE IdProductoLote = ?'
+  return await runAsync(db, query, [product.Descripcion, product.IdProductoLote])
 }
 
-export function deleteProduct(productId){
-
+//Tested
+export async function deleteProduct(product){
+  var query = 'UPDATE ProductosLotes SET Activo = false ' +
+  'WHERE IdProductoLote = ?'
+  return await runAsync(db, query, [product.IdProductoLote])
 }
 
-export function getProductList(){
-
+//Tested
+export async function getProductList(customFilters){
+  var query = 'SELECT * FROM ProductosLotes WHERE Activo = true '
+  if (customFilters !== undefined){
+    query += ` AND Descripcion LIKE "%${customFilters}%" `
+  }
+  query += 'ORDER BY Descripcion'
+  return await allAsync(db, query, [])
 }
 
 // Catalog --------------------------------------------------------------------
@@ -689,7 +701,7 @@ export async function getCatalogList (customFilters) {
 //Tested
 export async function insertCatalogEntry(catalogEntry) {
   var query = 'INSERT INTO Catalogo (Descripcion, Precio, FechaInicio, FechaFin, Activo) ' +
-  'VALUES (?, ?, date("now", "localtime"), NULL, -1)'
+  'VALUES (?, ?, date("now", "localtime"), NULL, true)'
   return await runAsync(db, query, [catalogEntry.Descripcion, catalogEntry.Precio])
 }
 
@@ -702,7 +714,7 @@ export async function updateCatalogEntry(catalogEntry) {
 
 //Tested
 export async function deleteCatalogEntry(catalogEntry) {
-  var query = 'UPDATE Catalogo SET FechaFin = date("now", "localtime"), Activo = 0 ' +
+  var query = 'UPDATE Catalogo SET FechaFin = date("now", "localtime"), Activo = false ' +
   'WHERE IdElementoCatalogo = ?'
   return await runAsync(db, query, [catalogEntry.IdElementoCatalogo])
 }

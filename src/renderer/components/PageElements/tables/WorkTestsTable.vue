@@ -162,7 +162,7 @@ export default {
       //Let's start looking if the changed row is already on the inserted list
       var temp = _.find(this.insertedRows, ['IdPrueba', rowId])
       if (this.isNotEmpty(temp)){
-        //Just update the inssert with the new value. No more action required.
+        //Just update the insert with the new value. No more action required.
         temp[field] = event.currentTarget.value
       } else {
         //OK, so we have to update. But maybe this field was already updated. Let's check.
