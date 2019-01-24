@@ -11,7 +11,7 @@ import { getConfigValue } from './dal'
 import _ from 'lodash'
 import axios from 'axios'
 
-const RELEASES_URL = 'https://api.github.cam/repos/alcastrob/labManager/releases'
+const RELEASES_URL = 'https://api.github.com/repos/alcastrob/labManager/releases'
 
 export async function checkForUpdates () {
   var currentVersion = require('../../package.json').version
