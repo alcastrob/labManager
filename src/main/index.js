@@ -49,7 +49,7 @@ async function checkUpdates(){
     log.debug('new version available')
     setTimeout(() => {
       mainWindow.webContents.send('update:available', updateInfo)
-    }, 5000)
+    }, 3 * 60 * 60 * 1000)
   }
 }
 

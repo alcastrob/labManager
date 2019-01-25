@@ -10,10 +10,10 @@ namespace dataMigration
         static void Main(string[] args)
         {
             Console.WriteLine("Reading the Access file data");
-            string accessDataDirectory = @"c:\temp\";
-            string sqliteDataDirectory = @"C:\git\labManager\";
+            string accessDataDirectory = @"C:\Users\Angel\Desktop\Data\";
+            string sqliteDataDirectory = @"C:\Users\Angel\Desktop\Data\";
             DataLoader loader = new DataLoader($"Provider=Microsoft.Jet.OLEDB.4.0;Data source={accessDataDirectory}SOLO_DATOS.mdb");
-            DataRecorder recorder = new DataRecorder($"Data Source={sqliteDataDirectory}labManager.sqlite;Version=3;");
+            DataRecorder recorder = new DataRecorder($"Data Source={sqliteDataDirectory}ORMA.sqlite;Version=3;");
 
             List<FichaTrabajoAccess> trabajosBruto = loader.GetFichaTrabajoData();
             List<PruebaAccess> pruebasBruto = loader.GetPruebaData();
@@ -21,8 +21,6 @@ namespace dataMigration
             List<FacturaAccess> facturasBruto = loader.GetFacturas();
             List<ProductosLotesAccess> productosBruto = loader.GetProductosLotes();
             List<DeclaracionConformidadAccess> declaracionesBruto = loader.GetDeclaracionConformidad();
-
-
 
             //var myData = from f in trabajosBruto
             //             where f.Dr == "CALLE" && f.FechaTerminacion <= new DateTime(2018, 01, 31)

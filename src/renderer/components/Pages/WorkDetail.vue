@@ -8,7 +8,7 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <collapsible-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible && !readOnly"></collapsible-action-button>
+              <collapsible-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts()" v-if="!adjunctsVisible && !readOnly"></collapsible-action-button>
               <collapsible-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="showConformity"></collapsible-action-button>
               <collapsible-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote"></collapsible-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
