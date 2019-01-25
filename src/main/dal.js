@@ -707,9 +707,11 @@ export async function insertCatalogEntry(catalogEntry) {
 
 //Tested
 export async function updateCatalogEntry(catalogEntry) {
-  var query = 'UPDATE Catalogo SET Descripcion = ?, Precio = ?' +
-  'WHERE IdElementoCatalogo = ?'
-  return await runAsync(db, query, [catalogEntry.Descripcion, catalogEntry.Precio, catalogEntry.IdElementoCatalogo])
+  // var query = 'UPDATE Catalogo SET Descripcion = ?, Precio = ?' +
+  // 'WHERE IdElementoCatalogo = ?'
+  // return await runAsync(db, query, [catalogEntry.Descripcion, catalogEntry.Precio, catalogEntry.IdElementoCatalogo])
+  deleteCatalogEntry(catalogEntry)
+  insertCatalogEntry(catalogEntry)
 }
 
 //Tested

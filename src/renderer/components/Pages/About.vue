@@ -3,10 +3,30 @@
     <h1>Acerca de labManager</h1>
     <div class="row">
       <div class="col-md-1">
-        <img src="/dist/electron/imgs/Tooth-64.png" alt="applicationLogo" class="mt-3">
+        <img src="static/Tooth-64.png" alt="applicationLogo" class="mt-3">
+        <!-- <img src="/dist/electron/static/Tooth-64.png" alt="applicationLogo" class="mt-3"> -->
       </div>
       <div class="col-md-11">
         <h3>versión {{currentVersion}}</h3>
+        <div class="alert alert-success animated bounceInDown" v-if="newerVersion">
+          <!-- alert-dismissible  -->
+          <!-- <button class="close" type="button" data-dismiss="alert">
+            <span>x</span>
+          </button> -->
+          <h4 class="alert-heading">Nueva versión del programa disponible ({{latestVersion}})</h4>
+          <hr>
+          <h5>{{latestVersionTitle}}</h5>
+          <div v-html="latestVersionDescription"></div>
+          <div align="right">
+            <button class="btn btn-secondary mt-4" v-on:click="download" v-if="!downloading">
+              <i class="fas fa-cloud-download-alt"></i>
+              Descargar e instalar
+            </button>
+            <div class="progress mt-4 mb-4" v-else>
+              <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" :style="downloadedPercentage"></div>
+            </div>
+          </div>
+        </div>
         <p class="text-justify">Esta aplicación permite realizar la gestión de trabajos de un laboratorio protésico dental. Ha sido desarrollada por Ángel Castro y se distribuye bajo los términos de la siguiente licencia MIT:</p>
         <pre class="p-2" style="border: 1px solid #454849; background-color:#DDD8D2;white-space:pre-wrap; word-wrap:break-word;">
 Copyright 2019 Ángel Castro
@@ -19,29 +39,8 @@ EL SOFTWARE SE PROPORCIONA "COMO ESTÁ", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA 
         </pre>
       </div>
     </div>
-    <p class="text-justify">
-      Toda la información de esta aplicación se encuentra disponible libremente en la página <a href="https://github.com/alcastrob/labManager" @click="urlClicked($event)">https://github.com/alcastrob/labManager</a>
+    <p class="text-justify">Toda la información de esta aplicación se encuentra disponible libremente en la página <a href="https://github.com/alcastrob/labManager" @click="urlClicked($event)">https://github.com/alcastrob/labManager</a>
     </p>
-    <div class="alert alert-success animated bounceInDown" v-if="newerVersion">
-      <!-- alert-dismissible  -->
-      <!-- <button class="close" type="button" data-dismiss="alert">
-        <span>x</span>
-      </button> -->
-      <h4 class="alert-heading">Nueva versión del programa disponible ({{latestVersion}})</h4>
-      <hr>
-      <h5>{{latestVersionTitle}}</h5>
-      <div v-html="latestVersionDescription"></div>
-      <div align="right">
-        <button class="btn btn-secondary mt-4" v-on:click="download" v-if="!downloading">
-          <i class="fas fa-cloud-download-alt"></i>
-          Descargar e instalar
-        </button>
-        <div class="progress mt-4 mb-4" v-else>
-          <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" :style="downloadedPercentage"></div>
-        </div>
-
-      </div>
-    </div>
     <p class="text-left">Los elementos externos que han sido licenciados para esta aplicación son:
     <ul>
         <li>
