@@ -52,8 +52,13 @@ export default {
         let newValue = parseFloat(modifiedValue.replace(/[^\d\.]/g, ""))
         // Ensure that it is not NaN
         if (isNaN(newValue)) {
-            newValue = 0
+          newValue = 0
         }
+        // If you're in the middle of typing a decimal value, you can't filter the decimal point.
+        if (modifiedValue === `${newValue}.`){
+          newValue = modifiedValue
+        }
+
         // Note: we cannot set this.value as it is a "prop". It needs to be passed to parent component
         // $emit the event so that parent component gets it
         this.$emit('input', newValue)

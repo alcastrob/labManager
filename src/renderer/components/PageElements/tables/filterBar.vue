@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   name: 'filterBar',
   data () {
@@ -22,10 +23,21 @@ export default {
   methods: {
     doFilter () {
       this.$parent.applyTextFilter(this.filterText)
+      this.resetPagination()
     },
     resetFilter () {
       this.filterText = ''
       this.$parent.applyTextFilter(this.filterText)
+      this.resetPagination()
+    },
+    resetPagination () {
+      //Try to figure out if the parent component has a pagination control, and if so, reset it to page 1
+      var pagination = _.find(this.$parent.$children, (o) => {
+        return o.$options._componentTag === 'pagination'
+      })
+      if (pagination !== undefined){
+        pagination.loadPage(1)
+      }
     }
   }
 }
