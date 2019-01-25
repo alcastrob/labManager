@@ -89,14 +89,18 @@ export default {
   methods: {
     beginExporting(){
       this.$refs.dentistTable.beginExporting()
+    },
+    getData: async function() {
+      this.$refs.dentistTable.setDataset(await getDentistList())
     }
   },
   mounted () {
-    getDentistList().then((dentists) => {
-      this.$refs.dentistTable.setDataset(dentists)
-    })
     this.isAdmin = configGet('isAdmin')
     this.$refs.excelButton.setTable(this.$refs.dentistTable)
+  },
+  activated () {
+    //The data will be loaded even if the rest of the page is in the cache
+    this.getData()
   }
 }
 

@@ -353,12 +353,9 @@ export function updateAdjuntsOfWork(adjunt) {
 // Dentists -------------------------------------------------------------------
 
 //Tested
-export function getDentistList () {
-  var query = 'SELECT * ' +
-  'FROM vDentistas'
-  return allAsync(db, query, []).then((row) => {
-    return row
-  })
+export async function getDentistList () {
+  var query = 'SELECT * FROM vDentistas'
+  return await allAsync(db, query, [])
 }
 
 //Tested

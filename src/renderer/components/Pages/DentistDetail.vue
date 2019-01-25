@@ -166,10 +166,11 @@ export default {
       return `/finances?dentistName=${encodeURIComponent(this.data.NombreDentista)}`
     },
     save: function() {
-      this.$v.touch()
+      this.$v.$touch()
       if(!this.$v.$invalid){
         updateDentist(this.data)
       }
+      history.go(-1)
     },
     canBeSaved: function() {
       return this.isDirty && this.data.NombreClinica !== ''

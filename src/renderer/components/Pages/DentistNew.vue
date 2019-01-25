@@ -135,6 +135,7 @@ export default {
       if (!this.$v.$invalid){
         insertDentist(this.data)
       }
+      history.go(-1)
     }
   },
   mounted () {
