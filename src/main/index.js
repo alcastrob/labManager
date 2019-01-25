@@ -1,7 +1,6 @@
 'use strict'
 
 import { app, BrowserWindow, Menu, dialog } from 'electron'
-import { checkForUpdates } from './updates'
 const path = require('path')
 const log = require('electron-log')
 const electron = require('electron')
@@ -38,19 +37,6 @@ function createWindow () {
 
   const mainMenu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(mainMenu)
-
-  checkUpdates()
-}
-
-async function checkUpdates(){
-  var updateInfo = await checkForUpdates()
-  if (updateInfo.newerVersion){
-    //Notify to the renderer component (the main window)
-    log.debug('new version available')
-    setTimeout(() => {
-      mainWindow.webContents.send('update:available', updateInfo)
-    }, 3 * 60 * 60 * 1000)
-  }
 }
 
 app.on('ready', createWindow)
@@ -70,8 +56,6 @@ app.on('activate', () => {
 ipc.on('file:opened', function (event, content) {
   mainWindow.setTitle(`labManager (${require('../../package.json').version}) - [${content}]`)
 })
-
-
 
 var menuTemplate = [{
   label: 'Archivo',

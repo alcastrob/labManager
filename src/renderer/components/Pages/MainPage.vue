@@ -21,6 +21,9 @@ import VueRouter from 'vue-router'
 import { loadDbFile } from '../../../main/dal.js'
 import { configGet, configSet } from '../../../main/store'
 var { ipcRenderer } = require('electron')
+import { checkForUpdates } from '../../../main/updates'
+
+const UPDATE_INTERVAL = 3 * 60 * 60 * 1000
 
 export default {
   name: 'mainPage',
@@ -57,8 +60,27 @@ export default {
     reloadDb: async function(file){
       configSet('dataFile', file)
       await this.loadDb()
-      //Reload everything
-      this.$router.go(0)
+      this.$router.push({
+        path: '/'
+      })
+    },
+    checkForUpdates: async function() {
+      var updates = await checkForUpdates()
+      if (updates.newerVersion){
+        swal({
+          title: "Actualización disponible",
+          text: "Existe una nueva versión de esta aplicación lista para su descarga e instalación.",
+          icon: "success",
+          buttons: {
+            cancel: 'Cancelar',
+            ok: 'Continuar'
+          }
+        }).then((value) =>{
+          if (value === 'ok') {
+            this.$router.push({ path: '/about' })
+          }
+        })
+      }
     }
   },
   created () {
@@ -70,21 +92,7 @@ export default {
         path: eventData.page
       })
     })
-    ipcRenderer.on('update:available', (sender, updateInfo) => {
-      swal({
-        title: "Actualización disponible",
-        text: "Existe una nueva versión de esta aplicación lista para su descarga e instalación.",
-        icon: "success",
-        buttons: {
-          cancel: 'Cancelar',
-          ok: 'Continuar'
-        }
-      }).then((value) =>{
-        if (value === 'ok') {
-          this.$router.push({ path: '/about' })
-        }
-      })
-    })
+    setInterval(this.checkForUpdates(), UPDATE_INTERVAL)
     ipcRenderer.on('reload:database', (event, file) => {
       this.reloadDb(file)
     })

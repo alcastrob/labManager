@@ -43,10 +43,6 @@ export default {
       type: Boolean,
       required: true
     }
-    // table: {
-    //   type: Object,
-    //   required: true
-    // }
   },
   methods: {
     toExcel() {
