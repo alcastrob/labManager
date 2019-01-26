@@ -8,7 +8,7 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <collapsible-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts()" v-if="!adjunctsVisible && !readOnly"></collapsible-action-button>
+              <collapsible-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible && !readOnly"></collapsible-action-button>
               <collapsible-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="showConformity"></collapsible-action-button>
               <collapsible-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote"></collapsible-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
@@ -16,17 +16,17 @@
                 <span>Imprimir etiqueta</span>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-on:click="showModal('Garantia')">Garantía</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Resina')" >Resina</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Compostura')">Compostura</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Aditamentos')" v-if="workAdjuncts !== undefined">Aditamentos</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Esqueléticos')">Esqueléticos</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Ortodoncia')">Ortodoncia</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Zirconio')">Zirconio</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Implantes')">Implantes</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('E-Max')">E-Max</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Composite')">Composite</a>
-                <a href="#" class="dropdown-item" v-on:click="showModal('Metal-Cerámica')">Metal-Cerámica</a>
+                <a href="#" class="dropdown-item" v-on:click="$refs.warranty.show()">Garantía</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Resina')" >Resina</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Compostura')">Compostura</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Aditamentos')" v-if="workAdjuncts !== undefined">Aditamentos</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Esqueléticos')">Esqueléticos</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Ortodoncia')">Ortodoncia</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Zirconio')">Zirconio</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Implantes')">Implantes</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('E-Max')">E-Max</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Composite')">Composite</a>
+                <a href="#" class="dropdown-item" v-on:click="showLabelModal('Metal-Cerámica')">Metal-Cerámica</a>
               </div> <!-- dropdown-menu -->
             </div>
           </div>
@@ -131,6 +131,7 @@
         <button class="btn btn-secondary" @click="printLabelAndHide"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir</button>
       </div>
     </b-modal>
+    <warrantyModal ref="warranty" :work="work"></warrantyModal>
     <conformityModal ref="conformity" :workId="work.IdTrabajo"></conformityModal>
     <div ref="labelContainer" class="visuallyhidden"></div>
   </div>
@@ -145,20 +146,23 @@ import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
 import conformityModal from '../PageElements/ConformityModal'
+import warrantyModal from '../PageElements/WarrantyModal'
 import VueRouter from 'vue-router'
 
 export default {
   name: 'workDetail',
   mixins: [workMixin],
   components: {
-    conformityModal
+    conformityModal,
+    warrantyModal
   },
   data () {
     return {
       printedLabel: '',
       workTests: [],
       readOnly: false,
-      invoice: undefined
+      invoice: undefined,
+      warrantyPeriod: 12
     }
   },
   validations: {
@@ -195,7 +199,7 @@ export default {
         }
       }
     },
-    showModal(labelType) {
+    showLabelModal(labelType) {
       this.printedLabel = labelType
       if (this.workIndications !== undefined){
         this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')

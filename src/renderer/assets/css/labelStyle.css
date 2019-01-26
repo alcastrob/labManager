@@ -1,6 +1,6 @@
 @page {
   size: auto;
-  margin: 2mm 60mm 2mm 60mm;
+  margin: 2mm 58mm 2mm 58mm;
 }
 body{
   margin: 0px;
@@ -85,4 +85,7 @@ tr>th {
 }
 .background-Zirconio {
   background-color: #CA787A;
+}
+.noborder {
+  border: none!important;
 }
