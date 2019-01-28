@@ -15,18 +15,18 @@
         <i class="fa fa-times-circle" v-on:click="deleteRow(test.IdPrueba)" v-if="$attrs.disabled !== true"></i>
       </td>
       <td class="noMargins">
-        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" :id="test.IdPrueba" v-on:focus="showPanel($event)" :disabled="$attrs.disabled === true">
+        <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" @blur="changeDescription($event)" :id="test.IdPrueba" v-on:focus="showPanel($event)" :disabled="$attrs.disabled === true">
         <div v-if="canShow(test.IdPrueba)" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
-          <span class="list-group-item clickable" @click="click">Truwa</span>
-          <span class="list-group-item clickable" @click="click">Fri</span>
-          <span class="list-group-item clickable" @click="click">Cubeta</span>
-          <span class="list-group-item clickable" @click="click">Prueba de cliente</span>
-          <span class="list-group-item clickable" @click="click">Prueba de estructura</span>
-          <span class="list-group-item clickable" @click="click">Prueba de plástico</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Truwa</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Fri</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Cubeta</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de cliente</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de estructura</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de plástico</span>
         </div>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" v-model="test.FechaSalida" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
+        <input type="date" class="inputInTd" v-model="test.FechaSalida" @blur="changedDate($event)" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
       </td>
       <td class="noMargins">
         <select class="inputInTd" v-model="test.IdTurnoFechaSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
@@ -47,43 +47,47 @@
         <input type="text" v-model="test.Comentario" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Comentario')" @focus="hidePanel" :disabled="$attrs.disabled === true">
       </td>
     </tr>
+    <!-- The empty row for new values -->
     <tr v-if="$attrs.disabled !== true">
       <td class="pt-3-half"></td>
       <td class="noMargins">
-        <input type="text" class="inputInTd" ref="newDescripcion" id="newDescripcion" v-on:focus="showPanel($event)">
+        <input type="text" class="inputInTd" ref="newDescripcion" v-model="$v.newRow.descripcion.$model" id="newDescripcion" @focus="showPanel($event)" :class="{'bg-danger text-white animated flash': $v.newRow.descripcion.$anyError}">
         <div v-if="canShow('newDescripcion')" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
-          <span class="list-group-item clickable" @click="click">Truwa</span>
-          <span class="list-group-item clickable" @click="click">Fri</span>
-          <span class="list-group-item clickable" @click="click">Cubeta</span>
-          <span class="list-group-item clickable" @click="click">Prueba de cliente</span>
-          <span class="list-group-item clickable" @click="click">Prueba de estructura</span>
-          <span class="list-group-item clickable" @click="click">Prueba de plástico</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Truwa</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Fri</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Cubeta</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de cliente</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de estructura</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de plástico</span>
         </div>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" ref="newFechaSalida" @focus="hidePanel">
+        <input type="date" class="inputInTd" ref="newFechaSalida" id="newFechaSalida" @focus="hidePanel" @blur="updateIfDateIsValid($event, isInvalidNewOutDate)" @input="updateIfDateIsValid($event, isInvalidNewOutDate)" v-model="$v.newRow.fechaSalida.$model" :class="{'bg-danger text-white animated flash': isInvalidNewOutDate}">
       </td>
       <td class="noMargins">
-        <select class="inputInTd" ref="newTurnoSalida">
+        <select class="inputInTd" ref="newTurnoSalida" v-model="$v.newRow.idTurnoFechaSalida.$model">
           <option selected="selected"></option>
           <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
         </select>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" ref="newFechaEntrada">
+        <input type="date" class="inputInTd" id="newFechaEntrada" v-model="$v.newRow.fechaEntrada.$model" @blur="updateIfDateIsValid($event, isInvalidNewInDate)" @input="updateIfDateIsValid($event, isInvalidNewInDate)" :class="{'bg-danger text-white animated flash': isInvalidNewInDate}">
       </td>
       <td class="noMargins">
-        <select class="inputInTd" ref="newTurnoEntrada">
+        <select class="inputInTd" ref="newTurnoEntrada" v-model="$v.newRow.idTurnoFechaEntrada.$model">
           <option selected="selected"></option>
           <option v-for="shift in deliveryShifts" v-bind:key="shift.IdTurno" v-bind:value="shift.IdTurno">{{shift.Descripcion}}</option>
         </select>
       </td>
       <td class="noMargins">
-        <input type="text" class="inputInTd" ref="newComentario" @blur="addLastRow()">
+        <input type="text" class="inputInTd" v-model="$v.newRow.comentario.$model" :class="{'bg-danger text-white animated flash': $v.newRow.comentario.$error && !allRowEmpty}" @blur="addLastRow()">
       </td>
     </tr>
   </table>
-  <!-- <div>
+  newRow: {{$v.newRow.$anyDirty}}<br>
+  wholeTable: {{isDirty()}}<br>
+  isError: {{isError()}}
+  <div>
       <h3>Inserted</h3>
       <ul v-for="inserted in insertedRows" :key="inserted.IdPrueba">
         <li>{{inserted.IdPrueba}}|{{inserted.Descripcion}}</li>
@@ -96,7 +100,7 @@
       <ul v-for="deleted in deletedRows" :key="deleted.IdPrueba">
         <li>{{deleted.IdPrueba}}|{{deleted.Descripcion}}</li>
       </ul>
-    </div> -->
+    </div>
 </div>
 </template>
 
@@ -104,6 +108,7 @@
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway'
+import { minLength, required } from 'vuelidate/lib/validators'
 import _ from 'lodash'
 
 export default {
@@ -115,33 +120,61 @@ export default {
   data () {
     return {
       deliveryShifts: [],
-      panels: {}
+      panels: {},
+      newRow: {
+        descripcion: '',
+        fechaSalida: '',
+        idTurnoFechaSalida: '',
+        fechaEntrada: '',
+        idTurnoFechaEntrada: '',
+        comentario: ''
+      },
+      isInvalidNewInDate: false,
+      isInvalidNewOutDate: false
+    }
+  },
+  validations: {
+    newRow: {
+      descripcion: { required },
+      fechaSalida: {},
+      idTurnoFechaSalida: {},
+      fechaEntrada: {},
+      idTurnoFechaEntrada: {},
+      comentario: {}
     }
   },
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
-      if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newComentario.value) || this.isNotEmpty(this.$refs.newFechaSalida.value) || this.isNotEmpty(this.$refs.newFechaEntrada.value) || this.isNotEmpty(this.$refs.newTurnoSalida.value)|| this.isNotEmpty(this.$refs.newTurnoEntrada.value)) {
-        var newRow = {
-          IdPrueba: this.newIds++,
-          IdTrabajo: this.workId,
-          Descripcion: this.$refs.newDescripcion.value,
-          FechaSalida: this.$refs.newFechaSalida.value,
-          IdTurnoFechaSalida: this.$refs.newTurnoSalida.value,
-          FechaEntrada: this.$refs.newFechaEntrada.value,
-          IdTurnoFechaEntrada: this.$refs.newTurnoEntrada.value,
-          Comentario: this.$refs.newComentario.value
+      debugger
+      if(this.allRowEmpty){
+        this.$v.newRow.$reset()
+      } else if (this.$v.newRow.$anyDirty){
+        this.$v.newRow.$touch()
+        if (!this.$v.newRow.$anyError) {
+          var newRow = {
+            IdPrueba: this.newIds++,
+            IdTrabajo: this.workId,
+            Descripcion: this.$v.newRow.descripcion.$model,
+            FechaSalida: this.$v.newRow.fechaSalida.$model,
+            IdTurnoFechaSalida: this.$refs.newTurnoSalida.value,
+            FechaEntrada: this.$v.newRow.fechaEntrada.$model,
+            IdTurnoFechaEntrada: this.$refs.newTurnoEntrada.value,
+            Comentario: this.$v.newRow.comentario.$model
+          }
+          this.data.push(newRow)
+          this.insertedRows.push(newRow)
+          this.$v.newRow.descripcion.$model = ''
+          this.$v.newRow.fechaSalida.$model = ''
+
+          this.$refs.newTurnoSalida.value = ''
+          this.$v.newRow.fechaEntrada.$model = ''
+          this.$refs.newTurnoEntrada.value = ''
+          this.$v.newRow.comentario.$model = ''
+          this.$v.newRow.$reset()
+          this.$emit('input', this.tests)
+          this.$refs.newDescripcion.focus()
         }
-        this.data.push(newRow)
-        this.insertedRows.push(newRow)
-        this.$refs.newDescripcion.value = ''
-        this.$refs.newFechaSalida.value = ''
-        this.$refs.newTurnoSalida.value = ''
-        this.$refs.newFechaEntrada.value = ''
-        this.$refs.newTurnoEntrada.value = ''
-        this.$refs.newComentario.value = ''
-        this.$emit('input', this.tests)
-        this.$refs.newDescripcion.focus()
       }
     },
     deleteRow: function (rowId) {
@@ -219,10 +252,10 @@ export default {
     canShow: function(id) {
       return this.panels[id]
      },
-    click: function(event) {
+    selectTestDescription: function(event) {
       var id = event.currentTarget.parentElement.previousElementSibling.id
       if (id === 'newDescripcion'){
-        this.$refs.newDescripcion.value = event.currentTarget.innerText
+        this.$v.newRow.descripcion.$model = event.currentTarget.innerText
         this.$refs.newFechaSalida.focus()
       } else {
         id = parseInt(id)
@@ -232,6 +265,44 @@ export default {
         event.currentTarget.parentElement.parentElement.nextElementSibling.children[0].focus()
       }
       this.hidePanel()
+    },
+    changeDescription: function(event){
+      var element = event.currentTarget
+      this.toggleValidation(element, element.value.length > 0)
+    },
+    changedDate: function(event){
+      var element = event.currentTarget
+      this.toggleValidation(element, element.validity.valid)
+    },
+    updateIfDateIsValid(event){
+      //Unfortunatelly, this check cannot be done on the :class of the input element, because the state must be updated on the @blur and the @input events. That's the reason to put appart the "invalid" state into a var.
+
+      if (event.currentTarget.id === 'newFechaSalida') {
+        this.isInvalidNewOutDate = !event.currentTarget.validity.valid
+      } else {
+        this.isInvalidNewInDate = !event.currentTarget.validity.valid
+      }
+     },
+    toggleValidation(element, isValid){
+      if (!isValid){
+        element.classList.add('bg-danger')
+        element.classList.add('text-white')
+        element.classList.add('animated')
+        element.classList.add('flash')
+      } else {
+        element.classList.remove('bg-danger')
+        element.classList.remove('text-white')
+        element.classList.remove('animated')
+        element.classList.remove('flash')
+      }
+    },
+    isError: function() {
+      return document.getElementsByClassName('bg-danger').length > 0
+    }
+  },
+  computed: {
+    allRowEmpty: function() {
+      return this.$v.newRow.descripcion.$model.length === 0 && this.$v.newRow.fechaSalida.$model.length === 0 && this.$v.newRow.idTurnoFechaSalida.$model === '' && this.$v.newRow.fechaEntrada.$model.length === 0 && this.$v.newRow.idTurnoFechaEntrada.$model === '' && this.$v.newRow.comentario.$model.length === 0
     }
   },
   mounted () {

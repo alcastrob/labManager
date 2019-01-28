@@ -251,14 +251,11 @@ export default {
     },
     isDirty(){
       var result = this.$v.$anyDirty 
-      console.log('this.$v.$anyDirty: ' + this.$v.$anyDirty)
       if (this.$refs.workIndications !== undefined){
         result = result || this.$refs.workIndications.isDirty() 
-        console.log('this.$refs.workIndications.isDirty(): ' + this.$refs.workIndications.isDirty())
       }
       if (this.$refs.workTests !== undefined){
         result = result || this.$refs.workTests.isDirty()
-        console.log('this.$refs.workTests.isDirty(): ', this.$refs.workTests.isDirty())
       }
       return result
     }
