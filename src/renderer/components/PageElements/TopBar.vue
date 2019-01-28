@@ -60,6 +60,7 @@
 <script>
 import VueRouter from 'vue-router'
 import { configGet } from '../../../main/store'
+var { ipcRenderer } = require('electron')
 
 export default {
   name: 'topBar',
@@ -67,7 +68,8 @@ export default {
     return {
       to: '',
       from: '',
-      isAdmin: false
+      isAdmin: false,
+      isDirty: false
     }
   },
   watch: {
@@ -84,6 +86,14 @@ export default {
     },
     getConfig: async function() {
       this.isAdmin = configGet('isAdmin')
+    },
+    cleanDirty(){
+      debugger
+      this.isDirty = false
+    },
+    setDirty(){
+      debugger
+      this.isDirty = true
     }
   },
   computed: {

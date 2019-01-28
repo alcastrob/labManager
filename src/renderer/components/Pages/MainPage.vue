@@ -1,6 +1,6 @@
 <template>
 <div id="page-top">
-    <topbar />
+    <topbar ref="topBar"></topbar>
     <div class="mt-3">
       <div id="wrapper">
         <div id="content-wrapper">

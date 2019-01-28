@@ -30,13 +30,14 @@
             <input type="text" class="inputInTd text-right" @blur="updatePrice($event, indication.IdTrabajoDetalle)" v-model="indication.Precio" :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}" v-on:keydown="filterJustNumberKeystrokes" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')" :disabled="$attrs.disabled === true">
           </td>
         </tr>
+        <!-- The empty row for new values -->
         <tr v-if="$attrs.disabled !== true">
           <td class="pt-3-half"></td>
           <!-- <td class="noMargins">
             <input type="text" class="inputInTd">
           </td> -->
           <td class="noMargins">
-            <input type="text" class="inputInTd" ref="newDescripcion" >
+            <input type="text" class="inputInTd" v-model="$v.newRow.descripcion.$model" ref="newDescripcion" :class="{'bg-danger text-white animated flash': $v.newRow.descripcion.$error && !allRowEmpty}">
           </td>
           <!-- <td class="noMargins">
             <input type="text" class="inputInTd">
@@ -45,7 +46,7 @@
             <input type="text" class="inputInTd">
           </td> -->
           <td class="noMargins">
-            <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
+            <input type="text" class="inputInTd text-right" v-model="$v.newRow.precio.$model" :class="{'bg-danger text-white animated flash': $v.newRow.precio.$error && !allRowEmpty}" @blur="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
           </td>
         </tr>
       </table>
@@ -72,33 +73,55 @@
 
 <script>
 
-import tablesWithEmptyRowMixin from './TablesWithEmptyRowsMixin'
+import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import { insertWorkIndications, updateWorkIndications, deleteWorkIndications, updatePriceSum } from '../../../../main/dal.js'
 import _ from 'lodash'
+import { decimal, minLength, required } from 'vuelidate/lib/validators'
 
 export default {
   name: 'workIndicationsTable',
   mixins: [tablesWithEmptyRowMixin],
   data () {
     return {
-      sumError: false
+      sumError: false,
+      newRow: {
+        descripcion: '',
+        precio: ''
+      }
+    }
+  },
+  validations: {
+    newRow: {
+      descripcion: {
+        required,
+        minLength: minLength(1)
+      },
+      precio: {
+        required,
+        decimal,
+        minLength: minLength(1)
+      }
     }
   },
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
-      if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
-        var newRow = {
-          Descripcion: this.$refs.newDescripcion.value,
-          IdTrabajoDetalle: this.newIds++,
-          Precio: this.$refs.newPrecio.value
-          }
-        this.data.push(newRow)
-        this.insertedRows.push(newRow)
-        this.$refs.newDescripcion.value = ''
-        this.$refs.newPrecio.value = ''
-        this.$emit('input', this.data)
-        this.$refs.newDescripcion.focus()
+      if (this.$v.newRow.$anyDirty){
+        this.$v.newRow.$touch()
+        if (!this.$v.newRow.$anyError) {
+          var newRow = {
+            Descripcion: this.newRow.descripcion,
+            IdTrabajoDetalle: this.newIds++,
+            Precio: this.newRow.precio
+            }
+          this.data.push(newRow)
+          this.insertedRows.push(newRow)
+          this.newRow.descripcion = ''
+          this.newRow.precio = ''
+          this.$v.newRow.$reset()
+          this.$emit('input', this.data)
+          this.$refs.newDescripcion.focus()
+        }
       }
     },
     deleteRow: function (rowId) {
@@ -196,7 +219,12 @@ export default {
     canDisplayDropdown: function() {
       //TODO
       return false
-    },
+    }
+  },
+  computed: {
+    allRowEmpty: function() {
+      return this.$v.newRow.descripcion.$model.length === 0 &&this.$v.newRow.precio.$model.length === 0
+    }
   }
 }
 </script>

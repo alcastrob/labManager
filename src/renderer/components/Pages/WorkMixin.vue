@@ -3,7 +3,7 @@
 
 <script>
 import Vue from 'Vue'
-import workIndicationsTable from '../PageElements/tables/WorkIndicationsTable'
+import workIndicationsTable from '../PageElements/tables/workIndicationsTable'
 import workTestsTable from '../PageElements/tables/workTestsTable'
 import collapsibleActionButton from '../PageElements/CollapsibleButtons/collapsibleActionButton'
 import dentistSearch from '../PageElements/DentistSearch'

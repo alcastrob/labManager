@@ -16,7 +16,7 @@
 <script>
 import productsTable from '../PageElements/tables/productsTable'
 import { mixin as clickaway } from 'vue-clickaway'
-import tableMixin from '../PageElements/tables/TablesWithEmptyRowsMixin'
+import tableMixin from '../PageElements/tables/tablesWithEmptyRowsMixin'
 import _ from 'lodash'
 
 export default {

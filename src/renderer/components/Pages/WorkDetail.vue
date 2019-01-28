@@ -5,6 +5,7 @@
         <div class="col-md-4">
           <h1>Trabajo nº {{work.IdTrabajo}}</h1>
         </div>
+        <button @click="click">{{isDirty()}}</button>
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
@@ -148,6 +149,7 @@ import delivery from '../Labels/Delivery'
 import conformityModal from '../PageElements/ConformityModal'
 import warrantyModal from '../PageElements/WarrantyModal'
 import VueRouter from 'vue-router'
+var { ipcRenderer } = require('electron')
 
 export default {
   name: 'workDetail',
@@ -198,6 +200,7 @@ export default {
           }
         }
       }
+      this.$parent.$refs.topBar.cleanDirty()
     },
     showLabelModal(labelType) {
       this.printedLabel = labelType
@@ -242,13 +245,34 @@ export default {
       }
       this.workTests = await getWorkTestsList(this.work.IdTrabajo)
       this.invoice = await getInvoicePerWork(this.work.IdTrabajo)
+    },
+    click: function(event){
+      event.currentTarget.textContent = this.isDirty()
+    },
+    isDirty(){
+      var result = this.$v.$anyDirty 
+      console.log('this.$v.$anyDirty: ' + this.$v.$anyDirty)
+      if (this.$refs.workIndications !== undefined){
+        result = result || this.$refs.workIndications.isDirty() 
+        console.log('this.$refs.workIndications.isDirty(): ' + this.$refs.workIndications.isDirty())
+      }
+      if (this.$refs.workTests !== undefined){
+        result = result || this.$refs.workTests.isDirty()
+        console.log('this.$refs.workTests.isDirty(): ', this.$refs.workTests.isDirty())
+      }
+      return result
     }
+  },
+  computed: {
   },
   created () {
     this.work.IdTrabajo = parseInt(this.$route.params.id)
   },
   mounted () {
     this.getData()
+    // this.$watch(this.$v.$anyDirty, function (newVal, oldVal) {
+    //   debugger
+    // })
   }
 }
 </script>

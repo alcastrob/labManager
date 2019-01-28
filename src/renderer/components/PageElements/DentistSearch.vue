@@ -1,6 +1,8 @@
 <template>
   <div class="input-group">
-    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-on:focus="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica" :class="{'is-invalid': isInvalid}" :disabled="$attrs.disabled === true">
+    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica" :class="{'is-invalid': isInvalid}" :disabled="$attrs.disabled === true" @blur="blur">
+<!-- v-on:focus="search" -->
+
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
       <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</span>
       <div v-for="dentist in candidateDentistsFromQuery" :key='dentist.IdDentista'>
@@ -11,7 +13,7 @@
 </template>
 
 <script>
-import { searchDentistsByName, getDentist } from '../../../main/dal.js'
+import { searchDentistsByName, searchDentistByExactName, getDentist } from '../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 
@@ -22,29 +24,42 @@ export default {
     return {
       resultsVisible: false,
       query: '',
+      selectedDentistId: -1,
       candidateDentistsFromQuery: [],
       focus: false
     }
   },
   props: ['value', 'isInvalid'],
   methods: {
-    search: function() {
+    search: async function() {
       this.resultsVisible = true
       this.focus = true
       if (this.query.length > 3) {
-        searchDentistsByName(this.query).then((dentistDetails) => {
-          this.candidateDentistsFromQuery = dentistDetails
-        })
+        this.candidateDentistsFromQuery = await searchDentistsByName(this.query)
       } else {
         this.candidateDentistsFromQuery = []
-        this.$emit('input', -1)
+        this.sendChangeEvents(-1)  
       }
     },
     selectDentist: function(name, id) {
       this.query = name
       this.resultsVisible = false
-      this.$emit('input', id)
-      this.$emit('change', null)
+      this.sendChangeEvents(id)
+    },
+    blur: async function(){
+      var candidates = await searchDentistByExactName(this.query)
+      if (candidates.length === 0 || candidates.length > 1) {
+        this.sendChangeEvents(-1)
+      } else if (candidates[0].IdDentista !== this.selectedDentistId) {
+        this.sendChangeEvents(candidates[0].IdDentista)
+      }
+    },
+    sendChangeEvents(newId) {
+      if (this.selectedDentistId !== newId){
+        this.selectedDentistId = newId
+        this.$emit('change', null)
+      }
+      this.$emit('input', newId)
     },
     createNew: function(name) {
       this.$router.push({
@@ -70,6 +85,7 @@ export default {
     this.$watch('value', function (newVal, oldVal) {
       getDentist(newVal).then((dentistDetail) => {
         if (dentistDetail !== undefined) {
+          this.selectedDentistId = dentistDetail.IdDentista
           this.query = dentistDetail.NombreDentista
           this.hidePopup()
         }

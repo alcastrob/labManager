@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import tablesWithEmptyRowMixin from './TablesWithEmptyRowsMixin'
+import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../../main/dal.js'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
@@ -237,7 +237,7 @@ export default {
   mounted () {
     // Check the required parameters (props)
     if (this.workId === undefined || this.workId === null)
-      throw 'Missing prop workId in WorkTestsTable.vue'
+      throw 'Missing prop workId in workTestsTable.vue'
     getDeliveryShifts().then((shifts) => {
       this.deliveryShifts = shifts
     })

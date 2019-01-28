@@ -392,13 +392,19 @@ export function updateDentist(dentist) {
 }
 
 //Tested
-export function searchDentistsByName (dentistName) {
+export async function searchDentistsByName (dentistName) {
   var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
   'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
   'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE NombreDentista LIKE ?'
-  return allAsync(db, query, ['%' + dentistName + '%']).then((rows) => {
-    return rows
-  })
+  return await allAsync(db, query, ['%' + dentistName + '%'])
+}
+
+//Tested
+export async function searchDentistByExactName (dentistName) {
+  var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
+  'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
+  'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE NombreDentista = ?'
+  return await allAsync(db, query, [dentistName])
 }
 
 // Work Month Check -----------------------------------------------------------

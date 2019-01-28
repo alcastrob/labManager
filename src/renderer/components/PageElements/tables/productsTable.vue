@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import tablesWithEmptyRowMixin from './TablesWithEmptyRowsMixin'
+import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import { getProductList, insertProduct, updateProduct, deleteProduct } from '../../../../main/dal.js'
 import euroInput from '../tables/euroInput'
 import filterBar from '../tables/filterBar'

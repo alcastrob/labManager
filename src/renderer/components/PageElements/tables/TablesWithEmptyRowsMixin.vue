@@ -26,6 +26,22 @@ export default {
     },
     isNotEmpty(value){
       return !this.isEmpty(value)
+    },
+    isDirty(){
+      this.isError()
+      return this.insertedRows.length !== 0 || this.updatedRows.length !== 0 || this.deletedRows.length !== 0 
+    },
+    isError(){
+      if (this.$v !== undefined){
+        return this.$v.$anyError
+      } else {
+        return false
+      }
+    },
+    touch(){
+      if (this.$v !== undefined){
+        this.$v.$touch()
+      }
     }
   },
   mounted () {

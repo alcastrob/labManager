@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import tablesWithEmptyRowMixin from './TablesWithEmptyRowsMixin'
+import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import { getCatalogList, insertCatalogEntry, updateCatalogEntry, deleteCatalogEntry } from '../../../../main/dal.js'
 import euroInput from '../tables/euroInput'
 import filterBar from '../tables/filterBar'
