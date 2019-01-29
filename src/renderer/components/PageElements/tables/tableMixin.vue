@@ -71,6 +71,10 @@ export default {
 
       this.applyTextFilter('') // Just to load all the data
     },
+    updateDataset: function(dataset) {
+      this.rawDataset = dataset
+      this.filteredDataset = dataset
+    },
     clickOn: function(index) {
       this.$router.push({
         path: this.urlBase + index

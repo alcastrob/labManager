@@ -120,7 +120,6 @@ export default {
       this.pageSave(this.leavingToUrl)
     },
     isPageDirty(){
-      
       var x = _.find(this.$parent.$children, (e) => {
         return e.isError !== undefined && e.isDirty !== undefined
       })

@@ -107,9 +107,10 @@ export default {
           return {IdDentista: idDentist}
       }
     },
-    updateDatasetWithFilters: async function (eventData) {
-      this.$refs.workExtendedTable.setDataset(await getWorksList(eventData))
-      this.lastFilterUsed = eventData
+    updateDatasetWithFilters: async function (filterData) {
+      // this.$refs.workExtendedTable.setDataset(await getWorksList(filterData))
+      this.$refs.workExtendedTable.updateDataset(await getWorksList(filterData))
+      this.lastFilterUsed = filterData
     },
     processFilterChange(filterData){
       this.updateDatasetWithFilters(filterData)
@@ -118,6 +119,11 @@ export default {
     beginExporting(){
       this.$refs.workExtendedTable.beginExporting()
     },
+    updateListAfterNavigating: async function() {
+      // debugger
+      await this.updateDatasetWithFilters(this.lastFilterUsed)
+      this.$refs.workExtendedTable.sortBy()
+    }
   },
   computed: {
     showCustomHeader: function() {
@@ -129,7 +135,7 @@ export default {
   },
   activated () {
     //The data will be loaded even if the rest of the page is in the cache
-    this.updateDatasetWithFilters(this.lastFilterUsed)
+    this.updateListAfterNavigating()
   },
   mounted () {
     this.$refs.workExtendedTable.setFilters(this.$route.query.filter)

@@ -169,18 +169,6 @@ export default {
       this.saveButtonPressed = true
       this.$v.$touch()
 
-      // this.$refs.dirtys.innerHTML = ''
-      // this.$refs.dirtys.innerHTML += `IdDentista: ${this.$v.work.IdDentista.$anyError} | ${this.$v.work.IdDentista.$anyDirty} <br> `
-      // this.$refs.dirtys.innerHTML += `Paciente: ${this.$v.work.Paciente.$anyError} | ${this.$v.work.Paciente.$anyDirty} <br> `
-      // this.$refs.dirtys.innerHTML += `TipoTrabajo: ${this.$v.work.IdTipoTrabajo.$anyError} | ${this.$v.work.IdTipoTrabajo.$anyDirty} <br> `
-      // this.$refs.dirtys.innerHTML += `PrecioMetal: ${this.$v.work.PrecioMetal.$anyError} | ${this.$v.work.PrecioMetal.$anyDirty} <br> `
-      // this.$refs.dirtys.innerHTML += `Color: ${this.$v.work.Color.$anyError} | ${this.$v.work.Color.$anyDirty} <br> `
-      // this.$refs.dirtys.innerHTML += `Indicaciones: ${this.$refs.workIndications.isError()} | ${this.$refs.workIndications.isDirty()} <br> `
-      // this.$refs.dirtys.innerHTML += `FechaEntrada: ${this.$v.work.FechaEntrada.$anyError} | ${this.$v.work.FechaEntrada.$anyDirty} <br> `
-      // this.$refs.dirtys.innerHTML += `FechaPrevista: ${this.$v.work.FechaPrevista.$anyError} | ${this.$v.work.FechaPrevista.$anyDirty} <br> `
-      // this.$refs.dirtys.innerHTML += `FechaTerminacion: ${this.$v.work.FechaTerminacion.$anyError} | ${this.$v.work.FechaTerminacion.$anyDirty} <br> `
-      // this.$refs.dirtys.innerHTML += `Pruebas: ${this.$refs.workTests.isError()} | ${this.$refs.workTests.isDirty()} <br> `
-
       if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()){
         return false
       }
@@ -285,6 +273,19 @@ export default {
         }
       }
     },
+    doValidatorExtraChecks() {
+      this.$refs.dirtys.innerHTML = ''
+      this.$refs.dirtys.innerHTML += `IdDentista: ${this.$v.work.IdDentista.$anyError} | ${this.$v.work.IdDentista.$anyDirty} <br> `
+      this.$refs.dirtys.innerHTML += `Paciente: ${this.$v.work.Paciente.$anyError} | ${this.$v.work.Paciente.$anyDirty} <br> `
+      this.$refs.dirtys.innerHTML += `TipoTrabajo: ${this.$v.work.IdTipoTrabajo.$anyError} | ${this.$v.work.IdTipoTrabajo.$anyDirty} <br> `
+      this.$refs.dirtys.innerHTML += `PrecioMetal: ${this.$v.work.PrecioMetal.$anyError} | ${this.$v.work.PrecioMetal.$anyDirty} <br> `
+      this.$refs.dirtys.innerHTML += `Color: ${this.$v.work.Color.$anyError} | ${this.$v.work.Color.$anyDirty} <br> `
+      this.$refs.dirtys.innerHTML += `Indicaciones: ${this.$refs.workIndications.isError()} | ${this.$refs.workIndications.isDirty()} <br> `
+      this.$refs.dirtys.innerHTML += `FechaEntrada: ${this.$v.work.FechaEntrada.$anyError} | ${this.$v.work.FechaEntrada.$anyDirty} <br> `
+      this.$refs.dirtys.innerHTML += `FechaPrevista: ${this.$v.work.FechaPrevista.$anyError} | ${this.$v.work.FechaPrevista.$anyDirty} <br> `
+      this.$refs.dirtys.innerHTML += `FechaTerminacion: ${this.$v.work.FechaTerminacion.$anyError} | ${this.$v.work.FechaTerminacion.$anyDirty} <br> `
+      this.$refs.dirtys.innerHTML += `Pruebas: ${this.$refs.workTests.isError()} | ${this.$refs.workTests.isDirty()} <br> `
+    },
     getData: async function(){
       this.work = await getWork(this.work.IdTrabajo)
       this.readOnly = this.work.FechaTerminacion !== null
@@ -299,6 +300,7 @@ export default {
   },
   computed: {
     isDirty(){
+      this.doValidatorExtraChecks()
       var result = this.$v.$anyDirty
       if (this.$refs.workIndications !== undefined){
         result = result || this.$refs.workIndications.isDirty()
