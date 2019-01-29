@@ -83,6 +83,7 @@ export default {
         } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
       filterChanged: false,
+      lastFilterUsed: {},
       listHeading: '',
       isAdmin : false
     }
@@ -108,6 +109,7 @@ export default {
     },
     updateDatasetWithFilters: async function (eventData) {
       this.$refs.workExtendedTable.setDataset(await getWorksList(eventData))
+      this.lastFilterUsed = eventData
     },
     processFilterChange(filterData){
       this.updateDatasetWithFilters(filterData)
@@ -124,6 +126,10 @@ export default {
   },
   created () {
     this.listHeading = this.$route.query.title
+  },
+  activated () {
+    //The data will be loaded even if the rest of the page is in the cache
+    this.updateDatasetWithFilters(this.lastFilterUsed)
   },
   mounted () {
     this.$refs.workExtendedTable.setFilters(this.$route.query.filter)

@@ -62,7 +62,7 @@
         </div>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" ref="newFechaSalida" id="newFechaSalida" @focus="hidePanel" @blur="updateIfDateIsValid($event, isInvalidNewOutDate)" @input="updateIfDateIsValid($event, isInvalidNewOutDate)" v-model="$v.newRow.fechaSalida.$model" :class="{'bg-danger text-white animated flash': isInvalidNewOutDate}">
+        <input type="date" class="inputInTd" ref="newFechaSalida" id="newFechaSalida" @focus="hidePanel" @blur="updateIfDateIsValid($event)" @input="updateIfDateIsValid($event)" v-model="$v.newRow.fechaSalida.$model" :class="{'bg-danger text-white animated flash': isInvalidNewOutDate}">
       </td>
       <td class="noMargins">
         <select class="inputInTd" ref="newTurnoSalida" v-model="$v.newRow.idTurnoFechaSalida.$model">
@@ -71,7 +71,7 @@
         </select>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" id="newFechaEntrada" v-model="$v.newRow.fechaEntrada.$model" @blur="updateIfDateIsValid($event, isInvalidNewInDate)" @input="updateIfDateIsValid($event, isInvalidNewInDate)" :class="{'bg-danger text-white animated flash': isInvalidNewInDate}">
+        <input type="date" class="inputInTd" id="newFechaEntrada" v-model="$v.newRow.fechaEntrada.$model" @blur="updateIfDateIsValid($event)" @input="updateIfDateIsValid($event)" :class="{'bg-danger text-white animated flash': isInvalidNewInDate}">
       </td>
       <td class="noMargins">
         <select class="inputInTd" ref="newTurnoEntrada" v-model="$v.newRow.idTurnoFechaEntrada.$model">
@@ -84,23 +84,20 @@
       </td>
     </tr>
   </table>
-  newRow: {{$v.newRow.$anyDirty}}<br>
-  wholeTable: {{isDirty()}}<br>
-  isError: {{isError()}}
-  <div>
-      <h3>Inserted</h3>
-      <ul v-for="inserted in insertedRows" :key="inserted.IdPrueba">
-        <li>{{inserted.IdPrueba}}|{{inserted.Descripcion}}</li>
-      </ul>
-      <h3>Updated</h3>
-      <ul v-for="updated in updatedRows" :key="updated.IdPrueba">
-        <li>{{updated.IdPrueba}}|{{updated.Descripcion}}</li>
-      </ul>
-      <h3>Deleted</h3>
-      <ul v-for="deleted in deletedRows" :key="deleted.IdPrueba">
-        <li>{{deleted.IdPrueba}}|{{deleted.Descripcion}}</li>
-      </ul>
-    </div>
+  <!-- <div>
+    <h3>Inserted</h3>
+    <ul v-for="inserted in insertedRows" :key="inserted.IdPrueba">
+      <li>{{inserted.IdPrueba}}|{{inserted.Descripcion}}</li>
+    </ul>
+    <h3>Updated</h3>
+    <ul v-for="updated in updatedRows" :key="updated.IdPrueba">
+      <li>{{updated.IdPrueba}}|{{updated.Descripcion}}</li>
+    </ul>
+    <h3>Deleted</h3>
+    <ul v-for="deleted in deletedRows" :key="deleted.IdPrueba">
+      <li>{{deleted.IdPrueba}}|{{deleted.Descripcion}}</li>
+    </ul>
+  </div> -->
 </div>
 </template>
 
@@ -146,7 +143,6 @@ export default {
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
-      debugger
       if(this.allRowEmpty){
         this.$v.newRow.$reset()
       } else if (this.$v.newRow.$anyDirty){
@@ -295,9 +291,6 @@ export default {
         element.classList.remove('animated')
         element.classList.remove('flash')
       }
-    },
-    isError: function() {
-      return document.getElementsByClassName('bg-danger').length > 0
     }
   },
   computed: {

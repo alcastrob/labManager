@@ -72,7 +72,7 @@
       </div>
     </div> <!-- row -->
   </div> <!-- container -->
-  <b-modal ref="printLabelModal" size="lg" title="Imprimir etiquetas" hide-footer @hidden="goBack()">
+  <b-modal ref="printLabelModal" size="lg" title="Imprimir etiquetas" hide-footer @hidden="goBack">
     <div class="modal-body">
       <div class="containter">
         <div class="row">
@@ -185,16 +185,39 @@ export default {
     }
   },
   methods: {
-    save: function() {
+    save: function(url) {
+      if (url.type === undefined){
+        //Not an event. Save the URL
+        this.url = url
+      }
       this.saveButtonPressed = true
       this.$v.$touch()
-      if (!this.$v.$invalid){
-        insertWork(this.work).then((id) => {
-          this.work.IdTrabajo = id
-          this.$refs.workIndications.save(this.work.IdTrabajo)
+      if (this.$v.$anyError || this.$refs.workIndications.isError()){
+        return false
+      }
+
+      if (this.$refs.workIndications.isDirty){
+        this.$refs.workIndications.save(this.work.IdTrabajo)
+      } 
+      var sum = _.sumBy(this.workIndications, function(n) {
+        var temp = parseFloat(n.Precio)
+        if (isNaN(temp)){
+          throw 'NaN'
+        } else {
+          return temp
+        }
+      })
+      if (sum != this.$v.work.$model.PrecioFinal){
+        this.$v.work.$model.PrecioFinal = sum
+      }
+
+      if (this.$v.work.$anyDirty){
+        insertWork(this.$v.work.$model).then((id) => {
+          this.$v.work.$model.IdTrabajo = id
+          this.$refs.workIndications.save(this.$v.work.$model.IdTrabajo)
         })
         if(this.adjunctsVisible){
-          this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
+          this.workAdjuncts.IdTrabajo = this.$v.work.$model.IdTrabajo
           insertAdjuntsOfWork(this.workAdjuncts)
         }
         this.showModal()
@@ -217,13 +240,18 @@ export default {
       if (this.$refs.cbComposite.checked) this.printLabel('Composite')
       if (this.$refs.cbMetalCeramica.checked) this.printLabel('Metal-Cerámica')
 
-      // this.hideModal()
       this.goBack()
     },
     goBack() {
-      this.$router.push({
-        path: '/works/list'
-      })
+      if (this.url === undefined || this.url === '') {
+        this.$router.push({
+          path: '/works/list'
+        })
+      } else {
+        this.$router.push({
+          path: this.url
+        })
+      }
       this.$toasted.show(`Se ha creado el trabajo ${this.work.IdTrabajo}.`, {
         position: 'top-right',
         duration: null,
@@ -259,6 +287,27 @@ export default {
         this.$refs.cbMetalCeramica.checked
       )
     }
+  },
+  computed: {
+    isDirty(){
+      var result = this.$v.$anyDirty
+      if (this.$refs.workIndications !== undefined){
+        result = result || this.$refs.workIndications.isDirty()
+      }
+      return result
+    },
+    isError(){
+      var result = this.$v.$anyError
+      if (this.$refs.workIndications !== undefined){
+        result = result || this.$refs.workIndications.isError()
+      }
+      return result
+    }
+  },
+  mounted () {
+    this.$root.$on('topbar:save', (url) => {
+      this.save(url)
+    })
   }
 }
 </script>

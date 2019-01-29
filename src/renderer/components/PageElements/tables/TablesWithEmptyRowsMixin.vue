@@ -29,6 +29,9 @@ export default {
     },
     isDirty(){
       return this.insertedRows.length !== 0 || this.updatedRows.length !== 0 || this.deletedRows.length !== 0
+    },
+    isError() {
+      return document.getElementsByClassName('bg-danger').length > 0
     }
   },
   mounted () {

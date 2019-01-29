@@ -3,13 +3,15 @@
     <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
       <li class="nav-item no-arrow mx-1">
-        <router-link to="/" class="nav-link" role="button">
+        <a href="#" class="nav-link" role="button" @click="go('/')">
+        <!-- <router-link to="/" class="nav-link" role="button" @click="isPageDirty"> -->
           <i class="fas fa-fw fa-tooth"></i>
           Inicio
-        </router-link>
+        <!-- </router-link> -->
+        </a>
       </li>
-      <li class="nav-item no-arrow mx-1" v-if="isBackVisible">
-        <a href="#" class="nav-link" role="button" v-on:click="goBack()">
+      <li class="nav-item no-arrow mx-1" v-if="isBackButtonVisible">
+        <a href="#" class="nav-link" role="button" @click="goBack()">
           <i class="fas fa-fw fa-caret-square-left"></i>
           Atrás
         </a>
@@ -18,49 +20,57 @@
 
     <ul class="navbar-nav ml-auto">
       <li class="nav-item no-arrow mx-1">
-        <router-link to="/works/new" class="nav-link" role="button">
+        <a href="#" class="nav-link" role="button" @click="go('/works/new')">
+        <!-- <router-link to="/works/new" class="nav-link" role="button"> -->
           <i class="fas fa-fw fa-teeth"></i>
           Nuevo Trabajo
-        </router-link>
+        <!-- </router-link> -->
+        </a>
       </li>
       <li class="nav-item no-arrow mr-1">
-        <router-link to="/works/list" class="nav-link" role="button">
+        <a href="#" class="nav-link" role="button" @click="go('/works/list')">
+        <!-- <router-link to="/works/list" class="nav-link" role="button"> -->
           <i class="fa fa-fw fa-list"></i>
           Listado Trabajos
-        </router-link>
+        <!-- </router-link> -->
+        </a>
       </li>
       <li class="nav-item no-arrow">
-        <router-link to="/dentists/list" class="nav-link" role="button">
+        <a href="#" class="nav-link" role="button" @click="go('/dentists/list')">
+        <!-- <router-link to="/dentists/list" class="nav-link" role="button"> -->
           <i class="fas fa-fw fa-id-badge"></i>
           Listado Dentistas
-        </router-link>
+        <!-- </router-link> -->
+        </a>
       </li>
       <li class="nav-item no-arrow" v-if="isAdmin">
-        <router-link to="/finances" class="nav-link" role="button">
+        <a href="#" class="nav-link" role="button" @click="go('/finances')">
+        <!-- <router-link to="/finances" class="nav-link" role="button"> -->
           <i class="fas fa-fw fa-money-bill-alt"></i>
           Gestión Económica
-        </router-link>
+        <!-- </router-link> -->
+        </a>
       </li>
     </ul>
-
-    <!-- Navbar Search -->
-    <!-- <form class="d-none d-md-inline-block form-inline ml-1 mr-0 mr-md-3 my-2 my-md-0">
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="Buscar..." >
-        <div class="input-group-append">
-          <button class="btn btn-primary" type="button">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
+    <b-modal ref="leavePageModal" title="Cambios no guardados" hide-footer>
+      <div class="modal-body">
+        <span>
+        En esta página hay cambios que serán descartados si continua navegando a otra página. ¿Desea guardarlos antes?
+        </span>
       </div>
-    </form> -->
+      <div class="modal-footer">
+        <button class="btn btn-secondary" @click="discardButtonClick">Descartar los cambios</button>
+        <button class="btn btn-secondary" @click="saveAndLeaveButtonClick"><i class="fas fa-save mr-2 position-relative" style="top: 1px;"></i>Guardar y continuar</button>
+      </div>
+    </b-modal>
   </nav>
 </template>
 
 <script>
 import VueRouter from 'vue-router'
 import { configGet } from '../../../main/store'
-var { ipcRenderer } = require('electron')
+import _ from 'lodash'
+import bModal from 'bootstrap-vue'
 
 export default {
   name: 'topBar',
@@ -69,7 +79,7 @@ export default {
       to: '',
       from: '',
       isAdmin: false,
-      isDirty: false
+      leavingToUrl: ''
     }
   },
   watch: {
@@ -79,25 +89,61 @@ export default {
     }
   },
   methods: {
+    go(url) {
+      if (!this.isPageDirty()){
+        this.$router.push({
+          path: url
+        })
+      } else {
+        this.$refs.leavePageModal.show()
+        this.leavingToUrl = url
+      }
+    },
     goBack() {
+      if (!this.isPageDirty()) {
+        this.$router.push({
+          path: this.from.fullPath
+        })
+      } else {
+        this.$refs.leavePageModal.show()
+        this.leavingToUrl = this.from.fullPath
+      }
+    },
+    discardButtonClick(){
+      this.$refs.leavePageModal.hide()
       this.$router.push({
-        path: this.from.fullPath
+        path: this.leavingToUrl
       })
+    },
+    saveAndLeaveButtonClick(){
+      this.$refs.leavePageModal.hide()
+      this.pageSave(this.leavingToUrl)
+    },
+    isPageDirty(){
+      
+      var x = _.find(this.$parent.$children, (e) => {
+        return e.isError !== undefined && e.isDirty !== undefined
+      })
+      if (x !== undefined){
+        return x.isDirty
+      } else {
+        return false
+      }
+    },
+    pageSave(url){
+      var x = _.find(this.$parent.$children, (e) => {
+        return e.isError !== undefined && e.isDirty !== undefined
+      })
+      if (x !== undefined){
+        this.$root.$emit('topbar:save', url)
+      }
     },
     getConfig: async function() {
       this.isAdmin = configGet('isAdmin')
-    },
-    cleanDirty(){
-      debugger
-      this.isDirty = false
-    },
-    setDirty(){
-      debugger
-      this.isDirty = true
     }
   },
   computed: {
-    isBackVisible(){
+    isBackButtonVisible(){
       switch (this.to.path){
         case '/works/new':
         case '/':

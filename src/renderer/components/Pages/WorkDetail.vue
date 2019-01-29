@@ -5,7 +5,6 @@
         <div class="col-md-4">
           <h1>Trabajo nº {{work.IdTrabajo}}</h1>
         </div>
-        <button @click="click">{{isDirty()}}</button>
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
@@ -17,7 +16,7 @@
                 <span>Imprimir etiqueta</span>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-on:click="$refs.warranty.show()">Garantía</a>
+                <a href="#" class="dropdown-item" v-on:click="showWarrantyLabelModal">Garantía</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Resina')" >Resina</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Compostura')">Compostura</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Aditamentos')" v-if="workAdjuncts !== undefined">Aditamentos</a>
@@ -83,19 +82,19 @@
       <div class="row">
         <div class="col-md-4">
           <label for="fEntrada">Fecha entrada</label>
-          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada" :disabled="readOnly">
-          <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()" v-if="!readOnly">
+          <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="$v.work.FechaEntrada.$model" @blur="triggerIsDirty($event)" @input="triggerIsDirty($event)" :disabled="readOnly">
+          <a href="#" class="form-text text-muted ml-2" @click="setStartDateToToday()" v-if="!readOnly">
           <i class="far fa-calendar-alt"></i>
           Poner fecha de hoy
           </a>
         </div> <!-- col-md-4 -->
         <div class="col-md-4">
           <label for="fPrevista">Fecha prevista</label>
-          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista" :disabled="readOnly">
+          <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="$v.work.FechaPrevista.$model" @blur="triggerIsDirty($event)" @input="triggerIsDirty($event)" :disabled="readOnly">
         </div> <!-- col-md-4 -->
         <div class="col-md-4">
           <label for="fSalida">Fecha terminación</label>
-          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="work.FechaTerminacion" :disabled="readOnly">
+          <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="$v.work.FechaTerminacion.$model" @blur="triggerIsDirty($event)" @input="triggerIsDirty($event)" :disabled="readOnly">
         </div>
       </div> <!-- row -->
 
@@ -108,7 +107,7 @@
 
       <div class="row">
         <div class="col-md-12 mt-4">
-          <workAdjuncts v-model="workAdjuncts" v-if="adjunctsVisible" :disabled="readOnly"></workAdjuncts>
+          <workAdjuncts v-model="$v.workAdjuncts.$model" v-if="adjunctsVisible" :disabled="readOnly"></workAdjuncts>
         </div> <!-- col-md-8 -->
       </div> <!-- row -->
       <div class="row">
@@ -117,6 +116,7 @@
             <i class="fas fa-save"></i>
             Guardar
           </button>
+          <span ref="dirtys"></span>
         </div>
       </div>
     </div> <!-- container -->
@@ -142,14 +142,11 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConfigValues, getInvoicePerWork } from '../../../main/dal.js'
-import { validId } from '../Validators/validId.js'
-import { decimal } from 'vuelidate/lib/validators'
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
 import conformityModal from '../PageElements/ConformityModal'
 import warrantyModal from '../PageElements/WarrantyModal'
 import VueRouter from 'vue-router'
-var { ipcRenderer } = require('electron')
 
 export default {
   name: 'workDetail',
@@ -167,56 +164,91 @@ export default {
       warrantyPeriod: 12
     }
   },
-  validations: {
-    work: {
-      IdTrabajo: { },
-      IdDentista: { validId },
-      NombreDentista: { },
-      IdTipoTrabajo: { validId },
-      Paciente: { },
-      Color: { },
-      PrecioMetal: { decimal },
-      FechaEntrada: { },
-      FechaPrevista: { },
-      FechaTerminacion: { }
-    }
-  },
   methods: {
-    save: function() {
+    save: function(url) {
       this.saveButtonPressed = true
       this.$v.$touch()
-      if (!this.$v.$invalid){
-        updateWork(this.work).then(() => {
-          this.$refs.workIndications.save(this.work.IdTrabajo)
-          this.$refs.workTests.save(this.work.IdTrabajo)
-        })
+
+      // this.$refs.dirtys.innerHTML = ''
+      // this.$refs.dirtys.innerHTML += `IdDentista: ${this.$v.work.IdDentista.$anyError} | ${this.$v.work.IdDentista.$anyDirty} <br> `
+      // this.$refs.dirtys.innerHTML += `Paciente: ${this.$v.work.Paciente.$anyError} | ${this.$v.work.Paciente.$anyDirty} <br> `
+      // this.$refs.dirtys.innerHTML += `TipoTrabajo: ${this.$v.work.IdTipoTrabajo.$anyError} | ${this.$v.work.IdTipoTrabajo.$anyDirty} <br> `
+      // this.$refs.dirtys.innerHTML += `PrecioMetal: ${this.$v.work.PrecioMetal.$anyError} | ${this.$v.work.PrecioMetal.$anyDirty} <br> `
+      // this.$refs.dirtys.innerHTML += `Color: ${this.$v.work.Color.$anyError} | ${this.$v.work.Color.$anyDirty} <br> `
+      // this.$refs.dirtys.innerHTML += `Indicaciones: ${this.$refs.workIndications.isError()} | ${this.$refs.workIndications.isDirty()} <br> `
+      // this.$refs.dirtys.innerHTML += `FechaEntrada: ${this.$v.work.FechaEntrada.$anyError} | ${this.$v.work.FechaEntrada.$anyDirty} <br> `
+      // this.$refs.dirtys.innerHTML += `FechaPrevista: ${this.$v.work.FechaPrevista.$anyError} | ${this.$v.work.FechaPrevista.$anyDirty} <br> `
+      // this.$refs.dirtys.innerHTML += `FechaTerminacion: ${this.$v.work.FechaTerminacion.$anyError} | ${this.$v.work.FechaTerminacion.$anyDirty} <br> `
+      // this.$refs.dirtys.innerHTML += `Pruebas: ${this.$refs.workTests.isError()} | ${this.$refs.workTests.isDirty()} <br> `
+
+      if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()){
+        return false
+      }
+
+      if (this.$refs.workIndications.isDirty){
+        this.$refs.workIndications.save(this.work.IdTrabajo)
+      } 
+      var sum = _.sumBy(this.workIndications, function(n) {
+        var temp = parseFloat(n.Precio)
+        if (isNaN(temp)){
+          throw 'NaN'
+        } else {
+          return temp
+        }
+      })
+      if (sum != this.$v.work.$model.PrecioFinal){
+        this.$v.work.$model.PrecioFinal = sum
+      }
+      if (this.$v.work.$anyDirty){
+        updateWork(this.$v.work.$model)
+      }
+      if (this.$refs.workTests.isDirty){
         this.$refs.workTests.save(this.work.IdTrabajo)
-        if(this.adjunctsVisible){
-          this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
-          if(this.workAdjunctsJustAdded){
-            insertAdjuntsOfWork(this.workAdjuncts)
-          } else {
-            updateAdjuntsOfWork(this.workAdjuncts)
-          }
+      }
+      if(this.$v.workAdjuncts.$anyDirty){
+        this.$v.workAdjuncts.$model.IdTrabajo = this.work.IdTrabajo
+        if(this.workAdjunctsJustAdded){
+          insertAdjuntsOfWork(this.$v.workAdjuncts.$model)
+        } else {
+          updateAdjuntsOfWork(this.$v.workAdjuncts.$model)
         }
       }
-      this.$parent.$refs.topBar.cleanDirty()
+      if (url !== undefined) {
+        this.$router.push({
+          path: url
+        })
+      } else {
+        return true
+      }
+    },
+    showWarrantyLabelModal(){
+      if(this.save()) {
+        // if (this.$v.work.$model.FechaTerminacion === ''){
+
+        // } else {
+
+        // }
+        this.$refs.warranty.show()
+      }
     },
     showLabelModal(labelType) {
-      this.printedLabel = labelType
-      if (this.workIndications !== undefined){
-        this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
-      } else {
-        this.workIndicationsText = ''
+      if(this.save()) {
+        this.printedLabel = labelType
+        if (this.workIndications !== undefined){
+          this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
+        } else {
+          this.workIndicationsText = ''
+        }
+        this.$refs.printLabelModal.show()
       }
-      this.$refs.printLabelModal.show()
     },
     printLabelAndHide: function() {
       this.printLabel()
       this.hideModal()
     },
     getDeliveryNote: async function () {
-      var row = await getConfigValues(['logo'])
+      if (this.save()){
+        var row = await getConfigValues(['logo'])
       var ComponentClass = Vue.extend(delivery)
       var instance = new ComponentClass({
         propsData: {
@@ -231,9 +263,27 @@ export default {
       })
       instance.$mount()
       instance.print(this.$refs.labelContainer)
+      }
     },
     showConformity(){
-      this.$refs.conformity.show()
+      if (this.save()) {
+        this.$refs.conformity.show()
+      }
+    },
+    triggerIsDirty(event){
+      if (!event.currentTarget.validity.valid){
+        switch (event.currentTarget.id) {
+          case 'fEntrada':
+            this.$v.work.FechaEntrada.$model = ''
+            break;
+          case 'fPrevista':
+            this.$v.work.FechaPrevista.$model = ''
+            break;
+          case 'fSalida':
+            this.$v.work.FechaTerminacion.$model = ''
+            break;
+        }
+      }
     },
     getData: async function(){
       this.work = await getWork(this.work.IdTrabajo)
@@ -245,31 +295,38 @@ export default {
       }
       this.workTests = await getWorkTestsList(this.work.IdTrabajo)
       this.invoice = await getInvoicePerWork(this.work.IdTrabajo)
-    },
-    click: function(event){
-      event.currentTarget.textContent = this.isDirty()
-    },
+    }
+  },
+  computed: {
     isDirty(){
-      var result = this.$v.$anyDirty 
+      var result = this.$v.$anyDirty
       if (this.$refs.workIndications !== undefined){
-        result = result || this.$refs.workIndications.isDirty() 
+        result = result || this.$refs.workIndications.isDirty()
       }
       if (this.$refs.workTests !== undefined){
         result = result || this.$refs.workTests.isDirty()
       }
       return result
+    },
+    isError(){
+      var result = this.$v.$anyError
+      if (this.$refs.workIndications !== undefined){
+        result = result || this.$refs.workIndications.isError()
+      }
+      if (this.$refs.workTests !== undefined){
+        result = result || this.$refs.workTests.isError()
+      }
+      return result
     }
-  },
-  computed: {
   },
   created () {
     this.work.IdTrabajo = parseInt(this.$route.params.id)
   },
   mounted () {
     this.getData()
-    // this.$watch(this.$v.$anyDirty, function (newVal, oldVal) {
-    //   debugger
-    // })
+    this.$root.$on('topbar:save', (url) => {
+      this.save(url)
+    })
   }
 }
 </script>

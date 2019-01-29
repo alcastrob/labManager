@@ -1,6 +1,3 @@
-<template>
-</template>
-
 <script>
 import Vue from 'Vue'
 import workIndicationsTable from '../PageElements/tables/workIndicationsTable'
@@ -16,6 +13,8 @@ import labelComposite from '../Labels/labelComposite'
 import bModal from 'bootstrap-vue'
 import _ from 'lodash'
 import { getWorkTypes } from '../../../main/dal.js'
+import { validId } from '../Validators/validId.js'
+import { decimal } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -59,7 +58,34 @@ export default {
         Otros: ''
       },
       adjunctsVisible: false,
-      workAdjunctsJustAdded: false
+      workAdjunctsJustAdded: false,
+      url: ''
+    }
+  },
+  validations: {
+    work: {
+      IdTrabajo: { },
+      IdDentista: { validId },
+      NombreDentista: { },
+      IdTipoTrabajo: { validId },
+      Paciente: { },
+      Color: { },
+      PrecioMetal: { decimal },
+      FechaEntrada: { },
+      FechaPrevista: { },
+      FechaTerminacion: { }
+    },
+    workAdjuncts: {
+      IdTrabajo: {},
+      Caja: {},
+      Cubeta: {},
+      Articulador: {},
+      Pletinas: {},
+      Tornillos: {},
+      Analogos: {},
+      PosteImpresion: {},
+      Interface: {},
+      Otros: {}
     }
   },
   methods: {
@@ -124,7 +150,7 @@ export default {
           mm='0'+mm;
       }
 
-      this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
+      this.$v.work.FechaEntrada.$model = yyyy + '-' + mm + '-' + dd
     },
     showAdjunts: function(justAdded) {
       if (justAdded === undefined || justAdded.type === "click") {

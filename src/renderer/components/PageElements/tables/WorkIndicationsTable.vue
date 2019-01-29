@@ -18,7 +18,7 @@
             <input type="text" class="inputInTd">
           </td> -->
           <td class="noMargins">
-            <input type="text" v-model="indication.Descripcion" class="inputInTd" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')" :disabled="$attrs.disabled === true">
+            <input type="text" v-model="indication.Descripcion" class="inputInTd" @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')" :class="{'bg-danger text-white animated flash': indication.Descripcion.length === 0}" :disabled="$attrs.disabled === true">
           </td>
           <!-- <td class="noMargins">
             <input type="text" class="inputInTd">

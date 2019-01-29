@@ -124,13 +124,13 @@ export function insertWork(work) {
   }
 
 //Tested
-export function updateWork(work) {
+export async function updateWork(work) {
   var query = 'UPDATE Trabajos SET IdDentista = ?, IdTipoTrabajo = ?, ' +
   'Paciente = ?, Color = ?, FechaTerminacion = ?, ' +
   'FechaEntrada = ?, FechaPrevista = ?, ' +
   'PrecioMetal = ?, Nombre = ? ' +
   'WHERE IdTrabajo = ?'
-  return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
+  return await runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
     work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista,
     work.PrecioMetal, work.Nombre, work.IdTrabajo])
 }
