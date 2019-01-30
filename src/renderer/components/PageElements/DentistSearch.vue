@@ -1,7 +1,9 @@
 <template>
   <div class="input-group">
-    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" ref="clinica" :class="{'is-invalid': isInvalid}" :disabled="$attrs.disabled === true" @blur="blur">
+    <input class="form-control typeahead-input" type="text" placeholder="Buscar por nombre..." @keyup="search" v-model="query" autocomplete="off"  v-on-clickaway="hidePopup" @change="change" ref="clinica" :class="{'is-invalid': isInvalid}" :disabled="$attrs.disabled === true">
+<!-- @blur="blur" -->
 <!-- v-on:focus="search" -->
+<!-- :disabled="$attrs.disabled === true" -->
 
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
       <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)"><i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista</span>
@@ -24,21 +26,21 @@ export default {
     return {
       resultsVisible: false,
       query: '',
-      selectedDentistId: -1,
+      selectedDentistId: undefined,
       candidateDentistsFromQuery: [],
-      focus: false
+      gotFocus: false
     }
   },
   props: ['value', 'isInvalid'],
   methods: {
     search: async function() {
       this.resultsVisible = true
-      this.focus = true
+      this.gotFocus = true
       if (this.query.length > 3) {
         this.candidateDentistsFromQuery = await searchDentistsByName(this.query)
       } else {
         this.candidateDentistsFromQuery = []
-        this.sendChangeEvents(-1)  
+        // this.sendChangeEvents(-1)
       }
     },
     selectDentist: function(name, id) {
@@ -46,10 +48,10 @@ export default {
       this.resultsVisible = false
       this.sendChangeEvents(id)
     },
-    blur: async function(){
+    change: async function(event) {
       var candidates = await searchDentistByExactName(this.query)
-      if (candidates.length === 0 || candidates.length > 1) {
-        this.sendChangeEvents(-1)
+      if (candidates.length !== 1) {
+        this.sendChangeEvents(0)
       } else if (candidates[0].IdDentista !== this.selectedDentistId) {
         this.sendChangeEvents(candidates[0].IdDentista)
       }
@@ -57,7 +59,7 @@ export default {
     sendChangeEvents(newId) {
       if (this.selectedDentistId !== newId){
         this.selectedDentistId = newId
-        this.$emit('change', null)
+        this.$emit('change', newId)
       }
       this.$emit('input', newId)
     },
@@ -73,23 +75,31 @@ export default {
       return !(_.some(this.candidateDentistsFromQuery, {'NombreDentista': name}))
     },
     canDisplayDropdown: function() {
-      this.resultVisible =  (this.query !== '' && this.canCreate(this.query) && this.focus)
+      this.resultVisible =  (this.query !== '' && this.canCreate(this.query) && this.gotFocus)
       return this.resultVisible
     },
     hidePopup: function() {
-      this.focus = false
+      this.gotFocus = false
+    },
+    focus: function() {
+      this.$refs.clinica.focus()
     }
   },
   mounted () {
     this.$refs.clinica.focus()
     this.$watch('value', function (newVal, oldVal) {
-      getDentist(newVal).then((dentistDetail) => {
-        if (dentistDetail !== undefined) {
-          this.selectedDentistId = dentistDetail.IdDentista
-          this.query = dentistDetail.NombreDentista
-          this.hidePopup()
-        }
-      })
+      if (newVal <= 0) {
+        this.selectedDentisId = undefined
+        this.query = ''
+      } else {
+        getDentist(newVal).then((dentistDetail) => {
+          if (dentistDetail !== undefined) {
+            this.selectedDentistId = dentistDetail.IdDentista
+            this.query = dentistDetail.NombreDentista
+            this.hidePopup()
+          }
+        })
+      }
     })
   }
 }

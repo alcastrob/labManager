@@ -168,7 +168,7 @@ if (process.platform === 'darwin') {
   menuTemplate.unshift({})
 }
 
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
   // 'production', 'staging', 'development', 'test'
   menuTemplate.push({
     label: 'Desarrollo',
@@ -187,7 +187,7 @@ if (process.env.NODE_ENV !== 'production') {
       }
     ]
   })
-}
+// }
 
 function openExistingFile(){
   var filePath = dialog.showOpenDialog({

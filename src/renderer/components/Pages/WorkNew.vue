@@ -16,7 +16,8 @@
     <div class="row">
       <div class="col-md-6 mb-3 mt-3">
         <label for="clinica">Clínica o Dr/a</label>
-        <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" ref="dentist" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" @change="$refs.paciente.focus()"></dentist-search>
+        <dentist-search id="clinica" ref="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" @change="$refs.paciente.focus()"></dentist-search>
+        <!-- @change="$refs.paciente.focus()" -->
         <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         <!-- <span>{{work.IdDentista}}</span> -->
       </div> <!-- col-md-6 -->
@@ -26,7 +27,7 @@
       </div> <!-- col-md-6 -->
       <div class="col-md-3">
         <label for="tipoTrabajo">Tipo trabajo</label>
-        <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
+        <select class="form-control" id="tipoTrabajo" ref="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
           <option disabled value="">Seleccione una opción</option>
           <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
         </select>
@@ -35,7 +36,7 @@
       </div> <!-- col-md-6 -->
       <div class="col-md-4">
         <label for="color">Color</label>
-        <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="work.Color">
+        <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model">
       </div> <!-- col-md-4 -->
     </div> <!-- row -->
     <div class="row">
@@ -47,7 +48,7 @@
     <div class="row">
       <div class="col-md-6 mt-3">
         <label for="fEntrada">Fecha entrada</label>
-        <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="work.FechaEntrada">
+        <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="$v.work.FechaEntrada.$model">
         <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
         <i class="far fa-calendar-alt"></i>
         Poner fecha de hoy
@@ -55,7 +56,7 @@
       </div> <!-- col-md-6 -->
       <div class="col-md-6 mt-3">
         <label for="fPrevista">Fecha prevista</label>
-        <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="work.FechaPrevista">
+        <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="$v.work.FechaPrevista.$model">
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
     <div class="row">
@@ -65,7 +66,7 @@
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-3">
-        <button class="btn btn-secondary btn-block" v-on:click="save">
+        <button class="btn btn-secondary btn-block" v-on:click="save()">
           <i class="fas fa-save"></i>
           Guardar
         </button>
@@ -165,6 +166,7 @@
 
 import { insertWork, insertAdjuntsOfWork } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
+import { decimal } from 'vuelidate/lib/validators'
 import VueRouter from 'vue-router'
 import workMixin from './WorkMixin'
 import _ from 'lodash'
@@ -182,42 +184,67 @@ export default {
       Color: { },
       FechaEntrada: { },
       FechaPrevista: { },
+      PrecioFinal: { decimal }
     }
   },
   methods: {
-    save: function(url) {
-      if (url.type === undefined){
-        //Not an event. Save the URL
+    reset: function() {
+      this.work.IdDentista = 0,
+      this.NombreDentista = '',
+      this.work.IdTipoTrabajo = '',
+      this.work.Paciente = '',
+      this.work.Color = '',
+      this.PrecioFinal = 0,
+      this.work.FechaEntrada = '',
+      this.work.FechaPrevista = '',
+      this.workIndications = []
+      this.workAdjuncts = {}
+      this.adjunctsVisible = false
+      this.workAdjunctsJustAdded = false
+      this.url = ''
+      this.$v.$reset()
+      this.$forceUpdate()
+    },
+    save: async function(url) {
+      if (url === undefined) {
+        this.url = '/works/list'
+      } else {
         this.url = url
       }
+
       this.saveButtonPressed = true
       this.$v.$touch()
       if (this.$v.$anyError || this.$refs.workIndications.isError()){
+        if (this.$v.work.IdDentista.$anyError){
+          this.$refs.clinica.focus()
+        }
+        if (this.$v.work.IdTipoTrabajo.$anyError){
+          this.$refs.tipoTrabajo.focus()
+        }
+
         return false
       }
 
       if (this.$refs.workIndications.isDirty){
         this.$refs.workIndications.save(this.work.IdTrabajo)
-      } 
-      var sum = _.sumBy(this.workIndications, function(n) {
+      }
+      var sum = parseFloat(_.sumBy(this.workIndications, function(n) {
         var temp = parseFloat(n.Precio)
         if (isNaN(temp)){
           throw 'NaN'
         } else {
           return temp
         }
-      })
-      if (sum != this.$v.work.$model.PrecioFinal){
-        this.$v.work.$model.PrecioFinal = sum
+      }))
+      if (sum != this.work.PrecioFinal){
+        this.work.PrecioFinal = sum
       }
 
       if (this.$v.work.$anyDirty){
-        insertWork(this.$v.work.$model).then((id) => {
-          this.$v.work.$model.IdTrabajo = id
-          this.$refs.workIndications.save(this.$v.work.$model.IdTrabajo)
-        })
+        this.work.IdTrabajo = await insertWork(this.work)
+        this.$refs.workIndications.save(this.work.IdTrabajo)
         if(this.adjunctsVisible){
-          this.workAdjuncts.IdTrabajo = this.$v.work.$model.IdTrabajo
+          this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
           insertAdjuntsOfWork(this.workAdjuncts)
         }
         this.showModal()
@@ -225,7 +252,7 @@ export default {
     },
     showModal() {
       this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
-      this.work.NombreDentista = this.$refs.dentist.query
+      this.work.NombreDentista = this.$refs.clinica.query
       this.$refs.printLabelModal.show()
     },
     printLabels: function() {
@@ -303,6 +330,8 @@ export default {
       }
       return result
     }
+  },
+  activated () {
   },
   mounted () {
     this.$root.$on('topbar:save', (url) => {

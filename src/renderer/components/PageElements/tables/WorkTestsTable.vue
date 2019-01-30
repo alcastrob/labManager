@@ -17,12 +17,17 @@
       <td class="noMargins">
         <input type="text" v-model="test.Descripcion" class="inputInTd" @change="trackChanges($event, test.IdPrueba, 'Descripcion')" @blur="changeDescription($event)" :id="test.IdPrueba" v-on:focus="showPanel($event)" :disabled="$attrs.disabled === true">
         <div v-if="canShow(test.IdPrueba)" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
-          <span class="list-group-item clickable" @click="selectTestDescription">Truwa</span>
-          <span class="list-group-item clickable" @click="selectTestDescription">Fri</span>
           <span class="list-group-item clickable" @click="selectTestDescription">Cubeta</span>
-          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de cliente</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Fri</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Fresdental</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Mozo Grau</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Phibo</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de bizcocho</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de diente</span>
           <span class="list-group-item clickable" @click="selectTestDescription">Prueba de estructura</span>
           <span class="list-group-item clickable" @click="selectTestDescription">Prueba de plástico</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Truwa</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Sineldent</span>
         </div>
       </td>
       <td class="noMargins">
@@ -53,12 +58,17 @@
       <td class="noMargins">
         <input type="text" class="inputInTd" ref="newDescripcion" v-model="$v.newRow.descripcion.$model" id="newDescripcion" @focus="showPanel($event)" :class="{'bg-danger text-white animated flash': $v.newRow.descripcion.$anyError}">
         <div v-if="canShow('newDescripcion')" class="list-group myTypeahead" style="position:absolute; left:0px; top: 48px; width: 200px; z-index=1;" >
-          <span class="list-group-item clickable" @click="selectTestDescription">Truwa</span>
-          <span class="list-group-item clickable" @click="selectTestDescription">Fri</span>
           <span class="list-group-item clickable" @click="selectTestDescription">Cubeta</span>
-          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de cliente</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Fri</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Fresdental</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Mozo Grau</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Phibo</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de bizcocho</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Prueba de diente</span>
           <span class="list-group-item clickable" @click="selectTestDescription">Prueba de estructura</span>
           <span class="list-group-item clickable" @click="selectTestDescription">Prueba de plástico</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Truwa</span>
+          <span class="list-group-item clickable" @click="selectTestDescription">Sineldent</span>
         </div>
       </td>
       <td class="noMargins">

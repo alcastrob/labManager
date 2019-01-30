@@ -113,14 +113,15 @@ export async function getWork(workId) {
 }
 
 //Tested
-export function insertWork(work) {
+export async function insertWork(work) {
   var query = 'INSERT INTO Trabajos (IdDentista, IdTipoTrabajo, ' +
     'Paciente, Color, FechaTerminacion, FechaEntrada, ' +
     'FechaPrevista, PrecioFinal, PrecioMetal) ' +
     'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-  return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
+  var id = await runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
     work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista,
     work.PrecioFinal, work.PrecioMetal])
+  return id
   }
 
 //Tested
@@ -142,9 +143,7 @@ export async function getWorkIndications (workId) {
   var query = 'SELECT IdTrabajoDetalle, IdTrabajo, Descripcion, Precio ' +
   'FROM TrabajosDetalle ' +
   'WHERE IdTrabajo = ?'
-  return await allAsync(db, query, [workId])//.then((rows) => {
-  //   return rows
-  // })
+  return await allAsync(db, query, [workId])
 }
 
 //Tested

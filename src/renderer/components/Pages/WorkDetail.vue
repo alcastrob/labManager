@@ -8,6 +8,7 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
+              <!-- <a href="#" class="btn btn-warning btn-collapsible"  @click="doValidatorExtraChecks">Validacion</a> -->
               <collapsible-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible && !readOnly"></collapsible-action-button>
               <collapsible-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="showConformity"></collapsible-action-button>
               <collapsible-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote"></collapsible-action-button>
@@ -48,7 +49,7 @@
       <div class="row">
         <div class="col-md-6 mb-3 mt-3">
           <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="readOnly" @change="$refs.paciente.focus()"></dentist-search>
+          <dentist-search id="clinica" ref="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="readOnly" @change="$refs.paciente.focus()" ></dentist-search>
           <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mt-3">
@@ -57,7 +58,7 @@
         </div> <!-- col-md-6 -->
         <div class="col-md-3">
           <label for="tipoTrabajo">Tipo trabajo</label>
-          <select class="form-control" id="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="readOnly" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
+          <select class="form-control" id="tipoTrabajo" ref="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="readOnly" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
             <option disabled value="">Seleccione una opción</option>
             <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
           </select>
@@ -65,7 +66,7 @@
         </div> <!-- col-md-6 -->
         <div class="col-md-2">
           <label for="precioMetal">Precio metal</label>
-          <input type="text" class="form-control" id="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}" :disabled="readOnly">
+          <input type="text" class="form-control" id="precioMetal" ref="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}" :disabled="readOnly">
           <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
         </div> <!-- col-md-2 -->
         <div class="col-md-4">
@@ -112,7 +113,7 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <button class="btn btn-secondary btn-block" type="button" @click="save" v-if="!readOnly">
+          <button class="btn btn-secondary btn-block" type="button" @click="save()" v-if="!readOnly">
             <i class="fas fa-save"></i>
             Guardar
           </button>
@@ -170,44 +171,53 @@ export default {
       this.$v.$touch()
 
       if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()){
+        if (this.$v.work.IdDentista.$anyError){
+          this.$refs.clinica.focus()
+        }
+        if (this.$v.work.IdTipoTrabajo.$anyError){
+          this.$refs.tipoTrabajo.focus()
+        }
+        if (this.$v.work.PrecioMetal.$anyError){
+          this.$refs.precioMetal.focus()
+        }
+
         return false
       }
 
       if (this.$refs.workIndications.isDirty){
         this.$refs.workIndications.save(this.work.IdTrabajo)
-      } 
-      var sum = _.sumBy(this.workIndications, function(n) {
+      }
+      var sum = parseFloat(_.sumBy(this.workIndications, function(n) {
         var temp = parseFloat(n.Precio)
         if (isNaN(temp)){
           throw 'NaN'
         } else {
           return temp
         }
-      })
-      if (sum != this.$v.work.$model.PrecioFinal){
-        this.$v.work.$model.PrecioFinal = sum
+      }))
+      if (sum != this.work.PrecioFinal){
+        this.work.PrecioFinal = sum
       }
       if (this.$v.work.$anyDirty){
-        updateWork(this.$v.work.$model)
+        updateWork(this.work)
       }
       if (this.$refs.workTests.isDirty){
         this.$refs.workTests.save(this.work.IdTrabajo)
       }
-      if(this.$v.workAdjuncts.$anyDirty){
-        this.$v.workAdjuncts.$model.IdTrabajo = this.work.IdTrabajo
+      if(this.workAdjuncts !== undefined && this.$v.workAdjuncts.$anyDirty){
+        this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
         if(this.workAdjunctsJustAdded){
-          insertAdjuntsOfWork(this.$v.workAdjuncts.$model)
+          insertAdjuntsOfWork(this.workAdjuncts)
         } else {
-          updateAdjuntsOfWork(this.$v.workAdjuncts.$model)
+          updateAdjuntsOfWork(this.workAdjuncts)
         }
       }
-      if (url !== undefined) {
-        this.$router.push({
-          path: url
-        })
-      } else {
-        return true
+      if (url === undefined) {
+        url = '/works/list'
       }
+      this.$router.push({
+        path: url
+      })
     },
     showWarrantyLabelModal(){
       if(this.save()) {
@@ -262,13 +272,13 @@ export default {
       if (!event.currentTarget.validity.valid){
         switch (event.currentTarget.id) {
           case 'fEntrada':
-            this.$v.work.FechaEntrada.$model = ''
+            this.work.FechaEntrada = ''
             break;
           case 'fPrevista':
-            this.$v.work.FechaPrevista.$model = ''
+            this.work.FechaPrevista = ''
             break;
           case 'fSalida':
-            this.$v.work.FechaTerminacion.$model = ''
+            this.work.FechaTerminacion = ''
             break;
         }
       }
@@ -300,7 +310,9 @@ export default {
   },
   computed: {
     isDirty(){
-      this.doValidatorExtraChecks()
+      if (this.readOnly){
+        return false
+      }
       var result = this.$v.$anyDirty
       if (this.$refs.workIndications !== undefined){
         result = result || this.$refs.workIndications.isDirty()

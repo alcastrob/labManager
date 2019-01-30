@@ -120,7 +120,6 @@ export default {
       this.$refs.workExtendedTable.beginExporting()
     },
     updateListAfterNavigating: async function() {
-      // debugger
       await this.updateDatasetWithFilters(this.lastFilterUsed)
       this.$refs.workExtendedTable.sortBy()
     }

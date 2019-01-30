@@ -111,13 +111,24 @@ export default {
     },
     discardButtonClick(){
       this.$refs.leavePageModal.hide()
+      var x = _.find(this.$parent.$children, (e) => {
+        return e.reset !== undefined
+      })
+      if (x !== undefined){
+        return x.reset()
+      }
       this.$router.push({
         path: this.leavingToUrl
       })
     },
     saveAndLeaveButtonClick(){
       this.$refs.leavePageModal.hide()
-      this.pageSave(this.leavingToUrl)
+      // var x = _.find(this.$parent.$children, (e) => {
+      //   return e.isError !== undefined && e.isDirty !== undefined
+      // })
+      // if (x !== undefined){
+      this.$root.$emit('topbar:save', this.leavingToUrl)
+      // }
     },
     isPageDirty(){
       var x = _.find(this.$parent.$children, (e) => {
@@ -127,14 +138,6 @@ export default {
         return x.isDirty
       } else {
         return false
-      }
-    },
-    pageSave(url){
-      var x = _.find(this.$parent.$children, (e) => {
-        return e.isError !== undefined && e.isDirty !== undefined
-      })
-      if (x !== undefined){
-        this.$root.$emit('topbar:save', url)
       }
     },
     getConfig: async function() {

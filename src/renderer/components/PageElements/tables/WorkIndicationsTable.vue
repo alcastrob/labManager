@@ -161,20 +161,22 @@ export default {
       this.$emit('input', this.data)
     },
     save(masterId){
-      _.forEach(this.insertedRows, function(row){
-        row.IdTrabajo = masterId
-        insertWorkIndications(row)
-      })
-      _.forEach(this.deletedRows, function(row){
-        deleteWorkIndications(row)
-      })
-      _.forEach(this.updatedRows, function(row){
-        updateWorkIndications(row)
-      })
-      updatePriceSum(masterId)
-      this.insertedRows = []
-      this.deletedRows = []
-      this.updatedRows = []
+      if (masterId !== 0){
+        _.forEach(this.insertedRows, function(row){
+          row.IdTrabajo = masterId
+          insertWorkIndications(row)
+        })
+        _.forEach(this.deletedRows, function(row){
+          deleteWorkIndications(row)
+        })
+        _.forEach(this.updatedRows, function(row){
+          updateWorkIndications(row)
+        })
+        updatePriceSum(masterId)
+        this.insertedRows = []
+        this.deletedRows = []
+        this.updatedRows = []
+      }
     },
     // Other methods (specific)------------------------------------------------
     getSum: function () {

@@ -71,6 +71,7 @@ export default {
       Paciente: { },
       Color: { },
       PrecioMetal: { decimal },
+      PrecioFinal: { decimal },
       FechaEntrada: { },
       FechaPrevista: { },
       FechaTerminacion: { }
@@ -150,7 +151,7 @@ export default {
           mm='0'+mm;
       }
 
-      this.$v.work.FechaEntrada.$model = yyyy + '-' + mm + '-' + dd
+      this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
     },
     showAdjunts: function(justAdded) {
       if (justAdded === undefined || justAdded.type === "click") {
