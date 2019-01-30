@@ -10,14 +10,14 @@
             <div>
               <!-- <a href="#" class="btn btn-warning btn-collapsible"  @click="doValidatorExtraChecks">Validacion</a> -->
               <collapsible-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible && !readOnly"></collapsible-action-button>
-              <collapsible-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="showConformity"></collapsible-action-button>
-              <collapsible-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote"></collapsible-action-button>
+              <collapsible-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="showConformity" title="La declaración de conformidad requiere que se establezca una fecha de terminación del trabajo" :disabled="$v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$model === null || $v.work.FechaTerminacion.$anyError"></collapsible-action-button>
+              <collapsible-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote" title="La nota de entrega requiere que se establezca una fecha de terminación del trabajo" :disabled="$v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$anyError"></collapsible-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-on:click="showWarrantyLabelModal">Garantía</a>
+                <a href="#" class="dropdown-item" :class="{'labeStrikethrough': $v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$anyError}" v-on:click="showWarrantyLabelModal" title="La nota de entrega requiere que se establezca una fecha de terminación del trabajo" >Garantía</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Resina')" >Resina</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Compostura')">Compostura</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Aditamentos')" v-if="workAdjuncts !== undefined">Aditamentos</a>
@@ -134,7 +134,7 @@
       </div>
     </b-modal>
     <warrantyModal ref="warranty" :work="work"></warrantyModal>
-    <conformityModal ref="conformity" :workId="work.IdTrabajo"></conformityModal>
+    <conformityModal ref="conformity" :work="work"></conformityModal>
     <div ref="labelContainer" class="visuallyhidden"></div>
   </div>
 </template>
@@ -225,13 +225,10 @@ export default {
       }
     },
     showWarrantyLabelModal(){
-      if(this.save()) {
-        // if (this.$v.work.$model.FechaTerminacion === ''){
-
-        // } else {
-
-        // }
-        this.$refs.warranty.show()
+      if (this.work.FechaTerminacion !== '' && !this.$v.work.FechaTerminacion.$anyError){
+        if(this.save()) {
+          this.$refs.warranty.show()
+        }
       }
     },
     showLabelModal(labelType) {
@@ -349,3 +346,8 @@ export default {
   }
 }
 </script>
+<style>
+.labeStrikethrough, .labeStrikethrough:hover {
+  text-decoration: line-through;
+}
+</style>

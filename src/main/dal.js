@@ -603,8 +603,8 @@ export async function getConformityDeclaration (workId) {
 //Tested
 export function insertConformityDeclaration(conformity, productIds) {
   var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses) ' +
-  'VALUES (?, date("now"), ?) '
-  return runAsync(db, query, [conformity.IdTrabajo, conformity.Meses]).then((conformityId) => {
+  'VALUES (?, ?, ?) '
+  return runAsync(db, query, [conformity.IdTrabajo, conformity.Fecha, conformity.Meses]).then((conformityId) => {
     return insertDeclarationProducts(conformityId, productIds)
   })
 }

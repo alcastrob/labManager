@@ -1,7 +1,7 @@
 <template>
-  <a href="#" class="btn btn-warning btn-collapsible" @click="callback">
+  <a href="#" class="btn" @click="click" ref="button" :class="{ 'btn-warning btn-collapsible': !disabled, 'btn btn-outline-secondary': disabled }">
     <i v-bind:class="this.iconCss"></i>
-    <span>{{text}}</span>
+    <span v-if="!disabled">{{text}}</span>
   </a>
 </template>
 
@@ -25,6 +25,18 @@ export default {
     callback: {
       type: Function,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+      required: false
+    }
+  },
+  methods: {
+    click(){
+      if (!this.disabled){
+        this.callback()
+      }
     }
   },
   mounted() {

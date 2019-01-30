@@ -45,8 +45,8 @@ export default {
     productSearch
   },
   props: {
-    workId: {
-      type: Number,
+    work: {
+      type: Object,
       required: true
     }
   },
@@ -88,7 +88,7 @@ export default {
       this.$refs.conformityModal.hide()
     },
     getDeclarationOfConformity: async function () {
-      var declaration = await getConformityDeclaration(this.workId)
+      var declaration = await getConformityDeclaration(this.work.IdTrabajo)
       var config = await getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'])
 
       //1. Get the config data first
@@ -119,12 +119,13 @@ export default {
     createDeclarationOfConformity: function () {
       insertConformityDeclaration(
         {
-          IdTrabajo: this.workId,
-          Meses: this.warrantyPeriod
+          IdTrabajo: this.work.IdTrabajo,
+          Meses: this.warrantyPeriod,
+          Fecha: this.work.FechaTerminacion
         },
         _.map(this.batches, 'IdProductoLote'))
       .then(() => {
-        getConformityDeclaration(this.workId).then((row) => {
+        getConformityDeclaration(this.work.IdTrabajo).then((row) => {
           this.print(row)
           this.hide()
         })
@@ -138,14 +139,14 @@ export default {
         }
         updateConformityDeclaration(dec,  _.map(this.batches, 'IdProductoLote'))
         .then(() => {
-          getConformityDeclaration(this.workId).then((row) => {
+          getConformityDeclaration(this.work.IdTrabajo).then((row) => {
           this.print(row)
           this.hide()
           })
         })
       } else {
         //No real updates, just print
-        getConformityDeclaration(this.workId).then((row) => {
+        getConformityDeclaration(this.work.IdTrabajo).then((row) => {
           this.print(row)
           this.hide()
         })
