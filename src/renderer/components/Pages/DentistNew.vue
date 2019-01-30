@@ -9,7 +9,7 @@
       <div class="row">
         <div class="col-md-6 mt-3">
           <label for="dentista">Dentista</label>
-          <input type="text" class="form-control" id="dentista" placeholder="Nombre de el/la dentista" :class="{'is-invalid': $v.data.NombreDentista.$error}" v-model="$v.data.NombreDentista.$model" ref="elementToFocus">
+          <input type="text" class="form-control" id="dentista" placeholder="Nombre de el/la dentista" :class="{'is-invalid': $v.data.NombreDentista.$error}" v-model="$v.data.NombreDentista.$model">
           <small class="text-danger" v-if="$v.data.NombreDentista.$error">El nombre de el/la dentista no puede estar en blanco</small>
         </div> <!-- col-md-6 -->
         <div class="col-md-6 mb-3 mt-3">
@@ -130,17 +130,45 @@ export default {
       }
   },
   methods: {
-    save: function() {
-      this.$v.$touch()
-      if (!this.$v.$invalid){
+    save: function(url) {
+      this.$v.data.$touch()
+      if (this.$v.data.$anyError){
+        if (this.$v.data.CorreoElectronico.$anyError){
+          document.getElementById('correoElectronico').focus()
+        }
+        if (this.$v.data.CP.$anyError){
+          document.getElementById('codigoPostal').focus()
+        }
+        if (this.$v.data.NombreDentista.$anyError){
+          document.getElementById('dentista').focus()
+        }
+        return false
+      } else {
         insertDentist(this.data)
+        if (url === undefined || url === '') {
+          this.$router.go(-1)
+        } else {
+          this.$router.push({
+            path: url
+          })
+        }
       }
-      history.go(-1)
     }
   },
   mounted () {
-    this.$refs.elementToFocus.focus()
+    document.getElementById('dentista').focus()
     this.data.NombreDentista = this.$route.query.name
+    this.$root.$on('topbar:save', (url) => {
+      this.save(url)
+    })
+  },
+  computed: {
+    isDirty(){
+      return this.$v.$anyDirty
+    },
+    isError(){
+      return this.$v.$anyError
+    }
   }
 }
 </script>

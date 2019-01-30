@@ -215,13 +215,12 @@ export default {
       this.saveButtonPressed = true
       this.$v.$touch()
       if (this.$v.$anyError || this.$refs.workIndications.isError()){
-        if (this.$v.work.IdDentista.$anyError){
-          this.$refs.clinica.focus()
-        }
         if (this.$v.work.IdTipoTrabajo.$anyError){
           this.$refs.tipoTrabajo.focus()
         }
-
+        if (this.$v.work.IdDentista.$anyError){
+          this.$refs.clinica.focus()
+        }
         return false
       }
 
@@ -330,8 +329,6 @@ export default {
       }
       return result
     }
-  },
-  activated () {
   },
   mounted () {
     this.$root.$on('topbar:save', (url) => {
