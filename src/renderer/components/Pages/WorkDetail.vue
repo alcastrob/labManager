@@ -113,7 +113,7 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <button class="btn btn-secondary btn-block" type="button" @click="save()" v-if="!readOnly">
+          <button class="btn btn-secondary btn-block" type="button" @click="save('/works/list')" v-if="!readOnly">
             <i class="fas fa-save"></i>
             Guardar
           </button>
@@ -212,12 +212,17 @@ export default {
           updateAdjuntsOfWork(this.workAdjuncts)
         }
       }
-      if (url === undefined) {
-        url = '/works/list'
+
+      //Everything went right. Depending how do you reach this function, you'll have tow ways of leaving it
+      if (url !== undefined) {
+        //Direct click on the SAVE button. Just get redirected to the URL
+        this.$router.push({
+          path: url
+        })
+      } else {
+        //You clicked on a print label button thar requires a previous save (and to get informed if the save was successfully or not). Get a true as return
+        return true
       }
-      this.$router.push({
-        path: url
-      })
     },
     showWarrantyLabelModal(){
       if(this.save()) {
@@ -247,20 +252,20 @@ export default {
     getDeliveryNote: async function () {
       if (this.save()){
         var row = await getConfigValues(['logo'])
-      var ComponentClass = Vue.extend(delivery)
-      var instance = new ComponentClass({
-        propsData: {
-          IdTrabajo: this.work.IdTrabajo,
-          NombreDentista: this.work.NombreDentista,
-          Paciente: this.work.Paciente,
-          FechaTerminacion: new Date(this.work.FechaTerminacion),
-          Detalles: this.workIndications,
-          PrecioFinal: this.work.PrecioFinal,
-          logo: 'data:image/png;base64,' + row[0].valor
-        }
-      })
-      instance.$mount()
-      instance.print(this.$refs.labelContainer)
+        var ComponentClass = Vue.extend(delivery)
+        var instance = new ComponentClass({
+          propsData: {
+            IdTrabajo: this.work.IdTrabajo,
+            NombreDentista: this.work.NombreDentista,
+            Paciente: this.work.Paciente,
+            FechaTerminacion: new Date(this.work.FechaTerminacion),
+            Detalles: this.workIndications,
+            PrecioFinal: this.work.PrecioFinal,
+            logo: 'data:image/png;base64,' + row[0].valor
+          }
+        })
+        instance.$mount()
+        instance.print(this.$refs.labelContainer)
       }
     },
     showConformity(){

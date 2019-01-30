@@ -30,7 +30,7 @@ export default new Router({
           path: '',
           // component: worksList
           component: dashboard
-          //component: testPage
+          // component: testPage
         },
         {
           path: 'about',
