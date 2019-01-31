@@ -147,7 +147,7 @@ export default {
       this.listHeading = this.$route.query.title
     })
 
-    this.isAdmin = configGet('isAdmin')
+    this.isAdmin = configGet('isAdmin') === true
     this.$refs.excelButton.setTable(this.$refs.workExtendedTable)
   }
 }

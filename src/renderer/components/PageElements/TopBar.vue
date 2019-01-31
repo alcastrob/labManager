@@ -141,7 +141,7 @@ export default {
       }
     },
     getConfig: async function() {
-      this.isAdmin = configGet('isAdmin')
+      this.isAdmin = configGet('isAdmin') === true
     }
   },
   computed: {

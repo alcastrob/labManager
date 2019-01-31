@@ -95,7 +95,7 @@ export default {
     }
   },
   mounted () {
-    this.isAdmin = configGet('isAdmin')
+    this.isAdmin = configGet('isAdmin') === true
     this.$refs.excelButton.setTable(this.$refs.dentistTable)
   },
   activated () {

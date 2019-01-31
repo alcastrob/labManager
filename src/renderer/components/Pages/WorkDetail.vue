@@ -40,10 +40,11 @@
       </div>
       <div class="row" v-if="readOnly">
         <div class="col-md-12">
-          <span><em>Este trabajo está cerrado, por lo que no se puede editar.</em></span><em>
-            <br>
-            Si, excepcionalmente, desea editarlo (bajo su propia responsabilidad) pulse <a href="#" @click="readOnly=false">aquí</a>.
-            </em>
+          <em>
+          <span>Este trabajo está cerrado, por lo que no se puede editar.</span>
+          <br>
+          <span v-if="isAdmin">Si, excepcionalmente, desea editarlo (bajo su propia responsabilidad) pulse <a href="#" @click="readOnly=false">aquí</a>.</span>
+          </em>
         </div>
       </div>
       <div class="row">
@@ -144,10 +145,10 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, getWorkTestsList, updateWork, updateAdjuntsOfWork, getConfigValues, getInvoicePerWork } from '../../../main/dal.js'
+import { configGet } from '../../../main/store.js'
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
 import conformityModal from '../PageElements/ConformityModal'
-// import warrantyModal from '../PageElements/WarrantyModal'
 import warrantyLabel from '../Labels/LabelGarantia'
 import VueRouter from 'vue-router'
 
@@ -157,7 +158,6 @@ export default {
   components: {
     conformityModal,
     warrantyLabel
-    // warrantyModal
   },
   data () {
     return {
@@ -165,7 +165,7 @@ export default {
       workTests: [],
       readOnly: false,
       invoice: undefined,
-      warrantyPeriod: 12
+      isAdmin: false
     }
   },
   methods: {
@@ -231,7 +231,6 @@ export default {
       if (this.work.FechaTerminacion !== '' && !this.$v.work.FechaTerminacion.$anyError){
         if(this.save()) {
           this.$refs.warrantyLabel.waitLogoAndPrint()
-          // this.$refs.warranty.show()
         }
       }
     },
@@ -347,6 +346,7 @@ export default {
     this.$root.$on('topbar:save', (url) => {
       this.save(url)
     })
+    this.isAdmin = configGet('isAdmin') === true
   }
 }
 </script>
