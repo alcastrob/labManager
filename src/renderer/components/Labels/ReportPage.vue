@@ -7,12 +7,12 @@
       CIF: {{vatNumber}}
     </div> <!-- col-sm-6 -->
     <div class="col-sm-6">
-      <h1 class="text-uppercase text-right mt-3">Nota de cobro</h1>
+      <h1 class="text-uppercase text-right mt-3">Resumen mensual</h1>
     </div> <!-- col-sm-6 -->
   </div> <!-- row -->
   <div class="row mt-2">
     <div class="col-sm-6">
-      <h3 class="text-uppercase">Datos de la nota de cobro</h3>
+      <h3 class="text-uppercase">Datos del resumen mensual</h3>
       <h5>Fecha: {{format(invoice.Fecha)}}</h5>
     </div> <!-- col-sm-6 -->
     <div class="col-sm-6">

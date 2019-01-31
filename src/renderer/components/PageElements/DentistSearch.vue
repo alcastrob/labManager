@@ -90,7 +90,7 @@ export default {
         this.selectedDentisId = undefined
         this.query = ''
       } else {
-        dentistDetail = await getDentist(newVal)
+        var dentistDetail = await getDentist(newVal)
         if (dentistDetail !== undefined) {
           this.selectedDentistId = dentistDetail.IdDentista
           this.query = dentistDetail.NombreDentista

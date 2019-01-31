@@ -43,7 +43,7 @@
           <em>
           <span>Este trabajo está cerrado, por lo que no se puede editar.</span>
           <br>
-          <span v-if="isAdmin">Si, excepcionalmente, desea editarlo (bajo su propia responsabilidad) pulse <a href="#" @click="readOnly=false">aquí</a>.</span>
+          <span>Si, excepcionalmente, desea editarlo (bajo su propia responsabilidad) pulse <a href="#" @click="readOnly=false">aquí</a>.</span>
           </em>
         </div>
       </div>

@@ -9,7 +9,7 @@
         <collapsible-action-button iconCss="fas fa-clipboard-list" text="Modo verificación (sólo lectura)" :callback="setReadOnly" v-if="!readOnly" ></collapsible-action-button>
         <collapsible-action-button iconCss="fas fa-check" text="Modo normal" :callback="unsetReadOnly" v-else></collapsible-action-button>
         <collapsibleExcelButton fileName="cierreMensual" :isCollapsible="true" :collapsed="false" :isDark="false"  ref="excelButton" :class="{'displayNone': !readOnly}" @click="beginExporting"></collapsibleExcelButton>
-        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateReport" v-if="!readOnly"><i class="fas fa-receipt mr-2"></i>Generar notas de cobro</button>
+        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateReport" v-if="!readOnly"><i class="fas fa-receipt mr-2"></i>Generar resúmenes</button>
         <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice" v-if="!readOnly"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       </div>
     </div> <!-- col-md-7 -->
@@ -64,13 +64,13 @@
       <button class="btn btn-secondary " @click="confirmGeneration(true)" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-print mr-2"></i>Generar e imprimir facturas</button>
     </div>
   </b-modal>
-  <b-modal ref="modalReport" size="lg" title="Emisión de facturas" hide-footer>
+  <b-modal ref="modalReport" size="lg" title="Emisión de resúmenes" hide-footer>
     <div class="modal-body">
       <div class="containter">
         <div class="row">
           <div class="col-md-12">
             <span>
-              Se van a emitir notas de cobro para los siguientes clientes.
+              Se van a emitir resúmenes para los siguientes clientes.
             </span>
             <ul class="pt-3">
               <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto.: {{sumDiscounts(dentist)}} | Total: {{sumTotals(dentist)}}</li>
@@ -89,7 +89,7 @@
     </div> <!-- modal-body -->
     <div class="modal-footer">
       <button class="btn btn-secondary" @click="hideReportModal"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
-      <button class="btn btn-secondary " @click="printReport"><i class="fas fa-print mr-2"></i>Imprimir notas de cobro</button>
+      <button class="btn btn-secondary " @click="printReport"><i class="fas fa-print mr-2"></i>Imprimir resúmenes</button>
     </div>
   </b-modal>
   <invoicePrint ref="invoice"></invoicePrint>
@@ -320,7 +320,7 @@ export default {
     sumTotals: function(dentistData){
       var total = 0
       for (var work of dentistData.selectedWorks){
-        total += parseFloat(work.SumaPrecioFinal) - parseFloat(work.TotalDescuento)
+        total += parseFloat(work.SumaTotalMetal) - parseFloat(work.TotalDescuento)
       }
       return this.moneyFormatter.format(total)
     }
