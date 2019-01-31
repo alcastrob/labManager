@@ -31,7 +31,7 @@ export default {
     search: function() {
       this.resultsVisible = true
       this.focus = true
-      if (this.query.length > 3) {
+      if (this.query.length > 1) {
         searchProductsByName(this.query).then((productDetails) => {
           this.candidateProductFromQuery = productDetails
         })

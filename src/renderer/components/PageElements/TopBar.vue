@@ -140,13 +140,20 @@ export default {
         return false
       }
     },
+    cleanURL(url){
+      if (url !== undefined) {
+        return url.replace(/\/\d+$/gm, '')
+      } else {
+        return url
+      }
+    },
     getConfig: async function() {
       this.isAdmin = configGet('isAdmin') === true
     }
   },
   computed: {
     isBackButtonVisible(){
-      switch (this.to.path){
+      switch (this.cleanURL(this.to.path)){
         case '/works/new':
         case '/':
         case '/about':
@@ -155,9 +162,15 @@ export default {
         case undefined:
           return false
         case '/works/list':
-          if (this.from.path !== '/finances' && ! this.from.path.includes('/dentist/details')){
+          if (this.from.path !== '/finances' && this.cleanURL(this.from.path) !== '/dentist/details'){
             return false
           } else {
+            return true
+          }
+        case '/works/details':
+          if (this.from.path === '/works/new'){
+            return false
+          } else{
             return true
           }
         default:

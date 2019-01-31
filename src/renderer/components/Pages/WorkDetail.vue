@@ -114,7 +114,7 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <button class="btn btn-secondary btn-block" type="button" @click="save('/works/list')" v-if="!readOnly">
+          <button class="btn btn-secondary btn-block" type="button" @click="save()" v-if="!readOnly">
             <i class="fas fa-save"></i>
             Guardar
           </button>
@@ -170,6 +170,7 @@ export default {
   },
   methods: {
     save: function(url) {
+      debugger
       this.saveButtonPressed = true
       this.$v.$touch()
 

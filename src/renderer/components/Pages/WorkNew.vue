@@ -178,20 +178,6 @@ import _ from 'lodash'
 export default {
   name: 'workNew',
   mixins: [workMixin],
-  // validations: {
-  //   work: {
-  //     IdTrabajo: { },
-  //     IdDentista: { validId },
-  //     NombreDentista: { },
-  //     IdTipoTrabajo: { validId },
-  //     Paciente: { },
-  //     Color: { },
-  //     PrecioMetal: { decimal },
-  //     PrecioFinal: { decimal },
-  //     FechaEntrada: { },
-  //     FechaPrevista: { }
-  //   }
-  // },
   methods: {
     reset: function() {
       this.work.IdDentista = 0,
@@ -211,11 +197,12 @@ export default {
       this.$forceUpdate()
     },
     save: async function(url) {
-      if (url === undefined) {
-        this.url = '/works/list'
-      } else {
-        this.url = url
-      }
+      // if (url === undefined) {
+      //   this.url = '/works/list'
+      // } else {
+      //   this.url = url
+      // }
+      this.url = url
 
       this.saveButtonPressed = true
       this.$v.$touch()
@@ -278,38 +265,34 @@ export default {
     },
     goBack() {
       if (this.url === undefined || this.url === '') {
-        this.$router.push({
-          path: '/works/list'
-        })
+        this.$router.push({ path: `/works/details/${this.work.IdTrabajo}` })
       } else {
-        this.$router.push({
-          path: this.url
+        this.$router.push({ path: this.url })
+        this.$toasted.show(`Se ha creado el trabajo ${this.work.IdTrabajo}.`, {
+          position: 'top-right',
+          duration: null,
+          singleton: true,
+          iconPack: 'fontawesome',
+          icon: {
+            name: 'teeth'
+          },
+          action: [
+            {
+              text: 'Ver',
+              onClick: (e, toastObject) => {
+                this.$router.push({ path: `/works/details/${this.work.IdTrabajo}` })
+                toastObject.goAway(0)
+              }
+            },
+            {
+              text: 'Cerrar',
+              onClick: (e, toastObject) => {
+                toastObject.goAway(0)
+              }
+            }
+          ]
         })
       }
-      this.$toasted.show(`Se ha creado el trabajo ${this.work.IdTrabajo}.`, {
-        position: 'top-right',
-        duration: null,
-        singleton: true,
-        iconPack: 'fontawesome',
-        icon: {
-          name: 'teeth'
-        },
-        action: [
-          {
-            text: 'Ver',
-            onClick: (e, toastObject) => {
-              this.$router.push({ path: `/works/details/${this.work.IdTrabajo}` })
-              toastObject.goAway(0)
-            }
-          },
-          {
-            text: 'Cerrar',
-            onClick: (e, toastObject) => {
-              toastObject.goAway(0)
-            }
-          }
-        ]
-      })
     },
     setBtnPrintEnabled(){
       this.$refs.btnPrint.disabled = !(
