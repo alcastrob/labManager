@@ -90,7 +90,6 @@ export default {
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
-      debugger
       if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
         var newRow = {
           IdElementoCatalogo: this.newIds++,

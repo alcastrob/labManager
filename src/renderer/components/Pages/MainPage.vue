@@ -32,7 +32,8 @@ export default {
   },
   methods: {
     loadDb: async function(){
-      if (configGet('dataFile') === ''){
+      var dataFile = configGet('dataFile')
+      if (dataFile === '' || dataFile === undefined){
         // No selected file for running the application
         swal({
           title: 'Datos nos cargados',

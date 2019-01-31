@@ -1,8 +1,7 @@
 'use strict'
 
-import { app, BrowserWindow, Menu, dialog } from 'electron'
+import { app, BrowserWindow, Menu, dialog, shell } from 'electron'
 const path = require('path')
-const log = require('electron-log')
 const electron = require('electron')
 const ipc = electron.ipcMain
 import { configGet } from '../main/store'
@@ -57,6 +56,8 @@ ipc.on('file:opened', function (event, content) {
   mainWindow.setTitle(`labManager (${require('../../package.json').version}) - [${content}]`)
 })
 
+var datafile = configGet('dataFile')
+
 var menuTemplate = [{
   label: 'Archivo',
   submenu: [
@@ -71,6 +72,13 @@ var menuTemplate = [{
       click () {
         openExistingFile()
       }
+    },
+    {
+      label: 'Abrir en Explorador de Windows',
+      click () {
+        openFileInShell()
+      },
+      enabled: !(datafile === undefined || datafile === '')
     },
     {
       label: 'Guardar copia de seguridad',
@@ -189,6 +197,13 @@ if (process.platform === 'darwin') {
   })
 // }
 
+function openFileInShell(){
+  var file = configGet('dataFile')
+  if (file !== undefined) {
+    shell.showItemInFolder(file)
+  }
+}
+
 function openExistingFile(){
   var filePath = dialog.showOpenDialog({
     properties: ['openFile']
@@ -197,6 +212,7 @@ function openExistingFile(){
     //The user selected a file and did not pressed the Cancel button of the dialog
     mainWindow.webContents.send('reload:database', filePath[0])
   }
+  datafile = configGet('dataFile')
 }
 
 // const remote = require('remote')

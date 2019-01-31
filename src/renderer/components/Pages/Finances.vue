@@ -27,34 +27,7 @@
         icon="fas fa-euro-sign" />
     </div> <!-- row -->
     <div class="row">
-      <div class="col-md-8">
-        <div class="card mt-3">
-          <div class="card-header">
-            <div class="row">
-              <div class="col-md-6">
-                <h3 class="pt-2">Facturas</h3>
-              </div>
-              <div class="col-md-6">
-                <collapsibleExcelButton fileName="facturas" :isCollapsible="true" :collapsed="false" :isDark="true" class="float-right mt-2" ref="excelButton"></collapsibleExcelButton>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <invoiceExtendedTable :headers="headers" :searchFields="searchFields" ref="invoiceExtendedTable" urlBase="/finances/invoices/" masterKey="IdFactura">
-            </invoiceExtendedTable>
-          </div> <!-- card-body -->
-        </div> <!-- card -->
-
-      </div> <!-- col-md-8 -->
       <div class="col-md-4">
-        <div class="card mt-3">
-          <div class="card-header">
-            <h3 class="pt-2">Evolución de ingresos</h3>
-          </div>
-          <div class="card-body">
-            <canvas ref="incomeEvolution"></canvas>
-          </div> <!-- card-body -->
-        </div> <!-- card -->
         <div class="card mt-3">
           <div class="card-header">
             <h3 class="pt-2">Top 20 <span class="small">(Últimos 12 meses)</span></h3>
@@ -63,47 +36,83 @@
             <canvas ref="top20"></canvas>
           </div> <!-- card-body -->
         </div> <!-- card -->
-        <div class="card mt-4">
-          <div class="card-header">
-            <h3 class="pt-2">Cierre de mes</h3>
-          </div>
-          <div class="card-body">
-            Para realizar el cierre de un mes contable, seleccione la fecha y pulse el botón para ir a la página de cierre.
-            <div class="row">
-              <div class="col-md-6">
-                <select class="form-control mt-3" ref="month">
-                  <option disabled value="">Seleccione un mes</option>
-                  <option value="1">enero</option>
-                  <option value="2">febrero</option>
-                  <option value="3">marzo</option>
-                  <option value="4">abril</option>
-                  <option value="5">mayo</option>
-                  <option value="6">junio</option>
-                  <option value="7">julio</option>
-                  <option value="8">agosto</option>
-                  <option value="9">septiembre</option>
-                  <option value="10">octubre</option>
-                  <option value="11">noviembre</option>
-                  <option value="12">diciembre</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <select class="form-control mt-3" ref="year">
-                  <option disabled value="">Seleccione un año</option>
-                  <option value="2019">2019</option>
-                  <option value="2020">2020</option>
-                  <option value="2021">2021</option>
-                  <option value="2022">2022</option>
-                  <option value="2023">2023</option>
-                  <option value="2024">2024</option>
-                  <option value="2025">2025</option>
-                </select>
-              </div>
-            </div>
-            <button type="button" class="btn btn-secondary btn-block mt-4" @click="gotoMonthCheck" >Ir a página de cierre</button>
-          </div> <!-- card-body -->
-        </div> <!-- card -->
       </div> <!-- col-md-4 -->
+      <div class="col-md-8">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mt-3">
+              <div class="card-header">
+                <h3 class="pt-2">Evolución de ingresos</h3>
+              </div>
+              <div class="card-body">
+                <canvas ref="incomeEvolution"></canvas>
+              </div> <!-- card-body -->
+            </div> <!-- card -->
+          </div> <!-- col-md-6 -->
+          <div class="col-md-6">
+            <div class="card mt-3">
+              <div class="card-header">
+                <h3 class="pt-2">Cierre de mes</h3>
+              </div>
+              <div class="card-body">
+                Para realizar el cierre de un mes contable, seleccione la fecha y pulse el botón para ir a la página de cierre.
+                <div class="row">
+                  <div class="col-md-6">
+                    <select class="form-control mt-3" ref="month">
+                      <option disabled value="">Seleccione un mes</option>
+                      <option value="1">enero</option>
+                      <option value="2">febrero</option>
+                      <option value="3">marzo</option>
+                      <option value="4">abril</option>
+                      <option value="5">mayo</option>
+                      <option value="6">junio</option>
+                      <option value="7">julio</option>
+                      <option value="8">agosto</option>
+                      <option value="9">septiembre</option>
+                      <option value="10">octubre</option>
+                      <option value="11">noviembre</option>
+                      <option value="12">diciembre</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <select class="form-control mt-3" ref="year">
+                      <option disabled value="">Seleccione un año</option>
+                      <option value="2019">2019</option>
+                      <option value="2020">2020</option>
+                      <option value="2021">2021</option>
+                      <option value="2022">2022</option>
+                      <option value="2023">2023</option>
+                      <option value="2024">2024</option>
+                      <option value="2025">2025</option>
+                    </select>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-block mt-4" @click="gotoMonthCheck" >Ir a página de cierre</button>
+              </div> <!-- card-body -->
+            </div> <!-- card -->
+          </div> <!-- col-md-6 -->
+        </div> <!-- row -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card mt-3"> <!-- Facturas -->
+              <div class="card-header">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h3 class="pt-2">Facturas</h3>
+                  </div>
+                  <div class="col-md-6">
+                    <collapsibleExcelButton fileName="facturas" :isCollapsible="true" :collapsed="false" :isDark="true" class="float-right mt-2" ref="excelButton"></collapsibleExcelButton>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <invoiceExtendedTable :headers="headers" :searchFields="searchFields" ref="invoiceExtendedTable" urlBase="/finances/invoices/" masterKey="IdFactura">
+                </invoiceExtendedTable>
+              </div> <!-- card-body -->
+            </div> <!-- card -->
+          </div>
+        </div> <!-- row -->
+      </div> <!-- col-md-8 -->
     </div> <!-- row -->
   </div>
 </div>

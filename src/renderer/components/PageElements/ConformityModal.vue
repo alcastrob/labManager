@@ -160,7 +160,6 @@ export default {
       }
     },
     print(conformity){
-      debugger
       var ComponentClass = Vue.extend(conformityLabel)
       var instance = new ComponentClass({
         propsData: {

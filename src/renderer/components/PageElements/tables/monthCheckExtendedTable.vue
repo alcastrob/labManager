@@ -221,13 +221,21 @@ export default {
       }
     },
     percentageDiscountChanged(work, dentist) {
-      work.TotalDescuento = parseFloat(work.SumaTotalMetal * work.PorcentajeDescuento / 100).toFixed(2)
-      // work.TotalDescuento = parseFloat(work.SumaPrecioFinal * work.PorcentajeDescuento / 100).toFixed(2)
+      if (work.SumaTotalMetal === 0){
+        work.TotalDescuento = 0
+        work.PorcentajeDescuento = 0
+      } else {
+        work.TotalDescuento = parseFloat(work.SumaTotalMetal * work.PorcentajeDescuento / 100).toFixed(2)
+      }
       this.applyDiscount(work, dentist)
     },
     totalDiscountChanged(work, dentist) {
-      work.PorcentajeDescuento = parseFloat( work.TotalDescuento * 100 / work.SumaTotalMetal).toFixed(2)
-      // work.PorcentajeDescuento = parseFloat( work.TotalDescuento * 100 / work.SumaPrecioFinal).toFixed(2)
+      if (work.SumaTotalMetal === 0){
+        work.TotalDescuento = 0
+        work.PorcentajeDescuento = 0
+      } else {
+        work.PorcentajeDescuento = parseFloat( work.TotalDescuento * 100 / work.SumaTotalMetal).toFixed(2)
+      }
       this.applyDiscount(work, dentist)
     },
 
