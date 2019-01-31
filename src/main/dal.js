@@ -602,17 +602,18 @@ export async function getConformityDeclaration (workId) {
 
 //Tested
 export function insertConformityDeclaration(conformity, productIds) {
-  var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses) ' +
-  'VALUES (?, ?, ?) '
-  return runAsync(db, query, [conformity.IdTrabajo, conformity.Fecha, conformity.Meses]).then((conformityId) => {
+  var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses, ProductoEspecifico) ' +
+  'VALUES (?, ?, ?, ?) '
+  return runAsync(db, query, [conformity.IdTrabajo, conformity.Fecha, conformity.Meses, conformity.ProductoEspecifico]).then((conformityId) => {
     return insertDeclarationProducts(conformityId, productIds)
   })
 }
 
 //Tested
 export function updateConformityDeclaration(conformity, productsIds){
-  var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ? WHERE IdDeclaracion = ?'
-  return runAsync(db, query, [conformity.Meses, conformity.IdDeclaracion]).then(() => {
+  debugger
+  var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ?, ProductoEspecifico = ? WHERE IdDeclaracion = ?'
+  return runAsync(db, query, [conformity.Meses, conformity.ProductoEspecifico, conformity.IdDeclaracion]).then(() => {
     var query2 = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
     return runAsync(db, query2, [conformity.IdDeclaracion]).then(() => {
       return insertDeclarationProducts(conformity.IdDeclaracion, productsIds)

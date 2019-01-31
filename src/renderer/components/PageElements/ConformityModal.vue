@@ -18,6 +18,8 @@
         <div v-else class="pl-5 text-danger">Ninguno<br></div>
         <label for="nombreProductoABuscar" class="pt-3">Producto y lote a añadir</label>
         <productSearch name="nombreProductoABuscar" @change="addBatch()" v-model="batchQueryResult" ref="productSearch"></productSearch>
+        <label for="productoEspecifico" class="pt-4">Producto específico para esta declaración de conformidad</label>
+        <input type="text" name="productoEspecifico" v-model="specificProduct" class="form-control" @change="isDirty=true">
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" @click="$refs.conformityModal.hide()"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
@@ -57,6 +59,7 @@ export default {
       declarationId: -1,
       warrantyPeriod: 12,
       date: '',
+      specificProduct: '',
       isDirty: false,
       makerNumber: '',
       personInCharge: '',
@@ -78,6 +81,7 @@ export default {
       this.batchQueryResult = ''
       this.$refs.productSearch.clear()
       this.warrantyPeriod = 12
+      this.specificProduct = ''
       this.declarationId = -1
       this.isDirty = false
       this.logo = ''
@@ -103,6 +107,7 @@ export default {
         this.declarationId = declaration.data.IdDeclaracion
         this.date = declaration.data.Fecha
         this.warrantyPeriod = declaration.data.Meses
+        this.specificProduct = declaration.data.ProductoEspecifico
         this.batches = _.map(declaration.details, (value) => {
           return {
             IdProductoLote: value.IdProductoLote,
@@ -121,10 +126,11 @@ export default {
         {
           IdTrabajo: this.work.IdTrabajo,
           Meses: this.warrantyPeriod,
-          Fecha: this.work.FechaTerminacion
+          Fecha: this.work.FechaTerminacion,
+          ProductoEspecifico: this.specificProduct
         },
-        _.map(this.batches, 'IdProductoLote'))
-      .then(() => {
+        _.map(this.batches, 'IdProductoLote')
+      ).then(() => {
         getConformityDeclaration(this.work.IdTrabajo).then((row) => {
           this.print(row)
           this.hide()
@@ -135,7 +141,8 @@ export default {
       if (this.isDirty){
         var dec = {
           IdDeclaracion: this.declarationId,
-          Meses: this.warrantyPeriod
+          Meses: this.warrantyPeriod,
+          ProductoEspecifico: this.specificProduct
         }
         updateConformityDeclaration(dec,  _.map(this.batches, 'IdProductoLote'))
         .then(() => {
@@ -153,6 +160,7 @@ export default {
       }
     },
     print(conformity){
+      debugger
       var ComponentClass = Vue.extend(conformityLabel)
       var instance = new ComponentClass({
         propsData: {

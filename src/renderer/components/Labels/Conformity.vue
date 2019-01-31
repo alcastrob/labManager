@@ -30,6 +30,7 @@
       PRODUCTO Y LOTE:
       <ul>
         <li v-for="product in conformityDeclarationDetails" v-bind:key="product.IdProductoLote">{{product.Descripcion}}</li>
+        <li v-if="conformityDeclaration.ProductoEspecifico !== ''">{{conformityDeclaration.ProductoEspecifico}}</li>
       </ul>
       <br>
     </div>

@@ -170,7 +170,6 @@ export default {
   },
   methods: {
     save: function(url) {
-      debugger
       this.saveButtonPressed = true
       this.$v.$touch()
 
