@@ -174,16 +174,15 @@ export default {
       this.$v.$touch()
 
       if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()){
-        if (this.$v.work.IdDentista.$anyError){
-          this.$refs.clinica.focus()
+        if (this.$v.work.PrecioMetal.$anyError){
+          this.$refs.precioMetal.focus()
         }
         if (this.$v.work.IdTipoTrabajo.$anyError){
           this.$refs.tipoTrabajo.focus()
         }
-        if (this.$v.work.PrecioMetal.$anyError){
-          this.$refs.precioMetal.focus()
+        if (this.$v.work.IdDentista.$anyError){
+          this.$refs.clinica.focus()
         }
-
         return false
       }
 
@@ -343,9 +342,7 @@ export default {
   },
   mounted () {
     this.getData()
-    this.$root.$on('topbar:save', (url) => {
-      this.save(url)
-    })
+    this.$root.$on('topbar:save', this.save)
     this.isAdmin = configGet('isAdmin') === true
   }
 }

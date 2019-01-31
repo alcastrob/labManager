@@ -189,9 +189,6 @@ export default {
         }
       }
     },
-    // canBeSaved: function() {
-    //   return this.isDirty && this.data.NombreClinica !== ''
-    // },
     getConfig: async function() {
       this.isAdmin = await getConfigValue('isAdmin')
     }
@@ -207,9 +204,7 @@ export default {
     })
     document.getElementById('dentista').focus()
     this.data.NombreDentista = this.$route.query.name
-    this.$root.$on('topbar:save', (url) => {
-      this.save(url)
-    })
+    this.$root.$on('topbar:save', this.save)
   },
   computed: {
     isDirty(){

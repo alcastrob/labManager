@@ -32,8 +32,12 @@
           <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
         </select>
         <small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
-        <!-- <span>{{work.IdTipoTrabajo}}</span> -->
       </div> <!-- col-md-6 -->
+      <div class="col-md-2">
+          <label for="precioMetal">Precio metal</label>
+          <input type="text" class="form-control" id="precioMetal" ref="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}">
+          <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
+        </div> <!-- col-md-2 -->
       <div class="col-md-4">
         <label for="color">Color</label>
         <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model">
@@ -174,19 +178,20 @@ import _ from 'lodash'
 export default {
   name: 'workNew',
   mixins: [workMixin],
-  validations: {
-    work: {
-      IdTrabajo: { },
-      IdDentista: { validId },
-      NombreDentista: { },
-      IdTipoTrabajo: { validId },
-      Paciente: { },
-      Color: { },
-      FechaEntrada: { },
-      FechaPrevista: { },
-      PrecioFinal: { decimal }
-    }
-  },
+  // validations: {
+  //   work: {
+  //     IdTrabajo: { },
+  //     IdDentista: { validId },
+  //     NombreDentista: { },
+  //     IdTipoTrabajo: { validId },
+  //     Paciente: { },
+  //     Color: { },
+  //     PrecioMetal: { decimal },
+  //     PrecioFinal: { decimal },
+  //     FechaEntrada: { },
+  //     FechaPrevista: { }
+  //   }
+  // },
   methods: {
     reset: function() {
       this.work.IdDentista = 0,
@@ -215,6 +220,9 @@ export default {
       this.saveButtonPressed = true
       this.$v.$touch()
       if (this.$v.$anyError || this.$refs.workIndications.isError()){
+        if (this.$v.work.PrecioMetal.$anyError){
+          this.$refs.precioMetal.focus()
+        }
         if (this.$v.work.IdTipoTrabajo.$anyError){
           this.$refs.tipoTrabajo.focus()
         }
@@ -331,9 +339,7 @@ export default {
     }
   },
   mounted () {
-    this.$root.$on('topbar:save', (url) => {
-      this.save(url)
-    })
+    this.$root.$on('topbar:save', this.save)
   }
 }
 </script>
