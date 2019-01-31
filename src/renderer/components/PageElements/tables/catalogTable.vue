@@ -90,6 +90,7 @@ export default {
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
+      debugger
       if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
         var newRow = {
           IdElementoCatalogo: this.newIds++,
@@ -138,8 +139,11 @@ export default {
         } else {
           //First time updated. So jot it down.
           var original = _.find(this.rawDataset, ['IdElementoCatalogo', rowId])
-          original[field] = event.currentTarget.value
-          this.updatedRows.push(original)
+          if (original !== undefined) {
+            //The catalog element is not expired yet, so we can update its values
+            original[field] = event.currentTarget.value
+            this.updatedRows.push(original)
+          }
         }
       }
       this.save()
@@ -164,13 +168,17 @@ export default {
     },
     // Other methods (specific)------------------------------------------------
     updatePrice(event, id) {
-      var elementInArray = _.find(this.data, ['IdElementoCatalogo', id])
-      if (this.isEmpty(event.srcElement.value)) {
-        elementInArray.Precio = 0
-      } else {
-        elementInArray.Precio =  event.srcElement.value
+      var elementInArray = _.find(this.rawDataset, ['IdElementoCatalogo', id])
+
+      if (elementInArray !== undefined) {
+        //The catalog element is not expired yet, so we can update its price
+        if (this.isEmpty(event.srcElement.value)) {
+          elementInArray.Precio = 0
+        } else {
+          elementInArray.Precio =  event.srcElement.value
+        }
+        this.$emit('input', this.rawDataset)
       }
-      this.$emit('input', this.data)
     },
     format(date) {
       return moment(date).format('DD/MM/YYYY')
@@ -208,7 +216,7 @@ export default {
         return _.slice(this.filteredDataset, left, right)
       }
     },
-    getData: async function(){
+      getData: async function(){
       this.rawDataset = await getCatalogList()
       this.filteredDataset = this.rawDataset
     },

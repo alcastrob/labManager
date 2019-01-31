@@ -131,11 +131,15 @@ export default {
       // }
     },
     isPageDirty(){
-      var x = _.find(this.$parent.$children, (e) => {
-        return e.isError !== undefined && e.isDirty !== undefined
+      //In order to say if the current page is dirty, first we have to find a component that have 'isError' and 'isDirty' computed values (not bare functions)
+      var page = _.find(this.$parent.$children, (e) => {
+        var isError = e.isError !== undefined && {}.toString.call(e.isError) !== '[object Function]'
+        var isDirty = e.isDirty !== undefined && {}.toString.call(e.isDirty) !== '[object Function]'
+        return isError && isDirty
       })
-      if (x !== undefined){
-        return x.isDirty
+      //If exists, get the isDirty computed value. If not, just return false and continue navigating
+      if (page !== undefined){
+        return page.isDirty
       } else {
         return false
       }
@@ -148,7 +152,7 @@ export default {
       }
     },
     getConfig: async function() {
-      this.isAdmin = configGet('isAdmin') === true
+      this.isAdmin = configGet('isAdmin')
     }
   },
   computed: {

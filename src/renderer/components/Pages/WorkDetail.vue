@@ -343,7 +343,7 @@ export default {
   mounted () {
     this.getData()
     this.$root.$on('topbar:save', this.save)
-    this.isAdmin = configGet('isAdmin') === true
+    this.isAdmin = configGet('isAdmin')
   }
 }
 </script>

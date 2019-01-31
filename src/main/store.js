@@ -12,7 +12,12 @@ export function configGet(key){
     data = JSON.parse(fs.readFileSync(filePath))
     loaded = true
   }
-  return data[key]
+  if (data[key] == 'true')
+    return true
+  else if (data[key] == 'false')
+    return false
+  else
+    return data[key]
 }
 
 export function configSet(key, val){

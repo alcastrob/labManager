@@ -128,7 +128,7 @@ var menuTemplate = [{
     }
   ]
 }]
-if (configGet('isAdmin') === true){
+if (configGet('isAdmin')){
   menuTemplate.push({
     label: 'Mantenimientos',
     submenu: [
