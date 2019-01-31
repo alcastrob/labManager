@@ -57,6 +57,7 @@ import moment from 'moment'
 var path = require('path')
 var fs = require('fs')
 import {Printd} from 'printd'
+import { getConfigValue } from '../../../main/dal.js'
 
 export default {
   name: 'labelGarantia',
@@ -64,20 +65,17 @@ export default {
   data () {
     return {
       imgLoaded: false,
+      logo: '',
       parentCallback: undefined
     }
   },
   props: {
-    logo: {
-      type: String,
-      required: true
-    },
     workData: {
       type: Object,
       required: true
     },
     period: {
-      type: Number,
+      type: String,
       required: true
     }
   },
@@ -99,7 +97,14 @@ export default {
     },
     format(date) {
       return moment(date).format('DD/MM/YYYY')
+    },
+    loadData: async function(){
+      var logoData = await getConfigValue('logo')
+      this.logo = 'data:image/png;base64,' + logoData
     }
+  },
+  created (){
+    this.loadData()
   }
 }
 </script>

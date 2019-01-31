@@ -11,13 +11,13 @@
               <!-- <a href="#" class="btn btn-warning btn-collapsible"  @click="doValidatorExtraChecks">Validacion</a> -->
               <collapsible-action-button iconCss="fas fa-map-pin" text="Aditamentos" :callback="showAdjunts" v-if="!adjunctsVisible && !readOnly"></collapsible-action-button>
               <collapsible-action-button iconCss="fas fa-certificate" text="Declaración de Conformidad" :callback="showConformity" title="La declaración de conformidad requiere que se establezca una fecha de terminación del trabajo" :disabled="$v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$model === null || $v.work.FechaTerminacion.$anyError"></collapsible-action-button>
-              <collapsible-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote" title="La nota de entrega requiere que se establezca una fecha de terminación del trabajo" :disabled="$v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$anyError"></collapsible-action-button>
+              <collapsible-action-button iconCss="fas fa-dolly" text="Nota de entrega" :callback="getDeliveryNote" title="La nota de entrega requiere que se establezca una fecha de terminación del trabajo" :disabled="$v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$model === null || $v.work.FechaTerminacion.$anyError"></collapsible-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
                 <span>Imprimir etiqueta</span>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" :class="{'labeStrikethrough': $v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$anyError}" v-on:click="showWarrantyLabelModal" title="La nota de entrega requiere que se establezca una fecha de terminación del trabajo" >Garantía</a>
+                <a href="#" class="dropdown-item" :class="{'labeStrikethrough': $v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$model === null || $v.work.FechaTerminacion.$anyError}" v-on:click="showWarrantyLabelModal" title="La nota de entrega requiere que se establezca una fecha de terminación del trabajo" >Garantía</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Resina')" >Resina</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Compostura')">Compostura</a>
                 <a href="#" class="dropdown-item" v-on:click="showLabelModal('Aditamentos')" v-if="workAdjuncts !== undefined">Aditamentos</a>
@@ -133,7 +133,8 @@
         <button class="btn btn-secondary" @click="printLabelAndHide"><i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir</button>
       </div>
     </b-modal>
-    <warrantyModal ref="warranty" :work="work"></warrantyModal>
+    <!-- <warrantyModal ref="warranty" :work="work"></warrantyModal> -->
+    <warrantyLabel :workData="work" ref="warrantyLabel" period="TRES" class="visuallyhidden"></warrantyLabel>
     <conformityModal ref="conformity" :work="work"></conformityModal>
     <div ref="labelContainer" class="visuallyhidden"></div>
   </div>
@@ -146,7 +147,8 @@ import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, get
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
 import conformityModal from '../PageElements/ConformityModal'
-import warrantyModal from '../PageElements/WarrantyModal'
+// import warrantyModal from '../PageElements/WarrantyModal'
+import warrantyLabel from '../Labels/LabelGarantia'
 import VueRouter from 'vue-router'
 
 export default {
@@ -154,7 +156,8 @@ export default {
   mixins: [workMixin],
   components: {
     conformityModal,
-    warrantyModal
+    warrantyLabel
+    // warrantyModal
   },
   data () {
     return {
@@ -227,7 +230,8 @@ export default {
     showWarrantyLabelModal(){
       if (this.work.FechaTerminacion !== '' && !this.$v.work.FechaTerminacion.$anyError){
         if(this.save()) {
-          this.$refs.warranty.show()
+          this.$refs.warrantyLabel.waitLogoAndPrint()
+          // this.$refs.warranty.show()
         }
       }
     },
