@@ -9,14 +9,16 @@ import {Printd} from 'printd'
 var path = require('path')
 var fs = require('fs')
 import invoicePage from './invoicePage'
-import { getConfigValues, getInvoice, getWorkIndications } from '../../../main/dal.js'
+import reportPage from './reportPage'
+import { getConfigValues, getInvoice, getWorkIndications, getDentist } from '../../../main/dal.js'
 
 const MAX_NUMBER_OF_LINES_PER_PAGE = 35
 
 export default {
   name: 'invoicePrint',
   components: {
-    invoicePage
+    invoicePage,
+    reportPage
   },
   data () {
     return {
@@ -38,7 +40,7 @@ export default {
     }
   },
   methods: {
-    renderContent: async function (invoiceId) {
+    loadInvoiceData: async function(invoiceId){
       if (invoiceId === undefined || invoiceId === null){
         throw 'Missing required parameter invoiceId on call to print method of InvoicePrint.vue'
       }
@@ -47,10 +49,15 @@ export default {
       var x = await getInvoice(this.invoiceId)
       this.invoice = x.invoice
       this.invoiceWorks = x.invoiceWorks
+
       for (var work of this.invoiceWorks){
         this.indications[work.IdTrabajo] = await getWorkIndications(work.IdTrabajo)
       }
-
+    },
+    renderContent: function (isInvoice) {
+      if (this.invoice === {}){
+        this.loadInvoiceData()
+      }
       this.pageLogosLoaded = {}
 
       this.instances = []
@@ -69,7 +76,7 @@ export default {
             currentPageLines += toAdd
           }
           else {
-            this.insertInstance(worksToPrint, indicationsToPrint, currentPage, false)
+            this.insertInstance(worksToPrint, indicationsToPrint, currentPage, false, isInvoice)
             // Now we reset the arrays and include the current work in the next page
             currentPage++
             worksToPrint = [currentWork]
@@ -85,20 +92,47 @@ export default {
 
       if (indicationsToPrint.length !== 0){
         //We have something to print on the last page
-        this.insertInstance(worksToPrint, indicationsToPrint, currentPage, true)
+        this.insertInstance(worksToPrint, indicationsToPrint, currentPage, true, isInvoice)
       }
     },
     print: async function (invoiceId) {
+      this.dataReset()
       this.forPrinter = true
-      await this.renderContent(invoiceId)
+      await this.loadInvoiceData(invoiceId)
+      this.renderContent()
       this.realPrint()
     },
-    show: async function(invoiceId){
-      this.forPrinter = false
-      this.renderContent(invoiceId)
+    printNoInvoice: async function(invoiceData) {
+      this.dataReset()
+      this.forPrinter = true
+
+      this.invoice = await getDentist(invoiceData.IdDentista)
+      this.invoice.Total = 0
+      this.invoiceWorks = invoiceData.selectedWorks
+      for (var work of this.invoiceWorks){
+        this.indications[work.IdTrabajo] = await getWorkIndications(work.IdTrabajo)
+        work.PrecioSinDescuento = work.SumaPrecioFinal
+        work.PrecioFinalConDescuento = work.SumaPrecioFinal - work.TotalDescuento
+        this.invoice.Total += work.PrecioFinalConDescuento
+      }
+
+      this.renderContent()
+      this.realPrint()
+
     },
-    insertInstance(worksToPrint, indicationsToPrint, currentPage, isLastPage){
-      var ComponentClass = Vue.extend(invoicePage)
+    show: async function(invoiceId){
+      this.dataReset()
+      this.forPrinter = false
+      await this.loadInvoiceData(invoiceId)
+      this.renderContent()
+    },
+    insertInstance(worksToPrint, indicationsToPrint, currentPage, isLastPage, isInvoice){
+      var ComponentClass
+      if (isInvoice){
+        ComponentClass = Vue.extend(invoicePage)
+      } else {
+        ComponentClass = Vue.extend(reportPage)
+      }
       this.pageLogosLoaded[currentPage] = false
       var instance = new ComponentClass({
         propsData: {
@@ -145,6 +179,14 @@ export default {
       this.vatNumber = _.find(config, ['clave', 'vatNumber']).valor
       this.footer = _.find(config, ['clave', 'invoiceFooter']).valor
     },
+    dataReset: function() {
+      this.invoice = {}
+      this.invoiceWorks = []
+      this.indications = []
+      this.instances = [],
+      this.invoiceId = -1,
+      this.forPrinter = true
+    }
   },
   created () {
     this.loadData()
@@ -152,9 +194,6 @@ export default {
     this.cssText += fs.readFileSync(path.resolve(__static, 'bootstrap.min.css'), 'UTF-8')
   },
   mounted () {
-    const ipc = require('electron').ipcRenderer
-    ipc.on('wrote-pdf', (event, path) => {
-    })
   }
 }
 </script>

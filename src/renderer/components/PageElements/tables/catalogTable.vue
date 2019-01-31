@@ -33,7 +33,7 @@
             <input type="text" class="inputInTd" ref="newDescripcion">
           </td>
           <td class="noMargins" >
-            <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" @keyup.enter="addLastRow()" v-on:keydown="filterJustNumberKeystrokes"></input>
+            <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" @keyup.enter="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
           </td>
           <td class="noMargins">
             <input type="text" class="inputInTd" disabled>

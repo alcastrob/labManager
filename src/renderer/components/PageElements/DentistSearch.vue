@@ -83,24 +83,26 @@ export default {
     },
     focus: function() {
       this.$refs.clinica.focus()
-    }
-  },
-  mounted () {
-    this.$refs.clinica.focus()
-    this.$watch('value', function (newVal, oldVal) {
+    },
+    getData: function() {
+      this.$watch('value', async function (newVal, oldVal) {
       if (newVal <= 0) {
         this.selectedDentisId = undefined
         this.query = ''
       } else {
-        getDentist(newVal).then((dentistDetail) => {
-          if (dentistDetail !== undefined) {
-            this.selectedDentistId = dentistDetail.IdDentista
-            this.query = dentistDetail.NombreDentista
-            this.hidePopup()
-          }
-        })
+        dentistDetail = await getDentist(newVal)
+        if (dentistDetail !== undefined) {
+          this.selectedDentistId = dentistDetail.IdDentista
+          this.query = dentistDetail.NombreDentista
+          this.hidePopup()
+        }
       }
     })
+    }
+  },
+  mounted () {
+    this.$refs.clinica.focus()
+    this.getData()
   }
 }
 </script>

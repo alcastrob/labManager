@@ -191,20 +191,21 @@ export default {
     },
     getConfig: async function() {
       this.isAdmin = await getConfigValue('isAdmin')
+    },
+    getData: async function() {
+      this.dentistId = this.$route.params.id
+
+      this.data = await getDentist(this.dentistId)
+      document.getElementById('dentista').focus()
+      this.data.NombreDentista = this.$route.query.name
+      this.$root.$on('topbar:save', this.save)
     }
   },
   created() {
     this.getConfig()
   },
   mounted () {
-    this.dentistId = this.$route.params.id
-
-    getDentist(this.dentistId).then((dentistDetail) => {
-      this.data = dentistDetail
-    })
-    document.getElementById('dentista').focus()
-    this.data.NombreDentista = this.$route.query.name
-    this.$root.$on('topbar:save', this.save)
+    this.getData()
   },
   computed: {
     isDirty(){

@@ -9,7 +9,8 @@
         <collapsible-action-button iconCss="fas fa-clipboard-list" text="Modo verificación (sólo lectura)" :callback="setReadOnly" v-if="!readOnly" ></collapsible-action-button>
         <collapsible-action-button iconCss="fas fa-check" text="Modo normal" :callback="unsetReadOnly" v-else></collapsible-action-button>
         <collapsibleExcelButton fileName="cierreMensual" :isCollapsible="true" :collapsed="false" :isDark="false"  ref="excelButton" :class="{'displayNone': !readOnly}" @click="beginExporting"></collapsibleExcelButton>
-        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice()" v-if="!readOnly"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
+        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateReport" v-if="!readOnly"><i class="fas fa-receipt mr-2"></i>Generar notas de cobro</button>
+        <button class="btn btn-warning" :disabled="selectedDentists.length === 0" @click="generateInvoice" v-if="!readOnly"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       </div>
     </div> <!-- col-md-7 -->
   </div> <!-- row -->
@@ -37,7 +38,7 @@
             </ul>
           </div> <!-- col-md-12 -->
         </div> <!-- row -->
-        <div class="row" v-if="!inProgress">
+        <div class="row" v-if="!generateInvoiceInProgress">
           <div class="col-md-6">
             <label for="fechaFacturas">Establezca la fecha de las facturas a emitir:</label>
             <input type="date" class="form-control" id="fechaFacturas" placeholder="dd/mm/aaaa" v-model="invoiceDate">
@@ -47,7 +48,7 @@
             </a>
           </div> <!-- col-md-6 -->
         </div> <!-- row -->
-        <div class="row" v-if="inProgress">
+        <div class="row" v-if="generateInvoiceInProgress">
           <div class="col-md-12 pt-2 pb-3">
             Procesando...
             <div class="progress">
@@ -62,8 +63,36 @@
       <button class="btn btn-secondary " @click="confirmGeneration(false)" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas</button>
       <button class="btn btn-secondary " @click="confirmGeneration(true)" ref="btnPrint" :disabled="invoiceDate === ''"><i class="fas fa-print mr-2"></i>Generar e imprimir facturas</button>
     </div>
-    <invoicePrint ref="invoice"></invoicePrint>
   </b-modal>
+  <b-modal ref="modalReport" size="lg" title="Emisión de facturas" hide-footer>
+    <div class="modal-body">
+      <div class="containter">
+        <div class="row">
+          <div class="col-md-12">
+            <span>
+              Se van a emitir notas de cobro para los siguientes clientes.
+            </span>
+            <ul class="pt-3">
+              <li v-for="dentist in selectedDentists" v-bind:key="dentist.IdDentista">{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto.: {{sumDiscounts(dentist)}} | Total: {{sumTotals(dentist)}}</li>
+            </ul>
+          </div> <!-- col-md-12 -->
+        </div> <!-- row -->
+        <div class="row" v-if="generateReportInProgress">
+          <div class="col-md-12 pt-2 pb-3">
+            Procesando...
+            <div class="progress">
+              <div class="progress-bar bg-info" :style="'width:' + currentProgress +'%'">{{currentProgress}}%</div>
+            </div>
+          </div> <!-- col-md-12 -->
+        </div> <!-- row -->
+      </div> <!-- containter -->
+    </div> <!-- modal-body -->
+    <div class="modal-footer">
+      <button class="btn btn-secondary" @click="hideReportModal"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar</button>
+      <button class="btn btn-secondary " @click="printReport"><i class="fas fa-print mr-2"></i>Imprimir notas de cobro</button>
+    </div>
+  </b-modal>
+  <invoicePrint ref="invoice"></invoicePrint>
 </div>
 </template>
 
@@ -175,7 +204,8 @@ export default {
       month: 0,
       selectedDentists: [],
       invoiceDate: '',
-      inProgress: false,
+      generateInvoiceInProgress: false,
+      generateReportInProgress: false,
       currentProgress: 0,
       moneyFormatter : new Intl.NumberFormat('es-ES', {
         style: 'currency',
@@ -186,10 +216,37 @@ export default {
   },
   methods: {
     generateInvoice() {
-      this.showModal()
+      this.generateInvoiceInProgress = false
+      this.currentProgress = 0
+      this.invoiceDate = ''
+      this.$refs.modal.show()
+    },
+    generateReport() {
+      this.generateInvoiceInProgress = false
+      this.currentProgress = 0
+      this.invoiceDate = ''
+      this.$refs.modalReport.show()
+    },
+    hideModal() {
+      this.$refs.modal.hide()
+    },
+    hideReportModal() {
+      this.$refs.modalReport.hide()
+    },
+    printReport: function() {
+      this.generateReportInProgress = true
+      this.currentProgress = 0
+      var percentageStep = 100 / this.selectedDentists.length
+      for (var dentist of this.selectedDentists)
+      {
+        var reportData = dentist
+        this.$refs.invoice.printNoInvoice(reportData)
+        this.currentProgress = Math.round(this.currentProgress + percentageStep)
+      }
+      this.$refs.modalReport.hide()
     },
     confirmGeneration: async function(haveToPrint) {
-      this.inProgress = true
+      this.generateInvoiceInProgress = true
       this.currentProgress = 0
       var percentageStep = 100 / this.selectedDentists.length
       for (var dentist of this.selectedDentists)
@@ -211,15 +268,6 @@ export default {
       }
       this.hideModal()
       this.$refs.theTable.forceFullReload()
-    },
-    showModal() {
-      this.inProgress = false
-      this.currentProgress = 0
-      this.invoiceDate = ''
-      this.$refs.modal.show()
-    },
-    hideModal() {
-      this.$refs.modal.hide()
     },
     beginExporting(){
       this.$refs.theTable.beginExporting(this.endExporting)
@@ -265,14 +313,14 @@ export default {
     sumDiscounts: function(dentistData){
       var total = 0
       for (var work of dentistData.selectedWorks){
-        total += work.TotalDescuento
+        total += parseFloat(work.TotalDescuento)
       }
       return this.moneyFormatter.format(total)
     },
     sumTotals: function(dentistData){
       var total = 0
       for (var work of dentistData.selectedWorks){
-        total += work.SumaPrecioFinal - work.TotalDescuento
+        total += parseFloat(work.SumaPrecioFinal) - parseFloat(work.TotalDescuento)
       }
       return this.moneyFormatter.format(total)
     }

@@ -358,11 +358,9 @@ export async function getDentistList () {
 }
 
 //Tested
-export function getDentist (dentistId) {
+export async function getDentist (dentistId) {
   var query = 'SELECT * FROM vDentistas WHERE IdDentista = ?'
-  return getAsync(db, query, [dentistId]).then((row) => {
-    return row
-  })
+  return await getAsync(db, query, [dentistId])
 }
 
 //Tested
