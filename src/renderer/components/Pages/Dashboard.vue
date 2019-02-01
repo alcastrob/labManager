@@ -9,24 +9,21 @@
               Trabajos a la espera de entrada de prueba
             </div>
             <div class="card-body">
-              <draggable v-model="myArray" :move="checkMove" v-on:start="start" v-on:end="end">
-                <transition-group>
-                  <div class="card p-2" v-for="test in waitingInbound" v-bind:key="test.IdPrueba">
-                    <div class="form-check">
-                      <div>
-                        <input class="form-check-input" type="checkbox" value="">
-                      </div>
-                      <div>{{test.IdTrabajo}}&nbsp;|&nbsp;{{test.NombreDentista}}</div>
-                      <div class="badge-container pr-2">
-                        <i class="fas fa-bookmark colored-badge" :class="{ 'fija-color': test.TipoTrabajo === 'Fija', 'resina-color': test.TipoTrabajo === 'Resina', 'ortodoncia-color': test.TipoTrabajo === 'Ortodoncia', 'esqueletico-color': test.TipoTrabajo === 'Esquelético', 'zirconio-color': test.TipoTrabajo === 'Zirconio', 'compostura-color': test.TipoTrabajo === 'Compostura', 'implante-color': test.TipoTrabajo === 'Implante' }" :title="test.TipoTrabajo"></i>
-                      </div>
-                      <div>{{test.Paciente}}</div>
+              <transition-group name="animated-card">
+                <div class="card p-2 animated-card" v-for="test in waitingInbound" v-bind:key="test.IdPrueba">
+                  <div class="form-check" :class="{'card-disabled' : test.checked === true }" @click="changeCheckbox(test)">
+                    <div>
+                      <input class="form-check-input" type="checkbox" value="" v-model="test.checked">
                     </div>
+                    <div>{{test.IdTrabajo}}&nbsp;|&nbsp;<span :title="test.NombreDentista">{{sumarizeText(test.NombreDentista, 20)}}</span></div>
+                    <div class="badge-container pr-2">
+                      <i class="fas fa-bookmark colored-badge" :class="{ 'fija-color': test.TipoTrabajo === 'Fija', 'resina-color': test.TipoTrabajo === 'Resina', 'ortodoncia-color': test.TipoTrabajo === 'Ortodoncia', 'esqueletico-color': test.TipoTrabajo === 'Esquelético', 'zirconio-color': test.TipoTrabajo === 'Zirconio', 'compostura-color': test.TipoTrabajo === 'Compostura', 'implante-color': test.TipoTrabajo === 'Implante' }" :title="test.TipoTrabajo"></i>
+                    </div>
+                    <div :title="test.Paciente">{{sumarizeText(test.Paciente, 28)}}</div>
                   </div>
-                </transition-group>
-              </draggable>
+                </div>
+              </transition-group>
             </div> <!-- card-body -->
-            <div class="card-footer small text-muted">Hoy se espera el retorno de XX pruebas, de las cuales se han recepcionado YY.</div>
           </div> <!-- card -->
         </div> <!-- col-md-12 -->
         <div class="col-md-4 mt-2">
@@ -251,30 +248,42 @@
 
 <script>
 import myIconCard from '../PageElements/iconCards/myIconCard'
-import { getWaitingInbound } from '../../../main/dal.js'
-import draggable from 'vuedraggable'
+import { getWaitingInbound, setInboundWorkTestToToday, unsetInboundTestToToday } from '../../../main/dal.js'
+import _ from 'lodash'
 
 export default {
   name: 'dashboard',
-  components: { myIconCard, draggable },
+  components: { myIconCard },
   data () {
     return {
-      waitingInbound: [],
-      myArray: []
+      waitingInbound: []
     }
   },
   methods: {
-    checkMove: function(a, b, c) {
-      return true
+    sumarizeText: function(text, size) {
+      if (text.length > size)
+        return text.substring(0, size) + '...'
+      else
+        return text
     },
-    start: function (event) {
-      event.item.classList.add('darkborder')
-    },
-    end: function (event){
-      event.item.classList.remove('darkborder')
+    changeCheckbox: async function(test){
+      test.checked = !test.checked
+      this.waitingInbound = _.sortBy(this.waitingInbound, (item) => {
+        return [item.checked, item.NombreDentista, item.IdTrabajo]
+      })
+
+      if (test.checked === true){
+        await setInboundWorkTestToToday(test.IdTrabajo)
+      } else {
+        await unsetInboundTestToToday(test.IdTrabajo)
+      }
+      this.$forceUpdate()
     },
     loadData: async function(){
       this.waitingInbound = await getWaitingInbound()
+      for (var test of this.waitingInbound){
+        test.checked = false
+      }
     }
   },
   mounted () {
@@ -323,6 +332,32 @@ body.fixed-nav.sidebar-toggled #content-wrapper {
   }
 }
 
+.animated-card {
+  transition: all 0.5s;
+
+}
+.animated-card-enter, .animated-card-leave-to
+/* .card-leave-active for <2.1.8 */ {
+  opacity: 0;
+  transform: scale(0);
+}
+.animated-card-enter-to {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card-move {
+  opacity: 1;
+  transition: all 0.5s;
+}
+
+.card-disabled {
+  /* background-color: red; */
+  color: #D8D8D8;
+  text-decoration: line-through;
+
+}
+
 .badge-container {
   z-index: 1;
   height: 0px;
@@ -333,8 +368,6 @@ body.fixed-nav.sidebar-toggled #content-wrapper {
   position: relative;
   top: -32px;
   font-size: 20px;
-  /* -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: #A0A0A0; */
   text-shadow: 2px 2px 3px #606060;
 }
 
@@ -360,8 +393,4 @@ body.fixed-nav.sidebar-toggled #content-wrapper {
   color: #ECD2D2;
 }
 
-.darkborder {
-  border: 1px solid #999999;
-  background-color: #E5F1F9;
-}
 </style>

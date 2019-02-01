@@ -220,6 +220,26 @@ export function deleteWorkTest(workTestId){
   return runAsync(db, query, [workTestId])
 }
 
+//Tested
+export async function setInboundWorkTestToToday(workTestId){
+  var query = 'UPDATE Pruebas ' +
+  'SET FechaEntrada = date("now", "localtime"), ' +
+  'IdTurnoFechaEntrada = 2 - (time("now") BETWEEN time("08:00:00") AND time("17:30:00")) ' +
+  'WHERE IdTrabajo = ? AND FechaEntrada IS NULL AND FechaSalida = ' +
+  '(SELECT MAX(FechaSalida) FROM Pruebas WHERE IdTrabajo = ?)'
+  return await runAsync(db, query, [workTestId, workTestId])
+}
+
+//Tested
+export async function unsetInboundTestToToday(workTestId){
+  var query = 'UPDATE Pruebas ' +
+  'SET FechaEntrada = NULL, ' +
+  'IdTurnoFechaEntrada = NULL ' +
+  'WHERE IdTrabajo = ? AND date(FechaEntrada, "localtime") = date("now", "localtime") AND FechaSalida = ' +
+  '(SELECT MAX(FechaSalida) FROM Pruebas WHERE IdTrabajo = ?)'
+  return await runAsync(db, query, [workTestId, workTestId])
+}
+
 // Custom queries for Work (KPIs)----------------------------------------------
 
 //Tested
@@ -600,7 +620,6 @@ export function insertConformityDeclaration(conformity, productIds) {
 
 //Tested
 export function updateConformityDeclaration(conformity, productsIds){
-  debugger
   var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ?, ProductoEspecifico = ? WHERE IdDeclaracion = ?'
   return runAsync(db, query, [conformity.Meses, conformity.ProductoEspecifico, conformity.IdDeclaracion]).then(() => {
     var query2 = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
