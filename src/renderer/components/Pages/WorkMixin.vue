@@ -40,6 +40,7 @@ export default {
         PrecioFinal: 0,
         FechaEntrada: '',
         FechaPrevista: '',
+        FechaPrevistaPrueba: '',
         FechaTerminacion: ''
       },
       workTypes: {},
@@ -74,6 +75,7 @@ export default {
       PrecioFinal: { decimal },
       FechaEntrada: { },
       FechaPrevista: { },
+      FechaPrevistaPrueba: { },
       FechaTerminacion: { }
     },
     workAdjuncts: {
@@ -92,6 +94,7 @@ export default {
   methods: {
     hideModal() {
       this.$refs.printLabelModal.hide()
+      this.$v.$reset()
     },
     printLabel: function(label) {
       var currentLabel

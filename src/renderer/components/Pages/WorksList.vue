@@ -63,7 +63,13 @@ export default {
           rowClass: '',
           formatter: 'date'
         }, {
-          title: 'F. Prevista',
+          title: 'F.P. Prueba',
+          dataField: 'FechaPrevistaPrueba',
+          titleClass: 'text-left',
+          rowClass: '',
+          formatter: 'date'
+        }, {
+          title: 'F.P. Terminación',
           dataField: 'FechaPrevista',
           titleClass: 'text-left',
           rowClass: '',

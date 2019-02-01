@@ -79,7 +79,8 @@ export default {
       to: '',
       from: '',
       isAdmin: false,
-      leavingToUrl: ''
+      leavingToUrl: '',
+      lastComponentFound: undefined
     }
   },
   watch: {
@@ -110,6 +111,7 @@ export default {
       }
     },
     discardButtonClick(){
+      this.lastComponentFound = undefined
       this.$refs.leavePageModal.hide()
       var x = _.find(this.$parent.$children, (e) => {
         return e.reset !== undefined
@@ -123,11 +125,7 @@ export default {
     },
     saveAndLeaveButtonClick(){
       this.$refs.leavePageModal.hide()
-      // var x = _.find(this.$parent.$children, (e) => {
-      //   return e.isError !== undefined && e.isDirty !== undefined
-      // })
-      // if (x !== undefined){
-      this.$root.$emit('topbar:save', this.leavingToUrl)
+      this.lastComponentFound.$emit('topbar:save', this.leavingToUrl)
       // }
     },
     isPageDirty(){
@@ -139,6 +137,7 @@ export default {
       })
       //If exists, get the isDirty computed value. If not, just return false and continue navigating
       if (page !== undefined){
+        this.lastComponentFound = page
         return page.isDirty
       } else {
         return false

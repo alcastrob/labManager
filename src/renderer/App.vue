@@ -1,18 +1,16 @@
 <template>
-  <div id="app">
-    <mainPage></mainPage>
-  </div>
+  <mainPage></mainPage>
 </template>
 
 <script>
-import mainPage from './components/Pages/MainPage.vue'
 import 'jquery/dist/jquery.min.js'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'chart.js/dist/Chart.min.js'
+import 'dropzone/dist/min/dropzone.min.js'
 import Vue from 'vue'
 import VueSwal from 'vue-swal'
 import VueToasted from 'vue-toasted'
-
+import mainPage from './components/Pages/MainPage.vue'
 
 Vue.use(VueSwal)
 Vue.use(VueToasted, { iconPack: 'fontawesome', singleton: true })
@@ -37,6 +35,7 @@ export default {
   @import url('~@/assets/css/nunito/nunito.css');
   @import url('~@/assets/css/animate/animate.min.css');
   @import url('~@/assets/css/bootstrap-vue.min.css');
+  @import url('~@/assets/css/dropzone.min.css');
 
   body {
     background-color: #E4DFDA;
@@ -126,6 +125,9 @@ export default {
   box-shadow: none;
 }
 
+.noOverflow {
+  overflow-x: hidden;
+}
 .visuallyhidden:not(:focus):not(:active) {
   position: absolute;
 
@@ -141,11 +143,12 @@ export default {
   clip: rect(0 0 0 0);
   overflow: hidden;
 }
-
-.noOverflow {
-  overflow-x: hidden;
-}
 .displayNone {
     display: none;
-  }
+}
+
+.separated-column {
+  border-left: 1px solid #CDC8CA;
+}
+
 </style>

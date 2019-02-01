@@ -78,26 +78,30 @@
       <div class="row">
         <div class="col-md-12 mt-4">
           <h4>Indicaciones</h4>
-          <workIndicationsTable v-model="workIndications" ref="workIndications" :disabled="readOnly"></workIndicationsTable>
+          <workIndicationsTable v-model="workIndications" ref="workIndications" id="workIndications" :disabled="readOnly"></workIndicationsTable>
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label for="fEntrada">Fecha entrada</label>
           <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="$v.work.FechaEntrada.$model" @blur="triggerIsDirty($event)" @input="triggerIsDirty($event)" :disabled="readOnly">
           <a href="#" class="form-text text-muted ml-2" @click="setStartDateToToday()" v-if="!readOnly">
           <i class="far fa-calendar-alt"></i>
           Poner fecha de hoy
           </a>
-        </div> <!-- col-md-4 -->
-        <div class="col-md-4">
-          <label for="fPrevista">Fecha prevista</label>
+        </div> <!-- col-md-3 -->
+        <div class="col-md-3">
+          <label for="fPrevistaPreuba">Fecha prevista prueba</label>
+          <input type="date" class="form-control" id="fPrevistaPrueba" placeholder="dd/mm/aaaa" v-model="$v.work.FechaPrevistaPrueba.$model" @blur="triggerIsDirty($event)" @input="triggerIsDirty($event)" :disabled="readOnly">
+        </div> <!-- col-md-3 -->
+        <div class="col-md-3">
+          <label for="fPrevista">Fecha prevista terminación</label>
           <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="$v.work.FechaPrevista.$model" @blur="triggerIsDirty($event)" @input="triggerIsDirty($event)" :disabled="readOnly">
-        </div> <!-- col-md-4 -->
-        <div class="col-md-4">
+        </div> <!-- col-md-3 -->
+        <div class="col-md-3">
           <label for="fSalida">Fecha terminación</label>
           <input type="date" class="form-control" id="fSalida" placeholder="dd/mm/aaaa" v-model="$v.work.FechaTerminacion.$model" @blur="triggerIsDirty($event)" @input="triggerIsDirty($event)" :disabled="readOnly">
-        </div>
+        </div> <!-- col-md-3 -->
       </div> <!-- row -->
 
       <div class="row">
@@ -169,7 +173,7 @@ export default {
     }
   },
   methods: {
-    save: function(url) {
+    save: function(url, refs) {
       this.saveButtonPressed = true
       this.$v.$touch()
 
@@ -223,6 +227,7 @@ export default {
         })
       } else {
         //You clicked on a print label button thar requires a previous save (and to get informed if the save was successfully or not). Get a true as return
+        this.$v.$reset()
         return true
       }
     },
@@ -280,6 +285,9 @@ export default {
             break;
           case 'fPrevista':
             this.work.FechaPrevista = ''
+            break;
+          case 'fPrevistaPrueba':
+            this.work.FechaPrevistaPrueba = ''
             break;
           case 'fSalida':
             this.work.FechaTerminacion = ''
@@ -342,7 +350,7 @@ export default {
   },
   mounted () {
     this.getData()
-    this.$root.$on('topbar:save', this.save)
+    this.$on('topbar:save', this.save)
     this.isAdmin = configGet('isAdmin')
   }
 }

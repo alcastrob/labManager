@@ -123,7 +123,6 @@ export default {
     return {
       dentistId: 0,
       requiresValidation: false,
-      // isDirty: false,
       data: {
         IdDentista: '',
         NombreDentista: '',
@@ -162,7 +161,6 @@ export default {
       return `/works/list/dentist/${this.dentistId}?title=Lista de Trabajos de ${this.data.NombreDentista}`
     },
     getInvoiceListUrl: function() {
-
       return `/finances?dentistName=${encodeURIComponent(this.data.NombreDentista)}`
     },
     save: function(url) {
@@ -178,15 +176,15 @@ export default {
           document.getElementById('dentista').focus()
         }
         return false
+      }
+      updateDentist(this.data)
+      this.$v.$reset()
+      if (url === undefined || url === '') {
+        this.$router.go(-1)
       } else {
-        updateDentist(this.data)
-        if (url === undefined || url === '') {
-          this.$router.go(-1)
-        } else {
-          this.$router.push({
-            path: url
-          })
-        }
+        this.$router.push({
+          path: url
+        })
       }
     },
     getConfig: async function() {
@@ -194,11 +192,11 @@ export default {
     },
     getData: async function() {
       this.dentistId = this.$route.params.id
-
       this.data = await getDentist(this.dentistId)
       document.getElementById('dentista').focus()
-      this.data.NombreDentista = this.$route.query.name
-      this.$root.$on('topbar:save', this.save)
+      if (this.$route.query.name !== undefined){
+        this.data.NombreDentista = this.$route.query.name
+      }
     }
   },
   created() {
@@ -206,6 +204,7 @@ export default {
   },
   mounted () {
     this.getData()
+    this.$on('topbar:save', this.save)
   },
   computed: {
     isDirty(){
@@ -217,9 +216,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.separated-column {
-  border-left: 1px solid #CDC8CA;
-}
-</style>

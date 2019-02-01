@@ -14,34 +14,45 @@
       </div>
     </div> <!-- row -->
     <div class="row">
-      <div class="col-md-6 mb-3 mt-3">
-        <label for="clinica">Clínica o Dr/a</label>
-        <dentist-search id="clinica" ref="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" @change="$refs.paciente.focus()"></dentist-search>
-        <!-- @change="$refs.paciente.focus()" -->
-        <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
-        <!-- <span>{{work.IdDentista}}</span> -->
-      </div> <!-- col-md-6 -->
-      <div class="col-md-6 mt-3">
-        <label for="paciente">Paciente</label>
-        <input type="text" class="form-control" v-model="$v.work.Paciente.$model" ref="paciente">
-      </div> <!-- col-md-6 -->
-      <div class="col-md-3">
-        <label for="tipoTrabajo">Tipo trabajo</label>
-        <select class="form-control" id="tipoTrabajo" ref="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
-          <option disabled value="">Seleccione una opción</option>
-          <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
-        </select>
-        <small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
-      </div> <!-- col-md-6 -->
-      <div class="col-md-2">
-          <label for="precioMetal">Precio metal</label>
-          <input type="text" class="form-control" id="precioMetal" ref="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}">
-          <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
-        </div> <!-- col-md-2 -->
-      <div class="col-md-4">
-        <label for="color">Color</label>
-        <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model">
-      </div> <!-- col-md-4 -->
+      <div class="col-md-10">
+        <div class="row">
+          <div class="col-md-6 mb-3 mt-3">
+            <label for="clinica">Clínica o Dr/a</label>
+            <dentist-search id="clinica" ref="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" @change="$refs.paciente.focus()"></dentist-search>
+            <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
+          </div> <!-- col-md-6 -->
+          <div class="col-md-6 mt-3">
+            <label for="paciente">Paciente</label>
+            <input type="text" class="form-control" v-model="$v.work.Paciente.$model" ref="paciente">
+          </div> <!-- col-md-6 -->
+          <div class="col-md-3">
+            <label for="tipoTrabajo">Tipo trabajo</label>
+            <select class="form-control" id="tipoTrabajo" ref="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
+              <option disabled value="">Seleccione una opción</option>
+              <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
+            </select>
+            <small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
+          </div> <!-- col-md-6 -->
+          <div class="col-md-2">
+              <label for="precioMetal">Precio metal</label>
+              <input type="text" class="form-control" id="precioMetal" ref="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}">
+              <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
+            </div> <!-- col-md-2 -->
+          <div class="col-md-4">
+            <label for="color">Color</label>
+            <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model">
+          </div> <!-- col-md-4 -->
+        </div> <!-- row -->
+      </div> <!-- col-md-10 -->
+      <div class="col-md-2 separated-column text-left">
+        <div class="mt-3">
+          Ficheros
+          <form action="/upload-target" class="dropzone">Aquí</form>
+          <input type="file" @change="addFiles">
+
+        </div>
+
+      </div>
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-3">
@@ -50,23 +61,27 @@
       </div> <!-- col-md-12 -->
     </div> <!-- row -->
     <div class="row">
-      <div class="col-md-6 mt-3">
+      <div class="col-md-4 mt-3">
         <label for="fEntrada">Fecha entrada</label>
         <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="$v.work.FechaEntrada.$model">
         <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
         <i class="far fa-calendar-alt"></i>
         Poner fecha de hoy
         </a>
-      </div> <!-- col-md-6 -->
-      <div class="col-md-6 mt-3">
-        <label for="fPrevista">Fecha prevista</label>
+      </div> <!-- col-md-4 -->
+      <div class="col-md-4 mt-3">
+        <label for="fPrevista">Fecha prevista prueba</label>
+        <input type="date" class="form-control" id="fPrevistaPrueba" placeholder="dd/mm/aaaa" v-model="$v.work.FechaPrevistaPrueba.$model">
+      </div> <!-- col-md-4 -->
+      <div class="col-md-4 mt-3">
+        <label for="fPrevista">Fecha prevista terminación</label>
         <input type="date" class="form-control" id="fPrevista" placeholder="dd/mm/aaaa" v-model="$v.work.FechaPrevista.$model">
-      </div> <!-- col-md-6 -->
+      </div> <!-- col-md-4 -->
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-4">
         <workAdjuncts v-model="workAdjuncts" v-if="adjunctsVisible"></workAdjuncts>
-      </div> <!-- col-md-8 -->
+      </div> <!-- col-md-12 -->
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-3">
@@ -74,7 +89,7 @@
           <i class="fas fa-save"></i>
           Guardar
         </button>
-      </div>
+      </div> <!-- col-md-12 -->
     </div> <!-- row -->
   </div> <!-- container -->
   <b-modal ref="printLabelModal" size="lg" title="Imprimir etiquetas" hide-footer @hidden="goBack">
@@ -197,11 +212,6 @@ export default {
       this.$forceUpdate()
     },
     save: async function(url) {
-      // if (url === undefined) {
-      //   this.url = '/works/list'
-      // } else {
-      //   this.url = url
-      // }
       this.url = url
 
       this.saveButtonPressed = true
@@ -264,6 +274,7 @@ export default {
       this.goBack()
     },
     goBack() {
+      this.$v.$reset()
       if (this.url === undefined || this.url === '') {
         this.$router.push({ path: `/works/details/${this.work.IdTrabajo}` })
       } else {
@@ -303,6 +314,9 @@ export default {
         this.$refs.cbEmax.checked || this.$refs.cbComposite.checked ||
         this.$refs.cbMetalCeramica.checked
       )
+    },
+    addFiles(event){
+      var files = event.target.files
     }
   },
   computed: {
@@ -322,7 +336,7 @@ export default {
     }
   },
   mounted () {
-    this.$root.$on('topbar:save', this.save)
+    this.$on('topbar:save', this.save)
   }
 }
 </script>

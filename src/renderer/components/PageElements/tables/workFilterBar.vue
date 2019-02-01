@@ -11,7 +11,7 @@
       <div id="filter-options" class="collapse">
         <option-line id="fEntrada" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes']" description="Fecha entrada: " ref="fEntrada">
         </option-line>
-        <option-line id="fPrevista" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna']" description="Fecha prevista: " ref="fPrevista">
+        <option-line id="fPrevista" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna']" description="Fecha prevista terminación: " ref="fPrevista">
         </option-line>
         <option-line id="fSalida" :isMultiple="false" :options="['Hoy', 'Esta semana', 'Últimos 7 días', 'Últimos 15 días', 'Últimos 30 días', 'Este mes', 'Ninguna o en el futuro']" description="Fecha terminación: " ref="fSalida">
         </option-line>

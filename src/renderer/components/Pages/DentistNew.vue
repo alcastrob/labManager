@@ -143,22 +143,22 @@ export default {
           document.getElementById('dentista').focus()
         }
         return false
+      }
+      insertDentist(this.data)
+      this.$v.$reset()
+      if (url === undefined || url === '') {
+        this.$router.go(-1)
       } else {
-        insertDentist(this.data)
-        if (url === undefined || url === '') {
-          this.$router.go(-1)
-        } else {
-          this.$router.push({
-            path: url
-          })
-        }
+        this.$router.push({
+          path: url
+        })
       }
     }
   },
   mounted () {
     document.getElementById('dentista').focus()
     this.data.NombreDentista = this.$route.query.name
-    this.$root.$on('topbar:save', this.save)
+    this.$on('topbar:save', this.save)
   },
   computed: {
     isDirty(){

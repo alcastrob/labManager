@@ -116,10 +116,10 @@ export async function getWork(workId) {
 export async function insertWork(work) {
   var query = 'INSERT INTO Trabajos (IdDentista, IdTipoTrabajo, ' +
     'Paciente, Color, FechaTerminacion, FechaEntrada, ' +
-    'FechaPrevista, PrecioFinal, PrecioMetal) ' +
-    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    'FechaPrevista, FechaPrevistaPrueba, PrecioFinal, PrecioMetal) ' +
+    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
   var id = await runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
-    work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista,
+    work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
     work.PrecioFinal, work.PrecioMetal])
   return id
   }
@@ -128,11 +128,11 @@ export async function insertWork(work) {
 export async function updateWork(work) {
   var query = 'UPDATE Trabajos SET IdDentista = ?, IdTipoTrabajo = ?, ' +
   'Paciente = ?, Color = ?, FechaTerminacion = ?, ' +
-  'FechaEntrada = ?, FechaPrevista = ?, ' +
+  'FechaEntrada = ?, FechaPrevista = ?, FechaPrevistaPrueba = ?, ' +
   'PrecioMetal = ?, Nombre = ? ' +
   'WHERE IdTrabajo = ?'
   return await runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
-    work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista,
+    work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
     work.PrecioMetal, work.Nombre, work.IdTrabajo])
 }
 
@@ -221,15 +221,6 @@ export function deleteWorkTest(workTestId){
 }
 
 // Custom queries for Work (KPIs)----------------------------------------------
-
-//Tested
-export function getInboundWorksToday() {
-  var query = 'SELECT COUNT(1) AS Count FROM Trabajos ' +
-  'WHERE FechaEntrada >= date("now","localtime") AND FechaEntrada < date("now", "localtime", "+1 day")'
-  return getAsync(db, query, []).then((row) => {
-    return row
-  })
-}
 
 //Tested
 export async function getWorkInExecution () {
@@ -721,6 +712,14 @@ export async function deleteCatalogEntry(catalogEntry) {
   'WHERE IdElementoCatalogo = ?'
   return await runAsync(db, query, [catalogEntry.IdElementoCatalogo])
 }
+
+//Dashboard -------------------------------------------------------------------
+
+export async function getWaitingInbound () {
+  var query = 'SELECT * FROM vDashboard_EsperandoEntrada'
+  return await allAsync(db, query, [])
+}
+
 
 // Config ---------------------------------------------------------------------
 
