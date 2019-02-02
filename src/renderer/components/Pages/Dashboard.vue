@@ -13,7 +13,7 @@
                 <div class="card p-2 animated-card" v-for="test in waitingInbound" v-bind:key="'a' + test.IdPrueba">
                   <div class="form-check" :class="{'card-disabled' : test.checked === true }" @click="changeCheckbox(test)">
                     <div>
-                      <input class="form-check-input" type="checkbox" value="" v-model="test.checked">
+                      <input class="form-check-input" type="checkbox" v-model="test.checked">
                     </div>
                     <div>{{test.IdTrabajo}}&nbsp;|&nbsp;<span :title="test.NombreDentista">{{sumarizeText(test.NombreDentista, 20)}}</span></div>
                     <div class="badge-container pr-2">
@@ -79,15 +79,16 @@
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
     </div> <!-- container -->
-    <b-modal ref="EndDateModal" :title="Trabajo " hide-footer>
+    <b-modal ref="endDateModal" :title="modalTitle" hide-footer no-close-on-backdrop no-close-on-esc hide-header-close>
       <div class="modal-body">
         <span>
-        En esta página hay cambios que serán descartados si continua navegando a otra página. ¿Desea guardarlos antes?
+        Al recibir de vuelta una prueba, hay que establecer una nueva fecha prevista de prueba.
         </span>
+        <input type="date" class="form-control mt-3" ref="nuevaFechaPrevistaPrueba" placeholder="dd/mm/aaaa" @change="enableBtnSetNewDate" @blur="enableBtnSetNewDate">
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="discardButtonClick">Descartar los cambios</button>
-        <button class="btn btn-secondary" @click="saveAndLeaveButtonClick"><i class="fas fa-save mr-2 position-relative" style="top: 1px;"></i>Guardar y continuar</button>
+      <div class="modal-footer mt-3">
+        <button class="btn btn-secondary" :disabled="isDisabledSaveButton()" @click="btnSetNewDateClick" ref="btnSetNewDate"><i class="fas fa-save mr-2 position-relative" style="top: 1px;" ></i>Aceptar</button>
+        <!-- isDisabledSaveButton() -->
       </div>
     </b-modal>
   </div>
@@ -95,7 +96,7 @@
 
 <script>
 import myIconCard from '../PageElements/iconCards/myIconCard'
-import { getWaitingInbound, setInboundWorkTestToToday, unsetInboundTestToToday, getOutboundingTests, getOutboundingWorks } from '../../../main/dal.js'
+import { getWaitingInbound, setInboundWorkTestToToday, unsetInboundTestToToday, getOutboundingTests, getOutboundingWorks, getWork, updateWork } from '../../../main/dal.js'
 import _ from 'lodash'
 import moment from 'moment'
 import bModal from 'bootstrap-vue'
@@ -107,7 +108,8 @@ export default {
     return {
       waitingInbound: [],
       outboundTests: [],
-      outboundWorks: []
+      outboundWorks: [],
+      currentTest: {}
     }
   },
   methods: {
@@ -118,6 +120,11 @@ export default {
         return text
     },
     changeCheckbox: async function(test){
+      if (!test.checked){
+        this.currentTest = test
+        this.$refs.nuevaFechaPrevistaPrueba.value = ''
+        this.$refs.endDateModal.show()
+      }
       test.checked = !test.checked
       this.waitingInbound = _.sortBy(this.waitingInbound, (item) => {
         return [item.checked, item.NombreDentista, item.IdTrabajo]
@@ -130,11 +137,22 @@ export default {
       }
       this.$forceUpdate()
     },
+    enableBtnSetNewDate: function(){
+      if (this.$refs.btnSetNewDate !== undefined) {
+        this.$refs.btnSetNewDate.disabled = this.isDisabledSaveButton()
+      }
+    },
+    btnSetNewDateClick: async function(){
+      var workToUpdate = await getWork(this.currentTest.IdTrabajo)
+      workToUpdate.FechaPrevista = this.$refs.nuevaFechaPrevistaPrueba.value
+      await updateWork(workToUpdate)
+
+      this.$refs.endDateModal.hide()
+    },
     redirectToWork: function(workId) {
       this.$router.push({ path: `/works/details/${workId}` })
     },
     format(date) {
-      // return moment(date).format('DD/MM/YYYY')
       var startOfToday = moment().startOf('day')
       var startOfDate = moment(date).startOf('day')
       var daysDiff = startOfDate.diff(startOfToday, 'days')
@@ -150,6 +168,13 @@ export default {
           return 'En tres días'
       }
     },
+    isDisabledSaveButton: function() {
+      if (this.$refs.nuevaFechaPrevistaPrueba === undefined){
+        return true
+      } else {
+        return this.$refs.nuevaFechaPrevistaPrueba.value === '' || !this.$refs.nuevaFechaPrevistaPrueba.validity.valid
+      }
+    },
     loadData: async function(){
       this.waitingInbound = await getWaitingInbound()
       for (var test of this.waitingInbound){
@@ -159,6 +184,15 @@ export default {
       this.outboundWorks = _.groupBy(await getOutboundingWorks(), (o) => {
         return o.FechaPrevista
       })
+    }
+  },
+  computed: {
+    modalTitle: function() {
+      if (this.currentTest.IdTrabajo === undefined){
+        return ''
+      } else {
+        return `Trabajo ${this.currentTest.IdTrabajo} | ${this.sumarizeText(this.currentTest.NombreDentista, 20)} | ${this.sumarizeText(this.currentTest.Paciente, 20)}`
+      }
     }
   },
   mounted () {
