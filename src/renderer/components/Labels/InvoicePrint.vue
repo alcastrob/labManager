@@ -99,7 +99,7 @@ export default {
       this.dataReset()
       this.forPrinter = true
       await this.loadInvoiceData(invoiceId)
-      this.renderContent()
+      this.renderContent(true)
       this.realPrint()
     },
     printNoInvoice: async function(invoiceData) {
@@ -116,7 +116,7 @@ export default {
         this.invoice.Total += work.PrecioFinalConDescuento
       }
 
-      this.renderContent()
+      this.renderContent(false)
       this.realPrint()
 
     },
@@ -124,9 +124,10 @@ export default {
       this.dataReset()
       this.forPrinter = false
       await this.loadInvoiceData(invoiceId)
-      this.renderContent()
+      this.renderContent(true)
     },
     insertInstance(worksToPrint, indicationsToPrint, currentPage, isLastPage, isInvoice){
+      debugger
       var ComponentClass
       if (isInvoice){
         ComponentClass = Vue.extend(invoicePage)
