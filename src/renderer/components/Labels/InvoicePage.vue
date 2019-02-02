@@ -12,7 +12,6 @@
   </div> <!-- row -->
   <div class="row mt-2">
     <div class="col-sm-6">
-      <h3 class="text-uppercase">Datos de la factura</h3>
       <h5>Número: {{invoice.NumFactura}} |  Fecha: {{format(invoice.Fecha)}}</h5>
     </div> <!-- col-sm-6 -->
     <div class="col-sm-6">
