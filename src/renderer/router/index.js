@@ -14,13 +14,12 @@ import dashboard from '../components/Pages/Dashboard.vue'
 import dentistNew from '../components/Pages/DentistNew.vue'
 import catalog from '../components/Pages/Catalog.vue'
 import products from '../components/Pages/Products.vue'
-import testPage from '../components/Pages/TestPage.vue'
 import invoice from '../components/Pages/Invoice.vue'
+import configuration from '../components/Pages/Configuration.vue'
 
 Vue.use(Router)
 
 export default new Router({
-  //mode: 'history',
   routes: [
     {
       path: '/',
@@ -28,9 +27,7 @@ export default new Router({
       children: [
         {
           path: '',
-          // component: worksList
           component: dashboard
-          // component: testPage
         },
         {
           path: 'about',
@@ -83,6 +80,10 @@ export default new Router({
         {
           path: 'maintenace/products',
           component: products
+        },
+        {
+          path: 'maintenace/configuration',
+          component: configuration
         }
       ]
     }

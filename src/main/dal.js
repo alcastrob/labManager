@@ -451,7 +451,7 @@ export async function getWorksAggregatedByDentist (year, month, readOnly) {
       query += 'LEFT JOIN FacturasTrabajos ft ON ft.IdTrabajo = t.IdTrabajo '
     }
 
-    query += 'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") '
+    query += 'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month", "-1 day") '
     if (!readOnly){
       query += 'AND ft.IdFactura IS NULL '
     }
@@ -465,12 +465,12 @@ export async function getWorksDeaggregatedByDentist (year, month, idDentist, isR
   var sMonth = ('00' + month).substr(-2)
   if (!isReadOnly){
     var query = 'SELECT * FROM vTrabajosPorDentista WHERE ' +
-    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
     'AND IdDentista = ' + idDentist
     return await allAsync(db, query, [])
   } else {
     var query = 'SELECT * FROM vTodosTrabajosPorDentista WHERE ' +
-    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
     'AND IdDentista = ' + idDentist
     return await allAsync(db, query, [])
   }
@@ -553,7 +553,7 @@ export async function getInvoicesList (customFilters) {
   //Tested
   export async function getInvoicesPerDentist(year, month, idDentist) {
     var query = 'SELECT * FROM vFacturasTrabajosPorDentista WHERE IdDentista = ? ' +
-    `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month")`
+    `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month", "-1 day")`
 
     return await allAsync(db, query, [idDentist])
   }
@@ -761,19 +761,23 @@ export async function getConfigValue(configKey){
   return (await getAsync(db, query, [configKey])).valor
 }
 
-//Tested
+//tested
 export async function getConfigValues(configKeyArray){
-  var query = 'SELECT * FROM Configuracion WHERE clave IN ('
-  for (var value of configKeyArray){
-    query += `"${value}",`
+  var query = 'SELECT * FROM Configuracion'
+  if (configKeyArray !== undefined) {
+    query += ' WHERE clave IN ('
+    for (var value of configKeyArray){
+      query += `"${value}",`
+    }
+    query = query.substring(0, query.length - 1) + ')'
   }
-  query = query.substring(0, query.length - 1) + ')'
-  return (await allAsync(db, query, []))
+
+  return await allAsync(db, query, [])
 }
 
-export function setConfigValue (configKey, configValue) {
+export async function setConfigValue (configKey, configValue) {
   var query = 'INSERT OR REPLACE INTO Configuracion (clave, valor) VALUES (?, ?)'
-  return runAsync(db, query, [configKey, configValue])
+  return await runAsync(db, query, [configKey, configValue])
 }
 
 // Generic functions ----------------------------------------------------------

@@ -153,6 +153,16 @@ if (configGet('isAdmin')){
           mainWindow.webContents.send
           ('navigation:navigateTo', {page: '/maintenace/products'})
         }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Configuración',
+        click () {
+          mainWindow.webContents.send
+          ('navigation:navigateTo', {page: '/maintenace/configuration'})
+        }
       }
     ]
   })
