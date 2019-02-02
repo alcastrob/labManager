@@ -23,7 +23,7 @@
             <template v-for="column in headers">
               <td v-bind:key="'b' + column.dataField" :class="column.rowClass" class="tableexport-string target">
 
-                <input type="checkbox" v-if="isButton(column.dataField) && !isExporting" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, dentist.IdDentista)" :id="'chkDentist-' + dentist.IdDentista">
+                <input type="checkbox" v-if="isButton(column.dataField) && !isExporting" @change="forceSomeWorksChechedBeforCheckingTheDentist($event, dentist.IdDentista)" :id="'chkDentist-' + dentist.IdDentista" tabindex="-1">
 
                 <div v-else-if="!isExporting">
                   <span>
@@ -34,7 +34,7 @@
                   <span v-if="column.dataField === 'NombreDentista' && isReadOnly && (invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista] !== [])">
 
                     <span v-for="invoice in invoiceIdsOfDentist(invoicesPerDentist[dentist.IdDentista])" v-bind:key="invoice.IdTrabajo">
-                      - <router-link :to="'/finances/invoices/' + invoice.IdFactura">{{invoice.NumFactura}}</router-link>
+                      - <router-link :to="'/finances/invoices/' + invoice.IdFactura" tabindex="-1">{{invoice.NumFactura}}</router-link>
                     </span>
 
                   </span>
@@ -53,17 +53,17 @@
               <tr v-bind:key="'work-' + work.IdTrabajo" v-if="selectedDentist === dentist.IdDentista" class="deaggregated" @click="clickedWork($event, dentist.IdDentista, work.IdTrabajo)">
                 <td class="small-text text-right" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
                   {{work.IdTrabajo}}&nbsp;
-                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(dentist.IdDentista)">
+                  <input type="checkbox" v-model="work.Chequeado" @change="updateDentistCheckbox(dentist.IdDentista)" tabindex="-1">
                 </td>
 
                 <td class="dentist-text column-20 tableexport-string target" :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}">
 
                   {{work.Paciente}}&nbsp;|&nbsp;{{formatDate(work, 'FechaTerminacion')}}&nbsp;|&nbsp;
 
-                  <router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo">Ver</router-link>
+                  <router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo" tabindex="-1">Ver</router-link>
 
                   <span v-if="isReadOnly && invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista].length !== 0">&nbsp;|&nbsp;
-                    <router-link :to="'/finances/invoices/' + invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo).IdFactura">{{invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo).NumFactura}}</router-link>
+                    <router-link :to="'/finances/invoices/' + invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo).IdFactura" tabindex="-1">{{invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo).NumFactura}}</router-link>
                   </span>
                   <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
                     <div class="text-left">
