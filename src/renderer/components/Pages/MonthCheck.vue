@@ -320,7 +320,7 @@ export default {
     sumTotals: function(dentistData){
       var total = 0
       for (var work of dentistData.selectedWorks){
-        total += parseFloat(work.SumaTotalMetal) - parseFloat(work.TotalDescuento)
+        total += parseFloat(work.SumaPrecioFinal) - parseFloat(work.TotalDescuento)
       }
       return this.moneyFormatter.format(total)
     }
