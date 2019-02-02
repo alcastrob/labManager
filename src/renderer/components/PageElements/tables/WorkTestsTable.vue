@@ -31,7 +31,7 @@
         </div>
       </td>
       <td class="noMargins">
-        <input type="date" class="inputInTd" v-model="test.FechaSalida" @blur="changedDate($event)" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
+        <input type="date" class="inputInTd" id="fSalida" v-model="test.FechaSalida" @blur="changedDate($event)" @change="trackChanges($event, test.IdPrueba, 'FechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
       </td>
       <td class="noMargins">
         <select class="inputInTd" v-model="test.IdTurnoFechaSalida"  @change="trackChanges($event, test.IdPrueba, 'IdTurnoFechaSalida')" @focus="hidePanel" :disabled="$attrs.disabled === true">
@@ -180,6 +180,11 @@ export default {
           this.$v.newRow.$reset()
           this.$emit('input', this.tests)
           this.$refs.newDescripcion.focus()
+
+          //Last, but not least. If there's a new outbound date, the work 'Test Expected Date' must be reset.
+          if (newRow.FechaSalida !== ''){
+            this.$parent._data.work.FechaPrevistaPrueba = ''
+          }
         }
       }
     },
@@ -220,6 +225,11 @@ export default {
           var original = _.find(this.data, ['IdPrueba', rowId])
           this.updatedRows.push(original)
         }
+      }
+
+      //Last, but not least. If the change is made in the outbound date, the work 'Test Expected Date' must be reset.
+      if (event.currentTarget.id === 'fSalida' && event.currentTarget.value !== '' && event.currentTarget.validity.valid){
+        this.$parent._data.work.FechaPrevistaPrueba = ''
       }
       this.$emit('input', this.data)
     },

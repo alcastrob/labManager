@@ -39,7 +39,9 @@ export default {
 
     // The dataset is loaded in the container component, so it could be not available during the mount because this load is async. This line will be invoked whenever the prop dataset is updated in the container component.
     this.$watch('value', function (newVal, oldVal) {
-      this.data = newVal.slice(0) // For cloning the array, not passing the reference. This way the watcher doesn't go bananas.
+      if (newVal !== undefined){
+        this.data = newVal.slice(0) // For cloning the array, not passing the reference. This way the watcher doesn't go bananas.
+      }
     })
   }
 }
