@@ -509,7 +509,9 @@ export async function getInvoicesList (customFilters) {
     }
     worksString =  worksString.substr(0, worksString.length - 1)
 
-    var totalDiscount = _.sum(_.map(works, 'totalDescuento'))
+    var totalDiscount = _.sumBy(works, (o) => {
+      return parseFloat(o.totalDescuento)
+    })
 
     var query1 = 'INSERT INTO Facturas(NumFactura, IdDentista, Fecha, Total) ' +
     'VALUES ( ' +
@@ -787,6 +789,7 @@ function getAsync (db, sql, params) {
     db.get(sql, params, function (err, row) {
       if (err) {
         reject(err)
+        console.log(`SQL Error. Params: ${params}| Query: ${sql}`)
       } else {
         resolve(row)
       }
@@ -799,6 +802,7 @@ function allAsync (db, sql, params) {
     db.all(sql, params, function (err, row) {
       if (err) {
         reject(err)
+        console.log(`SQL Error. Params: ${params}| Query: ${sql}`)
       } else {
         resolve(row)
       }
@@ -811,6 +815,7 @@ function runAsync (db, sql, params) {
     db.run(sql, params, function (err, row){
       if (err) {
         reject(err)
+        console.log(`SQL Error. Params: ${params}| Query: ${sql}`)
       } else {
         // resolve(row)
         resolve(this.lastID)
@@ -818,3 +823,4 @@ function runAsync (db, sql, params) {
     })
   })
 }
+
