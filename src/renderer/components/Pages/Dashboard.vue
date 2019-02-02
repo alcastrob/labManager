@@ -10,7 +10,7 @@
             </div>
             <div class="card-body">
               <transition-group name="animated-card">
-                <div class="card p-2 animated-card" v-for="test in waitingInbound" v-bind:key="test.IdPrueba">
+                <div class="card p-2 animated-card" v-for="test in waitingInbound" v-bind:key="'a' + test.IdPrueba">
                   <div class="form-check" :class="{'card-disabled' : test.checked === true }" @click="changeCheckbox(test)">
                     <div>
                       <input class="form-check-input" type="checkbox" value="" v-model="test.checked">
@@ -33,230 +33,81 @@
               Trabajos con pruebas que salen hoy
             </div>
             <div class="card-body">
-              <h4>Por la mañana</h4>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
+              <transition-group name="animated-card">
+                <div class="card p-2 animated-card" v-for="test in outboundTests" v-bind:key="'b' + test.IdPrueba">
+                  <div class="form-check" @click="redirectToWork(test.IdTrabajo)">
+                    <span>
+                      {{test.IdTrabajo}}&nbsp;|&nbsp;
+                    </span>
+                    <span :title="test.NombreDentista">{{sumarizeText(test.NombreDentista, 25)}}</span>
+                    <div class="badge-container pr-2">
+                      <i class="fas fa-bookmark colored-badge" :class="{ 'fija-color': test.TipoTrabajo === 'Fija', 'resina-color': test.TipoTrabajo === 'Resina', 'ortodoncia-color': test.TipoTrabajo === 'Ortodoncia', 'esqueletico-color': test.TipoTrabajo === 'Esquelético', 'zirconio-color': test.TipoTrabajo === 'Zirconio', 'compostura-color': test.TipoTrabajo === 'Compostura', 'implante-color': test.TipoTrabajo === 'Implante' }" :title="test.TipoTrabajo"></i>
+                    </div>
+                    <div :title="test.Paciente">{{sumarizeText(test.Paciente, 28)}}</div>
                   </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
                 </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge ortodoncia-color" title="Ortodoncia"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge esqueletico-color" title="Esqueletico"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge zirconio-color" title="Zirconio"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge implante-color" title="Implante"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge compostura-color" title="Compostura"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <h4 class="mt-4">Por la tarde</h4>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
+              </transition-group>
             </div> <!-- card-body -->
-            <div class="card-footer small text-muted">Hoy hay programados el envío de XX pruebas, de las cuales YY ya han sido enviadas.</div>
           </div> <!-- card -->
         </div> <!-- col-md-12 -->
         <div class="col-md-4 mt-2">
           <div class="card mb-3">
             <div class="card-header">
               <i class="fas fa-sign-out-alt"></i>
-              Trabajos a finalizar hoy
+              Trabajos a finalizar en los próximos días
             </div>
             <div class="card-body">
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+              <div class="pb-3" v-for="date in outboundWorks" v-bind:key="'c' + date[0].FechaPrevista">
+                <h4>{{format(date[0].FechaPrevista)}}</h4>
+                <transition-group name="animated-card">
+                  <div class="card p-2 animated-card" v-for="test in date" v-bind:key="'d' + test.IdPrueba">
+                    <div class="form-check" @click="redirectToWork(test.IdTrabajo)">
+                      <span>
+                        {{test.IdTrabajo}}&nbsp;|&nbsp;
+                      </span>
+                      <span :title="test.NombreDentista">{{sumarizeText(test.NombreDentista, 25)}}</span>
+                      <div class="badge-container pr-2">
+                        <i class="fas fa-bookmark colored-badge" :class="{ 'fija-color': test.TipoTrabajo === 'Fija', 'resina-color': test.TipoTrabajo === 'Resina', 'ortodoncia-color': test.TipoTrabajo === 'Ortodoncia', 'esqueletico-color': test.TipoTrabajo === 'Esquelético', 'zirconio-color': test.TipoTrabajo === 'Zirconio', 'compostura-color': test.TipoTrabajo === 'Compostura', 'implante-color': test.TipoTrabajo === 'Implante' }" :title="test.TipoTrabajo"></i>
+                      </div>
+                      <div :title="test.Paciente">{{sumarizeText(test.Paciente, 28)}}</div>
+                    </div>
                   </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge fija-color" title="Fija"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge resina-color" title="Resina"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge ortodoncia-color" title="Ortodoncia"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge esqueletico-color" title="Esqueletico"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge zirconio-color" title="Zirconio"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge implante-color" title="Implante"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
-              </div>
-              <div class="card p-2">
-                <div class="form-check">
-                  <div>
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                  </div>
-                  <div>12345&nbsp;|&nbsp;Clínica clínica clínica</div>
-                  <div class="badge-container pr-2">
-                    <i class="fas fa-bookmark colored-badge compostura-color" title="Compostura"></i>
-                  </div>
-                  <div>Paciente paciente paciente</div>
-                </div>
+                </transition-group>
               </div>
             </div> <!-- card-body -->
-            <div class="card-footer small text-muted">Hoy han de finalizar XX trabajos, de los cuales ya han finalizado YY.</div>
           </div> <!-- card -->
         </div> <!-- col-md-12 -->
       </div> <!-- row -->
     </div> <!-- container -->
+    <b-modal ref="EndDateModal" :title="Trabajo " hide-footer>
+      <div class="modal-body">
+        <span>
+        En esta página hay cambios que serán descartados si continua navegando a otra página. ¿Desea guardarlos antes?
+        </span>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" @click="discardButtonClick">Descartar los cambios</button>
+        <button class="btn btn-secondary" @click="saveAndLeaveButtonClick"><i class="fas fa-save mr-2 position-relative" style="top: 1px;"></i>Guardar y continuar</button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
 <script>
 import myIconCard from '../PageElements/iconCards/myIconCard'
-import { getWaitingInbound, setInboundWorkTestToToday, unsetInboundTestToToday } from '../../../main/dal.js'
+import { getWaitingInbound, setInboundWorkTestToToday, unsetInboundTestToToday, getOutboundingTests, getOutboundingWorks } from '../../../main/dal.js'
 import _ from 'lodash'
+import moment from 'moment'
+import bModal from 'bootstrap-vue'
 
 export default {
   name: 'dashboard',
   components: { myIconCard },
   data () {
     return {
-      waitingInbound: []
+      waitingInbound: [],
+      outboundTests: [],
+      outboundWorks: []
     }
   },
   methods: {
@@ -279,23 +130,39 @@ export default {
       }
       this.$forceUpdate()
     },
+    redirectToWork: function(workId) {
+      this.$router.push({ path: `/works/details/${workId}` })
+    },
+    format(date) {
+      // return moment(date).format('DD/MM/YYYY')
+      var startOfToday = moment().startOf('day')
+      var startOfDate = moment(date).startOf('day')
+      var daysDiff = startOfDate.diff(startOfToday, 'days')
+
+      switch (daysDiff){
+        case 0:
+          return 'Hoy'
+        case 1:
+          return 'Mañana'
+        case 2:
+          return 'Pasado mañana'
+        case 3:
+          return 'En tres días'
+      }
+    },
     loadData: async function(){
       this.waitingInbound = await getWaitingInbound()
       for (var test of this.waitingInbound){
         test.checked = false
       }
+      this.outboundTests = await getOutboundingTests()
+      this.outboundWorks = _.groupBy(await getOutboundingWorks(), (o) => {
+        return o.FechaPrevista
+      })
     }
   },
   mounted () {
     this.loadData()
-  },
-  computed: {
-    worksReceivedTodayCopy: function() {
-      return 0
-    },
-    worksSentTodayCopy: function() {
-      return 0
-    }
   }
 }
 </script>

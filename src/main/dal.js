@@ -734,8 +734,21 @@ export async function deleteCatalogEntry(catalogEntry) {
 
 //Dashboard -------------------------------------------------------------------
 
+//Tested
 export async function getWaitingInbound () {
   var query = 'SELECT * FROM vDashboard_EsperandoEntrada'
+  return await allAsync(db, query, [])
+}
+
+//Tested
+export async function getOutboundingTests () {
+  var query = 'SELECT * FROM vDashboard_PruebasSalenHoy'
+  return await allAsync(db, query, [])
+}
+
+//Tested
+export async function getOutboundingWorks () {
+  var query = 'SELECT * FROM vDashboard_TrabajosSalenHoy'
   return await allAsync(db, query, [])
 }
 
