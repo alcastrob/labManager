@@ -99,8 +99,7 @@ export default {
       return moment(date).format('DD/MM/YYYY')
     },
     loadData: async function(){
-      var logoData = await getConfigValue('logo')
-      this.logo = 'data:image/png;base64,' + logoData
+      this.logo = await getConfigValue('logo')
     }
   },
   created (){

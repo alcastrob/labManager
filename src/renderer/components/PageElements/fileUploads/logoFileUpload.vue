@@ -1,6 +1,6 @@
 <template>
   <div>
-    <fileUploadMixin type="image/*" :multipleFiles="false" ref="fileUpload"></fileUploadMixin>
+    <fileUploadBase type="image/*" :multipleFiles="false" ref="fileUpload"></fileUploadBase>
     <div id="logo" class="carousel slide mb-2 center" data-ride="carousel">
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import fileUploadMixin from './fileUploadMixin'
+import fileUploadBase from './fileUploadMixin'
 const fs = require('fs')
 const dialog = require('electron').remote.dialog
 
@@ -26,9 +26,8 @@ const dialog = require('electron').remote.dialog
 export default {
   name: 'logoFileUpload',
   components: {
-    fileUploadMixin
+    fileUploadBase
   },
-  // mixins: [fileUploadMixin],
   data () {
     return {}
   },
@@ -55,18 +54,14 @@ export default {
       reader.readAsDataURL(file[0])
     },
     save_sidecar(e) {
-      var b64head = 'data:image/png;base64,'
-      if (e.currentTarget.result.startsWith(b64head)){
-        var x = e.currentTarget.result.substring(b64head.length, e.currentTarget.result.length)
-        this.$emit('input', x)
-      } else {
-        this.$emit('input', e.currentTarget.result)
-      }
+      // var b64 = e.currentTarget.result.replace(/data:image\/\w*;base64,/gm, '')
+      this.$emit('input', e.currentTarget.result)
       this.$refs.fileUpload.reset()
     },
-    convertFromBase64: function(content) {
+    convertFromBase64: function(b64) {
+      var content = b64.replace(/data:image\/\w*;base64,/gm, '')
       var contentType = ''
-      var sliceSize = 512
+      var sliceSize = 1024
 
       var byteCharacters = atob(content)
       var byteArrays = []
@@ -88,7 +83,7 @@ export default {
   },
   computed: {
     getLogo(){
-      return 'data:image/png;base64,' + this.value
+      return this.value
     }
   }
 }

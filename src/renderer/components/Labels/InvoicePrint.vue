@@ -176,7 +176,7 @@ export default {
     },
     loadData: async function() {
       var config = await getConfigValues(['logo', 'vatNumber', 'invoiceFooter'])
-      this.logo = 'data:image/png;base64,' + _.find(config, ['clave', 'logo']).valor
+      this.logo =  _.find(config, ['clave', 'logo']).valor
       this.vatNumber = _.find(config, ['clave', 'vatNumber']).valor
       this.footer = _.find(config, ['clave', 'invoiceFooter']).valor
     },
