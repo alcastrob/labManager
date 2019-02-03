@@ -4,12 +4,12 @@
       <fileUploadBase class="col-md-12" type="image/*" :multipleFiles="true" ref="fileUpload"></fileUploadBase>
     </div> <!-- row -->
     <div class="row text-center text-lg-left">
-      <div class="col-md-4 pb-3 text-center" v-for="image in value" v-bind:key="hash(image)">
+      <div class="col-md-4 pb-3 text-center" v-for="image in value" v-bind:key="hash(image) + '-' + new Date().getTime()">
         <a href="#" class="mb-4">
           <img class="img-fluid img-thumbnail thumbnail" :src="image" title="Haga click para visualizar">
         </a>
-        <button class="btn btn-secondary btn-sm" title="Descargar la imagen al ordenador"><i class="fas fa-download"></i></button>
-        <button class="btn btn-secondary btn-sm" title="Borrar la imagen"><i class="fas fa-times-circle"></i></button>
+        <button class="btn btn-secondary btn-sm" title="Descargar la imagen al ordenador" @click="downloadImage(image)"><i class="fas fa-download"></i></button>
+        <button class="btn btn-secondary btn-sm" title="Borrar la imagen" @click="deleteImage(image)"><i class="fas fa-times-circle"></i></button>
       </div> <!-- col-md-4 -->
     </div> <!-- row -->
   </div> <!-- container -->
@@ -17,6 +17,7 @@
 
 <script>
 import fileUploadBase from './fileUploadBase'
+const dialog = require('electron').remote.dialog
 
 export default {
   name: 'imagesFileUpload',
@@ -38,9 +39,27 @@ export default {
       type: Boolean,
       required: false,
       default: 'true'
+    },
+    idTrabajo: {
+      type: Number,
+      required: true
     }
   },
   methods: {
+    deleteImage(image) {
+      this.value.splice(this.value.indexOf(image), 1)
+      this.$emit('input', this.value)
+    },
+    downloadImage(image) {
+      var position = this.value.indexOf(image)
+      var imageType = this.$refs.fileUpload.getFileType(image)
+      var path = dialog.showSaveDialog(null, {
+        defaultPath: `${this.idTrabajo}_${position}.${imageType}`
+        })
+      if (path !== undefined) {
+        this.$refs.fileUpload.saveFile(image, path)
+      }
+    },
     upload(files){
       for (var file of files){
         this.viewFile(file)

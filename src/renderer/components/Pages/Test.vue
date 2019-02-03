@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-md-4">
-      <imagesFileUpload v-model="logos" :multipleFiles="true" accept="image/*"></imagesFileUpload>
+      <imagesFileUpload v-model="logos" :multipleFiles="true" accept="image/*" :idTrabajo="1"></imagesFileUpload>
     </div>
 
   </div>

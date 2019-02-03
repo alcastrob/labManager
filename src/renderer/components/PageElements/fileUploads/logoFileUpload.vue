@@ -19,7 +19,6 @@
 
 <script>
 import fileUploadBase from './fileUploadBase'
-const fs = require('fs')
 const dialog = require('electron').remote.dialog
 
 export default {
@@ -38,14 +37,11 @@ export default {
       this.$emit('input', '')
     },
     download() {
-      var path = dialog.showSaveDialog(null, { defaultPath: 'logo.png'})
+      var imageType = this.$refs.fileUpload.getFileType(this.value)
+
+      var path = dialog.showSaveDialog(null, { defaultPath: `logo.${imageType}`})
       if (path !== undefined) {
-        var binaryArrays = this.convertFromBase64(this.value)
-        var stream = fs.createWriteStream(path)
-        for (var array of binaryArrays){
-          stream.write(array)
-        }
-        stream.end()
+        this.$refs.fileUpload.saveFile(this.value, path)
       }
     },
     upload(file) {
@@ -57,28 +53,6 @@ export default {
     upload_sidecar(e) {
       this.$emit('input', e.currentTarget.result)
       this.$refs.fileUpload.reset()
-    },
-    convertFromBase64: function(b64) {
-      var content = b64.replace(/data:image\/\w*;base64,/gm, '')
-      var contentType = ''
-      var sliceSize = 1024
-
-      var byteCharacters = atob(content)
-      var byteArrays = []
-
-      for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-        var slice = byteCharacters.slice(offset, offset + sliceSize)
-
-        var byteNumbers = new Array(slice.length)
-        for (var i = 0; i < slice.length; i++) {
-          byteNumbers[i] = slice.charCodeAt(i)
-        }
-
-        var byteArray = new Uint8Array(byteNumbers)
-
-        byteArrays.push(byteArray)
-      }
-      return byteArrays
     }
   }
 }

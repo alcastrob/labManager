@@ -25,6 +25,8 @@
 <script>
 const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
 
+const fs = require('fs')
+
 export default {
   name: 'fileUploadBase',
   data () {
@@ -62,6 +64,40 @@ export default {
     },
     setStatusSaving() {
       this.currentStatus = STATUS_SAVING
+    },
+    getFileType(file) {
+      const regex = /\/\w*;/gm
+      return  regex.exec(file)[0].replace('/', '').replace(';', '')
+    },
+    saveFile(file, path){
+      var binaryArrays = this.convertFromBase64(file)
+        var stream = fs.createWriteStream(path)
+        for (var array of binaryArrays){
+          stream.write(array)
+        }
+        stream.end()
+    },
+    convertFromBase64: function(b64) {
+      var content = b64.replace(/data:image\/\w*;base64,/gm, '')
+      var contentType = ''
+      var sliceSize = 1024
+
+      var byteCharacters = atob(content)
+      var byteArrays = []
+
+      for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize)
+
+        var byteNumbers = new Array(slice.length)
+        for (var i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i)
+        }
+
+        var byteArray = new Uint8Array(byteNumbers)
+
+        byteArrays.push(byteArray)
+      }
+      return byteArrays
     }
   },
   computed: {

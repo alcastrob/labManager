@@ -130,11 +130,7 @@ export default {
   },
   computed: {
     isDirty(){
-      var result = this.$v.$anyDirty
-      if (this.$refs.workIndications !== undefined){
-        result = result
-      }
-      return result
+      return false
     },
     isError(){
       var result = this.$v.$anyError
