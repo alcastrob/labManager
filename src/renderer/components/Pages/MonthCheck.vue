@@ -40,12 +40,8 @@
         </div> <!-- row -->
         <div class="row" v-if="!generateInvoiceInProgress">
           <div class="col-md-6">
-            <label for="fechaFacturas">Establezca la fecha de las facturas a emitir:</label>
+            <label for="fechaFacturas">Verifique la fecha de las facturas a emitir:</label>
             <input type="date" class="form-control" id="fechaFacturas" placeholder="dd/mm/aaaa" v-model="invoiceDate">
-            <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
-              <i class="far fa-calendar-alt"></i>
-              Poner fecha de hoy
-            </a>
           </div> <!-- col-md-6 -->
         </div> <!-- row -->
         <div class="row" v-if="generateInvoiceInProgress">
@@ -102,6 +98,7 @@ import collapsibleActionButton from '../PageElements/CollapsibleButtons/collapsi
 import invoicePrint from '../Labels/InvoicePrint'
 import { bTooltip, bModal} from 'bootstrap-vue'
 import _ from 'lodash'
+import moment from 'moment'
 import { insertInvoice } from '../../../main/dal.js'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 
@@ -218,13 +215,13 @@ export default {
     generateInvoice() {
       this.generateInvoiceInProgress = false
       this.currentProgress = 0
-      this.invoiceDate = ''
+      this.invoiceDate = moment(new Date(this.year, this.month, 0)).format('YYYY-MM-DD')
       this.$refs.modal.show()
     },
     generateReport() {
       this.generateInvoiceInProgress = false
       this.currentProgress = 0
-      this.invoiceDate = ''
+      this.invoiceDate = moment(new Date(this.year, this.month, 0)).format('YYYY-MM-DD')
       this.$refs.modalReport.show()
     },
     hideModal() {
@@ -286,22 +283,6 @@ export default {
       this.$refs.theTable.setReadOnlyMode(false)
       this.$refs.theTable.forceFullReload()
       this.$refs.theTable.forceTableHeaderReflow()
-    },
-    setStartDateToToday: function() {
-      var today = new Date()
-      var dd = today.getDate()
-
-      var mm = today.getMonth()+1
-      var yyyy = today.getFullYear()
-      if(dd<10) {
-          dd='0'+dd;
-      }
-
-      if(mm<10) {
-          mm='0'+mm;
-      }
-
-      this.invoiceDate = yyyy + '-' + mm + '-' + dd
     },
     sumBasePrice: function(dentistData){
       var total = 0
