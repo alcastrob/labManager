@@ -16,6 +16,7 @@ import catalog from '../components/Pages/Catalog.vue'
 import products from '../components/Pages/Products.vue'
 import invoice from '../components/Pages/Invoice.vue'
 import configuration from '../components/Pages/Configuration.vue'
+import test from '../components/Pages/Test.vue'
 
 Vue.use(Router)
 
@@ -27,7 +28,8 @@ export default new Router({
       children: [
         {
           path: '',
-          component: dashboard
+          // component: dashboard
+          component: test
         },
         {
           path: 'about',

@@ -4,7 +4,7 @@
     <div id="logo" class="carousel slide mb-2 center" data-ride="carousel">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img v-if="value.length > 0" class="d-block img-fluid" :src="getLogo" alt="logo actual">
+          <img v-if="value.length > 0" class="d-block img-fluid" :src="value" alt="logo actual">
           <span v-else class="text-center">No hay ninguna imagen seleccionada</span>
         </div>
       </div>
@@ -18,10 +18,9 @@
 </template>
 
 <script>
-import fileUploadBase from './fileUploadMixin'
+import fileUploadBase from './fileUploadBase'
 const fs = require('fs')
 const dialog = require('electron').remote.dialog
-
 
 export default {
   name: 'logoFileUpload',
@@ -31,7 +30,9 @@ export default {
   data () {
     return {}
   },
-  props: ['value'],
+  props: {
+    value: {}
+  },
   methods: {
     deleteImage() {
       this.$emit('input', '')
@@ -47,14 +48,13 @@ export default {
         stream.end()
       }
     },
-    save(file) {
+    upload(file) {
       this.$refs.fileUpload.setStatusSaving()
       var reader = new FileReader()
-      reader.onloadend = this.save_sidecar
+      reader.onloadend = this.upload_sidecar
       reader.readAsDataURL(file[0])
     },
-    save_sidecar(e) {
-      // var b64 = e.currentTarget.result.replace(/data:image\/\w*;base64,/gm, '')
+    upload_sidecar(e) {
       this.$emit('input', e.currentTarget.result)
       this.$refs.fileUpload.reset()
     },
@@ -79,11 +79,6 @@ export default {
         byteArrays.push(byteArray)
       }
       return byteArrays
-    }
-  },
-  computed: {
-    getLogo(){
-      return this.value
     }
   }
 }
