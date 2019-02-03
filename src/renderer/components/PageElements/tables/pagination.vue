@@ -33,8 +33,6 @@
 
 export default {
   name: 'pagination',
-  props: {
-  },
   methods: {
     loadPage: function (page) {
       if (page === 'prev') {

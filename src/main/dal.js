@@ -823,4 +823,3 @@ function runAsync (db, sql, params) {
     })
   })
 }
-

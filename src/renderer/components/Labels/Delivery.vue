@@ -3,7 +3,6 @@
   <div class="row">
     <div class="col-sm-6">
       <h1 class="text-uppercase">Nota de entrega</h1><br>
-      Nº ALBARÁN: {{IdTrabajo}}
     </div>
     <div class="col-sm-6">
       <img @load="logoLoaded" :src="logo">
@@ -18,8 +17,15 @@
       {{Paciente}}<br>
     </div>
     <div class="col-sm-6">
-      FECHA:
-      {{format(FechaTerminacion)}}<br>
+      <div class="row">
+        <div class="col-sm-6">
+          FECHA: {{format(FechaTerminacion)}}
+        </div>
+        <div class="col-sm-6 text-right">
+          Nº ALBARÁN: {{IdTrabajo}}
+        </div>
+      </div>
+      <br>
     </div>
   </div> <!-- row -->
 

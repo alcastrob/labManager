@@ -19,18 +19,23 @@
         <input type="text" class="form-control" v-model="$v.config.vatNumber.$model" id="vatNumber" ref="vatNumber" :class="{'is-invalid': $v.config.vatNumber.$error}">
         <small class="text-danger" v-if="$v.config.vatNumber.$error">Este valor es obligatorio<br></small>
       </div> <!-- col-md-6 -->
+
+
       <div class="col-md-6 mt-3">
-        <label for="personInCharge">Responsable</label>
+        <label for="personInCharge" class="">Responsable</label>
         <input type="text" class="form-control" v-model="$v.config.personInCharge.$model" id="personInCharge" ref="personInCharge" :class="{'is-invalid': $v.config.personInCharge.$error}">
         <small class="text-danger" v-if="$v.config.personInCharge.$error">Este valor es obligatorio<br></small>
-
-        <label for="personInCharge" class="mt-2">Logo</label>
-        <input type="text" class="form-control" v-model="$v.config.logo.$model" id="personInCharge" :class="{'is-invalid': $v.config.personInCharge.$error}">
-        <small class="text-danger" v-if="$v.config.logo.$error">Este valor es obligatorio<br></small>
 
         <label for="invoiceFooter" class="mt-2">Pie de factura</label>
         <input type="text" class="form-control" v-model="$v.config.invoiceFooter.$model" id="invoiceFooter" ref="invoiceFooter" :class="{'is-invalid': $v.config.invoiceFooter.$error}">
         <small class="text-danger" v-if="$v.config.invoiceFooter.$error">Este valor es obligatorio<br></small>
+
+        <label for="logo" class="mt-2">Logo</label>
+         <!--UPLOAD-->
+        <logoFileUpload v-model="$v.config.logo.$model" :class="{'is-image-invalid': $v.config.logo.$error}"></logoFileUpload>
+
+        <!-- <input type="text" class="form-control" v-model="$v.config.logo.$model" id="personInCharge" :class="{'is-invalid': $v.config.personInCharge.$error}"> -->
+        <small class="text-danger" v-if="$v.config.logo.$error">Este valor es obligatorio<br></small>
       </div> <!-- col-md-6 -->
     </div> <!-- row -->
   </div>
@@ -40,9 +45,14 @@
 // import { mixin as clickaway } from 'vue-clickaway'
 import { required } from 'vuelidate/lib/validators'
 import { getConfigValues, setConfigValue } from '../../../main/dal.js'
+const fs = require('fs')
+import logoFileUpload from '../PageElements/fileUploads/logoFileUpload'
 
 export default {
   name: 'configuration',
+  components: {
+    logoFileUpload
+  },
   // mixins: [ clickaway ],
   data () {
     return {
@@ -140,6 +150,10 @@ export default {
   }
 }
 </script>
-
 <style>
+.is-image-invalid {
+  background-color: #FF7285;
+  padding: 10px;
+  border: 1px solid red;
+}
 </style>
