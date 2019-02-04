@@ -80,12 +80,12 @@ var menuTemplate = [{
       },
       enabled: !(datafile === undefined || datafile === '')
     },
-    {
-      label: 'Guardar copia de seguridad',
-      click () {
-        // mainWindow.webContents.send('todo:clear')
-      }
-    },
+    // {
+    //   label: 'Guardar copia de seguridad',
+    //   click () {
+    //     // mainWindow.webContents.send('todo:clear')
+    //   }
+    // },
     {
       type: 'separator'
     },

@@ -720,9 +720,6 @@ export async function insertCatalogEntry(catalogEntry) {
 
 //Tested
 export async function updateCatalogEntry(catalogEntry) {
-  // var query = 'UPDATE Catalogo SET Descripcion = ?, Precio = ?' +
-  // 'WHERE IdElementoCatalogo = ?'
-  // return await runAsync(db, query, [catalogEntry.Descripcion, catalogEntry.Precio, catalogEntry.IdElementoCatalogo])
   deleteCatalogEntry(catalogEntry)
   insertCatalogEntry(catalogEntry)
 }
@@ -781,6 +778,24 @@ export async function setConfigValue (configKey, configValue) {
   var query = 'INSERT OR REPLACE INTO Configuracion (clave, valor) VALUES (?, ?)'
   return await runAsync(db, query, [configKey, configValue])
 }
+
+// Files ----------------------------------------------------------------------
+
+// export async function getFilesList (workId) {
+//   var query = 'SELECT IdFichero, IdTrabajo, Ruta FROM TrabajosFicheros WHERE IdTrabajo = ?'
+//   return await allAsync(db, query, [workId])
+// }
+
+// //Tested
+// export async function insertFile(workId, path) {
+//   var query = 'INSERT INTO TrabajosFicheros (IdTrabajo, Ruta) VALUES (?, ?)'
+//   return await runAsync(db, query, [workId, path])
+// }
+
+// export async function deleteFile(fileId) {
+//   var query = 'DELETE FROM TrabajosFicheros WHERE IdFichero = ?'
+//   return await runAsync(db, query, [fileId])
+// }
 
 // Generic functions ----------------------------------------------------------
 

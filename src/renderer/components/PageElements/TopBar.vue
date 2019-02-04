@@ -80,7 +80,7 @@ export default {
       from: '',
       isAdmin: false,
       leavingToUrl: '',
-      lastComponentFound: undefined
+      lastComponentFound: undefined,
     }
   },
   watch: {
@@ -233,4 +233,5 @@ export default {
     width: auto;
   }
 }
+
 </style>

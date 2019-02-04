@@ -10,9 +10,8 @@
       </div>
     </div>
     <div class="text-center">
-    <button class="btn btn-secondary" @click="download"><i class="fas fa-download mr-2 position-relative" style="top: 1px;"></i>Descargar a disco</button>
-    <button class="btn btn-secondary" @click="deleteImage"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Borrar</button>
-
+      <button class="btn btn-secondary" @click="download"><i class="fas fa-download mr-2 position-relative" style="top: 1px;"></i>Descargar a disco</button>
+      <button class="btn btn-secondary" @click="deleteImage"><i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Borrar</button>
     </div>
   </div>
 </template>
@@ -20,6 +19,7 @@
 <script>
 import fileUploadBase from './fileUploadBase'
 const dialog = require('electron').remote.dialog
+import { getFileType, saveFile } from '../../../../main/files.js'
 
 export default {
   name: 'logoFileUpload',
@@ -37,11 +37,11 @@ export default {
       this.$emit('input', '')
     },
     download() {
-      var imageType = this.$refs.fileUpload.getFileType(this.value)
+      var imageType = getFileType(this.value)
 
       var path = dialog.showSaveDialog(null, { defaultPath: `logo.${imageType}`})
       if (path !== undefined) {
-        this.$refs.fileUpload.saveFile(this.value, path)
+        saveFile(this.value, path)
       }
     },
     upload(file) {

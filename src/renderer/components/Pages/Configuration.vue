@@ -20,7 +20,6 @@
         <small class="text-danger" v-if="$v.config.vatNumber.$error">Este valor es obligatorio<br></small>
       </div> <!-- col-md-6 -->
 
-
       <div class="col-md-6 mt-3">
         <label for="personInCharge" class="">Responsable</label>
         <input type="text" class="form-control" v-model="$v.config.personInCharge.$model" id="personInCharge" ref="personInCharge" :class="{'is-invalid': $v.config.personInCharge.$error}">

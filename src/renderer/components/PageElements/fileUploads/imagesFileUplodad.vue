@@ -4,30 +4,18 @@
       <fileUploadBase class="col-md-12" type="image/*" :multipleFiles="true" ref="fileUpload"></fileUploadBase>
     </div> <!-- row -->
     <div class="row text-center text-lg-left">
-      <div class="col-md-4 pb-3 text-center" v-for="image in value" v-bind:key="hash(image) + '-a-' + new Date().getTime()">
+      <div class="col-md-4 pb-3 text-center" v-for="(image, idx) in value" v-bind:key="idx">
         <a href="#" class="mb-4" @click="viewImage(image)">
           <img class="img-fluid img-thumbnail thumbnail" :src="image" title="Haga click para visualizar">
         </a>
         <button class="btn btn-secondary btn-sm" title="Descargar la imagen al ordenador" @click="downloadImage(image)"><i class="fas fa-download"></i></button>
-        <button class="btn btn-secondary btn-sm" title="Borrar la imagen" @click="deleteImage(image)"><i class="fas fa-times-circle"></i></button>
+        <button class="btn btn-secondary btn-sm" title="Borrar la imagen" @click="deleteImage(image, idx)"><i class="fas fa-times-circle"></i></button>
       </div> <!-- col-md-4 -->
     </div> <!-- row -->
-    <div id="slider" ref="slider" class="carousel slide overlay" :class="{'displayNone': !fullscreen}" data-ride="carousel">
-      <ol class="carousel-indicators" ref="imageIndicators">
-        <li v-for="(image, idx) in value" v-bind:key="hash(image) + '-b-' + new Date().getTime()" data-target="#slider" :data-slice-to="value.indexOf(image)" :class="{ active: idx === 0 }"></li>
-      </ol>
-      <div class="carousel-inner" ref="carouselImages">
-        <div class="carousel-item" v-for="(image, idx) in value" v-bind:key="hash(image) + '-c-' + new Date().getTime()">
-          <img class="d-block img-fluid" :src="image">
-        </div>
-      </div>
-      <a href="#slider" class="carousel-control-prev" data-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-      </a>
-      <a href="#slider" class="carousel-control-next" data-slide="next">
-          <span class="carousel-control-next-icon"></span>
-        </a>
-    </div>
+    <b-carousel id="carousel1" ref="carousel1" controls indicators background="#ababab" :interval="0" v-model="currentSlide" class="overlay" :class="{'displayNone': !fullscreen}">
+      <b-carousel-slide v-for="(image, idx) in value" :img-src="value[idx]" v-bind:key="'b-' + idx" @clidk="exitFullscreen">
+      </b-carousel-slide>
+    </b-carousel>
   </div>
 
 </template>
@@ -36,25 +24,22 @@
 import fileUploadBase from './fileUploadBase'
 import Vue from 'vue'
 const dialog = require('electron').remote.dialog
+import bCarousel from 'bootstrap-vue'
+import { copyFile, deleteFile, getFileList, getFileType, saveFile, turnFileIntoB64, hash } from '../../../../main/files.js'
 
 document.onkeydown = e => {
-  if (e === undefined) {
-    bus.$emit('esc')
-  } else {
-    switch (e.keyCode) {
-      case 27:
-        bus.$emit('esc')
-        break
-      case 37:
-        // bus.$emit('goPrev')
-        break
-      case 39:
-        // bus.$emit('goNext')
-        break
-      default:
-        console.log(e)
-        break
-    }
+  switch (e.keyCode) {
+    case 27:
+      bus.$emit('esc')
+      break
+    case 37:
+      bus.$emit('goPrev')
+      break
+    case 39:
+      bus.$emit('goNext')
+      break
+    default:
+      break
   }
 }
 
@@ -67,7 +52,8 @@ export default {
   },
   data () {
     return {
-      fullscreen: false
+      fullscreen: false,
+      currentSlide: 0
     }
   },
   props: {
@@ -89,67 +75,72 @@ export default {
     }
   },
   methods: {
-    deleteImage(image) {
-      this.value.splice(this.value.indexOf(image), 1)
+    deleteImage: async function(image, imagePosition) {
+      debugger
+      this.value.splice(imagePosition, 1)
+      await deleteFile(image, this.idTrabajo)
       this.$emit('input', this.value)
     },
     downloadImage(image) {
       var position = this.value.indexOf(image)
-      var imageType = this.$refs.fileUpload.getFileType(image)
+      var imageType = getFileType(image)
       var path = dialog.showSaveDialog(null, {
         defaultPath: `${this.idTrabajo}_${position}.${imageType}`
         })
       if (path !== undefined) {
-        this.$refs.fileUpload.saveFile(image, path)
+        saveFile(image, path)
       }
     },
-    upload(files){
+    upload: async function(files){
       for (var file of files){
-        this.viewThubnails(file)
+        debugger
+        //First, insert the files into the shared directory
+        var hash = hash(file)
+        var path = await copyFile(file, hash, this.idTrabajo)
+
+        //Then, update the UI
+        this.viewThumbnail(file)
       }
     },
     viewImage(image) {
       this.fullscreen = true
-      var position = this.value.indexOf(image)
-      
-      // for (var i = 0; i < this.value.length; i++){
-      //   if (i === position) {
-      //     this.$refs.carouselImages.childNodes[i].classList.add('active')
-      //     // this.$refs.imageIndicators.childNodes[i].classList.add('active')
-      //     console.log('active ' + i)
-      //   } else {
-      //     this.$refs.carouselImages.childNodes[i].classList.remove('active')
-      //     // this.$refs.imageIndicators.childNodes[i].classList.remove('active')
-      //     console.log('inactive ' + i)
-      //   }
-      // }
+      this.currentSlide = this.value.indexOf(image)
     },
     exitFullscreen() {
       this.fullscreen = false
     },
-    viewThubnails(file){
+    goNext() {
+      this.currentSlide = this.currentSlide % this.value.lenght
+    },
+    goPrev() {
+      this.currentSlide = this.currentSlide % this.value.lenght
+    },
+    viewThumbnail(file){
       var reader = new FileReader()
-      reader.onloadend = this.viewThubnails_sidecar
+      reader.onloadend = this.viewThumbnail_sidecar
       reader.readAsDataURL(file)
     },
-    viewThubnails_sidecar(e){
+    viewThumbnail_sidecar(e){
       this.value.push(e.currentTarget.result)
     },
-    hash: function(data) {
-      var hash = 0, i, chr
-      if (data.length === 0) return hash
-      for (i = 0; i < data.length; i++) {
-        chr   = data.charCodeAt(i)
-        hash  = ((hash << 5) - hash) + chr
-        hash |= 0 // Convert to 32bit integer
+    directViewThumbnail(file) {
+      this.value.push(file)
+    },
+    getData: async function(){
+      var files = await getFileList(this.idTrabajo)
+      for (var file of files) {
+        var x = await turnFileIntoB64(file)
+        this.viewThumbnail(x)
       }
-      return hash
     }
+  },
+  mounted() {
+    this.getData()
   },
   created() {
     bus
-      .$on('goPrev', this.prev)
-      .$on('goNext', this.next)
+      .$on('goPrev', this.goPrev)
+      .$on('goNext', this.goNext)
       .$on('esc', this.exitFullscreen)
   }
 }
