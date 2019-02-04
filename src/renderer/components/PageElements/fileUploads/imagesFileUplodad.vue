@@ -4,16 +4,16 @@
       <fileUploadBase class="col-md-12" type="image/*" :multipleFiles="true" ref="fileUpload"></fileUploadBase>
     </div> <!-- row -->
     <div class="row text-center text-lg-left">
-      <div class="col-md-4 pb-3 text-center" v-for="(image, idx) in value" v-bind:key="idx">
-        <a href="#" class="mb-4" @click="viewImage(image)">
-          <img class="img-fluid img-thumbnail thumbnail" :src="image" title="Haga click para visualizar">
+      <div class="col-md-4 pb-3 text-center" v-for="(image, idx) in imageArray" v-bind:key="image.path">
+        <a href="#" class="mb-4" @click="viewImage(image.content, idx)">
+          <img class="img-fluid img-thumbnail thumbnail" :src="image.content" title="Haga click para visualizar">
         </a>
         <button class="btn btn-secondary btn-sm" title="Descargar la imagen al ordenador" @click="downloadImage(image)"><i class="fas fa-download"></i></button>
-        <button class="btn btn-secondary btn-sm" title="Borrar la imagen" @click="deleteImage(image, idx)"><i class="fas fa-times-circle"></i></button>
+        <button class="btn btn-secondary btn-sm" title="Borrar la imagen" @click="deleteImage(image)"><i class="fas fa-times-circle"></i></button>
       </div> <!-- col-md-4 -->
     </div> <!-- row -->
     <b-carousel id="carousel1" ref="carousel1" controls indicators background="#ababab" :interval="0" v-model="currentSlide" class="overlay" :class="{'displayNone': !fullscreen}">
-      <b-carousel-slide v-for="(image, idx) in value" :img-src="value[idx]" v-bind:key="'b-' + idx" @clidk="exitFullscreen">
+      <b-carousel-slide v-for="(image, idx) in imageArray" :img-src="imageArray[idx].content" v-bind:key="'b-' + idx" @clidk="exitFullscreen">
       </b-carousel-slide>
     </b-carousel>
   </div>
@@ -25,7 +25,8 @@ import fileUploadBase from './fileUploadBase'
 import Vue from 'vue'
 const dialog = require('electron').remote.dialog
 import bCarousel from 'bootstrap-vue'
-import { copyFile, deleteFile, getFileList, getFileType, saveFile, turnFileIntoB64, hash } from '../../../../main/files.js'
+import { copyFile, deleteFile, getFileList, saveFile, turnFileIntoB64 } from '../../../../main/files.js'
+import _ from 'lodash'
 
 document.onkeydown = e => {
   switch (e.keyCode) {
@@ -53,12 +54,11 @@ export default {
   data () {
     return {
       fullscreen: false,
-      currentSlide: 0
+      currentSlide: 0,
+      imageArray: []
     }
   },
   props: {
-    value: {
-    },
     accept: {
       type: String,
       required: false,
@@ -75,17 +75,15 @@ export default {
     }
   },
   methods: {
-    deleteImage: async function(image, imagePosition) {
+    deleteImage: async function(image) {
       debugger
-      this.value.splice(imagePosition, 1)
-      await deleteFile(image, this.idTrabajo)
-      this.$emit('input', this.value)
+      _.remove(this.imageArray, (e) => { return e.path === image.path})
+      await deleteFile(image)
+      this.$forceUpdate()
     },
     downloadImage(image) {
-      var position = this.value.indexOf(image)
-      var imageType = getFileType(image)
       var path = dialog.showSaveDialog(null, {
-        defaultPath: `${this.idTrabajo}_${position}.${imageType}`
+        defaultPath: image.path.replace(/^.*[\\\/]/, '')
         })
       if (path !== undefined) {
         saveFile(image, path)
@@ -93,35 +91,39 @@ export default {
     },
     upload: async function(files){
       for (var file of files){
-        debugger
         //First, insert the files into the shared directory
-        var hash = hash(file)
-        var path = await copyFile(file, hash, this.idTrabajo)
+        var newPath = await copyFile(file, this.idTrabajo)
 
         //Then, update the UI
-        this.viewThumbnail(file)
+        this.viewThumbnail(file, newPath)
       }
     },
-    viewImage(image) {
+    viewImage(image, index) {
       this.fullscreen = true
-      this.currentSlide = this.value.indexOf(image)
+      this.currentSlide = index
     },
     exitFullscreen() {
       this.fullscreen = false
     },
     goNext() {
-      this.currentSlide = this.currentSlide % this.value.lenght
+      this.currentSlide = this.currentSlide % imageArray.lenght
     },
     goPrev() {
-      this.currentSlide = this.currentSlide % this.value.lenght
+      this.currentSlide = this.currentSlide % imageArray.lenght
     },
-    viewThumbnail(file){
+    viewThumbnail(file, newPath){
       var reader = new FileReader()
-      reader.onloadend = this.viewThumbnail_sidecar
+      var parent = this
+      reader.onloadend = function(e) {
+        if (newPath !== undefined) {
+          //If this function is called from upload, file will have a field called name that will point to the local directory (before upload). In this case, newFile will be set.
+          parent.imageArray.push({path: newPath, content: e.currentTarget.result})
+        } else {
+          //If this function is called from getData, newPath will be undefined, and the name field on file will contain the full path to the server file (after upload).
+          parent.imageArray.push({path: file.name, content: e.currentTarget.result})
+        }
+      }
       reader.readAsDataURL(file)
-    },
-    viewThumbnail_sidecar(e){
-      this.value.push(e.currentTarget.result)
     },
     directViewThumbnail(file) {
       this.value.push(file)
