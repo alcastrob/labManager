@@ -48,31 +48,39 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-6 mb-3 mt-3">
-          <label for="clinica">Clínica o Dr/a</label>
-          <dentist-search id="clinica" ref="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="readOnly" @change="$refs.paciente.focus()" ></dentist-search>
-          <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
-        </div> <!-- col-md-6 -->
-        <div class="col-md-6 mt-3">
-          <label for="paciente">Paciente</label>
-          <input type="text" class="form-control" v-model="$v.work.Paciente.$model" :disabled="readOnly"  ref="paciente">
-        </div> <!-- col-md-6 -->
-        <div class="col-md-3">
-          <label for="tipoTrabajo">Tipo trabajo</label>
-          <select class="form-control" id="tipoTrabajo" ref="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="readOnly" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
-            <option disabled value="">Seleccione una opción</option>
-            <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
-          </select>
-          <small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
-        </div> <!-- col-md-6 -->
-        <div class="col-md-2">
-          <label for="precioMetal">Precio metal</label>
-          <input type="text" class="form-control" id="precioMetal" ref="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}" :disabled="readOnly">
-          <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
-        </div> <!-- col-md-2 -->
-        <div class="col-md-4">
-          <label for="color">Color</label>
-          <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model" :disabled="readOnly">
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-md-6 mb-3 mt-3">
+              <label for="clinica">Clínica o Dr/a</label>
+              <dentist-search id="clinica" ref="clinica" v-model="$v.work.IdDentista.$model" :isInvalid="$v.work.IdDentista.$error && saveButtonPressed" :disabled="readOnly" @change="$refs.paciente.focus()" ></dentist-search>
+              <small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed">Es necesario especificar una clínica o dr/a.</small>
+            </div> <!-- col-md-6 -->
+            <div class="col-md-6 mt-3">
+              <label for="paciente">Paciente</label>
+              <input type="text" class="form-control" v-model="$v.work.Paciente.$model" :disabled="readOnly"  ref="paciente">
+            </div> <!-- col-md-6 -->
+            <div class="col-md-3">
+              <label for="tipoTrabajo">Tipo trabajo</label>
+              <select class="form-control" id="tipoTrabajo" ref="tipoTrabajo" v-model="$v.work.IdTipoTrabajo.$model" :disabled="readOnly" :class="{'is-invalid': $v.work.IdTipoTrabajo.$error}">
+                <option disabled value="">Seleccione una opción</option>
+                <option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">{{type.Descripcion}}</option>
+              </select>
+              <small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed">Es necesario especificar un tipo de trabajo.</small>
+            </div> <!-- col-md-6 -->
+            <div class="col-md-2">
+              <label for="precioMetal">Precio metal</label>
+              <input type="text" class="form-control" id="precioMetal" ref="precioMetal" placeholder="€" v-model="$v.work.PrecioMetal.$model" :class="{'is-invalid': $v.work.PrecioMetal.$error}" :disabled="readOnly">
+              <small class="text-danger" v-if="$v.work.PrecioMetal.$error">Aunque opcional, se requiere que el precio del metal sea válido</small>
+            </div> <!-- col-md-2 -->
+            <div class="col-md-4">
+              <label for="color">Color</label>
+              <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model" :disabled="readOnly">
+            </div> <!-- col-md-4 -->
+          </div> <!-- row -->
+        </div> <!-- col-md-8 -->
+        <div class="col-md-4 separated-column text-left">
+          <h4>Ficheros</h4>
+          <imagesFileUpload :multipleFiles="true" accept="image/*" :idTrabajo="work.IdTrabajo"></imagesFileUpload>
         </div> <!-- col-md-4 -->
       </div> <!-- row -->
       <div class="row">
@@ -155,13 +163,15 @@ import delivery from '../Labels/Delivery'
 import conformityModal from '../PageElements/ConformityModal'
 import warrantyLabel from '../Labels/LabelGarantia'
 import VueRouter from 'vue-router'
+import imagesFileUpload from '../PageElements/fileUploads/imagesFileUplodad'
 
 export default {
   name: 'workDetail',
   mixins: [workMixin],
   components: {
     conformityModal,
-    warrantyLabel
+    warrantyLabel,
+    imagesFileUpload
   },
   data () {
     return {
@@ -356,7 +366,7 @@ export default {
 }
 </script>
 <style>
-.labeStrikethrough, .labeStrikethrough:hover {
-  text-decoration: line-through;
-}
+  .labeStrikethrough, .labeStrikethrough:hover {
+    text-decoration: line-through;
+  }
 </style>

@@ -14,7 +14,7 @@
       </div>
     </div> <!-- row -->
     <div class="row">
-      <div class="col-md-10">
+      <div class="col-md-12">
         <div class="row">
           <div class="col-md-6 mb-3 mt-3">
             <label for="clinica">Clínica o Dr/a</label>
@@ -43,16 +43,7 @@
             <input type="text" class="form-control" id="color" placeholder="Indique el color" v-model="$v.work.Color.$model">
           </div> <!-- col-md-4 -->
         </div> <!-- row -->
-      </div> <!-- col-md-10 -->
-      <div class="col-md-2 separated-column text-left">
-        <div class="mt-3">
-          Ficheros
-          <form action="/upload-target" class="dropzone">Aquí</form>
-          <input type="file" @change="addFiles">
-
-        </div>
-
-      </div>
+      </div> <!-- col-md-12 -->
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12 mt-3">

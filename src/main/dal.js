@@ -779,24 +779,6 @@ export async function setConfigValue (configKey, configValue) {
   return await runAsync(db, query, [configKey, configValue])
 }
 
-// Files ----------------------------------------------------------------------
-
-// export async function getFilesList (workId) {
-//   var query = 'SELECT IdFichero, IdTrabajo, Ruta FROM TrabajosFicheros WHERE IdTrabajo = ?'
-//   return await allAsync(db, query, [workId])
-// }
-
-// //Tested
-// export async function insertFile(workId, path) {
-//   var query = 'INSERT INTO TrabajosFicheros (IdTrabajo, Ruta) VALUES (?, ?)'
-//   return await runAsync(db, query, [workId, path])
-// }
-
-// export async function deleteFile(fileId) {
-//   var query = 'DELETE FROM TrabajosFicheros WHERE IdFichero = ?'
-//   return await runAsync(db, query, [fileId])
-// }
-
 // Generic functions ----------------------------------------------------------
 
 function getAsync (db, sql, params) {

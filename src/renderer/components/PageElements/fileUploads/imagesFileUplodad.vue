@@ -76,7 +76,6 @@ export default {
   },
   methods: {
     deleteImage: async function(image) {
-      debugger
       _.remove(this.imageArray, (e) => { return e.path === image.path})
       await deleteFile(image)
       this.$forceUpdate()
@@ -149,18 +148,18 @@ export default {
 </script>
 
 <style>
-img.thumbnail {
-  max-width: 100px;
-  max-height: 200px;
-}
+  img.thumbnail {
+    max-width: 100px;
+    max-height: 200px;
+  }
 
-.overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  background: rgba(51,51,51,0.7);
-  z-index: 100;
+  .overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(51,51,51,0.7);
+    z-index: 100;
   }
 </style>

@@ -18,6 +18,11 @@
         <label for="vatNumber" class="mt-2">CIF</label>
         <input type="text" class="form-control" v-model="$v.config.vatNumber.$model" id="vatNumber" ref="vatNumber" :class="{'is-invalid': $v.config.vatNumber.$error}">
         <small class="text-danger" v-if="$v.config.vatNumber.$error">Este valor es obligatorio<br></small>
+
+        <label for="sharedPath" class="mt-2">Directorio de imágenes</label>
+        <input type="text" class="form-control" v-model="$v.config.sharedPath.$model" id="sharedPath" ref="sharedPath" :class="{'is-invalid': $v.config.sharedPath.$error}">
+        <small class="text-danger" v-if="$v.config.sharedPath.$error">Este valor es obligatorio<br></small>
+
       </div> <!-- col-md-6 -->
 
       <div class="col-md-6 mt-3">
@@ -52,7 +57,6 @@ export default {
   components: {
     logoFileUpload
   },
-  // mixins: [ clickaway ],
   data () {
     return {
       config: {
@@ -62,6 +66,7 @@ export default {
         personInCharge: '',
         logo: '',
         invoiceFooter: '',
+        sharedPath: ''
       }
     }
   },
@@ -72,12 +77,12 @@ export default {
       vatNumber: { required },
       personInCharge: { required },
       logo: { required },
-      invoiceFooter: { required }
+      invoiceFooter: { required },
+      sharedPath: { required }
     }
   },
   methods: {
     save: async function(url){
-      // this.$v.$touch()
       if (this.$v.$anyError){
         if (this.$v.config.invoiceFooter.$anyError){
           this.$refs.invoiceFooter.focus()
@@ -97,6 +102,10 @@ export default {
         if (this.$v.config.companyName.$anyError){
           this.$refs.companyName.focus()
         }
+        if (this.$v.config.sharedPath.$anyError){
+          this.$refs.sharedPath.focus()
+        }
+
         return false
       }
 
@@ -117,6 +126,9 @@ export default {
       }
       if (this.$v.config.invoiceFooter.$dirty){
         await setConfigValue('invoiceFooter', this.config.invoiceFooter)
+      }
+      if (this.$v.config.sharedPath.$dirty){
+        await setConfigValue('sharedPath', this.config.sharedPath)
       }
 
       this.$router.push({ path: url })

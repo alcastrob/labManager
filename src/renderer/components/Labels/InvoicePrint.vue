@@ -127,7 +127,6 @@ export default {
       this.renderContent(true)
     },
     insertInstance(worksToPrint, indicationsToPrint, currentPage, isLastPage, isInvoice){
-      debugger
       var ComponentClass
       if (isInvoice){
         ComponentClass = Vue.extend(invoicePage)

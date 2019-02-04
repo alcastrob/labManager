@@ -28,8 +28,8 @@ export default new Router({
       children: [
         {
           path: '',
-          // component: dashboard
-          component: test
+          component: dashboard
+          // component: test
         },
         {
           path: 'about',
