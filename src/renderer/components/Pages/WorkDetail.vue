@@ -114,7 +114,7 @@
       </div> <!-- row -->
       <div class="row">
         <div class="col-md-12 mt-3">
-          <button class="btn btn-secondary btn-block" type="button" @click="save()" v-if="!readOnly">
+          <button class="btn btn-secondary btn-block" type="button" @click="save()" v-if="!readOnly" ref="btnSave">
             <i class="fas fa-save"></i>
             Guardar
           </button>
@@ -151,6 +151,8 @@ import delivery from '../Labels/Delivery'
 import conformityModal from '../PageElements/ConformityModal'
 import warrantyLabel from '../Labels/LabelGarantia'
 import VueRouter from 'vue-router'
+const VueScrollTo = require('vue-scrollto')
+Vue.use(VueScrollTo)
 
 export default {
   name: 'workDetail',
@@ -169,11 +171,41 @@ export default {
     }
   },
   methods: {
+    cleanComponent: function() {
+      this.work.IdDentista = 0
+      this.NombreDentista = ''
+      this.work.IdTipoTrabajo = ''
+      this.work.Paciente = ''
+      this.work.Color = ''
+      this.PrecioFinal = 0
+      this.work.FechaEntrada = ''
+      this.work.FechaPrevista = ''
+      this.workIndications = {}
+      this.$refs.workIndications.cleanComponent()
+      this.workTests = {}
+      this.$refs.workTests.cleanComponent()
+      this.workAdjuncts = {}
+      this.adjunctsVisible = false
+      this.workAdjunctsJustAdded = false
+      this.url = ''
+      this.$v.$reset()
+      this.$forceUpdate()
+    },
     save: function(url) {
       this.saveButtonPressed = true
       this.$v.$touch()
 
+      //If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
+      this.$refs.workIndications.addLastRow()
+      this.$refs.workTests.addLastRow()
       if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()){
+        if (this.$refs.workTests.isError()){
+          this.$refs.workTests.focus()
+          this.$scrollTo(this.$refs.btnSave, 1000)
+        }
+        if (this.$refs.workIndications.isError()){
+          this.$refs.workIndications.focus()
+        }
         if (this.$v.work.PrecioMetal.$anyError){
           this.$refs.precioMetal.focus()
         }
@@ -319,9 +351,13 @@ export default {
       }
       var result = this.$v.$anyDirty
       if (this.$refs.workIndications !== undefined){
+        //If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
+        this.$refs.workIndications.addLastRow()
         result = result || this.$refs.workIndications.isDirty()
       }
       if (this.$refs.workTests !== undefined){
+        //If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
+        this.$refs.workTests.addLastRow()
         result = result || this.$refs.workTests.isDirty()
       }
       return result
@@ -329,9 +365,14 @@ export default {
     isError(){
       var result = this.$v.$anyError
       if (this.$refs.workIndications !== undefined){
+        //If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
+        this.$refs.workIndications.addLastRow()
         result = result || this.$refs.workIndications.isError()
+        return result
       }
       if (this.$refs.workTests !== undefined){
+        //If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
+        this.$refs.workTests.addLastRow()
         result = result || this.$refs.workTests.isError()
       }
       return result

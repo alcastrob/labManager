@@ -1,5 +1,5 @@
 <template>
-<div id="table" class="table-editable">
+<div id="workTestTable" class="table-editable">
   <table class="table table-bordered table-responsive-xs table-striped" v-on-clickaway="hidePanel">
     <tr>
       <th style="width: 4%"></th>
@@ -301,6 +301,27 @@ export default {
         element.classList.remove('animated')
         element.classList.remove('flash')
       }
+    },
+    focus: function() {
+      document.getElementById('workTestTable').focus()
+    },
+    cleanComponent() {
+      this.newIds = 10000000
+      this.insertedRows = []
+      this.deletedRows = []
+      this.updatedRows = []
+      this.newRow.descripcion = ''
+      this.newRow.fechaSalida = ''
+      this.newRow.idTurnoFechaSalida = ''
+      this.newRow.fechaEntrada = ''
+      this.newRow.idTurnoFechaEntrada = ''
+      this.newRow.comentario = ''
+      this.isInvalidNewInDate = false,
+      this.isInvalidNewOutDate = false
+      this.$v.newRow.$reset()
+    },
+    isError() {
+      return document.getElementsByClassName('bg-danger').length > 0 || this.$v.newRow.$anyError
     }
   },
   computed: {

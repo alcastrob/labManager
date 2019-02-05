@@ -239,7 +239,6 @@ export default {
     isError() {
       return document.getElementsByClassName('bg-danger').length > 0 || this.$v.newRow.$anyError
     }
-
   },
   computed: {
     allRowEmpty: function() {

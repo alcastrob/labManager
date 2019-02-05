@@ -84,6 +84,7 @@
     "vue-floatthead": "0.0.5",
     "vue-notification": "^1.3.14",
     "vue-router": "^3.0.1",
+    "vue-scrollto": "^2.13.0",
     "vue-swal": "^1.0.0",
     "vue-toasted": "^1.1.26",
     "vuedraggable": "^2.17.0",
