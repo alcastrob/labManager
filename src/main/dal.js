@@ -294,6 +294,39 @@ export async function getWorksEndedLast30days() {
     }
   }
 
+  //Tested
+  export async function getMonthTotalsPerDentist(dentistId) {
+    var query = 'SELECT strftime("%m", FechaTerminacion) AS Month, ' +
+    'strftime("%Y", FechaTerminacion) AS Year, SUM(PrecioFinal) AS Sum ' +
+    'FROM Trabajos ' +
+    'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" AND IdDentista = ? ' +
+    'GROUP BY Month, Year'
+    var data = await allAsync(db, query, [dentistId])
+    var thisYearData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    var previousYearData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    _.forEach(_.filter(data, ['Year', new Date().getFullYear().toString()]), (v) => { thisYearData[parseInt(v.Month) - 1] = parseFloat(v.Sum).toFixed(2)})
+    _.forEach(_.filter(data, ['Year', (new Date().getFullYear() - 1).toString()]), (v) => { previousYearData[parseInt(v.Month) - 1] = parseFloat(v.Sum).toFixed(2)})
+    return {
+      thisYear: thisYearData,
+      lastYear: previousYearData
+    }
+  }
+
+  export async function getSumPerDentistPerWorkType(dentistId) {
+    var query = 'SELECT tt.Descripcion AS TipoTrabajo, ' +
+    'SUM(PrecioFinal) AS Sum ' +
+    'FROM Trabajos t ' +
+    'INNER JOIN TipoTrabajos tt ON t.IdTipoTrabajo = tt.IdTipoTrabajo ' +
+    'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" AND IdDentista = ? ' +
+    'GROUP BY TipoTrabajo'
+    var data = await allAsync(db, query, [dentistId])
+    return {
+      labels: _.map(data, (e) => { return e.TipoTrabajo}),
+      data: _.map(data, (e) => { return e.Sum})
+    }
+  }
+
+  //Tested
   export async function getLeaderboard(limit) {
     var query = 'SELECT d.NombreDentista, ' +
       'SUM(t.PrecioFinal) AS Sum ' +

@@ -19,7 +19,7 @@
 <script>
 import fileUploadBase from './fileUploadBase'
 const dialog = require('electron').remote.dialog
-import { getFileType, saveFile } from '../../../../main/files.js'
+import { saveFile } from '../../../../main/files.js'
 
 export default {
   name: 'logoFileUpload',

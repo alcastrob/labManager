@@ -160,6 +160,7 @@ import { getWork, getWorkIndications, insertAdjuntsOfWork, getAdjuntsOfWork, get
 import { configGet } from '../../../main/store.js'
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
+import imagesFileUpload from '../PageElements/fileUploads/imagesFileUplodad'
 import conformityModal from '../PageElements/ConformityModal'
 import warrantyLabel from '../Labels/LabelGarantia'
 import VueRouter from 'vue-router'

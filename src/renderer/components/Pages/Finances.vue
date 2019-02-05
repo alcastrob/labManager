@@ -271,6 +271,7 @@ export default {
           }
         }
       })
+      
       this.top20Chart = new Chart(ctxLeaderboard, {
         type: 'horizontalBar',
         data: leaderboardChartData,

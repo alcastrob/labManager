@@ -98,20 +98,32 @@
         </div>
         <div class="col-md-4 separated-column text-left" v-if="isAdmin"> <!-- Columna 2 -->
           <h4 class="pt-2">Datos y estadísticas</h4>
-          <p class="text-left">Aquí irá toda la información de las estadísticas del dentista.</p>
-          <p class="text-justify">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero blanditiis impedit itaque perferendis magnam nesciunt iure deserunt? Perspiciatis nemo fugiat cum officiis et ratione in vel maxime. Ratione, hic consequuntur.</p>
-          <p class="text-justify">Illo veritatis, eveniet laudantium expedita repudiandae error, pariatur et nobis laboriosam itaque neque ipsam iusto labore, dolorem suscipit provident tenetur! Ab accusantium totam autem cupiditate eveniet. Laboriosam consectetur repellendus debitis!</p>
-          <p class="text-justify">Cumque nisi eum nam doloribus ea officia mollitia magni beatae adipisci non recusandae id consequuntur ullam sequi minima optio nesciunt omnis praesentium, soluta voluptatum, laborum enim, delectus quisquam. Soluta, laborum.</p>
-          <p class="text-justify">Ullam, rerum in exercitationem, repudiandae sunt eligendi ab laboriosam ea facere, suscipit dolores voluptate nisi. Eos iure placeat dolores, cupiditate optio ex impedit explicabo accusantium doloribus iste nostrum neque! Quia.</p>
-          </div>
+          <div class="card mt-3" >
+            <div class="card-header">
+              <h5 class="pt-2">Evolución de ingresos</h5>
+            </div>
+            <div class="card-body">
+              <canvas ref="incomeEvolution" height="250"></canvas>
+            </div> <!-- card-body -->
+          </div> <!-- card  -->
+          <div class="card mt-3" >
+            <div class="card-header">
+              <h5 class="pt-2">Desglose de ingresos por tipo de trabajo</h5>
+            </div>
+            <div class="card-body">
+              <canvas ref="incomeEvolutionPerType" height="250"></canvas>
+            </div> <!-- card-body -->
+          </div> <!-- card  -->
+        </div> <!-- col-md-4 -->
       </div> <!-- row -->
     </div> <!-- container -->
   </div>
 </template>
 
 <script>
-import { getDentist, updateDentist, getConfigValue } from '../../../main/dal.js'
+import { getDentist, updateDentist, getConfigValue, getMonthTotalsPerDentist, getSumPerDentistPerWorkType } from '../../../main/dal.js'
 import collapsibleLinkButton from '../PageElements/CollapsibleButtons/collapsibleLinkButton'
+import { configGet } from '../../../main/store.js'
 import { required, email, numeric, minLength, maxLength } from 'vuelidate/lib/validators'
 
 export default {
@@ -137,7 +149,11 @@ export default {
         Telefono: '',
         Telefono2: ''
       },
-      isAdmin: false
+      isAdmin: false,
+      moneyFormatter: new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'EUR'
+      }),
     }
   },
   validations: {
@@ -187,8 +203,83 @@ export default {
         })
       }
     },
+    loadGraph: async function() {
+      var dataMonths = await getMonthTotalsPerDentist(this.dentistId)
+      var dataWorkTypes = await getSumPerDentistPerWorkType(this.dentistId)
+
+      this.yearsExpenseEvolutionChart = [new Date().getFullYear(), new Date().getFullYear() - 1]
+
+      var barChartData = {
+        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto','Septiembre', 'Octobre', 'Noviembre', 'Diciembre'],
+        datasets: [{
+          label: this.yearsExpenseEvolutionChart[0],
+          backgroundColor: 'rgba(247, 146, 86, .8)',
+          borderColor: 'rgba(247, 146, 86, 1)',
+          borderWidth: 1,
+          data: dataMonths.thisYear
+        }, {
+          label: this.yearsExpenseEvolutionChart[1],
+          backgroundColor: 'rgba(93, 169, 233, .8)',
+          borderColor: 'rgba(93, 169, 233, 1)',
+          borderWidth: 1,
+          data: dataMonths.lastYear
+        }]
+      }
+
+      var ctxIncomeEvolution = this.$refs.incomeEvolution.getContext('2d')
+      this.expenseEvolutionChart = new Chart(ctxIncomeEvolution, {
+        type: 'bar',
+        data: barChartData,
+        options: {
+          responsive: true,
+          legend: {
+            position: 'bottom',
+          },
+          title: {
+            display: false,
+          },
+          tooltips: {
+            callbacks: {
+              label: this.setExpenseEvolutionTooltip
+            }
+          },
+        }
+      })
+
+      //-----------------
+
+      var barGroupedChartData = {
+        labels: dataWorkTypes.labels,
+        datasets: [{
+          backgroundColor: ['rgb(255, 186, 73)', 'rgb(227, 74, 111)', 'rgb(248, 178, 189)', 'rgb(178, 161, 152)', 'rgb(96, 165, 97)'],
+          borderWidth: 1,
+          data: dataWorkTypes.data
+        }]
+      }
+
+      var ctxIncomeEvolutionPerWorkType = this.$refs.incomeEvolutionPerType.getContext('2d')
+      this.expenseEvolutionChart = new Chart(ctxIncomeEvolutionPerWorkType, {
+        type: 'pie',
+        data: barGroupedChartData,
+        options: {
+          responsive: true,
+          legend: {
+            position: 'bottom',
+          },
+          title: {
+            display: false,
+          }
+        }
+      })
+    },
+    setExpenseEvolutionTooltip(tooltipItem) {
+      return `${tooltipItem.xLabel} ${this.yearsExpenseEvolutionChart[tooltipItem.datasetIndex]}: ${this.moneyFormatter.format(tooltipItem.yLabel)}`
+    },
+    setWorkTypeTooltip(tooltipItem) {
+      return `${tooltipItem.xLabel} ${this.yearsExpenseEvolutionChart[tooltipItem.datasetIndex]}: ${this.moneyFormatter.format(tooltipItem.yLabel)}`
+    },
     getConfig: async function() {
-      this.isAdmin = await getConfigValue('isAdmin')
+      this.isAdmin = configGet('isAdmin')
     },
     getData: async function() {
       this.dentistId = this.$route.params.id
@@ -204,6 +295,7 @@ export default {
   },
   mounted () {
     this.getData()
+    this.loadGraph()
     this.$on('topbar:save', this.save)
   },
   computed: {
