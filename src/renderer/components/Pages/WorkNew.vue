@@ -55,10 +55,6 @@
       <div class="col-md-4 mt-3">
         <label for="fEntrada">Fecha entrada</label>
         <input type="date" class="form-control" id="fEntrada" placeholder="dd/mm/aaaa" v-model="$v.work.FechaEntrada.$model">
-        <a href="#" class="form-text text-muted ml-2" v-on:click="setStartDateToToday()">
-        <i class="far fa-calendar-alt"></i>
-        Poner fecha de hoy
-        </a>
       </div> <!-- col-md-4 -->
       <div class="col-md-4 mt-3">
         <label for="fPrevista">Fecha prevista prueba</label>
@@ -192,7 +188,8 @@ export default {
       this.work.Paciente = ''
       this.work.Color = ''
       this.PrecioFinal = 0
-      this.work.FechaEntrada = ''
+      this.setStartDateToToday()
+      // this.work.FechaEntrada = ''
       this.work.FechaPrevista = ''
       this.workIndications = {}
       this.$refs.workIndications.cleanComponent()
