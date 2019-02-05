@@ -90,6 +90,7 @@ export default {
   },
   methods: {
     go(url) {
+      debugger
       if (!this.isPageDirty()){
         if (this.to.fullPath === url) {
           this.cleanPage()
@@ -104,8 +105,8 @@ export default {
       }
     },
     goBack() {
-      this.cleanPage()
       if (!this.isPageDirty()) {
+        this.cleanPage()
         this.$router.push({
           path: this.from.fullPath
         })
@@ -123,8 +124,8 @@ export default {
     },
     saveAndLeaveButtonClick(){
       this.$refs.leavePageModal.hide()
-      this.cleanPage()
       this.$root.$emit('topbar:save', this.leavingToUrl)
+      // this.cleanPage()
     },
     isPageDirty(){
       //In order to say if the current page is dirty, first we have to find a component that have 'isError' and 'isDirty' computed values (not bare functions)
@@ -135,7 +136,7 @@ export default {
       })
       //If exists, get the isDirty computed value. If not, just return false and continue navigating
       if (page !== undefined){
-        return page.isDirty
+        return page.isDirty || page.isError
       } else {
         return false
       }
