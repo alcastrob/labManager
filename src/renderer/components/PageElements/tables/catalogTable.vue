@@ -1,5 +1,5 @@
 <template>
-<div id="table" class="table-editable">
+<div id="catalogTable" class="table-editable">
   <div>
     <filterBar ref="filterBar"></filterBar>
     <table class="table table-bordered table-responsive-xs table-striped" >
@@ -30,10 +30,10 @@
         <tr v-if="$attrs.disabled !== true">
           <td class="pt-3-half"></td>
           <td class="noMargins">
-            <input type="text" class="inputInTd" ref="newDescripcion">
+            <input type="text" class="inputInTd" v-model="$v.newRow.descripcion.$model" :class="{'bg-danger text-white animated flash': $v.newRow.descripcion.$error}" ref="newDescripcion">
           </td>
           <td class="noMargins" >
-            <input type="text" class="inputInTd text-right" ref="newPrecio" @blur="addLastRow()" @keyup.enter="addLastRow()" v-on:keydown="filterJustNumberKeystrokes">
+            <input type="text" class="inputInTd text-right" v-model="$v.newRow.precio.$model" @blur="addLastRow()" @keyup.enter="addLastRow()" v-on:keydown="filterJustNumberKeystrokes" :class="{'bg-danger text-white animated flash': $v.newRow.precio.$error}">
           </td>
           <td class="noMargins">
             <input type="text" class="inputInTd" disabled>
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import { getCatalogList, insertCatalogEntry, updateCatalogEntry, deleteCatalogEntry } from '../../../../main/dal.js'
 import euroInput from '../tables/euroInput'
@@ -68,6 +69,9 @@ import filterBar from '../tables/filterBar'
 import pagination from '../tables/pagination'
 import _ from 'lodash'
 import moment from 'moment'
+import { required, decimal } from 'vuelidate/lib/validators'
+const VueScrollTo = require('vue-scrollto')
+Vue.use(VueScrollTo)
 
 const PAGESIZE = 10
 
@@ -85,21 +89,37 @@ export default {
       filteredDataset: [],
       pageSize: PAGESIZE,
       currentPage: 1,
+      newRow: {
+        descripcion: '',
+        precio: ''
+      }
+    }
+  },
+  validations: {
+    newRow: {
+      descripcion: {
+        required
+      },
+      precio: {
+        required,
+        decimal
+      }
     }
   },
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
-      if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
-        var newRow = {
+      if (this.$v.newRow.$anyDirty){
+        this.$v.newRow.$touch()
+        var _newRow = {
           IdElementoCatalogo: this.newIds++,
-          Descripcion: this.$refs.newDescripcion.value,
-          Precio: this.$refs.newPrecio.value
+          Descripcion: this.newRow.descripcion,
+          Precio: this.newRow.precio
           }
-        this.data.push(newRow)
-        this.insertedRows.push(newRow)
-        this.$refs.newDescripcion.value = ''
-        this.$refs.newPrecio.value = ''
+        this.data.push(_newRow)
+        this.insertedRows.push(_newRow)
+        this.newRow.descripcion = ''
+        this.newRow.precio = ''
         this.save()
         this.$emit('input', this.data)
         this.$refs.newDescripcion.focus()
@@ -149,21 +169,28 @@ export default {
       this.$emit('input', this.rawDataset)
     },
     save(){
-      _.forEach(this.insertedRows, function(row){
-        insertCatalogEntry(row)
-      })
-      _.forEach(this.deletedRows, function(row){
-        deleteCatalogEntry(row)
-      })
-      _.forEach(this.updatedRows, function(row){
-        updateCatalogEntry(row)
-      })
-      this.insertedRows = []
-      this.deletedRows = []
-      this.updatedRows = []
+      this.$v.$touch()
+      this.addLastRow()
+      if (this.$v.$anyError) {
+        this.$scrollTo(this.$refs.newDescripcion,1000)
+      } else {
+        _.forEach(this.insertedRows, function(row){
+          insertCatalogEntry(row)
+        })
+        _.forEach(this.deletedRows, function(row){
+          deleteCatalogEntry(row)
+        })
+        _.forEach(this.updatedRows, function(row){
+          updateCatalogEntry(row)
+        })
+        this.insertedRows = []
+        this.deletedRows = []
+        this.updatedRows = []
+  
+        this.getData()
+        this.$refs.filterBar.doFilter()
 
-      this.getData()
-      this.$refs.filterBar.doFilter()
+      }
     },
     // Other methods (specific)------------------------------------------------
     updatePrice(event, id) {
@@ -215,7 +242,19 @@ export default {
         return _.slice(this.filteredDataset, left, right)
       }
     },
-      getData: async function(){
+    focus: function() {
+      document.getElementById('catalogTable').focus()
+    },
+    cleanComponent() {
+      this.newIds = 10000000
+      this.insertedRows = []
+      this.deletedRows = []
+      this.updatedRows = []
+    },
+    isError() {
+      return document.getElementsByClassName('bg-danger').length > 0
+    },
+    getData: async function(){
       this.rawDataset = await getCatalogList()
       this.filteredDataset = this.rawDataset
     },

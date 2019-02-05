@@ -1,5 +1,5 @@
 <template>
-<div id="table" class="table-editable">
+<div id="productsTable" class="table-editable">
   <div>
     <filterBar ref="filterBar"></filterBar>
     <table class="table table-bordered table-responsive-xs table-striped" >
@@ -15,14 +15,14 @@
             <i class="fa fa-times-circle" v-on:click="deleteRow(product.IdProductoLote)"></i>
           </td>
           <td class="noMargins">
-            <input type="text" v-model="product.Descripcion" class="inputInTd" @change="trackChanges($event, product.IdProductoLote, 'Descripcion')" @keyup.enter="trackChanges($event, product.IdProductoLote, 'Descripcion')">
+            <input type="text" v-model="product.Descripcion" class="inputInTd" @change="trackChanges($event, product.IdProductoLote, 'Descripcion')" @keyup.enter="trackChanges($event, product.IdProductoLote, 'Descripcion')" ref="newDescripcion">
           </td>
         </tr>
         <!-- the blank line -->
         <tr v-if="$attrs.disabled !== true">
           <td class="pt-3-half"></td>
           <td class="noMargins">
-            <input type="text" class="inputInTd" ref="newDescripcion" @blur="addLastRow()" @keyup.enter="addLastRow()">
+            <input type="text" class="inputInTd" v-model="$v.newRow.descripcion.$model" @blur="addLastRow()" @keyup.enter="addLastRow()" :class="{'bg-danger text-white animated flash': $v.newRow.descripcion.$error}">
           </td>
         </tr>
       </tbody>
@@ -54,6 +54,8 @@ import filterBar from '../tables/filterBar'
 import pagination from '../tables/pagination'
 import _ from 'lodash'
 import moment from 'moment'
+import { required } from 'vuelidate/lib/validators'
+
 
 const PAGESIZE = 10
 
@@ -71,18 +73,29 @@ export default {
       filteredDataset: [],
       pageSize: PAGESIZE,
       currentPage: 1,
+      newRow: {
+        descripcion: ''
+      }
+    }
+  },
+  validations: {
+    newRow: {
+      descripcion: {
+        required
+      }
     }
   },
   methods: {
     // Related with the state and persistence----------------------------------
     addLastRow(){
-      if (this.isNotEmpty(this.$refs.newDescripcion.value)) {
-        var newRow = {
+      if (this.$v.newRow.$anyDirty){
+        this.$v.newRow.$touch()
+        var _newRow = {
           IdProductoLote: this.newIds++,
-          Descripcion: this.$refs.newDescripcion.value
-          }
-        this.data.push(newRow)
-        this.insertedRows.push(newRow)
+          Descripcion: this.newRow.descripcion
+        }
+        this.data.push(_newRow)
+        this.insertedRows.push(_newRow)
         this.$refs.newDescripcion.value = ''
         this.save()
         this.$emit('input', this.data)
@@ -167,6 +180,18 @@ export default {
         return _.slice(this.filteredDataset, left, right)
       }
     },
+    focus: function() {
+      document.getElementById('productsTable').focus()
+    },
+    cleanComponent() {
+      this.newIds = 10000000
+      this.insertedRows = []
+      this.deletedRows = []
+      this.updatedRows = []
+    },
+    isError() {
+      return document.getElementsByClassName('bg-danger').length > 0
+    },
     getData: async function(){
       this.rawDataset = await getProductList()
       this.filteredDataset = this.rawDataset
@@ -174,6 +199,7 @@ export default {
   },
   mounted () {
     this.getData()
+    this.$root.$on('topbar:save', this.save)
   }
 }
 </script>

@@ -24,6 +24,20 @@ export default {
   mixins: [ clickaway, tableMixin ],
   components: {
     productsTable
+  },
+  computed: {
+    isDirty() {
+      //If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
+      this.$refs.products.addLastRow()
+      var result = this.$refs.products.isDirty()
+      return result
+    },
+    isError() {
+      //If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
+      this.$refs.products.addLastRow()
+      var result = this.$refs.products.isError()
+      return result
+    }
   }
 }
 </script>
