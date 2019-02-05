@@ -185,16 +185,17 @@ export default {
   name: 'workNew',
   mixins: [workMixin],
   methods: {
-    reset: function() {
-      this.work.IdDentista = 0,
-      this.NombreDentista = '',
-      this.work.IdTipoTrabajo = '',
-      this.work.Paciente = '',
-      this.work.Color = '',
-      this.PrecioFinal = 0,
-      this.work.FechaEntrada = '',
-      this.work.FechaPrevista = '',
-      this.workIndications = []
+    cleanComponent: function() {
+      this.work.IdDentista = 0
+      this.NombreDentista = ''
+      this.work.IdTipoTrabajo = ''
+      this.work.Paciente = ''
+      this.work.Color = ''
+      this.PrecioFinal = 0
+      this.work.FechaEntrada = ''
+      this.work.FechaPrevista = ''
+      this.workIndications = {}
+      this.$refs.workIndications.cleanComponent()
       this.workAdjuncts = {}
       this.adjunctsVisible = false
       this.workAdjunctsJustAdded = false
@@ -207,7 +208,13 @@ export default {
 
       this.saveButtonPressed = true
       this.$v.$touch()
+
+      //If the row is not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
+      this.$refs.workIndications.addLastRow()
       if (this.$v.$anyError || this.$refs.workIndications.isError()){
+        if (this.$refs.workIndications.isError()){
+          this.$refs.workIndications.focus()
+        }
         if (this.$v.work.PrecioMetal.$anyError){
           this.$refs.precioMetal.focus()
         }
@@ -314,6 +321,8 @@ export default {
     isDirty(){
       var result = this.$v.$anyDirty
       if (this.$refs.workIndications !== undefined){
+        //If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
+        this.$refs.workIndications.addLastRow()
         result = result || this.$refs.workIndications.isDirty()
       }
       return result
@@ -321,13 +330,16 @@ export default {
     isError(){
       var result = this.$v.$anyError
       if (this.$refs.workIndications !== undefined){
+        //If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
+        this.$refs.workIndications.addLastRow()
         result = result || this.$refs.workIndications.isError()
       }
       return result
     }
   },
   mounted () {
-    this.$on('topbar:save', this.save)
+    this.$root.$on('topbar:save', this.save)
+    this.cleanComponent()
   }
 }
 </script>

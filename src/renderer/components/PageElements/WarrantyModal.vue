@@ -59,7 +59,8 @@ export default {
     },
     loadData: async function(){
       var logoData = await getConfigValue('logo')
-      this.logo = await getConfigValue('logo')
+      this.logo = (logoData.startsWith('data:image/png;base64,'))? 'data:image/png;base64,' + logoData : logoData
+      // this.logo = 'data:image/png;base64,' + logoData
     }
   },
   created (){

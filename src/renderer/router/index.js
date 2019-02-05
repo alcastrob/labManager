@@ -29,7 +29,6 @@ export default new Router({
         {
           path: '',
           component: dashboard
-          // component: test
         },
         {
           path: 'about',

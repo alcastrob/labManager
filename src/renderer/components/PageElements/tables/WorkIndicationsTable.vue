@@ -1,5 +1,5 @@
 <template>
-<div id="table" class="table-editable">
+<div id="workIndicationsTable" class="table-editable">
     <div>
       <table class="table table-bordered table-responsive-xs table-striped" >
         <tr>
@@ -221,11 +221,28 @@ export default {
     canDisplayDropdown: function() {
       //TODO
       return false
+    },
+    focus: function() {
+      document.getElementById('workIndicationsTable').focus()
+    },
+    cleanComponent() {
+      // this.data = []
+      this.newIds = 10000000
+      this.insertedRows = []
+      this.deletedRows = []
+      this.updatedRows = []
+      this.sumError = false
+      this.newRow.descripcion = ''
+      this.newRow.precio = ''
+      this.$v.newRow.$reset()
+    },
+    isError() {
+      return document.getElementsByClassName('bg-danger').length > 0 || this.$v.newRow.$anyError
     }
   },
   computed: {
     allRowEmpty: function() {
-      return this.$v.newRow.descripcion.$model.length === 0 &&this.$v.newRow.precio.$model.length === 0
+      return this.$v.newRow.descripcion.$model.length === 0 && this.$v.newRow.precio.$model.length === 0
     }
   }
 }

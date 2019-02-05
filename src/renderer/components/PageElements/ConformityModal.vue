@@ -168,7 +168,8 @@ export default {
           makerNumber: this.makerNumber,
           personInCharge: this.personInCharge,
           companyName: this.companyName,
-          logo: this.logo
+          // logo: 'data:image/png;base64,' + this.logo
+          logo: (!this.logo.startsWith('data:image/png;base64,'))? 'data:image/png;base64,' + this.logo : this.logo
         }
       })
       instance.$mount()
