@@ -90,7 +90,6 @@ export default {
   },
   methods: {
     go(url) {
-      debugger
       if (!this.isPageDirty()){
         if (this.to.fullPath === url) {
           this.cleanPage()
