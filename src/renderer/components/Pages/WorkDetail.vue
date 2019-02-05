@@ -260,7 +260,7 @@ export default {
             FechaTerminacion: new Date(this.work.FechaTerminacion),
             Detalles: this.workIndications,
             PrecioFinal: this.work.PrecioFinal,
-            logo: 'data:image/png;base64,' + row[0].valor
+            logo: (!row[0].valor.startsWith('data:image/png;base64,'))? 'data:image/png;base64,' + row[0].valor : row[0].valor
           }
         })
         instance.$mount()

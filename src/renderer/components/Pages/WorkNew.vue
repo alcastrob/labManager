@@ -179,15 +179,16 @@ export default {
   name: 'workNew',
   mixins: [workMixin],
   methods: {
-    reset: function() {
-      this.work.IdDentista = 0,
-      this.NombreDentista = '',
-      this.work.IdTipoTrabajo = '',
-      this.work.Paciente = '',
-      this.work.Color = '',
-      this.PrecioFinal = 0,
-      this.work.FechaEntrada = '',
-      this.work.FechaPrevista = '',
+    cleanComponent: function() {
+      console.log('cleanComponent')
+      this.work.IdDentista = 0
+      this.NombreDentista = ''
+      this.work.IdTipoTrabajo = ''
+      this.work.Paciente = ''
+      this.work.Color = ''
+      this.PrecioFinal = 0
+      this.work.FechaEntrada = ''
+      this.work.FechaPrevista = ''
       this.workIndications = []
       this.workAdjuncts = {}
       this.adjunctsVisible = false
@@ -197,11 +198,6 @@ export default {
       this.$forceUpdate()
     },
     save: async function(url) {
-      // if (url === undefined) {
-      //   this.url = '/works/list'
-      // } else {
-      //   this.url = url
-      // }
       this.url = url
 
       this.saveButtonPressed = true
@@ -311,6 +307,7 @@ export default {
       if (this.$refs.workIndications !== undefined){
         result = result || this.$refs.workIndications.isDirty()
       }
+      console.log('isDirty: ' + result)
       return result
     },
     isError(){
@@ -318,11 +315,17 @@ export default {
       if (this.$refs.workIndications !== undefined){
         result = result || this.$refs.workIndications.isError()
       }
+      console.log('isError: ' + result)
       return result
     }
   },
   mounted () {
+    console.log('mounted')
     this.$root.$on('topbar:save', this.save)
+    this.cleanComponent()
+  },
+  activated () {
+    console.log('activated')
   }
 }
 </script>

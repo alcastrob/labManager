@@ -91,15 +91,20 @@ export default {
   methods: {
     go(url) {
       if (!this.isPageDirty()){
-        this.$router.push({
-          path: url
-        })
+        if (this.to.fullPath === url) {
+          this.cleanPage()
+        } else {
+          this.$router.push({
+            path: url
+          })
+        }
       } else {
         this.$refs.leavePageModal.show()
         this.leavingToUrl = url
       }
     },
     goBack() {
+      this.cleanPage()
       if (!this.isPageDirty()) {
         this.$router.push({
           path: this.from.fullPath
@@ -111,24 +116,15 @@ export default {
     },
     discardButtonClick(){
       this.$refs.leavePageModal.hide()
-      var x = _.find(this.$parent.$children, (e) => {
-        return e.reset !== undefined
-      })
-      if (x !== undefined){
-        return x.reset()
-      }
+      this.cleanPage()
       this.$router.push({
         path: this.leavingToUrl
       })
     },
     saveAndLeaveButtonClick(){
       this.$refs.leavePageModal.hide()
-      // var x = _.find(this.$parent.$children, (e) => {
-      //   return e.isError !== undefined && e.isDirty !== undefined
-      // })
-      // if (x !== undefined){
+      this.cleanPage()
       this.$root.$emit('topbar:save', this.leavingToUrl)
-      // }
     },
     isPageDirty(){
       //In order to say if the current page is dirty, first we have to find a component that have 'isError' and 'isDirty' computed values (not bare functions)
@@ -142,6 +138,14 @@ export default {
         return page.isDirty
       } else {
         return false
+      }
+    },
+    cleanPage(){
+      var x = _.find(this.$parent.$children, (e) => {
+        return e.cleanComponent !== undefined
+      })
+      if (x !== undefined){
+        return x.cleanComponent()
       }
     },
     cleanURL(url){
