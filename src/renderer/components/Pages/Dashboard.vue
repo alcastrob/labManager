@@ -34,7 +34,7 @@
             </div>
             <div class="card-body">
               <transition-group name="animated-card">
-                <div class="card p-2 animated-card" v-for="test in outboundTests" v-bind:key="'b' + test.IdPrueba">
+                <div class="card p-2 animated-card" v-for="(test, idx) in outboundTests" v-bind:key="'b' + idx">
                   <div class="form-check" @click="redirectToWork(test.IdTrabajo)">
                     <span>
                       {{test.IdTrabajo}}&nbsp;|&nbsp;
@@ -60,7 +60,7 @@
               <div class="pb-3" v-for="date in outboundWorks" v-bind:key="'c' + date[0].FechaPrevista">
                 <h4>{{format(date[0].FechaPrevista)}}</h4>
                 <transition-group name="animated-card">
-                  <div class="card p-2 animated-card" v-for="test in date" v-bind:key="'d' + test.IdPrueba">
+                  <div class="card p-2 animated-card" v-for="(test, idx) in date" v-bind:key="'d' + idx">
                     <div class="form-check" @click="redirectToWork(test.IdTrabajo)">
                       <span>
                         {{test.IdTrabajo}}&nbsp;|&nbsp;

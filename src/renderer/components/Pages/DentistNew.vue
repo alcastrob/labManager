@@ -158,7 +158,7 @@ export default {
   mounted () {
     document.getElementById('dentista').focus()
     this.data.NombreDentista = this.$route.query.name
-    this.$on('topbar:save', this.save)
+    this.$root.$on('topbar:save', this.save)
   },
   computed: {
     isDirty(){

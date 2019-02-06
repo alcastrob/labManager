@@ -33,12 +33,12 @@ document.onkeydown = e => {
     case 27:
       bus.$emit('esc')
       break
-    case 37:
-      bus.$emit('goPrev')
-      break
-    case 39:
-      bus.$emit('goNext')
-      break
+    // case 37:
+    //   bus.$emit('goPrev')
+    //   break
+    // case 39:
+    //   bus.$emit('goNext')
+    //   break
     default:
       break
   }
@@ -105,10 +105,10 @@ export default {
       this.fullscreen = false
     },
     goNext() {
-      this.currentSlide = this.currentSlide % imageArray.lenght
+      // this.currentSlide = this.currentSlide % imageArray.lenght
     },
     goPrev() {
-      this.currentSlide = this.currentSlide % imageArray.lenght
+      // this.currentSlide = this.currentSlide % imageArray.lenght
     },
     viewThumbnail(file, newPath){
       var reader = new FileReader()
@@ -140,8 +140,8 @@ export default {
   },
   created() {
     bus
-      .$on('goPrev', this.goPrev)
-      .$on('goNext', this.goNext)
+      // .$on('goPrev', this.goPrev)
+      // .$on('goNext', this.goNext)
       .$on('esc', this.exitFullscreen)
   }
 }

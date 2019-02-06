@@ -4,7 +4,7 @@
     <div id="logo" class="carousel slide mb-2 center" data-ride="carousel">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img v-if="value.length > 0" class="d-block img-fluid" :src="value" alt="logo actual">
+          <img v-if="value.length > 0" class="d-block img-fluid" :src="'data:image/png;base64,' + value" alt="logo actual">
           <span v-else class="text-center">No hay ninguna imagen seleccionada</span>
         </div>
       </div>
@@ -37,9 +37,7 @@ export default {
       this.$emit('input', '')
     },
     download() {
-      var imageType = getFileType(this.value)
-
-      var path = dialog.showSaveDialog(null, { defaultPath: `logo.${imageType}`})
+      var path = dialog.showSaveDialog(null, { defaultPath: `logo.${png}`})
       if (path !== undefined) {
         saveFile(this.value, path)
       }

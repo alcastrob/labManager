@@ -38,21 +38,27 @@ export async function deleteFile(fileContent){
 
 //Tested
 export async function getFileList(workId) {
+  var returnedValue = []
   var path = await getConfigValue('sharedPath')
   if (!path.endsWith('\\')) {
     path += '\\'
   }
+  try {
+    var files = fs.readdirSync(path)
+    files = _.filter(files, (e) => {
+      return e.startsWith(`${workId}_`)
+    })
 
-  var files = fs.readdirSync(path)
-  files = _.filter(files, (e) => {
-    return e.startsWith(`${workId}_`)
-  })
-
-  var returnedValue = []
-  for (var file of files) {
-    returnedValue.push(path + file)
+    for (var file of files) {
+      returnedValue.push(path + file)
+    }
   }
-  return returnedValue
+  catch(error){
+    console.log('Cannot open path ' + path)
+  }
+  finally {
+    return returnedValue
+  }
 }
 
 //Tested

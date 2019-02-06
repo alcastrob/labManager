@@ -790,7 +790,8 @@ export async function getOutboundingWorks () {
 //Tested
 export async function getConfigValue(configKey){
   var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
-  return (await getAsync(db, query, [configKey])).valor
+  var x = await getAsync(db, query, [configKey])
+  return (x).valor
 }
 
 //tested

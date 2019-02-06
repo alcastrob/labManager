@@ -296,7 +296,7 @@ export default {
   mounted () {
     this.getData()
     this.loadGraph()
-    this.$on('topbar:save', this.save)
+    this.$root.$on('topbar:save', this.save)
   },
   computed: {
     isDirty(){

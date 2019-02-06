@@ -1,4 +1,4 @@
-<template>
+  <template>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
@@ -152,7 +152,7 @@ export default {
     }
   },
   created () {
-    this.$on('topbar:save', this.save)
+    this.$root.$on('topbar:save', this.save)
     this.getData()
   }
 }

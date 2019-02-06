@@ -210,6 +210,7 @@ export default {
       this.$v.$touch()
 
       //If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
+      console.log('a:' +  this.$refs.workIndicacionts === undefined)
       this.$refs.workIndications.addLastRow()
       this.$refs.workTests.addLastRow()
       if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()){
@@ -307,7 +308,7 @@ export default {
             FechaTerminacion: new Date(this.work.FechaTerminacion),
             Detalles: this.workIndications,
             PrecioFinal: this.work.PrecioFinal,
-            logo: (!row[0].valor.startsWith('data:image/png;base64,'))? 'data:image/png;base64,' + row[0].valor : row[0].valor
+            logo: 'data:image/png;base64,' + row[0].valor
           }
         })
         instance.$mount()
@@ -401,7 +402,7 @@ export default {
   },
   mounted () {
     this.getData()
-    this.$on('topbar:save', this.save)
+    this.$root.$on('topbar:save', this.save)
     this.isAdmin = configGet('isAdmin')
   }
 }
