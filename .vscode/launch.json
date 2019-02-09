@@ -1,14 +1,35 @@
 {
-  // Use IntelliSense para saber los atributos posibles.
-  // Mantenga el puntero para ver las descripciones de los existentes atributos 
-  // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}\\src\\main\\index.js"
-    }
-  ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/app/electron.js",
+			"stopOnEntry": false,
+			"args": [],
+			"cwd": "${workspaceRoot}",
+                        // this points to the electron task runner
+			"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+			"runtimeArgs": [
+				"--nolazy"
+			],
+			"env": {
+				"NODE_ENV": "production"
+			},
+			"externalConsole": false,
+			"sourceMaps": false,
+			"outDir": null
+		},
+		{
+			"name": "Attach",
+			"type": "node",
+			"request": "attach",
+			"port": 5858,
+			"sourceMaps": false,
+			"outDir": null,
+			"localRoot": "${workspaceRoot}",
+			"remoteRoot": null
+		}
+	]
 }

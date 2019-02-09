@@ -62,7 +62,7 @@
 
                   <router-link :to="'/works/details/' + work.IdTrabajo" role="button" :id="'tooltipTarget' + work.IdTrabajo" tabindex="-1">Ver</router-link>
 
-                  <span v-if="isReadOnly && invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista].length !== 0">&nbsp;|&nbsp;
+                  <span v-if="isReadOnly && invoicesPerDentist[dentist.IdDentista] !== undefined && invoicesPerDentist[dentist.IdDentista].length !== 0 && invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo) !== undefined">&nbsp;|&nbsp;
                     <router-link :to="'/finances/invoices/' + invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo).IdFactura" tabindex="-1">{{invoiceOfWork(invoicesPerDentist[dentist.IdDentista], work.IdTrabajo).NumFactura}}</router-link>
                   </span>
                   <b-tooltip :target="'tooltipTarget' + work.IdTrabajo" placement="right" delay="500">
@@ -227,7 +227,7 @@ export default {
       } else {
         work.TotalDescuento = parseFloat(work.SumaTotalMetal * work.PorcentajeDescuento / 100).toFixed(2)
       }
-      this.applyDiscount(work, dentist)
+      this.applyDiscount(dentist)
     },
     totalDiscountChanged(work, dentist) {
       if (work.SumaTotalMetal === 0){
@@ -236,7 +236,7 @@ export default {
       } else {
         work.PorcentajeDescuento = parseFloat( work.TotalDescuento * 100 / work.SumaTotalMetal).toFixed(2)
       }
-      this.applyDiscount(work, dentist)
+      this.applyDiscount(dentist)
     },
 
     //Calculations-------------------------------
@@ -270,7 +270,7 @@ export default {
         }
       }
     },
-    applyDiscount: function(work, dentist){
+    applyDiscount: function(dentist){
       dentist.SumaDescuento = 0
       dentist.SumaGranTotal = 0
 
@@ -279,9 +279,12 @@ export default {
         dentist.SumaGranTotal += parseFloat(currentWork.SumaPrecioFinal) - parseFloat(currentWork.TotalDescuento)
       }
 
-      dentist.percentage = parseFloat(100-(dentist.SumaGranTotal*100/dentist.SumaPrecioFinal)).toFixed(2)
+      if (dentist.SumaPrecioFinal === 0) {
+        dentist.percentage = 0
+      } else {
+        dentist.percentage = parseFloat(100-(dentist.SumaGranTotal*100/dentist.SumaPrecioFinal)).toFixed(2)
+      }
       this.$forceUpdate()
-
     },
 
     //Verifications------------------------------
@@ -394,7 +397,7 @@ export default {
         }
         return dentistName
       } else {
-        return dentist[column.dataField]
+        return dentist[column.dataField].replace(/(\d*).(\d+)/g, "$1,$2")
       }
     },
 
@@ -406,10 +409,10 @@ export default {
         this.worksPerDentist[idDentist] = works
         this.remainingWorks[idDentist] = this.calculateRemainingWorks(works)
         for (var work of works){
-          // work.TotalDescuento = moneyFormatter.format(work.TotalDescuento)
           this.getWorkIndications(work.IdTrabajo)
         }
         this.$forceUpdate()
+        return works
       }
     },
     getWorkIndications: async function(idTrabajo) {
@@ -424,9 +427,12 @@ export default {
       this.calcColumnSums(['SumaPrecioFinal', 'SumaAditamentos', 'SumaCeramica', 'SumaResina', 'SumaOrtodoncia', 'SumaEsqueletico', 'SumaZirconio', 'SumaFija', 'SumaTotalMetal', 'SumaDescuento', 'SumaGranTotal'])
 
       for(var dentist of this.rawDataset) {
-        await this.getWorksOfDentist(dentist.IdDentista)
+        var works = await this.getWorksOfDentist(dentist.IdDentista)
         if (this.isReadOnly) {
           this.invoicesPerDentist[dentist.IdDentista] = await getInvoicesPerDentist(year, month, dentist.IdDentista)
+        }
+        if (works !== undefined){
+          this.applyDiscount(dentist)
         }
       }
       this.$forceUpdate()
@@ -471,7 +477,6 @@ export default {
   vertical-align: text-top;
   resize: none;
   overflow: hidden;
-  
 }
 .dentist-text {
   font-size: .8em;
