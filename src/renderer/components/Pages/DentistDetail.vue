@@ -212,17 +212,17 @@ export default {
       var barChartData = {
         labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto','Septiembre', 'Octobre', 'Noviembre', 'Diciembre'],
         datasets: [{
-          label: this.yearsExpenseEvolutionChart[0],
-          backgroundColor: 'rgba(247, 146, 86, .8)',
-          borderColor: 'rgba(247, 146, 86, 1)',
-          borderWidth: 1,
-          data: dataMonths.thisYear
-        }, {
           label: this.yearsExpenseEvolutionChart[1],
           backgroundColor: 'rgba(93, 169, 233, .8)',
           borderColor: 'rgba(93, 169, 233, 1)',
           borderWidth: 1,
           data: dataMonths.lastYear
+        }, {
+          label: this.yearsExpenseEvolutionChart[0],
+          backgroundColor: 'rgba(247, 146, 86, .8)',
+          borderColor: 'rgba(247, 146, 86, 1)',
+          borderWidth: 1,
+          data: dataMonths.thisYear
         }]
       }
 
