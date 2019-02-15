@@ -617,18 +617,6 @@ export async function getInvoicesList (customFilters) {
   //   return runAsync(db, query, [invoiceId])
   // }
 
-// SELECT max(IdFactura), strftime('%Y', Fecha) as year
-// FROM Facturas
-// WHERE year='2018'
-// GROUP BY year
-
-// CREATE TABLE FacturasTrabajos (
-//   IdFactura   INTEGER REFERENCES Facturas (IdFactura),
-//   IdTrabajo   INTEGER REFERENCES Trabajos (IdTrabajo),
-//   EsDescuento BOOLEAN NOT NULL DEFAULT (false) ,
-//   PRIMARY KEY (IdFactura, IdTrabajo)
-// );
-
 
 // Conformity Declarations ----------------------------------------------------
 
