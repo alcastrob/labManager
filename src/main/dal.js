@@ -1,7 +1,7 @@
 'use strict'
 
 var sqlite3 = require('sqlite3').verbose()
-var db
+var db = undefined
 
 import _ from 'lodash'
 import { configGet } from '../main/store'
@@ -542,8 +542,8 @@ export async function getInvoicesList (customFilters) {
     }
     worksString =  worksString.substr(0, worksString.length - 1)
 
-    var totalDiscount = _.sumBy(works, (o) => {
-      return parseFloat(o.totalDescuento)
+    var totalDiscount = _.sumBy(works, (work) => {
+      return parseFloat(work.totalDescuento)
     })
 
     var query1 = 'INSERT INTO Facturas(NumFactura, IdDentista, Fecha, Total) ' +
@@ -816,6 +816,9 @@ export async function setConfigValue (configKey, configValue) {
 // Generic functions ----------------------------------------------------------
 
 function getAsync (db, sql, params) {
+  if (db === undefined){
+    loadDbFile()
+  }
   return new Promise(function (resolve, reject) {
     db.get(sql, params, function (err, row) {
       if (err) {
@@ -829,6 +832,9 @@ function getAsync (db, sql, params) {
 }
 
 function allAsync (db, sql, params) {
+  if (db === undefined){
+    loadDbFile()
+  }
   return new Promise(function (resolve, reject) {
     db.all(sql, params, function (err, row) {
       if (err) {
@@ -842,6 +848,9 @@ function allAsync (db, sql, params) {
 }
 
 function runAsync (db, sql, params) {
+  if (db === undefined){
+    loadDbFile()
+  }
   return new Promise(function (resolve, reject) {
     db.run(sql, params, function (err, row){
       if (err) {

@@ -282,7 +282,7 @@ export default {
       if (dentist.SumaPrecioFinal === 0) {
         dentist.percentage = 0
       } else {
-        dentist.percentage = parseFloat(100-(dentist.SumaGranTotal*100/dentist.SumaPrecioFinal)).toFixed(2)
+        dentist.percentage = ((100*(dentist.SumaPrecioFinal-dentist.SumaGranTotal))/dentist.SumaTotalMetal).toFixed(2)
       }
       this.$forceUpdate()
     },
