@@ -155,6 +155,11 @@ export default {
           titleClass: 'text-left',
           rowClass: ''
         }, {
+          title: 'CIF',
+          dataField: 'DatosFiscales',
+          titleClass: 'text-left',
+          rowClass: ''
+        }, {
           title: 'Fecha Factura',
           dataField: 'Fecha',
           titleClass: 'text-right',
