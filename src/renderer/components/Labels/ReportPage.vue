@@ -180,27 +180,26 @@ export default {
     }
   },
   methods: {
-    logoLoaded() {
+    logoLoaded () {
       this.imgLoaded = true
     },
-    waitLogo(callback){
+    waitLogo (callback) {
       if (callback !== undefined) {
         this.parentCallback = callback
       }
       if (!this.imgLoaded) {
         window.setTimeout(this.waitLogo, 500)
-        return
       } else {
         this.parentCallback(this.pageNumber)
       }
     },
-    format(date) {
+    format (date) {
       return moment(date).format('DD/MM/YYYY')
     },
-    printPdf(){
+    printPdf () {
       const ipc = require('electron').ipcRenderer
       ipc.send('print-to-pdf')
-    },
+    }
   }
 }
 </script>

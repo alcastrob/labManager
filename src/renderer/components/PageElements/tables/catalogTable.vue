@@ -84,18 +84,18 @@ export default {
       rawDataset: [],
       filteredDataset: [],
       pageSize: PAGESIZE,
-      currentPage: 1,
+      currentPage: 1
     }
   },
   methods: {
     // Related with the state and persistence----------------------------------
-    addLastRow(){
+    addLastRow () {
       if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
         var newRow = {
           IdElementoCatalogo: this.newIds++,
           Descripcion: this.$refs.newDescripcion.value,
           Precio: this.$refs.newPrecio.value
-          }
+        }
         this.data.push(newRow)
         this.insertedRows.push(newRow)
         this.$refs.newDescripcion.value = ''
@@ -109,9 +109,9 @@ export default {
       this.data = _.remove(this.data, function (n) {
         return n.IdElementoCatalogo !== rowId
       })
-      if (_.some(this.insertedRows, ['IdElementoCatalogo', rowId])){
+      if (_.some(this.insertedRows, ['IdElementoCatalogo', rowId])) {
         _.remove(this.insertedRows, ['IdElementoCatalogo', rowId])
-      } else if (_.some(this.updatedRows, ['IdElementoCatalogo', rowId])){
+      } else if (_.some(this.updatedRows, ['IdElementoCatalogo', rowId])) {
         _.remove(this.updatedRows, ['IdElementoCatalogo', rowId])
         this.deletedRows.push({IdElementoCatalogo: rowId})
       } else {
@@ -120,26 +120,26 @@ export default {
       this.save()
       this.$emit('input', this.rawDataset)
     },
-    trackChanges(event, rowId, field) {
-      //Let's start looking if the changed row is already on the inserted list
+    trackChanges (event, rowId, field) {
+      // Let's start looking if the changed row is already on the inserted list
       var temp = _.find(this.insertedRows, ['IdElementoCatalogo', rowId])
-      if (this.isNotEmpty(temp)){
-        //Just update the insert with the new value. No more action required.
+      if (this.isNotEmpty(temp)) {
+        // Just update the insert with the new value. No more action required.
         temp[field] = event.currentTarget.value
       } else {
-        //OK, so we have to update. But maybe this field was already updated. Let's check.
+        // OK, so we have to update. But maybe this field was already updated. Let's check.
         temp = _.find(this.updatedRows, ['IdElementoCatalogo', rowId])
-        if (this.isNotEmpty(temp)){
-          //The row was already updated. Make a cumulative update
+        if (this.isNotEmpty(temp)) {
+          // The row was already updated. Make a cumulative update
           var original = _.find(this.rawDataset, ['IdElementoCatalogo', rowId])
           temp.Precio = original.Precio
           temp.Descripcion = original.Descripcion
           temp[field] = event.currentTarget.value
         } else {
-          //First time updated. So jot it down.
+          // First time updated. So jot it down.
           var original = _.find(this.rawDataset, ['IdElementoCatalogo', rowId])
           if (original !== undefined) {
-            //The catalog element is not expired yet, so we can update its values
+            // The catalog element is not expired yet, so we can update its values
             original[field] = event.currentTarget.value
             this.updatedRows.push(original)
           }
@@ -148,14 +148,14 @@ export default {
       this.save()
       this.$emit('input', this.rawDataset)
     },
-    save(){
-      _.forEach(this.insertedRows, function(row){
+    save () {
+      _.forEach(this.insertedRows, function (row) {
         insertCatalogEntry(row)
       })
-      _.forEach(this.deletedRows, function(row){
+      _.forEach(this.deletedRows, function (row) {
         deleteCatalogEntry(row)
       })
-      _.forEach(this.updatedRows, function(row){
+      _.forEach(this.updatedRows, function (row) {
         updateCatalogEntry(row)
       })
       this.insertedRows = []
@@ -166,26 +166,26 @@ export default {
       this.$refs.filterBar.doFilter()
     },
     // Other methods (specific)------------------------------------------------
-    updatePrice(event, id) {
+    updatePrice (event, id) {
       var elementInArray = _.find(this.rawDataset, ['IdElementoCatalogo', id])
 
       if (elementInArray !== undefined) {
-        //The catalog element is not expired yet, so we can update its price
+        // The catalog element is not expired yet, so we can update its price
         if (this.isEmpty(event.srcElement.value)) {
           elementInArray.Precio = 0
         } else {
-          elementInArray.Precio =  event.srcElement.value
+          elementInArray.Precio = event.srcElement.value
         }
         this.$emit('input', this.rawDataset)
       }
     },
-    format(date) {
+    format (date) {
       return moment(date).format('DD/MM/YYYY')
     },
-    applyTextFilter: async function(text){
+    applyTextFilter: async function (text) {
       this.filteredDataset = await getCatalogList(text)
     },
-    filterJustNumberKeystrokes(event){
+    filterJustNumberKeystrokes (event) {
       if (!(event.key === '0' || event.key === '1' || event.key === '2' ||
         event.key === '3' || event.key === '4' || event.key === '5' ||
         event.key === '6' || event.key === '7' || event.key === '8' ||
@@ -194,11 +194,10 @@ export default {
         event.key === '-' || (event.key === 'c' && event.ctrlKey === true) ||
         event.key === 'Delete' || (event.key === 'v' && event.ctrlKey === true) ||
         event.key === 'Backspace' || event.key === 'Tab' || event.key === 'Enter'
-      ))
-        event.preventDefault()
+      )) { event.preventDefault() }
     },
     getPaginatedData: function () {
-      if (this.rawDataset.length === 0){
+      if (this.rawDataset.length === 0) {
         return []
       }
 
@@ -209,16 +208,14 @@ export default {
         right = arraySize + 1
       }
 
-      if (left < 0 || left > arraySize)
-        return []
-      else {
+      if (left < 0 || left > arraySize) { return [] } else {
         return _.slice(this.filteredDataset, left, right)
       }
     },
-      getData: async function(){
+    getData: async function () {
       this.rawDataset = await getCatalogList()
       this.filteredDataset = this.rawDataset
-    },
+    }
   },
   mounted () {
     this.getData()

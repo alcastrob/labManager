@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import "file-saverjs/FileSaver.min.js";
-import TableExport from "tableexport";
+import 'file-saverjs/FileSaver.min.js'
+import TableExport from 'tableexport'
 
 export default {
   name: 'excelButton',
@@ -45,35 +45,35 @@ export default {
     }
   },
   methods: {
-    toExcel() {
+    toExcel () {
       this.$emit('click')
       this.$refs.exportingModal.show()
       this.disablePagination(this.toExcelCallback)
     },
-    toExcelCallback() {
+    toExcelCallback () {
       var instance = new TableExport(this.table.$el, {
         filename: this.fileName,
         exportButtons: false
-      });
+      })
       var x = instance.getExportData()
-      var exportData = x[Object.keys(x)[0]]['xlsx'];
+      var exportData = x[Object.keys(x)[0]]['xlsx']
       instance.export2file(
         exportData.data, exportData.mimeType,
         exportData.filename, exportData.fileExtension,
         undefined, undefined,
         this.fileName
-      );
+      )
       this.$refs.exportingModal.hide()
       this.enablePagination()
       this.table.endExporting()
     },
-    setEnablePaginationCallback(enablePagination){
+    setEnablePaginationCallback (enablePagination) {
       this.enablePagination = enablePagination
     },
-    setDisablePaginationCallback(disablePagination){
+    setDisablePaginationCallback (disablePagination) {
       this.disablePagination = disablePagination
     },
-    setTable(table){
+    setTable (table) {
       this.table = table
       this.enablePagination = table.enablePagination
       this.disablePagination = table.disablePagination

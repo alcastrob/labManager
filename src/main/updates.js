@@ -1,3 +1,6 @@
+import { getConfigValue } from './dal'
+import _ from 'lodash'
+import axios from 'axios'
 'use strict'
 
 const semver = require('semver')
@@ -5,11 +8,8 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const https = require('https')
-const { spawn } = require('child_process');
+const { spawn } = require('child_process')
 const remote = require('electron').remote
-import { getConfigValue } from './dal'
-import _ from 'lodash'
-import axios from 'axios'
 
 const RELEASES_URL = 'https://api.github.com/repos/alcastrob/labManager/releases'
 
@@ -25,7 +25,7 @@ export async function checkForUpdates () {
 
   var latestVersion, newerVersion, latestVersionTitle, latestVersionDescription, downloadUrl, fileName
 
-  if (responseReleases.status === 200){
+  if (responseReleases.status === 200) {
     latestVersion = _.map(responseReleases.data, 'tag_name').sort(semver.rcompare)[0]
     newerVersion = semver.gt(latestVersion, currentVersion)
     if (newerVersion) {
@@ -38,7 +38,7 @@ export async function checkForUpdates () {
           Authorization: `Bearer ${token}`
         }
       })
-      if (responseAssets.status === 200){
+      if (responseAssets.status === 200) {
         fileName = responseAssets.data.name
         downloadUrl = responseAssets.data.browser_download_url
       } else {
@@ -61,28 +61,28 @@ export async function checkForUpdates () {
   }
 }
 
-export function downloadUpdate(downloadUrl, installName, updatedPercentageCallback) {
+export function downloadUpdate (downloadUrl, installName, updatedPercentageCallback) {
   var fileName = path.join(os.tmpdir(), installName)
   var file = fs.createWriteStream(fileName, {encoding: 'binary'})
-  //The first request is for the 302 to AWS
+  // The first request is for the 302 to AWS
   var request = https.get(downloadUrl,
-    ((response) => {
+    (response) => {
       var awsUrl = response.headers.location
 
       var request2 = https.get(awsUrl,
-        ((response2) => {
+        (response2) => {
           var totalSize = parseInt(response2.headers['content-length'])
           var currentSize = 0
           response2.pipe(file)
 
           response2.on('data', (d) => {
             currentSize += d.length
-            updatedPercentageCallback(Math.round(currentSize*100/totalSize))
-            //downloadedPercentage = `width: ${Math.round(currentSize*100/totalSize)}%`
+            updatedPercentageCallback(Math.round(currentSize * 100 / totalSize))
+            // downloadedPercentage = `width: ${Math.round(currentSize*100/totalSize)}%`
           })
           response2.on('end', () => {
             file.close()
-            //The new process will continue running after the application is shutted down.
+            // The new process will continue running after the application is shutted down.
             var installerProcess = spawn(fileName, [], {
               detached: true,
               stdio: 'ignore'
@@ -90,10 +90,10 @@ export function downloadUpdate(downloadUrl, installName, updatedPercentageCallba
             installerProcess.unref()
             remote.getCurrentWindow().close()
           })
-        })
+        }
       )
-    })
-  ).on('error', function(err) {
+    }
+  ).on('error', function (err) {
     fs.unlink(fileName)
   })
 }

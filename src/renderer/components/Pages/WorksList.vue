@@ -32,73 +32,73 @@ export default {
   data () {
     return {
       headers: [ {
-          title: 'Nº',
-          dataField: 'IdTrabajo',
-          titleClass: 'text-left',
-          rowClass: ''
-        }, {
-          title: 'Dentista',
-          dataField: 'NombreDentista',
-          titleClass: 'text-left',
-          rowClass: ''
-        }, {
-          title: 'Paciente',
-          dataField: 'Paciente',
-          titleClass: 'text-left',
-          rowClass: ''
-        }, {
-          title: 'Tipo',
-          dataField: 'TipoTrabajo',
-          titleClass: 'text-left',
-          rowClass: ''
-        }, {
-          title: 'Color',
-          dataField: 'Color',
-          titleClass: 'text-left',
-          rowClass: ''
-        }, {
-          title: 'F. Entrada',
-          dataField: 'FechaEntrada',
-          titleClass: 'text-left',
-          rowClass: '',
-          formatter: 'date'
-        }, {
-          title: 'F.P. Prueba',
-          dataField: 'FechaPrevistaPrueba',
-          titleClass: 'text-left',
-          rowClass: '',
-          formatter: 'date'
-        }, {
-          title: 'F.P. Terminación',
-          dataField: 'FechaPrevista',
-          titleClass: 'text-left',
-          rowClass: '',
-          formatter: 'date'
-        }, {
-          title: 'F. Terminación',
-          dataField: 'FechaTerminacion',
-          titleClass: 'text-left',
-          rowClass: '',
-          formatter: 'date'
-        }, {
-          title: 'Importe',
-          dataField: 'PrecioFinal',
-          titleClass: 'text-right mr-2',
-          rowClass: 'text-right',
-          formatter: 'money'
-        } ],
+        title: 'Nº',
+        dataField: 'IdTrabajo',
+        titleClass: 'text-left',
+        rowClass: ''
+      }, {
+        title: 'Dentista',
+        dataField: 'NombreDentista',
+        titleClass: 'text-left',
+        rowClass: ''
+      }, {
+        title: 'Paciente',
+        dataField: 'Paciente',
+        titleClass: 'text-left',
+        rowClass: ''
+      }, {
+        title: 'Tipo',
+        dataField: 'TipoTrabajo',
+        titleClass: 'text-left',
+        rowClass: ''
+      }, {
+        title: 'Color',
+        dataField: 'Color',
+        titleClass: 'text-left',
+        rowClass: ''
+      }, {
+        title: 'F. Entrada',
+        dataField: 'FechaEntrada',
+        titleClass: 'text-left',
+        rowClass: '',
+        formatter: 'date'
+      }, {
+        title: 'F.P. Prueba',
+        dataField: 'FechaPrevistaPrueba',
+        titleClass: 'text-left',
+        rowClass: '',
+        formatter: 'date'
+      }, {
+        title: 'F.P. Terminación',
+        dataField: 'FechaPrevista',
+        titleClass: 'text-left',
+        rowClass: '',
+        formatter: 'date'
+      }, {
+        title: 'F. Terminación',
+        dataField: 'FechaTerminacion',
+        titleClass: 'text-left',
+        rowClass: '',
+        formatter: 'date'
+      }, {
+        title: 'Importe',
+        dataField: 'PrecioFinal',
+        titleClass: 'text-right mr-2',
+        rowClass: 'text-right',
+        formatter: 'money'
+      } ],
       searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
       filterChanged: false,
       lastFilterUsed: {},
       listHeading: '',
-      isAdmin : false
+      isAdmin: false
     }
   },
   methods: {
-    translateFilter(filterName, idDentist) {
-      if (idDentist === undefined){
-        //It's a listing that includes ALL the dentist
-        switch(filterName) {
+    translateFilter (filterName, idDentist) {
+      if (idDentist === undefined) {
+        // It's a listing that includes ALL the dentist
+        switch (filterName) {
           case 'receivedToday':
             return {fEntrada: 'Hoy'}
           case 'inProgress':
@@ -110,7 +110,7 @@ export default {
         }
       } else {
         // The listing is specific for one dentist
-          return {IdDentista: idDentist}
+        return {IdDentista: idDentist}
       }
     },
     updateDatasetWithFilters: async function (filterData) {
@@ -118,20 +118,20 @@ export default {
       this.$refs.workExtendedTable.updateDataset(await getWorksList(filterData))
       this.lastFilterUsed = filterData
     },
-    processFilterChange(filterData){
+    processFilterChange (filterData) {
       this.updateDatasetWithFilters(filterData)
       this.filterChanged = true
     },
-    beginExporting(){
+    beginExporting () {
       this.$refs.workExtendedTable.beginExporting()
     },
-    updateListAfterNavigating: async function() {
+    updateListAfterNavigating: async function () {
       await this.updateDatasetWithFilters(this.lastFilterUsed)
       this.$refs.workExtendedTable.sortBy()
     }
   },
   computed: {
-    showCustomHeader: function() {
+    showCustomHeader: function () {
       return this.listHeading !== undefined && !this.filterChanged
     }
   },
@@ -139,7 +139,7 @@ export default {
     this.listHeading = this.$route.query.title
   },
   activated () {
-    //The data will be loaded even if the rest of the page is in the cache
+    // The data will be loaded even if the rest of the page is in the cache
     this.updateListAfterNavigating()
   },
   mounted () {

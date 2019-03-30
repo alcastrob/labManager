@@ -36,25 +36,24 @@
 </template>
 
 <script>
-import pagination from "./pagination"
-import Vue from "vue"
-import invoiceFilterBar from "./invoiceFilterBar"
-import tableMixin from "./tableMixin"
+import pagination from './pagination'
+import invoiceFilterBar from './invoiceFilterBar'
+import tableMixin from './tableMixin'
 
 export default {
-  name: "invoiceExtendedTable",
+  name: 'invoiceExtendedTable',
   mixins: [tableMixin],
   components: {
     pagination,
     invoiceFilterBar
   },
   methods: {
-    setFilter: function(query) {
-      this.$refs.filterBar.setFilter(query);
+    setFilter: function (query) {
+      this.$refs.filterBar.setFilter(query)
     },
-    processFilterChange(filterData) {
-      this.$parent.processFilterChange(filterData);
-    },
+    processFilterChange (filterData) {
+      this.$parent.processFilterChange(filterData)
+    }
   }
-};
+}
 </script>

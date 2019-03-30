@@ -23,7 +23,7 @@
 </template>
 
 <script>
-const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
+const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3
 
 export default {
   name: 'fileUploadBase',
@@ -49,32 +49,32 @@ export default {
     }
   },
   methods: {
-    reset() {
+    reset () {
       // reset form to initial state
       this.currentStatus = STATUS_INITIAL
       this.uploadedFiles = []
       this.uploadError = null
     },
-    filesChange(fileList) {
+    filesChange (fileList) {
       // save it
       this.$parent.upload(fileList)
       this.reset()
     },
-    setStatusSaving() {
+    setStatusSaving () {
       this.currentStatus = STATUS_SAVING
-    },
+    }
   },
   computed: {
-    isInitial() {
+    isInitial () {
       return this.currentStatus === STATUS_INITIAL
     },
-    isSaving() {
+    isSaving () {
       return this.currentStatus === STATUS_SAVING
     },
-    isSuccess() {
+    isSuccess () {
       return this.currentStatus === STATUS_SUCCESS
     },
-    isFailed() {
+    isFailed () {
       return this.currentStatus === STATUS_FAILED
     }
   },

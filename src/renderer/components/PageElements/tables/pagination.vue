@@ -36,36 +36,36 @@ export default {
   methods: {
     loadPage: function (page) {
       if (page === 'prev') {
-        this.$parent.currentPage --
+        this.$parent.currentPage--
       } else if (page === 'next') {
-        this.$parent.currentPage ++
+        this.$parent.currentPage++
       } else {
         this.$parent.currentPage = page
       }
     },
-    isCurrentPage(page) {
+    isCurrentPage (page) {
       return page === this.$parent.currentPage
     },
-    lastPage() {
-      return Math.ceil(this.$parent.filteredDataset.length/this.$parent.pageSize)
+    lastPage () {
+      return Math.ceil(this.$parent.filteredDataset.length / this.$parent.pageSize)
     }
   },
   computed: {
-    pageSelectors() {
+    pageSelectors () {
       if (this.lastPage() === 0) {
         return []
       } else {
         var array = []
-        for (var i=4; i>0; i--) {
+        for (var i = 4; i > 0; i--) {
           var value = this.$parent.currentPage - i
           if (value > 0) array.push(value)
         }
         array.push(this.$parent.currentPage)
-        if(this.lastPage() > this.$parent.currentPage+1 && this.$parent.currentPage > 3){
+        if (this.lastPage() > this.$parent.currentPage + 1 && this.$parent.currentPage > 3) {
           array.shift()
         }
         var soFar = array.length
-        for (var j=1; j<=(5-soFar); j++) {
+        for (var j = 1; j <= (5 - soFar); j++) {
           var value2 = this.$parent.currentPage + j
           if (value2 <= this.lastPage()) array.push(value2)
         }
@@ -85,7 +85,7 @@ export default {
     recordFrom () {
       return ((this.$parent.currentPage - 1) * this.$parent.pageSize) + 1
     },
-    recordTo() {
+    recordTo () {
       var to = this.$parent.currentPage * this.$parent.pageSize
       if (this.$parent.filteredDataset.length < to) {
         return this.$parent.filteredDataset.length
@@ -93,7 +93,7 @@ export default {
         return to
       }
     },
-    totalRecords() {
+    totalRecords () {
       return this.$parent.filteredDataset.length
     }
   }

@@ -1,5 +1,5 @@
-"use strict";
+'use strict'
 
 export const validId = (value) => {
-  return parseInt(value) !== NaN && value > 0
+  return !isNaN(value) && value > 0
 }

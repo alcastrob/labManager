@@ -7,28 +7,16 @@
         </td>
       </tr>
       <tr>
-        <td class="labelSubtitle noborder">
-          Trabajo nº
-        </td>
-        <td class="labelTitle noborder">
-          {{workData.IdTrabajo}}
-        </td>
+        <td class="labelSubtitle noborder">Trabajo nº</td>
+        <td class="labelTitle noborder">{{workData.IdTrabajo}}</td>
       </tr>
       <tr>
-        <td class="labelSubtitle noborder">
-          Paciente:
-        </td>
-        <td class="labelTitle noborder">
-          {{workData.Paciente}}
-        </td>
+        <td class="labelSubtitle noborder">Paciente:</td>
+        <td class="labelTitle noborder">{{workData.Paciente}}</td>
       </tr>
       <tr>
-        <td class="labelSubtitle noborder">
-          Clínica o Dr/a.:
-        </td>
-        <td class="labelTitle noborder">
-          {{workData.NombreDentista}}
-        </td>
+        <td class="labelSubtitle noborder">Clínica o Dr/a.:</td>
+        <td class="labelTitle noborder">{{workData.NombreDentista}}</td>
       </tr>
       <tr>
         <td colspan="2" class="labelSubtitle noborder">
@@ -41,70 +29,71 @@
       </tr>
       <tr>
         <td class="labelSubtitle noborder">
-          Fecha:<br> {{format(workData.FechaTerminacion)}}
+          Fecha:
+          <br>
+          {{format(workData.FechaTerminacion)}}
         </td>
-        <td class="labelSubtitle text-vtop noborder text-right" style="vertical-align: text-top; text-align: right;">
-          Sello de clínica
-        </td>
+        <td
+          class="labelSubtitle text-vtop noborder text-right"
+          style="vertical-align: text-top; text-align: right;"
+        >Sello de clínica</td>
       </tr>
     </table>
-  </div> <!-- box -->
+  </div>
+  <!-- box -->
 </template>
 
 <script>
 import labelMixin from './LabelMixin'
 import moment from 'moment'
-var path = require('path')
-var fs = require('fs')
-import {Printd} from 'printd'
+import { Printd } from 'printd'
 import { getConfigValue } from '../../../main/dal.js'
 
 export default {
-  name: 'labelGarantia',
-  mixins: [labelMixin],
-  data () {
-    return {
-      imgLoaded: false,
-      logo: '',
-      parentCallback: undefined
-    }
-  },
-  props: {
-    workData: {
-      type: Object,
-      required: true
-    },
-    period: {
-      type: String,
-      required: true
-    }
-  },
-  methods: {
-    logoLoaded() {
-      this.imgLoaded = true
-    },
-    waitLogoAndPrint(){
-      if (!this.imgLoaded) {
-        window.setTimeout(this.waitLogo, 500)
-        return
-      } else {
-        this.print()
-      }
-    },
-    print () {
-      const d = new Printd()
-      d.print(this.$el, this.cssText)
-    },
-    format(date) {
-      return moment(date).format('DD/MM/YYYY')
-    },
-    loadData: async function(){
-      var logoData = await getConfigValue('logo')
-      this.logo = 'data:image/png;base64,' + logoData
-    }
-  },
-  created (){
-    this.loadData()
-  }
+	name: 'labelGarantia',
+	mixins: [labelMixin],
+	data() {
+		return {
+			imgLoaded: false,
+			logo: '',
+			parentCallback: undefined
+		}
+	},
+	props: {
+		workData: {
+			type: Object,
+			required: true
+		},
+		period: {
+			type: String,
+			required: true
+		}
+	},
+	methods: {
+		logoLoaded() {
+			this.imgLoaded = true
+		},
+		waitLogoAndPrint() {
+			if (!this.imgLoaded) {
+				window.setTimeout(this.waitLogo, 500)
+			} else {
+				this.print()
+			}
+		},
+		print() {
+			const d = new Printd()
+			d.print(this.$el, this.cssText)
+		},
+		format(date) {
+			return moment(date).format('DD/MM/YYYY')
+		},
+		loadData: async function() {
+			var logoData = await getConfigValue('logo')
+			this.logo = 'data:image/png;base64,' + logoData
+		}
+	},
+	created() {
+		this.loadData()
+	}
 }
 </script>

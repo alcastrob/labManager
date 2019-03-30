@@ -13,21 +13,20 @@ export default {
         style: 'currency',
         currency: 'EUR'
       })
-     }
+    }
   },
   methods: {
-    isNotANumber(data){
-      if (this.isEmpty(data))
-        return true
+    isNotANumber (data) {
+      if (this.isEmpty(data)) { return true }
       return (isNaN(parseFloat(data)))
     },
-    isEmpty(value){
+    isEmpty (value) {
       return (value === null || value === undefined || value === '')
     },
-    isNotEmpty(value){
+    isNotEmpty (value) {
       return !this.isEmpty(value)
     },
-    isDirty(){
+    isDirty () {
       return this.insertedRows.length !== 0 || this.updatedRows.length !== 0 || this.deletedRows.length !== 0
     }
     // isError() {
@@ -39,7 +38,7 @@ export default {
 
     // The dataset is loaded in the container component, so it could be not available during the mount because this load is async. This line will be invoked whenever the prop dataset is updated in the container component.
     this.$watch('value', function (newVal, oldVal) {
-      if (Array.isArray(newVal)){
+      if (Array.isArray(newVal)) {
         this.data = newVal.slice(0) // For cloning the array, not passing the reference. This way the watcher doesn't go bananas.
       }
     })

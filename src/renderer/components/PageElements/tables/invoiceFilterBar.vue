@@ -57,18 +57,18 @@ export default {
       this.$parent.applyTextFilter(this.filterText)
       this.processFilterChange()
     },
-    processFilterChange(filterData) {
+    processFilterChange (filterData) {
       this.$refs.fInicio.value = ''
       this.$refs.fFin.value = ''
       this.$parent.processFilterChange({
         fFactura: this.$refs.fFactura.getSelected()
       })
     },
-    dateChanged() {
+    dateChanged () {
       this.$refs.fFactura.clear()
       this.$parent.processFilterChange({
-        fInicio: (this.$refs.fInicio.value === '')?undefined:this.$refs.fInicio.value,
-        fFin: (this.$refs.fFin.value === '')?undefined:this.$refs.fFin.value
+        fInicio: (this.$refs.fInicio.value === '') ? undefined : this.$refs.fInicio.value,
+        fFin: (this.$refs.fFin.value === '') ? undefined : this.$refs.fFin.value
       })
     }
   }

@@ -16,81 +16,80 @@ import catalog from '../components/Pages/Catalog.vue'
 import products from '../components/Pages/Products.vue'
 import invoice from '../components/Pages/Invoice.vue'
 import configuration from '../components/Pages/Configuration.vue'
-import test from '../components/Pages/Test.vue'
 
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      component: mainPage,
-      children: [
-        {
-          path: '',
-          component: dashboard
-        },
-        {
-          path: 'about',
-          component: about
-        },
-        {
-          path: 'works/new',
-          component: worksNew
-        },
-        {
-          path: 'works/list',
-          component: worksList
-        },
-        {
-          path: 'works/list/dentist/:id',
-          component: worksList
-        },
-        {
-          path: 'works/details/:id',
-          component: workDetail
-        },
-        {
-          path: 'dentists/new',
-          component: dentistNew
-        },
-        {
-          path: 'dentists/list',
-          component: dentistsList
-        },
-        {
-          path: 'dentists/details/:id',
-          component: dentistDetails
-        },
-        {
-          path: 'finances',
-          component: finances
-        },
-        {
-          path: 'finances/monthCheck/:year/:month',
-          component: monthCheck
-        },
-        {
-          path: 'finances/invoices/:id',
-          component: invoice
-        },
-        {
-          path: 'maintenace/catalog',
-          component: catalog
-        },
-        {
-          path: 'maintenace/products',
-          component: products
-        },
-        {
-          path: 'maintenace/configuration',
-          component: configuration
-        }
-      ]
+  routes: [{
+    path: '/',
+    component: mainPage,
+    children: [{
+        path: '',
+        component: dashboard
+      },
+      {
+        path: 'about',
+        component: about
+      },
+      {
+        path: 'works/new',
+        component: worksNew
+      },
+      {
+        path: 'works/list',
+        component: worksList
+      },
+      {
+        path: 'works/list/dentist/:id',
+        component: worksList
+      },
+      {
+        path: 'works/details/:id',
+        component: workDetail
+      },
+      {
+        path: 'dentists/new',
+        component: dentistNew
+      },
+      {
+        path: 'dentists/list',
+        component: dentistsList
+      },
+      {
+        path: 'dentists/details/:id',
+        component: dentistDetails
+      },
+      {
+        path: 'finances',
+        component: finances
+      },
+      {
+        path: 'finances/monthCheck/:year/:month',
+        component: monthCheck
+      },
+      {
+        path: 'finances/invoices/:id',
+        component: invoice
+      },
+      {
+        path: 'maintenace/catalog',
+        component: catalog
+      },
+      {
+        path: 'maintenace/products',
+        component: products
+      },
+      {
+        path: 'maintenace/configuration',
+        component: configuration
+      }
+    ]
+  }],
+  scrollBehavior(to, from, savedPosition) {
+    let position = {
+      x: 0,
+      y: 0
     }
-  ],
-  scrollBehavior (to, from, savedPosition) {
-    let position = { x: 0, y: 0 }
     // Keep scroll position when using browser buttons
     if (savedPosition) {
       position = savedPosition

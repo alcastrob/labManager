@@ -31,11 +31,11 @@ export default {
       this.resetPagination()
     },
     resetPagination () {
-      //Try to figure out if the parent component has a pagination control, and if so, reset it to page 1
+      // Try to figure out if the parent component has a pagination control, and if so, reset it to page 1
       var pagination = _.find(this.$parent.$children, (o) => {
         return o.$options._componentTag === 'pagination'
       })
-      if (pagination !== undefined){
+      if (pagination !== undefined) {
         pagination.loadPage(1)
       }
     }

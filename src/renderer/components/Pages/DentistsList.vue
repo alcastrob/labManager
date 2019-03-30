@@ -75,7 +75,7 @@ export default {
           titleClass: 'text-left',
           rowClass: '',
           formatter: 'date'
-        },{
+        }, {
           title: 'Último trabajo',
           dataField: 'FechaUltimoTrabajo',
           titleClass: 'text-left',
@@ -87,10 +87,10 @@ export default {
     }
   },
   methods: {
-    beginExporting(){
+    beginExporting () {
       this.$refs.dentistTable.beginExporting()
     },
-    getData: async function() {
+    getData: async function () {
       this.$refs.dentistTable.setDataset(await getDentistList())
     }
   },
@@ -99,11 +99,10 @@ export default {
     this.$refs.excelButton.setTable(this.$refs.dentistTable)
   },
   activated () {
-    //The data will be loaded even if the rest of the page is in the cache
+    // The data will be loaded even if the rest of the page is in the cache
     this.getData()
   }
 }
-
 </script>
 
 <style>

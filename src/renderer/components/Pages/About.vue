@@ -73,21 +73,21 @@ export default {
     }
   },
   methods: {
-    download: async function() {
+    download: async function () {
       this.downloading = true
       downloadUpdate(this.downloadUrl, this.installName, this.updatedPercentageCallback)
     },
-    checkForUpdates: async function() {
+    checkForUpdates: async function () {
       var updateInfo = await checkForUpdates()
       this.downloadUrl = updateInfo.downloadUrl
-      this.currentVersion = updateInfo.currentVersion,
-      this.newerVersion = updateInfo.newerVersion,
-      this.latestVersion = updateInfo.latestVersion,
-      this.latestVersionTitle = updateInfo.latestVersionTitle,
-      this.latestVersionDescription = updateInfo.latestVersionDescription,
+      this.currentVersion = updateInfo.currentVersion
+      this.newerVersion = updateInfo.newerVersion
+      this.latestVersion = updateInfo.latestVersion
+      this.latestVersionTitle = updateInfo.latestVersionTitle
+      this.latestVersionDescription = updateInfo.latestVersionDescription
       this.installName = updateInfo.fileName
     },
-    updatedPercentageCallback: function(percentage) {
+    updatedPercentageCallback: function (percentage) {
       this.downloadedPercentage = `width: ${percentage}%`
     },
     urlClicked (event) {
