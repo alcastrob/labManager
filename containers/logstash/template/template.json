@@ -1,0 +1,15 @@
+{
+  "template": "labManager-*",
+  "mappings": {
+    "doc": {
+      "properties": {
+        "hostName": {
+          "type": "text"
+        },
+        "severity": {
+          "type": "text"
+        }
+      }
+    }
+  }
+}
