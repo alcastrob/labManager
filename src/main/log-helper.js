@@ -1,5 +1,3 @@
-import log from 'loglevel'
-
 export function remoteLog(logger, options) {
 	if (!logger || !logger.methodFactory) {
 		throw new Error('loglevel instance has to be specified in order to be extended')
@@ -14,10 +12,10 @@ export function remoteLog(logger, options) {
 	var _sendQueue = []
 	var _isSending = false
 
-	logger.methodFactory = function(methodName, logLevel) {
+	logger.methodFactory = function (methodName, logLevel) {
 		var rawMethod = _originalFactory(methodName, logLevel)
 
-		return function(message) {
+		return function (message) {
 			if (typeof _prefix === 'string') {
 				message = _prefix + message
 			} else if (typeof _prefix === 'function') {
@@ -35,7 +33,7 @@ export function remoteLog(logger, options) {
 		}
 	}
 
-	var _sendNextMessage = function() {
+	var _sendNextMessage = function () {
 		if (!_sendQueue.length || _isSending) {
 			return
 		}
@@ -47,7 +45,7 @@ export function remoteLog(logger, options) {
 
 		req.open('POST', _url, true)
 		req.setRequestHeader('Content-Type', 'text/plain')
-		req.onreadystatechange = function() {
+		req.onreadystatechange = function () {
 			if (req.readyState === 4) {
 				_isSending = false
 				setTimeout(_sendNextMessage, 0)

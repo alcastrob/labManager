@@ -213,14 +213,14 @@ export default {
 	computed: {
 		isDirty() {
 			return false
-		},
-		isError() {
-			var result = this.$v.$anyError
-			if (this.$refs.workIndications !== undefined) {
-				result = result
-			}
-			return result
 		}
+		// isError() {
+		// 	var result = this.$v.$anyError
+		// 	if (this.$refs.workIndications !== undefined) {
+		// 		result = result
+		// 	}
+		// 	return result
+		// }
 	},
 	created() {
 		this.$root.$on('topbar:save', this.save)

@@ -74,7 +74,9 @@ export async function getWorksList(customFilters) {
 
 function processTypeQuery(field, values) {
   var returnedValue = ` AND ${field} IN (`
-  _.forEach(values, (value) => returnedValue += `"${value}",`)
+  _.forEach(values, (value) => {
+    returnedValue += `"${value}",`
+  })
 
   return returnedValue.substring(0, returnedValue.length - 1) + ')'
 }

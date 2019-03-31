@@ -1,19 +1,26 @@
-import { getConfigValue } from './dal'
+// eslint-disable-next-line
+'use strict'
+
 import _ from 'lodash'
 import axios from 'axios'
-'use strict'
+import log from 'loglevel'
+import {
+  getConfigValue
+} from './dal'
 
 const semver = require('semver')
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const https = require('https')
-const { spawn } = require('child_process')
+const {
+  spawn
+} = require('child_process')
 const remote = require('electron').remote
 
 const RELEASES_URL = 'https://api.github.com/repos/alcastrob/labManager/releases'
 
-export async function checkForUpdates () {
+export async function checkForUpdates() {
   var currentVersion = require('../../package.json').version
   var token = await getConfigValue('githubToken')
   var responseReleases = await axios
@@ -61,15 +68,17 @@ export async function checkForUpdates () {
   }
 }
 
-export function downloadUpdate (downloadUrl, installName, updatedPercentageCallback) {
+export function downloadUpdate(downloadUrl, installName, updatedPercentageCallback) {
   var fileName = path.join(os.tmpdir(), installName)
-  var file = fs.createWriteStream(fileName, {encoding: 'binary'})
+  var file = fs.createWriteStream(fileName, {
+    encoding: 'binary'
+  })
   // The first request is for the 302 to AWS
-  var request = https.get(downloadUrl,
+  https.get(downloadUrl,
     (response) => {
       var awsUrl = response.headers.location
 
-      var request2 = https.get(awsUrl,
+      https.get(awsUrl,
         (response2) => {
           var totalSize = parseInt(response2.headers['content-length'])
           var currentSize = 0
@@ -94,6 +103,7 @@ export function downloadUpdate (downloadUrl, installName, updatedPercentageCallb
       )
     }
   ).on('error', function (err) {
+    log.error(err)
     fs.unlink(fileName)
   })
 }

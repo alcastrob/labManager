@@ -159,19 +159,18 @@ export default {
 		realPrint() {
 			// This method is intended to be used only when all the logos of the invoicePage components are fully loaded
 			if (
-				!_.every(Object.values(this.pageLogosLoaded), val => {
+				_.every(Object.values(this.pageLogosLoaded), val => {
 					return val
 				})
 			) {
-				window.setTimeout(this.realPrint, 500)
-				return
-			} else {
 				const d = new Printd()
 				d.print(this.$el, this.cssText)
 
 				for (var currentInstance of this.instances) {
 					this.$refs.container.removeChild(currentInstance.$el)
 				}
+			} else {
+				window.setTimeout(this.realPrint, 500)
 			}
 		},
 		loadData: async function() {
