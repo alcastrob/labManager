@@ -272,6 +272,20 @@ export default {
 				path: path
 			})
 		},
+		selectPreviousMonthOnMonthCloseCard: function() {
+			var yearToClose = new Date().getFullYear()
+			var monthToClose = new Date().getMonth() + 1
+			if (monthToClose === 1) {
+				yearToClose--
+				monthToClose = 12
+			} else {
+				monthToClose--
+			}
+			var optionSelectedYear = _.find(this.$refs.year.options, option => option.value === yearToClose.toString())
+			optionSelectedYear.selected = true
+			var optionSelectedMonth = _.find(this.$refs.month.options, option => option.value === monthToClose.toString())
+			optionSelectedMonth.selected = true
+		},
 		updateDatasetWithFilters: async function(eventData) {
 			this.$refs.invoiceExtendedTable.setDataset(await getInvoicesList(eventData))
 		},
@@ -399,6 +413,8 @@ export default {
 	mounted() {
 		this.loadGraph()
 		this.$refs.excelButton.setTable(this.$refs.invoiceExtendedTable)
+		this.selectPreviousMonthOnMonthCloseCard()
+
 		// this.$refs.excelButton.setEnablePaginationCallback(this.$refs.invoiceExtendedTable.enablePagination)
 		// this.$refs.excelButton.setDisablePaginationCallback(this.$refs.invoiceExtendedTable.disablePagination)
 	}
