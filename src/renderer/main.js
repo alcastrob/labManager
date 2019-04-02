@@ -19,7 +19,7 @@ Vue.config.productionTip = false
 remoteLog(log, {
   url: 'http://104.248.82.4:5000',
   prefix: (severity, message) => {
-    return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}: ${message}`
+    return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}-${require('../../package.json').version}: ${message}`
   },
   callOriginal: true
 })

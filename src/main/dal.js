@@ -15,6 +15,7 @@ export async function loadDbFile() {
     db = new sqlite3.Database(configGet('dataFile'))
     await getConfigValue('companyName')
   } catch (err) {
+    log.error(`${configGet('dataFile')} is not a good sqlite file`)
     // Looks not to be a good sqlite database. Reject it
     return false
   }
@@ -129,6 +130,7 @@ export async function insertWork(work) {
     work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
     work.PrecioFinal, work.PrecioMetal
   ])
+  log.info(`Created the work ${id}`)
   return id
 }
 
@@ -139,6 +141,7 @@ export async function updateWork(work) {
     'FechaEntrada = ?, FechaPrevista = ?, FechaPrevistaPrueba = ?, ' +
     'PrecioMetal = ?, Nombre = ? ' +
     'WHERE IdTrabajo = ?'
+  log.info(`Updating the work ${work.idWork}`)
   return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
     work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
     work.PrecioMetal, work.Nombre, work.IdTrabajo
@@ -160,6 +163,7 @@ export function insertWorkIndications(workIndication) {
   var query = 'INSERT INTO TrabajosDetalle (IdTrabajo, ' +
     'Descripcion, Precio) ' +
     'VALUES (?, ?, ?)'
+  log.info(`Creating the work indication for work ${workIndication.IdTrabajo}`)
   return runAsync(db, query, [workIndication.IdTrabajo,
     workIndication.Descripcion, workIndication.Precio
   ])
@@ -170,17 +174,20 @@ export function updateWorkIndications(workIndication) {
   var query = 'UPDATE TrabajosDetalle ' +
     'SET Descripcion = ?, Precio = ? ' +
     'WHERE IdTrabajoDetalle = ?'
+  log.info(`Updating the work indication ${workIndication.IdTrabajoDetalle} for work ${workIndication.IdTrabajo}`)
   return runAsync(db, query, [workIndication.Descripcion, workIndication.Precio, workIndication.IdTrabajoDetalle])
 }
 
 // Tested
 export function deleteWorkIndications(workIndication) {
   var query = 'DELETE FROM TrabajosDetalle WHERE IdTrabajoDetalle = ?'
+  log.info(`Deleting the work indication ${workIndication.IdTrabajoDetalle} for work ${workIndication.IdTrabajo}`)
   return runAsync(db, query, [workIndication.IdTrabajoDetalle])
 }
 
 export function updatePriceSum(workId) {
   var query = 'UPDATE Trabajos SET PrecioFinal = (SELECT SUM(Precio) FROM TrabajosDetalle WHERE IdTrabajo = ?) WHERE IdTrabajo = ?'
+  log.info(`Updating the final price for work ${workId}`)
   return runAsync(db, query, [workId, workId])
 }
 
