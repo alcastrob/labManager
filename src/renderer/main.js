@@ -17,7 +17,7 @@ if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 remoteLog(log, {
-  url: 'http://localhost:5000',
+  url: 'http://104.248.82.4:5000',
   prefix: (severity, message) => {
     return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}: ${message}`
   },
