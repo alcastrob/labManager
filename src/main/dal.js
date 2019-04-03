@@ -13,6 +13,7 @@ var db
 export async function loadDbFile() {
   try {
     db = new sqlite3.Database(configGet('dataFile'))
+    db.configure('busyTimeout', 5000)
     await getConfigValue('companyName')
   } catch (err) {
     log.error(`${configGet('dataFile')} is not a good sqlite file`)
@@ -95,7 +96,7 @@ function processDateQuery(field, value) {
     case 'Últimos 30 días':
       return ` AND (${field} BETWEEN date("now", "localtime", "-30 day") AND date("now", "localtime", "+1 day"))`
     case 'Este mes':
-      return ` AND (${field} BETWEEN date("now", "localtime", "start of month") AND date("now", "localtime", "start of month", "+1 month"))`
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month") AND date("now", "localtime", "start of month", "+1 month", "-1 day"))`
     case 'Mes pasado':
       return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-1 month") AND date("now", "localtime"))`
     case 'Hace dos meses':
@@ -141,7 +142,7 @@ export async function updateWork(work) {
     'FechaEntrada = ?, FechaPrevista = ?, FechaPrevistaPrueba = ?, ' +
     'PrecioMetal = ?, Nombre = ? ' +
     'WHERE IdTrabajo = ?'
-  log.info(`Updating the work ${work.idWork}`)
+  log.info(`Updating the work ${work.IdTrabajo}`)
   return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
     work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
     work.PrecioMetal, work.Nombre, work.IdTrabajo
@@ -518,12 +519,13 @@ export async function getWorksAggregatedByDentist(year, month, readOnly) {
     query += 'LEFT JOIN FacturasTrabajos ft ON ft.IdTrabajo = t.IdTrabajo '
   }
 
-  query += 'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") '
+  query += 'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month", "-1 day") '
   if (!readOnly) {
     query += 'AND ft.IdFactura IS NULL '
   }
   query += 'GROUP BY t.IdDentista, d.NombreDentista ' +
     'ORDER BY d.NombreDentista'
+  log.debug(`getWorksAggregatedByDentist query: ${query}`)
   return allAsync(db, query, [])
 }
 
@@ -532,13 +534,15 @@ export async function getWorksDeaggregatedByDentist(year, month, idDentist, isRe
   var sMonth = ('00' + month).substr(-2)
   if (!isReadOnly) {
     var query = 'SELECT * FROM vTrabajosPorDentista WHERE ' +
-      'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+      'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
       'AND IdDentista = ' + idDentist
+    log.debug(`getWorksAggregatedByDentist query: ${query}`)
     return allAsync(db, query, [])
   } else {
     var query = 'SELECT * FROM vTodosTrabajosPorDentista WHERE ' +
-      'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+      'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
       'AND IdDentista = ' + idDentist
+    log.debug(`getWorksAggregatedByDentist query: ${query}`)
     return allAsync(db, query, [])
   }
 }
@@ -622,7 +626,7 @@ export async function getInvoice(invoiceId) {
 // Tested
 export async function getInvoicesPerDentist(year, month, idDentist) {
   var query = 'SELECT * FROM vFacturasTrabajosPorDentista WHERE IdDentista = ? ' +
-    `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month")`
+    `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month", "-1 day")`
 
   return allAsync(db, query, [idDentist])
 }
@@ -839,10 +843,15 @@ export async function setConfigValue(configKey, configValue) {
 
 // Generic functions ----------------------------------------------------------
 
+export async function delay(milis) {
+  return new Promise((resolve) => setTimeout(resolve, milis))
+}
+
 function getAsync(db, sql, params) {
-  if (db === undefined) {
+  if (!db) {
     loadDbFile()
   }
+
   return new Promise(function (resolve, reject) {
     db.get(sql, params, function (err, row) {
       if (err) {
@@ -856,14 +865,14 @@ function getAsync(db, sql, params) {
 }
 
 function allAsync(db, sql, params) {
-  if (db === undefined) {
+  if (!db) {
     loadDbFile()
   }
   return new Promise(function (resolve, reject) {
     db.all(sql, params, function (err, row) {
       if (err) {
-        reject(err)
         log.error(`SQL Error. Params: ${params}| Query: ${sql}`)
+        reject(err)
       } else {
         resolve(row)
       }
@@ -872,14 +881,14 @@ function allAsync(db, sql, params) {
 }
 
 function runAsync(db, sql, params) {
-  if (db === undefined) {
+  if (!db) {
     loadDbFile()
   }
   return new Promise(function (resolve, reject) {
     db.run(sql, params, function (err, row) {
       if (err) {
-        reject(err)
         log.error(`SQL Error. Params: ${params}| Query: ${sql}`)
+        reject(err)
       } else {
         // resolve(row)
         resolve(this.lastID)
