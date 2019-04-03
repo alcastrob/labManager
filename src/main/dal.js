@@ -87,7 +87,7 @@ function processDateQuery(field, value){
     case 'Últimos 30 días':
     return ` AND (${field} BETWEEN date("now", "localtime", "-30 day") AND date("now", "localtime", "+1 day"))`
     case 'Este mes':
-      return ` AND (${field} BETWEEN date("now", "localtime", "start of month") AND date("now", "localtime", "start of month", "+1 month"))`
+      return ` AND (${field} BETWEEN date("now", "localtime", "start of month") AND date("now", "localtime", "start of month", "+1 month", "-1 day"))`
     case 'Mes pasado':
       return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-1 month") AND date("now", "localtime"))`
     case 'Hace dos meses':
@@ -484,7 +484,7 @@ export async function getWorksAggregatedByDentist (year, month, readOnly) {
       query += 'LEFT JOIN FacturasTrabajos ft ON ft.IdTrabajo = t.IdTrabajo '
     }
 
-    query += 'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month") '
+    query += 'WHERE t.FechaTerminacion BETWEEN date("' + year + '-' + ('00' + month).substr(-2) + '-01") AND date("' + year + '-' + ('00' + month).substr(-2) + '-01", "+1 month", "-1 day") '
     if (!readOnly){
       query += 'AND ft.IdFactura IS NULL '
     }
@@ -498,12 +498,12 @@ export async function getWorksDeaggregatedByDentist (year, month, idDentist, isR
   var sMonth = ('00' + month).substr(-2)
   if (!isReadOnly){
     var query = 'SELECT * FROM vTrabajosPorDentista WHERE ' +
-    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
     'AND IdDentista = ' + idDentist
     return await allAsync(db, query, [])
   } else {
     var query = 'SELECT * FROM vTodosTrabajosPorDentista WHERE ' +
-    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month") ' +
+    'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
     'AND IdDentista = ' + idDentist
     return await allAsync(db, query, [])
   }
@@ -588,7 +588,7 @@ export async function getInvoicesList (customFilters) {
   //Tested
   export async function getInvoicesPerDentist(year, month, idDentist) {
     var query = 'SELECT * FROM vFacturasTrabajosPorDentista WHERE IdDentista = ? ' +
-    `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month")`
+    `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month", "-1 day")`
 
     return await allAsync(db, query, [idDentist])
   }
