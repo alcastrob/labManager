@@ -1,6 +1,6 @@
 {
   "name": "labmanager",
-  "version": "0.9.20",
+  "version": "0.9.21",
   "author": "Angel Castro <al.castro@gmail.com>",
   "description": "An application for managing a dental prosthetic laboratory",
   "license": "MIT",
@@ -32,8 +32,7 @@
       "dist/electron/**/*"
     ],
     "dmg": {
-      "contents": [
-        {
+      "contents": [{
           "x": 410,
           "y": 150,
           "type": "link",
@@ -55,13 +54,11 @@
     "linux": {
       "icon": "build/icons"
     },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "alcastrob",
-        "repo": "labManager"
-      }
-    ]
+    "publish": [{
+      "provider": "github",
+      "owner": "alcastrob",
+      "repo": "labManager"
+    }]
   },
   "dependencies": {
     "axios": "^0.18.0",

@@ -1,3 +1,5 @@
+import log from 'loglevel'
+
 const electron = require('electron')
 const path = require('path')
 const fs = require('fs')
@@ -11,6 +13,8 @@ export function configGet(key) {
     const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
     data = JSON.parse(fs.readFileSync(filePath))
     loaded = true
+    log.info(`Loaded the local config file`)
+    log.debug(`Config file contents: ${JSON.stringify(data)}`)
   }
   if (data[key] === 'true') {
     return true

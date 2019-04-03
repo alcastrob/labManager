@@ -160,6 +160,7 @@ export default {
 			this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
 		},
 		showAdjunts: function(justAdded) {
+			log.debug('ShowAdjunts button clicked')
 			if (justAdded === undefined || justAdded.type === 'click') {
 				this.workAdjunctsJustAdded = true
 				this.workAdjuncts = {
