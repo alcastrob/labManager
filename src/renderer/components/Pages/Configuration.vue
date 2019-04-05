@@ -118,7 +118,7 @@
 <script>
 // import { mixin as clickaway } from 'vue-clickaway'
 import { required } from 'vuelidate/lib/validators'
-import { getConfigValues, setConfigValue } from '../../../main/dal.js'
+import PersistenceService from '../../../services/PersistenceService.js'
 import logoFileUpload from '../PageElements/fileUploads/logoFileUpload'
 import log from 'loglevel'
 
@@ -180,32 +180,32 @@ export default {
 			}
 
 			if (this.$v.config.companyName.$dirty) {
-				await setConfigValue('companyName', this.config.companyName)
+				await this.persistenceService.setConfigValue('companyName', this.config.companyName)
 			}
 			if (this.$v.config.personInCharge.$dirty) {
-				await setConfigValue('personInCharge', this.config.personInCharge)
+				await this.persistenceService.setConfigValue('personInCharge', this.config.personInCharge)
 			}
 			if (this.$v.config.makerNumber.$dirty) {
-				await setConfigValue('makerNumber', this.config.makerNumber)
+				await this.persistenceService.setConfigValue('makerNumber', this.config.makerNumber)
 			}
 			if (this.$v.config.logo.$dirty) {
-				await setConfigValue('logo', this.config.logo)
+				await this.persistenceService.setConfigValue('logo', this.config.logo)
 			}
 			if (this.$v.config.vatNumber.$dirty) {
-				await setConfigValue('vatNumber', this.config.vatNumber)
+				await this.persistenceService.setConfigValue('vatNumber', this.config.vatNumber)
 			}
 			if (this.$v.config.invoiceFooter.$dirty) {
-				await setConfigValue('invoiceFooter', this.config.invoiceFooter)
+				await this.persistenceService.setConfigValue('invoiceFooter', this.config.invoiceFooter)
 			}
 			if (this.$v.config.sharedPath.$dirty) {
-				await setConfigValue('sharedPath', this.config.sharedPath)
+				await this.persistenceService.setConfigValue('sharedPath', this.config.sharedPath)
 			}
 
 			log.info(`>> navigate: ${url}`)
 			this.$router.push({ path: url })
 		},
 		getData: async function() {
-			for (var pair of await getConfigValues()) {
+			for (var pair of await this.persistenceService.getConfigValues()) {
 				this.config[pair.clave] = pair.valor
 			}
 		}
@@ -214,15 +214,9 @@ export default {
 		isDirty() {
 			return false
 		}
-		// isError() {
-		// 	var result = this.$v.$anyError
-		// 	if (this.$refs.workIndications !== undefined) {
-		// 		result = result
-		// 	}
-		// 	return result
-		// }
 	},
 	created() {
+		this.persistenceService = new PersistenceService()
 		this.$root.$on('topbar:save', this.save)
 		this.getData()
 	}

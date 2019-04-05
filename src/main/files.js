@@ -1,6 +1,4 @@
-import {
-  getConfigValue
-} from './dal.js'
+import PersistenceService from '../services/PersistenceService'
 import _ from 'lodash'
 import log from 'loglevel'
 
@@ -9,7 +7,8 @@ const mime = require('mime-types')
 
 // Tested
 async function getFilePathUsingWorkId(file, workId) {
-  var path = await getConfigValue('sharedPath')
+  var workService = new PersistenceService()
+  var path = await workService.getConfigValue('sharedPath')
   if (!path.endsWith('\\')) {
     path += '\\'
   }
@@ -43,7 +42,8 @@ export async function deleteFile(fileContent) {
 // Tested
 export async function getFileList(workId) {
   var returnedValue = []
-  var path = await getConfigValue('sharedPath')
+  var workService = new WorkService()
+  var path = await workService.getConfigValue('sharedPath')
   if (!path.endsWith('\\')) {
     path += '\\'
   }
@@ -90,10 +90,6 @@ function getByteArrays(byteCharacters) {
 
 // Tested
 export async function turnFileIntoB64(fileName) {
-  // var path = await getConfigValue('sharedPath')
-  // if (!path.endsWith('\\')) {
-  //   path += '\\'
-  // }
   var content = fs.readFileSync(fileName, 'binary')
   var y = getByteArrays(content)
   return new File(y, fileName, {

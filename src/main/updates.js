@@ -4,9 +4,7 @@
 import _ from 'lodash'
 import axios from 'axios'
 import log from 'loglevel'
-import {
-  getConfigValue
-} from './dal'
+import PersistenceService from '../services/PersistenceService'
 
 const semver = require('semver')
 const path = require('path')
@@ -22,7 +20,8 @@ const RELEASES_URL = 'https://api.github.com/repos/alcastrob/labManager/releases
 
 export async function checkForUpdates() {
   var currentVersion = require('../../package.json').version
-  var token = await getConfigValue('githubToken')
+  var persistenceService = new PersistenceService()
+  var token = await persistenceService.getConfigValue('githubToken')
   var responseReleases = await axios
     .get(RELEASES_URL, {
       headers: {

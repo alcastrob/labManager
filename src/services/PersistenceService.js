@@ -62,6 +62,46 @@ export default class PersistenceService {
     return this.runAsync(query, [configKey, configValue])
   }
 
+  _processTypeQuery(field, values) {
+    var returnedValue = ` AND ${field} IN (`
+    _.forEach(values, (value) => {
+      returnedValue += `"${value}",`
+    })
+
+    return returnedValue.substring(0, returnedValue.length - 1) + ')'
+  }
+
+  _processDateQuery(field, value) {
+    switch (value) {
+      case 'Hoy':
+        return ` AND (${field} BETWEEN date("now","localtime") AND  date("now", "localtime", "+1 day"))`
+      case 'Esta semana':
+        return ` AND (${field} BETWEEN date('now', 'weekday 1', '-7 day') AND date('now', 'weekday 1', '-1 day'))`
+      case 'Últimos 7 días':
+        return ` AND (${field} BETWEEN date("now", "localtime", "-7 day") AND date("now", "localtime", "+1 day"))`
+      case 'Últimos 15 días':
+        return ` AND (${field} BETWEEN date("now", "localtime", "-15 day") AND date("now", "localtime", "+1 day"))`
+      case 'Últimos 30 días':
+        return ` AND (${field} BETWEEN date("now", "localtime", "-30 day") AND date("now", "localtime", "+1 day"))`
+      case 'Este mes':
+        return ` AND (${field} BETWEEN date("now", "localtime", "start of month") AND date("now", "localtime", "start of month", "+1 month", "-1 day"))`
+      case 'Mes pasado':
+        return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-1 month") AND date("now", "localtime"))`
+      case 'Hace dos meses':
+        return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-2 month") AND date("now", "localtime"))`
+      case 'Hace tres meses':
+        return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-3 month") AND date("now", "localtime"))`
+      case 'Hace seis meses':
+        return ` AND (${field} BETWEEN date("now", "localtime", "start of month", "-6 month") AND date("now", "localtime"))`
+      case 'Ninguna':
+        return ` AND (${field} is null)`
+      case 'Ninguna o en el futuro':
+        return ` AND (${field} is null OR ${field} > date("now", "localtime"))`
+      default:
+        throw 'Not recognized the WHERE parameter ' + value
+    }
+  }
+
   async delay(milis) {
     return new Promise((resolve) => setTimeout(resolve, milis))
   }

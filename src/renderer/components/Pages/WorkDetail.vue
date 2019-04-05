@@ -360,9 +360,9 @@ import {
 	getWorkTestsList,
 	updateWork,
 	updateAdjuntsOfWork,
-	getConfigValues,
 	getInvoicePerWork
 } from '../../../main/dal.js'
+import PersistenceService from '../../../services/PersistenceService.js'
 import { configGet } from '../../../main/store.js'
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
@@ -508,7 +508,7 @@ export default {
 		},
 		getDeliveryNote: async function() {
 			if (this.save()) {
-				var row = await getConfigValues(['logo'])
+				var row = await this.persistenceService.getConfigValues(['logo'])
 				var ComponentClass = Vue.extend(delivery)
 				var instance = new ComponentClass({
 					propsData: {
@@ -622,6 +622,7 @@ export default {
 		}
 	},
 	created() {
+		this.persistenceService = new PersistenceService()
 		this.work.IdTrabajo = parseInt(this.$route.params.id)
 	},
 	mounted() {

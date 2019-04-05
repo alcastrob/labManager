@@ -38,7 +38,7 @@
 <script>
 import { integer, minValue } from 'vuelidate/lib/validators'
 import warrantyLabel from '../Labels/LabelGarantia'
-import { getConfigValue } from '../../../main/dal.js'
+import PersistenceService from '../../../services/PersistenceService.js'
 // eslint-disable-next-line
 import bModal from 'bootstrap-vue'
 
@@ -78,11 +78,12 @@ export default {
 			this.$refs.warrantyLabel.waitLogoAndPrint()
 		},
 		loadData: async function() {
-			var logoData = await getConfigValue('logo')
+			var logoData = await this.persistenceService.getConfigValue('logo')
 			this.logo = 'data:image/png;base64,' + logoData
 		}
 	},
 	created() {
+		this.persistenceService = new PersistenceService()
 		this.loadData()
 	}
 }

@@ -310,7 +310,7 @@
 </template>
 
 <script>
-import WorkService from '../../../services/WorksService.js'
+import WorkService from '../../../services/WorkService.js'
 import { insertAdjuntsOfWork } from '../../../main/dal.js'
 import workMixin from './WorkMixin'
 import _ from 'lodash'

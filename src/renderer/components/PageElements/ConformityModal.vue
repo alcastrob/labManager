@@ -88,9 +88,9 @@ import { integer, minValue } from 'vuelidate/lib/validators'
 import {
 	getConformityDeclaration,
 	insertConformityDeclaration,
-	updateConformityDeclaration,
-	getConfigValues
+	updateConformityDeclaration
 } from '../../../main/dal.js'
+import PersistenceService from '../../../services/PersistenceService.js'
 import conformityLabel from '../Labels/Conformity'
 // eslint-disable-next-line
 import bModal from 'bootstrap-vue'
@@ -149,7 +149,12 @@ export default {
 		},
 		getDeclarationOfConformity: async function() {
 			var declaration = await getConformityDeclaration(this.work.IdTrabajo)
-			var config = await getConfigValues(['makerNumber', 'personInCharge', 'companyName', 'logo'])
+			var config = await this.persistenceService.getConfigValues([
+				'makerNumber',
+				'personInCharge',
+				'companyName',
+				'logo'
+			])
 
 			// 1. Get the config data first
 			this.makerNumber = _.find(config, ['clave', 'makerNumber']).valor
@@ -239,6 +244,9 @@ export default {
 				this.batches.push(this.batchQueryResult)
 				this.isDirty = true
 			}
+		},
+		created() {
+			this.persistenceService = new PersistenceService()
 		}
 	}
 }

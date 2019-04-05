@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import WorkService from '../../../services/WorksService.js'
+import WorkService from '../../../services/WorkService.js'
 import workExtendedTable from '../PageElements/tables/workExtendedTable'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 import { configGet } from '../../../main/store'

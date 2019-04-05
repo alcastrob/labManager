@@ -50,39 +50,6 @@ export function createNewDatabase() {
 
 // Works ----------------------------------------------------------------------
 
-// Tested
-export async function getWorksList(customFilters) {
-  var query = 'SELECT * FROM vTrabajos WHERE 1=1'
-  if (customFilters !== undefined) {
-    if (customFilters.fEntrada !== undefined) {
-      query += processDateQuery('FechaEntrada', customFilters.fEntrada)
-    }
-    if (customFilters.fPrevista !== undefined) {
-      query += processDateQuery('FechaPrevista', customFilters.fPrevista)
-    }
-    if (customFilters.fSalida !== undefined) {
-      query += processDateQuery('FechaTerminacion', customFilters.fSalida)
-    }
-    if (customFilters.tipo !== undefined && customFilters.tipo.length > 0) {
-      query += processTypeQuery('TipoTrabajo', customFilters.tipo)
-    }
-    if (customFilters.IdDentista !== undefined) {
-      query += ` AND IdDentista = ${customFilters.IdDentista}`
-    }
-  }
-
-  return allAsync(db, query, [])
-}
-
-function processTypeQuery(field, values) {
-  var returnedValue = ` AND ${field} IN (`
-  _.forEach(values, (value) => {
-    returnedValue += `"${value}",`
-  })
-
-  return returnedValue.substring(0, returnedValue.length - 1) + ')'
-}
-
 function processDateQuery(field, value) {
   switch (value) {
     case 'Hoy':
@@ -112,41 +79,6 @@ function processDateQuery(field, value) {
     default:
       throw 'Not recognized the WHERE parameter ' + value
   }
-}
-
-// Tested
-export async function getWork(workId) {
-  var query = 'SELECT * FROM vTrabajos ' +
-    'WHERE IdTrabajo = ?'
-  return getAsync(db, query, [workId])
-}
-
-// Tested
-export async function insertWork(work) {
-  var query = 'INSERT INTO Trabajos (IdDentista, IdTipoTrabajo, ' +
-    'Paciente, Color, FechaTerminacion, FechaEntrada, ' +
-    'FechaPrevista, FechaPrevistaPrueba, PrecioFinal, PrecioMetal) ' +
-    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-  var id = await runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
-    work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
-    work.PrecioFinal, work.PrecioMetal
-  ])
-  log.info(`Created the work ${id}`)
-  return id
-}
-
-// Tested
-export async function updateWork(work) {
-  var query = 'UPDATE Trabajos SET IdDentista = ?, IdTipoTrabajo = ?, ' +
-    'Paciente = ?, Color = ?, FechaTerminacion = ?, ' +
-    'FechaEntrada = ?, FechaPrevista = ?, FechaPrevistaPrueba = ?, ' +
-    'PrecioMetal = ?, Nombre = ? ' +
-    'WHERE IdTrabajo = ?'
-  log.info(`Updating the work ${work.IdTrabajo}`)
-  return runAsync(db, query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
-    work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
-    work.PrecioMetal, work.Nombre, work.IdTrabajo
-  ])
 }
 
 // Work Indications -----------------------------------------------------------

@@ -8,7 +8,8 @@ import _ from 'lodash'
 import { Printd } from 'printd'
 import invoicePage from './invoicePage'
 import reportPage from './reportPage'
-import { getConfigValues, getInvoice, getWorkIndications, getDentist } from '../../../main/dal.js'
+import { getInvoice, getWorkIndications, getDentist } from '../../../main/dal.js'
+import PersistenceService from '../../../services/PersistenceService.js'
 var path = require('path')
 var fs = require('fs')
 
@@ -174,7 +175,7 @@ export default {
 			}
 		},
 		loadData: async function() {
-			var config = await getConfigValues(['logo', 'vatNumber', 'invoiceFooter'])
+			var config = await this.persistenceService.getConfigValues(['logo', 'vatNumber', 'invoiceFooter'])
 			this.logo = 'data:image/png;base64,' + _.find(config, ['clave', 'logo']).valor
 			this.vatNumber = _.find(config, ['clave', 'vatNumber']).valor
 			this.footer = _.find(config, ['clave', 'invoiceFooter']).valor
@@ -189,6 +190,7 @@ export default {
 		}
 	},
 	created() {
+		this.persistenceService = new PersistenceService()
 		this.loadData()
 		this.cssText = fs.readFileSync(path.resolve(__static, 'printed.css'), 'UTF-8')
 		this.cssText += fs.readFileSync(path.resolve(__static, 'bootstrap.min.css'), 'UTF-8')

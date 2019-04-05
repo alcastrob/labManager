@@ -47,7 +47,7 @@
 import labelMixin from './LabelMixin'
 import moment from 'moment'
 import { Printd } from 'printd'
-import { getConfigValue } from '../../../main/dal.js'
+import PersistenceService from '../../../services/PersistenceService.js'
 
 export default {
 	name: 'labelGarantia',
@@ -88,11 +88,12 @@ export default {
 			return moment(date).format('DD/MM/YYYY')
 		},
 		loadData: async function() {
-			var logoData = await getConfigValue('logo')
+			var logoData = await this.persistenceService.getConfigValue('logo')
 			this.logo = 'data:image/png;base64,' + logoData
 		}
 	},
 	created() {
+		this.persistenceService = new PersistenceService()
 		this.loadData()
 	}
 }
