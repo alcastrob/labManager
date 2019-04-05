@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { getWorksList } from '../../../main/dal.js'
+import WorkService from '../../../services/WorksService.js'
 import workExtendedTable from '../PageElements/tables/workExtendedTable'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 import { configGet } from '../../../main/store'
@@ -144,8 +144,8 @@ export default {
 			}
 		},
 		updateDatasetWithFilters: async function(filterData) {
-			// this.$refs.workExtendedTable.setDataset(await getWorksList(filterData))
-			this.$refs.workExtendedTable.updateDataset(await getWorksList(filterData))
+			// var workService = new WorkService()
+			this.$refs.workExtendedTable.updateDataset(await this.workService.getWorksList(filterData))
 			log.debug(`UpdateDatasetWithFilters: ${JSON.stringify(filterData)}`)
 			this.lastFilterUsed = filterData
 		},
@@ -168,6 +168,7 @@ export default {
 	},
 	created() {
 		this.listHeading = this.$route.query.title
+		this.workService = new WorkService()
 	},
 	activated() {
 		// The data will be loaded even if the rest of the page is in the cache
@@ -175,7 +176,6 @@ export default {
 	},
 	mounted() {
 		this.$refs.workExtendedTable.setFilters(this.$route.query.filter)
-		// this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter, this.$route.params.id))
 
 		this.$root.$on('workList:ReloadRequest', () => {
 			this.$refs.workExtendedTable.setFilters(this.$route.query.filter)

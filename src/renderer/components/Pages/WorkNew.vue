@@ -310,7 +310,8 @@
 </template>
 
 <script>
-import { insertWork, insertAdjuntsOfWork } from '../../../main/dal.js'
+import WorkService from '../../../services/WorksService.js'
+import { insertAdjuntsOfWork } from '../../../main/dal.js'
 import workMixin from './WorkMixin'
 import _ from 'lodash'
 import log from 'loglevel'
@@ -379,7 +380,7 @@ export default {
 			}
 
 			if (this.$v.work.$anyDirty) {
-				this.work.IdTrabajo = await insertWork(this.work)
+				this.work.IdTrabajo = await this.workService.insertWork(this.work)
 				this.$refs.workIndications.save(this.work.IdTrabajo)
 				if (this.adjunctsVisible) {
 					this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
@@ -480,8 +481,14 @@ export default {
 			return result
 		}
 	},
+	created() {
+		this.workService = new WorkService()
+	},
 	mounted() {
-		this.$root.$on('topbar:save', this.save)
+		this.$root.$on('topbar:save', () => {
+			log.debug('Requested to save from the topbar')
+			this.save()
+		})
 		this.cleanComponent()
 	}
 }
