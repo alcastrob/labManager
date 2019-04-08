@@ -1,52 +1,37 @@
 import _ from 'lodash'
-import {
-  configGet
-} from '../main/store'
+// import {
+//   configGet
+// } from '../main/store'
 import log from 'loglevel'
+import PersistenceService from '../services/PersistenceService'
 
 // eslint-disable-next-line no-unused-expressions
 'use strict'
 
-var sqlite3 = require('sqlite3').verbose()
-var db
+var db = new PersistenceService().loadDbFile()
 
-export async function loadDbFile() {
-  try {
-    db = new sqlite3.Database(configGet('dataFile'))
-    db.configure('busyTimeout', 5000)
-    await getConfigValue('companyName')
-  } catch (err) {
-    log.error(`${configGet('dataFile')} is not a good sqlite file`)
-    // Looks not to be a good sqlite database. Reject it
-    return false
-  }
-  // eslint-disable-next-line no-useless-escape
-  require('electron').ipcRenderer.send('file:opened', db.filename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, ''))
-  return true
-}
+// function createTable() {
+//   db.run('CREATE TABLE TipoTrabajos (' +
+//     '    IdTipoTrabajo INTEGER PRIMARY KEY AUTOINCREMENT,' +
+//     '    Descripcion   TEXTO   NOT NULL);', insertValueObjects)
+// }
 
-function createTable() {
-  db.run('CREATE TABLE TipoTrabajos (' +
-    '    IdTipoTrabajo INTEGER PRIMARY KEY AUTOINCREMENT,' +
-    '    Descripcion   TEXTO   NOT NULL);', insertValueObjects)
-}
+// function insertValueObjects() {
+//   var batch = db.prepare('INSERT INTO TipoTrabajos (IdTipoTrabajo, Descripcion) VALUES (?, ?)')
+//   batch.run(1, 'Fija')
+//   batch.run(2, 'Resina')
+//   batch.run(3, 'Ortodoncia')
+//   batch.run(4, 'Esquelético')
+//   batch.run(5, 'Zirconio')
+//   batch.run(6, 'Compostura')
+//   batch.run(7, 'Implante')
+//   batch.finalize()
+//   db.close()
+// }
 
-function insertValueObjects() {
-  var batch = db.prepare('INSERT INTO TipoTrabajos (IdTipoTrabajo, Descripcion) VALUES (?, ?)')
-  batch.run(1, 'Fija')
-  batch.run(2, 'Resina')
-  batch.run(3, 'Ortodoncia')
-  batch.run(4, 'Esquelético')
-  batch.run(5, 'Zirconio')
-  batch.run(6, 'Compostura')
-  batch.run(7, 'Implante')
-  batch.finalize()
-  db.close()
-}
-
-export function createNewDatabase() {
-  db = new sqlite3.Database(configGet('dataFile'), createTable)
-}
+// export function createNewDatabase() {
+//   db = new sqlite3.Database(configGet('dataFile'), createTable)
+// }
 
 // Works ----------------------------------------------------------------------
 
@@ -88,7 +73,7 @@ export async function getWorkIndications(workId) {
   var query = 'SELECT IdTrabajoDetalle, IdTrabajo, Descripcion, Precio ' +
     'FROM TrabajosDetalle ' +
     'WHERE IdTrabajo = ?'
-  return allAsync(db, query, [workId])
+  return db.allAsync(db, query, [workId])
 }
 
 // Tested
@@ -97,7 +82,7 @@ export function insertWorkIndications(workIndication) {
     'Descripcion, Precio) ' +
     'VALUES (?, ?, ?)'
   log.info(`Creating the work indication for work ${workIndication.IdTrabajo}`)
-  return runAsync(db, query, [workIndication.IdTrabajo,
+  return db.runAsync(db, query, [workIndication.IdTrabajo,
     workIndication.Descripcion, workIndication.Precio
   ])
 }
@@ -108,20 +93,20 @@ export function updateWorkIndications(workIndication) {
     'SET Descripcion = ?, Precio = ? ' +
     'WHERE IdTrabajoDetalle = ?'
   log.info(`Updating the work indication ${workIndication.IdTrabajoDetalle} for work ${workIndication.IdTrabajo}`)
-  return runAsync(db, query, [workIndication.Descripcion, workIndication.Precio, workIndication.IdTrabajoDetalle])
+  return db.runAsync(db, query, [workIndication.Descripcion, workIndication.Precio, workIndication.IdTrabajoDetalle])
 }
 
 // Tested
 export function deleteWorkIndications(workIndication) {
   var query = 'DELETE FROM TrabajosDetalle WHERE IdTrabajoDetalle = ?'
   log.info(`Deleting the work indication ${workIndication.IdTrabajoDetalle} for work ${workIndication.IdTrabajo}`)
-  return runAsync(db, query, [workIndication.IdTrabajoDetalle])
+  return db.runAsync(db, query, [workIndication.IdTrabajoDetalle])
 }
 
 export function updatePriceSum(workId) {
   var query = 'UPDATE Trabajos SET PrecioFinal = (SELECT SUM(Precio) FROM TrabajosDetalle WHERE IdTrabajo = ?) WHERE IdTrabajo = ?'
   log.info(`Updating the final price for work ${workId}`)
-  return runAsync(db, query, [workId, workId])
+  return db.runAsync(db, query, [workId, workId])
 }
 
 // Work Tests -----------------------------------------------------------------
@@ -130,7 +115,7 @@ export function updatePriceSum(workId) {
 export async function getWorkTestsList(workId) {
   var query = 'SELECT * FROM vPruebas ' +
     'WHERE IdTrabajo = ?'
-  return allAsync(db, query, [workId]) // .then((rows) => {
+  return db.allAsync(db, query, [workId]) // .then((rows) => {
   //   return rows
   // })
 }
@@ -138,7 +123,7 @@ export async function getWorkTestsList(workId) {
 // Tested
 export function getDeliveryShifts() {
   var query = 'SELECT IdTurno, Descripcion FROM Turnos'
-  return allAsync(db, query, []).then((rows) => {
+  return db.allAsync(db, query, []).then((rows) => {
     return rows
   })
 }
@@ -148,7 +133,7 @@ export function insertWorkTest(workTest) {
   var query = 'INSERT INTO Pruebas (IdTrabajo, Descripcion, FechaSalida, ' +
     'FechaEntrada, Comentario, IdTurnoFechaSalida, IdTurnoFechaEntrada) ' +
     'VALUES (?, ?, ?, ?, ?, ?, ?)'
-  return runAsync(db, query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
+  return db.runAsync(db, query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
     workTest.FechaEntrada, workTest.Comentario, workTest.IdTurnoFechaSalida,
     workTest.IdTurnoFechaEntrada
   ])
@@ -160,7 +145,7 @@ export function updateWorkTest(workTest) {
     'FechaEntrada = ?, Comentario = ?, IdTurnoFechaSalida = ?, ' +
     'IdTurnoFechaEntrada = ? ' +
     'WHERE IdPrueba = ?'
-  return runAsync(db, query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
+  return db.runAsync(db, query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
     workTest.FechaEntrada, workTest.Comentario, workTest.IdTurnoFechaSalida,
     workTest.IdTurnoFechaEntrada, workTest.IdPrueba
   ])
@@ -169,7 +154,7 @@ export function updateWorkTest(workTest) {
 // Tested
 export function deleteWorkTest(workTestId) {
   var query = 'DELETE FROM Pruebas WHERE IdPrueba = ?'
-  return runAsync(db, query, [workTestId])
+  return db.runAsync(db, query, [workTestId])
 }
 
 // Tested
@@ -179,7 +164,7 @@ export async function setInboundWorkTestToToday(workTestId) {
     'IdTurnoFechaEntrada = 2 - (time("now") BETWEEN time("08:00:00") AND time("17:30:00")) ' +
     'WHERE IdTrabajo = ? AND FechaEntrada IS NULL AND FechaSalida = ' +
     '(SELECT MAX(FechaSalida) FROM Pruebas WHERE IdTrabajo = ?)'
-  return runAsync(db, query, [workTestId, workTestId])
+  return db.runAsync(db, query, [workTestId, workTestId])
 }
 
 // Tested
@@ -189,7 +174,7 @@ export async function unsetInboundTestToToday(workTestId) {
     'IdTurnoFechaEntrada = NULL ' +
     'WHERE IdTrabajo = ? AND date(FechaEntrada, "localtime") = date("now", "localtime") AND FechaSalida = ' +
     '(SELECT MAX(FechaSalida) FROM Pruebas WHERE IdTrabajo = ?)'
-  return runAsync(db, query, [workTestId, workTestId])
+  return db.runAsync(db, query, [workTestId, workTestId])
 }
 
 // Custom queries for Work (KPIs)----------------------------------------------
@@ -199,7 +184,7 @@ export async function getWorkInExecution() {
   var query = 'SELECT COUNT(1) AS Count ' +
     'FROM Trabajos ' +
     'WHERE FechaTerminacion is NULL OR FechaTerminacion >= date("now", "localtime")'
-  return getAsync(db, query, [])
+  return db.getAsync(db, query, [])
 }
 
 // Tested
@@ -208,7 +193,7 @@ export async function getWorksEndedThisMonth() {
     'FROM Trabajos t ' +
     'WHERE FechaTerminacion >= date("now", "localtime", "start of month") ' +
     'AND FechaTerminacion <= date("now", "localtime")'
-  return getAsync(db, query, [])
+  return db.getAsync(db, query, [])
 }
 
 // Tested
@@ -216,7 +201,7 @@ export async function getWorksEndedLast30days() {
   var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
     'FROM Trabajos ' +
     'WHERE FechaTerminacion >= date("now", "localtime", "-30 days")'
-  return getAsync(db, query, [])
+  return db.getAsync(db, query, [])
 }
 
 // Tested
@@ -225,7 +210,7 @@ export async function getWorksEndedPrevious30days() {
     'FROM Trabajos ' +
     'WHERE FechaTerminacion >= date("now", "localtime", "-60 days") ' +
     'AND FechaTerminacion <= date("now", "localtime", "-30 days")'
-  return getAsync(db, query, [])
+  return db.getAsync(db, query, [])
 }
 
 // Tested
@@ -235,7 +220,7 @@ export async function getMonthTotals() {
     'FROM Trabajos ' +
     'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" ' +
     'GROUP BY Month, Year'
-  var data = await allAsync(db, query, [])
+  var data = await db.allAsync(db, query, [])
   var thisYearData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   var previousYearData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   _.forEach(_.filter(data, ['Year', new Date().getFullYear().toString()]), (v) => {
@@ -257,7 +242,7 @@ export async function getMonthTotalsPerDentist(dentistId) {
     'FROM Trabajos ' +
     'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" AND IdDentista = ? ' +
     'GROUP BY Month, Year'
-  var data = await allAsync(db, query, [dentistId])
+  var data = await db.allAsync(db, query, [dentistId])
   var thisYearData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   var previousYearData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   _.forEach(_.filter(data, ['Year', new Date().getFullYear().toString()]), (v) => {
@@ -279,7 +264,7 @@ export async function getSumPerDentistPerWorkType(dentistId) {
     'INNER JOIN TipoTrabajos tt ON t.IdTipoTrabajo = tt.IdTipoTrabajo ' +
     'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" AND IdDentista = ? ' +
     'GROUP BY TipoTrabajo'
-  var data = await allAsync(db, query, [dentistId])
+  var data = await db.allAsync(db, query, [dentistId])
   return {
     labels: _.map(data, (e) => {
       return e.TipoTrabajo
@@ -303,7 +288,7 @@ export async function getLeaderboard(limit) {
     query += 'LIMIT ' + limit
   }
 
-  return allAsync(db, query, [])
+  return db.allAsync(db, query, [])
 }
 
 // Work Types -----------------------------------------------------------------
@@ -312,7 +297,7 @@ export async function getLeaderboard(limit) {
 export function getWorkTypes() {
   var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
 
-  return allAsync(db, query, []).then((row) => {
+  return db.allAsync(db, query, []).then((row) => {
     return row
   })
 }
@@ -327,7 +312,7 @@ export async function getAdjuntsOfWork(workId) {
     'FROM Aditamentos ' +
     'WHERE IdTrabajo = ?'
 
-  return getAsync(db, query, [workId])
+  return db.getAsync(db, query, [workId])
 }
 
 // Tested
@@ -338,7 +323,7 @@ export function insertAdjuntsOfWork(adjunt) {
     'Interface, Otros) ' +
     'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 
-  return runAsync(db, query, [adjunt.IdTrabajo, adjunt.Caja, adjunt.Cubeta, adjunt.Articulador,
+  return db.runAsync(db, query, [adjunt.IdTrabajo, adjunt.Caja, adjunt.Cubeta, adjunt.Articulador,
     adjunt.Pletinas, adjunt.Tornillos, adjunt.Analogos, adjunt.PosteImpresion,
     adjunt.Interface, adjunt.Otros
   ])
@@ -352,7 +337,7 @@ export function updateAdjuntsOfWork(adjunt) {
     'Analogos = ?, PosteImpresion = ?, Interface = ?,' +
     'Otros = ? ' +
     'WHERE IdTrabajo = ?'
-  return runAsync(db, query, [adjunt.Caja, adjunt.Cubeta, adjunt.Articulador,
+  return db.runAsync(db, query, [adjunt.Caja, adjunt.Cubeta, adjunt.Articulador,
     adjunt.Pletinas, adjunt.Tornillos, adjunt.Analogos, adjunt.PosteImpresion,
     adjunt.Interface, adjunt.Otros, adjunt.IdTrabajo
   ])
@@ -363,13 +348,13 @@ export function updateAdjuntsOfWork(adjunt) {
 // Tested
 export async function getDentistList() {
   var query = 'SELECT * FROM vDentistas'
-  return allAsync(db, query, [])
+  return db.allAsync(db, query, [])
 }
 
 // Tested
 export async function getDentist(dentistId) {
   var query = 'SELECT * FROM vDentistas WHERE IdDentista = ?'
-  return getAsync(db, query, [dentistId])
+  return db.getAsync(db, query, [dentistId])
 }
 
 // Tested
@@ -378,7 +363,7 @@ export function insertDentist(dentist) {
     'DatosFiscales, Direccion, DatosBancarios, DatosInteres, ' +
     'CorreoElectronico, CP, Poblacion, Telefono, Telefono2) ' +
     'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-  runAsync(db, query, [dentist.NombreDentista, dentist.NombreClinica, dentist.DatosFiscales,
+  db.runAsync(db, query, [dentist.NombreDentista, dentist.NombreClinica, dentist.DatosFiscales,
     dentist.Direccion, dentist.DatosBancarios, dentist.DatosInteres,
     dentist.CorreoElectronico, dentist.CP, dentist.Poblacion,
     dentist.Telefono, dentist.Telefono2
@@ -393,7 +378,7 @@ export function updateDentist(dentist) {
     'DatosInteres = ?, CorreoElectronico = ?, CP = ?, ' +
     'Poblacion = ?, Telefono = ?, Telefono2 = ? ' +
     'WHERE IdDentista = ? '
-  runAsync(db, query, [dentist.NombreDentista, dentist.NombreClinica,
+  db.runAsync(db, query, [dentist.NombreDentista, dentist.NombreClinica,
     dentist.DatosFiscales, dentist.Direccion, dentist.DatosBancarios, dentist.DatosInteres, dentist.CorreoElectronico, dentist.CP, dentist.Poblacion, dentist.Telefono, dentist.Telefono2,
     dentist.IdDentista
   ])
@@ -404,7 +389,7 @@ export async function searchDentistsByName(dentistName) {
   var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
     'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
     'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE NombreDentista LIKE ?'
-  return allAsync(db, query, ['%' + dentistName + '%'])
+  return db.allAsync(db, query, ['%' + dentistName + '%'])
 }
 
 // Tested
@@ -412,7 +397,7 @@ export async function searchDentistByExactName(dentistName) {
   var query = 'SELECT IdDentista, NombreDentista, NombreClinica, ' +
     'DatosFiscales, Direccion, DatosBancarios, DatosInteres, CorreoElectronico, ' +
     'CP, Poblacion, Telefono, Telefono2 FROM Dentistas WHERE NombreDentista = ?'
-  return allAsync(db, query, [dentistName])
+  return db.allAsync(db, query, [dentistName])
 }
 
 // Work Month Check -----------------------------------------------------------
@@ -458,7 +443,7 @@ export async function getWorksAggregatedByDentist(year, month, readOnly) {
   query += 'GROUP BY t.IdDentista, d.NombreDentista ' +
     'ORDER BY d.NombreDentista'
   log.debug(`getWorksAggregatedByDentist query: ${query}`)
-  return allAsync(db, query, [])
+  return db.allAsync(db, query, [])
 }
 
 // Tested
@@ -469,20 +454,20 @@ export async function getWorksDeaggregatedByDentist(year, month, idDentist, isRe
       'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
       'AND IdDentista = ' + idDentist
     log.debug(`getWorksAggregatedByDentist query: ${query}`)
-    return allAsync(db, query, [])
+    return db.allAsync(db, query, [])
   } else {
     var query = 'SELECT * FROM vTodosTrabajosPorDentista WHERE ' +
       'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
       'AND IdDentista = ' + idDentist
     log.debug(`getWorksAggregatedByDentist query: ${query}`)
-    return allAsync(db, query, [])
+    return db.allAsync(db, query, [])
   }
 }
 
 // Tested
 export async function setCheckToWork(idTrabajo, check) {
   var query = 'INSERT OR REPLACE INTO TrabajosChequeados (IdTrabajo, Chequeado) VALUES (?, ?)'
-  return runAsync(db, query, [idTrabajo, check])
+  return db.runAsync(db, query, [idTrabajo, check])
 }
 
 // Invoices ------------------------------------------------------------------
@@ -501,7 +486,7 @@ export async function getInvoicesList(customFilters) {
       query += ` AND Fecha <= date("${customFilters.fFin}")`
     }
   }
-  return allAsync(db, query, [])
+  return db.allAsync(db, query, [])
 }
 
 // Tested
@@ -535,10 +520,10 @@ export async function insertInvoice(idDentist, works, invoiceDate) {
     '  date(?), ' +
     `  (SELECT SUM(PrecioFinal) - ${totalDiscount} FROM Trabajos WHERE IdTrabajo IN (${worksString})) ` +
     ')'
-  var idInvoice = await runAsync(db, query1, [invoiceDate, invoiceDate, idDentist, invoiceDate])
+  var idInvoice = await db.runAsync(db, query1, [invoiceDate, invoiceDate, idDentist, invoiceDate])
   for (var value of works) {
     var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo, PorcentajeDescuento, TotalDescuento) VALUES (?, ?, ?, ?)'
-    await runAsync(db, query2, [idInvoice, value.idTrabajo, value.porcentajeDescuento, value.totalDescuento])
+    await db.runAsync(db, query2, [idInvoice, value.idTrabajo, value.porcentajeDescuento, value.totalDescuento])
   }
   return idInvoice
 }
@@ -547,8 +532,8 @@ export async function insertInvoice(idDentist, works, invoiceDate) {
 export async function getInvoice(invoiceId) {
   var query1 = 'SELECT * FROM vFacturas WHERE IdFactura = ?'
   var query2 = 'SELECT * FROM vFacturasTrabajos WHERE IdFactura = ?'
-  var invoice = await getAsync(db, query1, [invoiceId])
-  var invoiceWorks = await allAsync(db, query2, [invoiceId])
+  var invoice = await db.getAsync(db, query1, [invoiceId])
+  var invoiceWorks = await db.allAsync(db, query2, [invoiceId])
   return {
     invoice: invoice,
     invoiceWorks: invoiceWorks
@@ -560,7 +545,7 @@ export async function getInvoicesPerDentist(year, month, idDentist) {
   var query = 'SELECT * FROM vFacturasTrabajosPorDentista WHERE IdDentista = ? ' +
     `AND FechaFactura BETWEEN date("${year}-${('00' + month).substr(-2)}-01") AND date("${year}-${('00' + month).substr(-2)}-01", "+1 month", "-1 day")`
 
-  return allAsync(db, query, [idDentist])
+  return db.allAsync(db, query, [idDentist])
 }
 
 // Tested
@@ -571,7 +556,7 @@ export async function getInvoicePerWork(idWork) {
     'INNER JOIN FacturasTrabajos ft ON f.IdFactura = ft.IdFactura ' +
     'WHERE ft.IdTrabajo = ?'
 
-  return getAsync(db, query, [idWork])
+  return db.getAsync(db, query, [idWork])
 }
 
 // export function updateInvoice(invoice) {
@@ -596,8 +581,8 @@ export async function getConformityDeclaration(workId) {
     ' WHERE IdTrabajo = ?'
 
   return {
-    data: await getAsync(db, query1, [workId]),
-    details: await allAsync(db, query2, [workId])
+    data: await db.getAsync(db, query1, [workId]),
+    details: await db.allAsync(db, query2, [workId])
   }
 }
 
@@ -605,7 +590,7 @@ export async function getConformityDeclaration(workId) {
 export function insertConformityDeclaration(conformity, productIds) {
   var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses, ProductoEspecifico) ' +
     'VALUES (?, ?, ?, ?) '
-  return runAsync(db, query, [conformity.IdTrabajo, conformity.Fecha, conformity.Meses, conformity.ProductoEspecifico]).then((conformityId) => {
+  return db.runAsync(db, query, [conformity.IdTrabajo, conformity.Fecha, conformity.Meses, conformity.ProductoEspecifico]).then((conformityId) => {
     return insertDeclarationProducts(conformityId, productIds)
   })
 }
@@ -613,9 +598,9 @@ export function insertConformityDeclaration(conformity, productIds) {
 // Tested
 export function updateConformityDeclaration(conformity, productsIds) {
   var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ?, ProductoEspecifico = ? WHERE IdDeclaracion = ?'
-  return runAsync(db, query, [conformity.Meses, conformity.ProductoEspecifico, conformity.IdDeclaracion]).then(() => {
+  return db.runAsync(db, query, [conformity.Meses, conformity.ProductoEspecifico, conformity.IdDeclaracion]).then(() => {
     var query2 = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
-    return runAsync(db, query2, [conformity.IdDeclaracion]).then(() => {
+    return db.runAsync(db, query2, [conformity.IdDeclaracion]).then(() => {
       return insertDeclarationProducts(conformity.IdDeclaracion, productsIds)
     })
   })
@@ -626,7 +611,7 @@ export function insertDeclarationProducts(conformityId, productsIds) {
   var promises = []
   for (var productId of productsIds) {
     var query2 = 'INSERT INTO DeclaracionProductos (IdDeclaracion, IdProductoLote) VALUES (?, ?)'
-    promises.push(runAsync(db, query2, [conformityId, productId]).then((id) => {
+    promises.push(db.runAsync(db, query2, [conformityId, productId]).then((id) => {
       return id
     }))
   }
@@ -644,7 +629,7 @@ export function insertDeclarationProducts(conformityId, productsIds) {
 // Tested
 export function searchProductsByName(productName) {
   var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion LIKE ? AND Activo = true'
-  return allAsync(db, query, ['%' + productName + '%']).then((rows) => {
+  return db.allAsync(db, query, ['%' + productName + '%']).then((rows) => {
     return rows
   })
 }
@@ -652,7 +637,7 @@ export function searchProductsByName(productName) {
 // Tested
 export function searchProductByExactName(productName) {
   var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion = ? AND Activo = true'
-  return allAsync(db, query, ['%' + productName + '%']).then((rows) => {
+  return db.allAsync(db, query, ['%' + productName + '%']).then((rows) => {
     return rows
   })
 }
@@ -660,7 +645,7 @@ export function searchProductByExactName(productName) {
 // Tested
 export function getProduct(productId) {
   var query = 'SELECT * FROM ProductosLotes WHERE IdProductoLote = ?'
-  return getAsync(db, query, [productId]).then((row) => {
+  return db.getAsync(db, query, [productId]).then((row) => {
     return row
   })
 }
@@ -668,20 +653,20 @@ export function getProduct(productId) {
 // Tested
 export async function insertProduct(product) {
   var query = 'INSERT INTO ProductosLotes (Descripcion, Activo) VALUES (?, true)'
-  return runAsync(db, query, [product.Descripcion])
+  return db.runAsync(db, query, [product.Descripcion])
 }
 
 export async function updateProduct(product) {
   var query = 'UPDATE ProductosLotes SET Descripcion = ? ' +
     'WHERE IdProductoLote = ?'
-  return runAsync(db, query, [product.Descripcion, product.IdProductoLote])
+  return db.runAsync(db, query, [product.Descripcion, product.IdProductoLote])
 }
 
 // Tested
 export async function deleteProduct(product) {
   var query = 'UPDATE ProductosLotes SET Activo = false ' +
     'WHERE IdProductoLote = ?'
-  return runAsync(db, query, [product.IdProductoLote])
+  return db.runAsync(db, query, [product.IdProductoLote])
 }
 
 // Tested
@@ -691,7 +676,7 @@ export async function getProductList(customFilters) {
     query += ` AND Descripcion LIKE "%${customFilters}%" `
   }
   query += 'ORDER BY Descripcion'
-  return allAsync(db, query, [])
+  return db.allAsync(db, query, [])
 }
 
 // Catalog --------------------------------------------------------------------
@@ -702,14 +687,14 @@ export async function getCatalogList(customFilters) {
   if (customFilters !== undefined) {
     query += ` AND Descripcion LIKE "%${customFilters}%"`
   }
-  return allAsync(db, query, [])
+  return db.allAsync(db, query, [])
 }
 
 // Tested
 export async function insertCatalogEntry(catalogEntry) {
   var query = 'INSERT INTO Catalogo (Descripcion, Precio, FechaInicio, FechaFin, Activo) ' +
     'VALUES (?, ?, date("now", "localtime"), NULL, true)'
-  return runAsync(db, query, [catalogEntry.Descripcion, catalogEntry.Precio])
+  return db.runAsync(db, query, [catalogEntry.Descripcion, catalogEntry.Precio])
 }
 
 // Tested
@@ -722,7 +707,7 @@ export async function updateCatalogEntry(catalogEntry) {
 export async function deleteCatalogEntry(catalogEntry) {
   var query = 'UPDATE Catalogo SET FechaFin = date("now", "localtime"), Activo = false ' +
     'WHERE IdElementoCatalogo = ?'
-  return runAsync(db, query, [catalogEntry.IdElementoCatalogo])
+  return db.runAsync(db, query, [catalogEntry.IdElementoCatalogo])
 }
 
 // Dashboard -------------------------------------------------------------------
@@ -730,101 +715,69 @@ export async function deleteCatalogEntry(catalogEntry) {
 // Tested
 export async function getWaitingInbound() {
   var query = 'SELECT * FROM vDashboard_EsperandoEntrada'
-  return allAsync(db, query, [])
+  return db.allAsync(db, query, [])
 }
 
 // Tested
 export async function getOutboundingTests() {
   var query = 'SELECT * FROM vDashboard_PruebasSalenHoy'
-  return allAsync(db, query, [])
+  return db.allAsync(db, query, [])
 }
 
 // Tested
 export async function getOutboundingWorks() {
   var query = 'SELECT * FROM vDashboard_TrabajosSalenHoy'
-  return allAsync(db, query, [])
-}
-
-// Config ---------------------------------------------------------------------
-
-// Tested
-export async function getConfigValue(configKey) {
-  var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
-  var x = await getAsync(db, query, [configKey])
-  return (x).valor
-}
-
-// tested
-export async function getConfigValues(configKeyArray) {
-  var query = 'SELECT * FROM Configuracion'
-  if (configKeyArray !== undefined) {
-    query += ' WHERE clave IN ('
-    for (var value of configKeyArray) {
-      query += `"${value}",`
-    }
-    query = query.substring(0, query.length - 1) + ')'
-  }
-
-  return allAsync(db, query, [])
-}
-
-export async function setConfigValue(configKey, configValue) {
-  var query = 'INSERT OR REPLACE INTO Configuracion (clave, valor) VALUES (?, ?)'
-  return runAsync(db, query, [configKey, configValue])
+  return db.allAsync(db, query, [])
 }
 
 // Generic functions ----------------------------------------------------------
 
-export async function delay(milis) {
-  return new Promise((resolve) => setTimeout(resolve, milis))
-}
+// function getAsync(db, sql, params) {
+//   if (!db) {
+//     loadDbFile()
+//   }
 
-function getAsync(db, sql, params) {
-  if (!db) {
-    loadDbFile()
-  }
+//   return new Promise(function (resolve, reject) {
+//     db.get(sql, params, function (err, row) {
+//       if (err) {
+//         reject(err)
+//         log.error(`SQL Error. Params: ${params}| Query: ${sql}`)
+//       } else {
+//         resolve(row)
+//       }
+//     })
+//   })
+// }
 
-  return new Promise(function (resolve, reject) {
-    db.get(sql, params, function (err, row) {
-      if (err) {
-        reject(err)
-        log.error(`SQL Error. Params: ${params}| Query: ${sql}`)
-      } else {
-        resolve(row)
-      }
-    })
-  })
-}
+// function allAsync(db, sql, params) {
+//   if (!db) {
+//     loadDbFile()
+//   }
+//   return new Promise(function (resolve, reject) {
+//     db.all(sql, params, function (err, row) {
+//       if (err) {
+//         log.error(`SQL Error. Params: ${params}| Query: ${sql}`)
+//         reject(err)
+//       } else {
+//         resolve(row)
+//       }
+//     })
+//   })
+// }
 
-function allAsync(db, sql, params) {
-  if (!db) {
-    loadDbFile()
-  }
-  return new Promise(function (resolve, reject) {
-    db.all(sql, params, function (err, row) {
-      if (err) {
-        log.error(`SQL Error. Params: ${params}| Query: ${sql}`)
-        reject(err)
-      } else {
-        resolve(row)
-      }
-    })
-  })
-}
-
-function runAsync(db, sql, params) {
-  if (!db) {
-    loadDbFile()
-  }
-  return new Promise(function (resolve, reject) {
-    db.run(sql, params, function (err, row) {
-      if (err) {
-        log.error(`SQL Error. Params: ${params}| Query: ${sql}`)
-        reject(err)
-      } else {
-        // resolve(row)
-        resolve(this.lastID)
-      }
-    })
-  })
-}
+// function runAsync(db, sql, params) {
+//   if (!db) {
+//     loadDbFile()
+//   }
+//   return new Promise(function (resolve, reject) {
+//     db.run(sql, params, function (err, row) {
+//       if (err) {
+//         log.error(`SQL Error. Params: ${params}| Query: ${sql}`)
+//         reject(err)
+//       } else {
+//         // resolve(row)
+//         resolve(this.lastID)
+//       }
+//     })
+//   })
+// }

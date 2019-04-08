@@ -5,6 +5,7 @@ import {
   configGet
 } from '../main/store'
 import log from 'loglevel'
+import _ from 'lodash'
 
 export default class PersistenceService {
   constructor() {
@@ -22,17 +23,17 @@ export default class PersistenceService {
       if (!x) {
         // Looks not to be a good sqlite database. Reject it
         log.error(`${configGet('dataFile')} is not a good sqlite file`)
-        return false
+        return undefined
       }
     } catch (err) {
       // Looks not to be a good sqlite database. Reject it
       log.error(`${configGet('dataFile')} is not a good sqlite file`)
-      return false
+      return undefined
     }
     // eslint-disable-next-line no-useless-escape
     require('electron').ipcRenderer.send('file:opened', this.db.filename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, ''))
     log.info(`File ${this.db.filename} opened `)
-    return true
+    return this.db
   }
 
   // Tested

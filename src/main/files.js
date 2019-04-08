@@ -42,8 +42,8 @@ export async function deleteFile(fileContent) {
 // Tested
 export async function getFileList(workId) {
   var returnedValue = []
-  var workService = new WorkService()
-  var path = await workService.getConfigValue('sharedPath')
+  var persistenceService = new PersistenceService()
+  var path = await persistenceService.getConfigValue('sharedPath')
   if (!path.endsWith('\\')) {
     path += '\\'
   }
