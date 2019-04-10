@@ -378,14 +378,15 @@ export default {
 			}
 
 			if (dentist.SumaPrecioFinal === 0) {
-				dentist.percentage = 0
+				dentist.percentage = (0).toFixed(2)
 			} else {
 				dentist.percentage = (
 					(100 * (dentist.SumaPrecioFinal - dentist.SumaGranTotal)) /
 					dentist.SumaTotalMetal
 				).toFixed(2)
 			}
-			this.$forceUpdate()
+
+			this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
 		},
 
 		// Verifications------------------------------
