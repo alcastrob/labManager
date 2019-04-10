@@ -8,8 +8,9 @@ import _ from 'lodash'
 import { Printd } from 'printd'
 import invoicePage from './invoicePage'
 import reportPage from './reportPage'
-import { getInvoice, getWorkIndications, getDentist } from '../../../main/dal.js'
-import PersistenceService from '../../../services/PersistenceService.js'
+import DentistService from '../../../services/DentistService'
+import InvoiceService from '../../../services/InvoiceService'
+import WorkIndicationService from '../../../services/WorkIndicationService'
 var path = require('path')
 var fs = require('fs')
 
@@ -47,12 +48,12 @@ export default {
 			}
 
 			this.invoiceId = invoiceId
-			var x = await getInvoice(this.invoiceId)
+			var x = await this.invoiceService.getInvoice(this.invoiceId)
 			this.invoice = x.invoice
 			this.invoiceWorks = x.invoiceWorks
 
 			for (var work of this.invoiceWorks) {
-				this.indications[work.IdTrabajo] = await getWorkIndications(work.IdTrabajo)
+				this.indications[work.IdTrabajo] = await this.workIndicationService.getWorkIndications(work.IdTrabajo)
 			}
 		},
 		renderContent: function(isInvoice) {
@@ -106,11 +107,11 @@ export default {
 			this.dataReset()
 			this.forPrinter = true
 
-			this.invoice = await getDentist(invoiceData.IdDentista)
+			this.invoice = await this.dentistService.getDentist(invoiceData.IdDentista)
 			this.invoice.Total = 0
 			this.invoiceWorks = invoiceData.selectedWorks
 			for (var work of this.invoiceWorks) {
-				this.indications[work.IdTrabajo] = await getWorkIndications(work.IdTrabajo)
+				this.indications[work.IdTrabajo] = await this.workIndicationService.getWorkIndications(work.IdTrabajo)
 				work.PrecioSinDescuento = work.SumaPrecioFinal
 				work.PrecioFinalConDescuento = work.SumaPrecioFinal - work.TotalDescuento
 				this.invoice.Total += work.PrecioFinalConDescuento
@@ -175,7 +176,7 @@ export default {
 			}
 		},
 		loadData: async function() {
-			var config = await this.persistenceService.getConfigValues(['logo', 'vatNumber', 'invoiceFooter'])
+			var config = await this.invoiceService.getConfigValues(['logo', 'vatNumber', 'invoiceFooter'])
 			this.logo = 'data:image/png;base64,' + _.find(config, ['clave', 'logo']).valor
 			this.vatNumber = _.find(config, ['clave', 'vatNumber']).valor
 			this.footer = _.find(config, ['clave', 'invoiceFooter']).valor
@@ -190,7 +191,9 @@ export default {
 		}
 	},
 	created() {
-		this.persistenceService = new PersistenceService()
+		this.invoiceService = new InvoiceService()
+		this.workIndicationService = new WorkIndicationService()
+		this.dentistService = new DentistService()
 		this.loadData()
 		this.cssText = fs.readFileSync(path.resolve(__static, 'printed.css'), 'UTF-8')
 		this.cssText += fs.readFileSync(path.resolve(__static, 'bootstrap.min.css'), 'UTF-8')

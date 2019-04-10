@@ -246,7 +246,7 @@
 
 <script>
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
-import { getDeliveryShifts, insertWorkTest, updateWorkTest, deleteWorkTest } from '../../../../main/dal.js'
+import WorkTestService from '../../../../services/WorkTestService'
 import { mixin as clickaway } from 'vue-clickaway'
 import { required } from 'vuelidate/lib/validators'
 import _ from 'lodash'
@@ -371,16 +371,14 @@ export default {
 			this.$emit('input', this.data)
 		},
 		save(masterId) {
-			_.forEach(this.insertedRows, function(row) {
+      // TODO Verify this method
+      _.forEach(this.insertedRows, async function(row) {
 				row.IdTrabajo = masterId
-				insertWorkTest(row)
+				await this.workTestService.insertWorkTest(row)
 			})
-			_.forEach(this.deletedRows, function(row) {
-				deleteWorkTest(row.IdPrueba)
-			})
-			_.forEach(this.updatedRows, function(row) {
-				updateWorkTest(row)
-			})
+			_.forEach(this.deletedRows, this.workTestService.deleteWorkTest)
+			_.forEach(this.updatedRows, this.workTestService.updateWorkTest
+			)
 			this.insertedRows = []
 			this.deletedRows = []
 			this.updatedRows = []
@@ -483,8 +481,11 @@ export default {
 			)
 		}
 	},
+	created() {
+		this.workTestService = new WorkTestService()
+	},
 	mounted() {
-		getDeliveryShifts().then(shifts => {
+		this.workTestService.getDeliveryShifts().then(shifts => {
 			this.deliveryShifts = shifts
 		})
 	}

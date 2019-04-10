@@ -352,18 +352,12 @@
 <script>
 import Vue from 'vue'
 import _ from 'lodash'
-import {
-	getWork,
-	getWorkIndications,
-	insertAdjuntsOfWork,
-	getAdjuntsOfWork,
-	getWorkTestsList,
-	updateWork,
-	updateAdjuntsOfWork,
-	getInvoicePerWork
-} from '../../../main/dal.js'
-import PersistenceService from '../../../services/PersistenceService.js'
-import { configGet } from '../../../main/store.js'
+import InvoiceService from '../../../services/InvoiceService'
+import WorkService from '../../../services/WorkService'
+import WorkIndicationService from '../../../services/WorkIndicationService'
+import WorkTestService from '../../../services/WorkTestService'
+import WorkAdjuntService from '../../../services/WorkAdjuntService'
+import { configGet } from '../../../main/store'
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
 import imagesFileUpload from '../PageElements/fileUploads/imagesFileUplodad'
@@ -412,12 +406,11 @@ export default {
 			this.$v.$reset()
 			this.$forceUpdate()
 		},
-		save: function(url) {
+		save: async function(url) {
 			this.saveButtonPressed = true
 			this.$v.$touch()
 
 			// If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
-			console.log('a:' + this.$refs.workIndicacionts === undefined)
 			this.$refs.workIndications.addLastRow()
 			this.$refs.workTests.addLastRow()
 			if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()) {
@@ -457,7 +450,7 @@ export default {
 				this.work.PrecioFinal = sum
 			}
 			if (this.$v.work.$anyDirty) {
-				updateWork(this.work)
+				await this.workService.updateWork(this.work)
 			}
 			if (this.$refs.workTests.isDirty) {
 				this.$refs.workTests.save(this.work.IdTrabajo)
@@ -465,9 +458,9 @@ export default {
 			if (this.workAdjuncts !== undefined && this.$v.workAdjuncts.$anyDirty) {
 				this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
 				if (this.workAdjunctsJustAdded) {
-					insertAdjuntsOfWork(this.workAdjuncts)
+					this.workAdjuntService.insertAdjuntsOfWork(this.workAdjuncts)
 				} else {
-					updateAdjuntsOfWork(this.workAdjuncts)
+					this.workAdjuntService.updateAdjuntsOfWork(this.workAdjuncts)
 				}
 			}
 
@@ -508,7 +501,7 @@ export default {
 		},
 		getDeliveryNote: async function() {
 			if (this.save()) {
-				var row = await this.persistenceService.getConfigValues(['logo'])
+				var row = await this.workService.getConfigValues(['logo'])
 				var ComponentClass = Vue.extend(delivery)
 				var instance = new ComponentClass({
 					propsData: {
@@ -576,15 +569,15 @@ export default {
 			this.$refs.dirtys.innerHTML += `Pruebas: ${this.$refs.workTests.isError()} | ${this.$refs.workTests.isDirty()} <br> `
 		},
 		getData: async function() {
-			this.work = await getWork(this.work.IdTrabajo)
+			this.work = await this.workService.getWork(this.work.IdTrabajo)
 			this.readOnly = this.work.FechaTerminacion !== null
-			this.workIndications = await getWorkIndications(this.work.IdTrabajo)
-			this.workAdjuncts = await getAdjuntsOfWork(this.work.IdTrabajo)
+			this.workIndications = await this.workIndicationService.getWorkIndications(this.work.IdTrabajo)
+			this.workAdjuncts = await this.workAdjuntService.getAdjuntsOfWork(this.work.IdTrabajo)
 			if (this.workAdjuncts !== undefined) {
 				this.showAdjunts(false)
 			}
-			this.workTests = await getWorkTestsList(this.work.IdTrabajo)
-			this.invoice = await getInvoicePerWork(this.work.IdTrabajo)
+			this.workTests = await this.workTestService.getWorkTestsList(this.work.IdTrabajo)
+			this.invoice = await this.invoiceService.getInvoicePerWork(this.work.IdTrabajo)
 		}
 	},
 	computed: {
@@ -622,7 +615,11 @@ export default {
 		}
 	},
 	created() {
-		this.persistenceService = new PersistenceService()
+		this.workService = new WorkService()
+		this.invoiceService = new InvoiceService()
+		this.workIndicationService = new WorkIndicationService()
+		this.workTestService = new WorkTestService()
+		this.workAdjuntService = new WorkAdjuntService()
 		this.work.IdTrabajo = parseInt(this.$route.params.id)
 	},
 	mounted() {

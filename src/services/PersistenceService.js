@@ -40,7 +40,8 @@ export default class PersistenceService {
   async getConfigValue(configKey) {
     var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
     var x = await this.getAsync(query, [configKey])
-    log.debug(`Config values: ${JSON.stringify(x)}`)
+    log.debug('Retreived the config values')
+    // log.debug(`Config values: ${JSON.stringify(x)}`)
     return (x).valor
   }
 
@@ -72,7 +73,7 @@ export default class PersistenceService {
     return returnedValue.substring(0, returnedValue.length - 1) + ')'
   }
 
-  _processDateQuery(field, value) {
+  processDateQuery(field, value) {
     switch (value) {
       case 'Hoy':
         return ` AND (${field} BETWEEN date("now","localtime") AND  date("now", "localtime", "+1 day"))`
@@ -155,4 +156,26 @@ export default class PersistenceService {
       })
     })
   }
+  // function createTable() {
+  //   db.run('CREATE TABLE TipoTrabajos (' +
+  //     '    IdTipoTrabajo INTEGER PRIMARY KEY AUTOINCREMENT,' +
+  //     '    Descripcion   TEXTO   NOT NULL);', insertValueObjects)
+  // }
+
+  // function insertValueObjects() {
+  //   var batch = db.prepare('INSERT INTO TipoTrabajos (IdTipoTrabajo, Descripcion) VALUES (?, ?)')
+  //   batch.run(1, 'Fija')
+  //   batch.run(2, 'Resina')
+  //   batch.run(3, 'Ortodoncia')
+  //   batch.run(4, 'Esquelético')
+  //   batch.run(5, 'Zirconio')
+  //   batch.run(6, 'Compostura')
+  //   batch.run(7, 'Implante')
+  //   batch.finalize()
+  //   db.close()
+  // }
+
+  // export function createNewDatabase() {
+  //   db = new sqlite3.Database(configGet('dataFile'), createTable)
+  // }
 }

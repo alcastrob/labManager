@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { searchDentistsByName, searchDentistByExactName, getDentist } from '../../../main/dal.js'
+import DentistService from '../../../services/DentistService'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 import log from 'loglevel'
@@ -55,7 +55,7 @@ export default {
 			this.resultsVisible = true
 			this.gotFocus = true
 			if (this.query.length > 3) {
-				this.candidateDentistsFromQuery = await searchDentistsByName(this.query)
+				this.candidateDentistsFromQuery = await this.dentistService.searchDentistsByName(this.query)
 			} else {
 				this.candidateDentistsFromQuery = []
 				// this.sendChangeEvents(-1)
@@ -67,7 +67,7 @@ export default {
 			this.sendChangeEvents(id)
 		},
 		change: async function(event) {
-			var candidates = await searchDentistByExactName(this.query)
+			var candidates = await this.dentistService.searchDentistByExactName(this.query)
 			if (candidates.length !== 1) {
 				this.sendChangeEvents(0)
 			} else if (candidates[0].IdDentista !== this.selectedDentistId) {
@@ -109,7 +109,7 @@ export default {
 					this.selectedDentisId = undefined
 					this.query = ''
 				} else {
-					var dentistDetail = await getDentist(newVal)
+					var dentistDetail = await this.dentistService.getDentist(newVal)
 					if (dentistDetail !== undefined) {
 						this.selectedDentistId = dentistDetail.IdDentista
 						this.query = dentistDetail.NombreDentista
@@ -118,6 +118,9 @@ export default {
 				}
 			})
 		}
+	},
+	created() {
+		this.dentistService = new DentistService()
 	},
 	mounted() {
 		this.$refs.clinica.focus()

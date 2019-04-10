@@ -203,7 +203,7 @@ import invoicePrint from '../Labels/InvoicePrint'
 import { bTooltip, bModal } from 'bootstrap-vue'
 import _ from 'lodash'
 import moment from 'moment'
-import { insertInvoice } from '../../../main/dal.js'
+import InvoiceService from '../../../services/InvoiceService.js'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 
 export default {
@@ -364,7 +364,7 @@ export default {
 			this.currentProgress = 0
 			var percentageStep = 100 / this.selectedDentists.length
 			for (var dentist of this.selectedDentists) {
-				var idInvoice = await insertInvoice(
+				var idInvoice = await this.invoiceService.insertInvoice(
 					dentist.IdDentista,
 					_.map(dentist.selectedWorks, work => {
 						return {
@@ -432,6 +432,7 @@ export default {
 		}
 	},
 	created() {
+		this.invoiceService = new InvoiceService()
 		this.year = this.$route.params.year
 		this.month = this.$route.params.month
 	},

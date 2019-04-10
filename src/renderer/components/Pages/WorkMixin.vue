@@ -11,9 +11,9 @@ import labelResina from '../Labels/LabelResina'
 import labelAditamentos from '../Labels/labelAditamentos'
 import labelComposite from '../Labels/labelComposite'
 import labelGarantia from '../Labels/LabelGarantia'
-import { getWorkTypes } from '../../../main/dal.js'
 import { validId } from '../Validators/validId.js'
 import { decimal } from 'vuelidate/lib/validators'
+import WorkService from '../../../services/WorkService'
 // eslint-disable-next-line
 import bModal from 'bootstrap-vue'
 import log from 'loglevel'
@@ -180,8 +180,11 @@ export default {
 			this.adjunctsVisible = true
 		}
 	},
+	created() {
+		this.workService = new WorkService()
+	},
 	mounted() {
-		getWorkTypes().then(types => {
+		this.workService.getWorkTypes().then(types => {
 			this.workTypes = types
 		})
 	}

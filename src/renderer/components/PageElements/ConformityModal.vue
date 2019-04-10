@@ -85,12 +85,7 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import { integer, minValue } from 'vuelidate/lib/validators'
-import {
-	getConformityDeclaration,
-	insertConformityDeclaration,
-	updateConformityDeclaration
-} from '../../../main/dal.js'
-import PersistenceService from '../../../services/PersistenceService.js'
+import ConformityDeclarationService from '../../../services/ConformityDeclarationService'
 import conformityLabel from '../Labels/Conformity'
 // eslint-disable-next-line
 import bModal from 'bootstrap-vue'
@@ -148,8 +143,8 @@ export default {
 			this.$refs.conformityModal.hide()
 		},
 		getDeclarationOfConformity: async function() {
-			var declaration = await getConformityDeclaration(this.work.IdTrabajo)
-			var config = await this.persistenceService.getConfigValues([
+			var declaration = await this.conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo)
+			var config = await this.conformityDeclarationService.getConfigValues([
 				'makerNumber',
 				'personInCharge',
 				'companyName',
@@ -182,20 +177,22 @@ export default {
 			this.$refs.conformityModal.show()
 		},
 		createDeclarationOfConformity: function() {
-			insertConformityDeclaration(
-				{
-					IdTrabajo: this.work.IdTrabajo,
-					Meses: this.warrantyPeriod,
-					Fecha: this.work.FechaTerminacion,
-					ProductoEspecifico: this.specificProduct
-				},
-				_.map(this.batches, 'IdProductoLote')
-			).then(() => {
-				getConformityDeclaration(this.work.IdTrabajo).then(row => {
-					this.print(row)
-					this.hide()
+			this.conformityDeclarationService
+				.insertConformityDeclaration(
+					{
+						IdTrabajo: this.work.IdTrabajo,
+						Meses: this.warrantyPeriod,
+						Fecha: this.work.FechaTerminacion,
+						ProductoEspecifico: this.specificProduct
+					},
+					_.map(this.batches, 'IdProductoLote')
+				)
+				.then(() => {
+					this.conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo).then(row => {
+						this.print(row)
+						this.hide()
+					})
 				})
-			})
 		},
 		updateDeclarationOfConformity: function() {
 			if (this.isDirty) {
@@ -204,15 +201,17 @@ export default {
 					Meses: this.warrantyPeriod,
 					ProductoEspecifico: this.specificProduct
 				}
-				updateConformityDeclaration(dec, _.map(this.batches, 'IdProductoLote')).then(() => {
-					getConformityDeclaration(this.work.IdTrabajo).then(row => {
-						this.print(row)
-						this.hide()
+				this.conformityDeclarationService
+					.updateConformityDeclaration(dec, _.map(this.batches, 'IdProductoLote'))
+					.then(() => {
+						this.conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo).then(row => {
+							this.print(row)
+							this.hide()
+						})
 					})
-				})
 			} else {
 				// No real updates, just print
-				getConformityDeclaration(this.work.IdTrabajo).then(row => {
+				this.conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo).then(row => {
 					this.print(row)
 					this.hide()
 				})
@@ -246,7 +245,7 @@ export default {
 			}
 		},
 		created() {
-			this.persistenceService = new PersistenceService()
+			this.conformityDeclarationService = new ConformityDeclarationService()
 		}
 	}
 }

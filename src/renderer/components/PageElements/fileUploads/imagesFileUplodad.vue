@@ -58,6 +58,7 @@
 
 <script>
 import fileUploadBase from './fileUploadBase'
+import log from 'loglevel'
 import Vue from 'vue'
 // eslint-disable-next-line
 import bCarousel from 'bootstrap-vue'
@@ -168,10 +169,14 @@ export default {
 			this.value.push(file)
 		},
 		getData: async function() {
-			var files = await getFileList(this.idTrabajo)
-			for (var file of files) {
-				var x = await turnFileIntoB64(file)
-				this.viewThumbnail(x)
+			try {
+				var files = await getFileList(this.idTrabajo)
+				for (var file of files) {
+					var x = await turnFileIntoB64(file)
+					this.viewThumbnail(x)
+				}
+			} catch (err) {
+				log.error(`Error in ${this.$vnode.componentOptions.tag}. ${JSON.stringify(err)}`)
 			}
 		}
 	},

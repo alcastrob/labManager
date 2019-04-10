@@ -86,7 +86,7 @@
 
 <script>
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
-import { getCatalogList, insertCatalogEntry, updateCatalogEntry, deleteCatalogEntry } from '../../../../main/dal.js'
+import CatalogService from '../../../../services/CatalogService'
 import euroInput from '../tables/euroInput'
 import filterBar from '../tables/filterBar'
 import pagination from '../tables/pagination'
@@ -173,15 +173,10 @@ export default {
 			this.$emit('input', this.rawDataset)
 		},
 		save() {
-			_.forEach(this.insertedRows, function(row) {
-				insertCatalogEntry(row)
-			})
-			_.forEach(this.deletedRows, function(row) {
-				deleteCatalogEntry(row)
-			})
-			_.forEach(this.updatedRows, function(row) {
-				updateCatalogEntry(row)
-			})
+			// TODO Verify this
+			_.forEach(this.insertedRows, this.catalogService.insertCatalogEntry)
+			_.forEach(this.deletedRows, this.catalogService.deleteCatalogEntry)
+			_.forEach(this.updatedRows, this.catalogService.updateCatalogEntry)
 			this.insertedRows = []
 			this.deletedRows = []
 			this.updatedRows = []
@@ -207,7 +202,7 @@ export default {
 			return moment(date).format('DD/MM/YYYY')
 		},
 		applyTextFilter: async function(text) {
-			this.filteredDataset = await getCatalogList(text)
+			this.filteredDataset = await this.catalogService.getCatalogList(text)
 		},
 		filterJustNumberKeystrokes(event) {
 			if (
@@ -258,9 +253,12 @@ export default {
 			}
 		},
 		getData: async function() {
-			this.rawDataset = await getCatalogList()
+			this.rawDataset = await this.catalogService.getCatalogList()
 			this.filteredDataset = this.rawDataset
 		}
+	},
+	created () {
+		this.catalogService = new CatalogService()
 	},
 	mounted() {
 		this.getData()

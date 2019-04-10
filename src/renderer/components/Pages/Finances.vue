@@ -165,15 +165,8 @@
 
 <script>
 import myIconCard from '../PageElements/iconCards/myIconCard'
-import {
-	getWorkInExecution,
-	getWorksEndedThisMonth,
-	getWorksEndedLast30days,
-	getWorksEndedPrevious30days,
-	getInvoicesList,
-	getMonthTotals,
-	getLeaderboard
-} from '../../../main/dal.js'
+import KpiService from '../../../services/KpiService'
+import InvoiceService from '../../../services/InvoiceService'
 import invoiceExtendedTable from '../PageElements/tables/invoiceExtendedTable'
 import _ from 'lodash'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
@@ -287,26 +280,26 @@ export default {
 			optionSelectedMonth.selected = true
 		},
 		updateDatasetWithFilters: async function(eventData) {
-			this.$refs.invoiceExtendedTable.setDataset(await getInvoicesList(eventData))
+			this.$refs.invoiceExtendedTable.setDataset(await this.invoiceService.getInvoicesList(eventData))
 		},
 		processFilterChange(filterData) {
 			this.updateDatasetWithFilters(filterData)
 		},
 		loadData: async function() {
 			this.updateDatasetWithFilters()
-			this.worksInProgressCount = (await getWorkInExecution()).Count
-			this.worksEndedThisMonthCount = (await getWorksEndedThisMonth()).Count
-			var works = await getWorksEndedLast30days()
+			this.worksInProgressCount = (await this.kpiService.getWorkInExecution()).Count
+			this.worksEndedThisMonthCount = (await this.kpiService.getWorksEndedThisMonth()).Count
+			var works = await this.kpiService.getWorksEndedLast30days()
 			this.worksEndedLast30daysCount = works.Count
 			this.worksEndedLast30daysSum = works.Sum
-			works = await getWorksEndedPrevious30days()
+			works = await this.kpiService.getWorksEndedPrevious30days()
 			this.worksEndedPrevious30daysCount = works.Count
 			this.worksEndedPrevious30daysSum = works.Sum
 			this.$refs.invoiceExtendedTable.setFilter(this.$route.query.dentistName)
 		},
 		loadGraph: async function() {
-			var dataMonths = await getMonthTotals()
-			var leaderboardData = await getLeaderboard(20)
+			var dataMonths = await this.kpiService.getMonthTotals()
+			var leaderboardData = await this.kpiService.getLeaderboard(20)
 
 			this.yearsExpenseEvolutionChart = [new Date().getFullYear(), new Date().getFullYear() - 1]
 
@@ -407,6 +400,10 @@ export default {
 			return `${tooltipItem.yLabel}: ${this.moneyFormatter.format(tooltipItem.xLabel)}`
 		}
 	},
+	created() {
+		this.invoiceService = new InvoiceService()
+		this.kpiService = new KpiService()
+	},
 	activated() {
 		this.loadData()
 	},
@@ -414,9 +411,6 @@ export default {
 		this.loadGraph()
 		this.$refs.excelButton.setTable(this.$refs.invoiceExtendedTable)
 		this.selectPreviousMonthOnMonthCloseCard()
-
-		// this.$refs.excelButton.setEnablePaginationCallback(this.$refs.invoiceExtendedTable.enablePagination)
-		// this.$refs.excelButton.setDisablePaginationCallback(this.$refs.invoiceExtendedTable.disablePagination)
 	}
 }
 </script>

@@ -185,7 +185,7 @@
 </template>
 
 <script>
-import { insertDentist } from '../../../main/dal.js'
+import DentistService from '../../../services/DentistService'
 import { required, email, numeric, minLength, maxLength } from 'vuelidate/lib/validators'
 import log from 'loglevel'
 
@@ -226,7 +226,7 @@ export default {
 		}
 	},
 	methods: {
-		save: function(url) {
+		save: async function(url) {
 			this.$v.data.$touch()
 			if (this.$v.data.$anyError) {
 				if (this.$v.data.CorreoElectronico.$anyError) {
@@ -240,7 +240,7 @@ export default {
 				}
 				return false
 			}
-			insertDentist(this.data)
+			await this.dentistService.insertDentist(this.data)
 			this.$v.$reset()
 			if (url === undefined || url === '') {
 				log.info(`>> navigate: go(-1)`)
@@ -253,11 +253,6 @@ export default {
 			}
 		}
 	},
-	mounted() {
-		document.getElementById('dentista').focus()
-		this.data.NombreDentista = this.$route.query.name
-		this.$root.$on('topbar:save', this.save)
-	},
 	computed: {
 		isDirty() {
 			return this.$v.$anyDirty
@@ -265,9 +260,14 @@ export default {
 		isError() {
 			return this.$v.$anyError
 		}
+	},
+	created() {
+		this.dentistService = new DentistService()
+	},
+	mounted() {
+		document.getElementById('dentista').focus()
+		this.data.NombreDentista = this.$route.query.name
+		this.$root.$on('topbar:save', this.save)
 	}
 }
 </script>
-
-<style>
-</style>

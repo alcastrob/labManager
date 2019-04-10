@@ -60,7 +60,7 @@
 
 <script>
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
-import { getProductList, insertProduct, updateProduct, deleteProduct } from '../../../../main/dal.js'
+import ProductBatchService from '../../../../services/ProductBatchService'
 import euroInput from '../tables/euroInput'
 import filterBar from '../tables/filterBar'
 import pagination from '../tables/pagination'
@@ -139,15 +139,10 @@ export default {
 			this.$emit('input', this.rawDataset)
 		},
 		save() {
-			_.forEach(this.insertedRows, function(row) {
-				insertProduct(row)
-			})
-			_.forEach(this.deletedRows, function(row) {
-				deleteProduct(row)
-			})
-			_.forEach(this.updatedRows, function(row) {
-				updateProduct(row)
-			})
+			// TODO Verify this
+			_.forEach(this.insertedRows, this.productBatchService.insertProduct)
+			_.forEach(this.deletedRows, this.productBatchService.deleteProduct)
+			_.forEach(this.updatedRows, this.productBatchService.updateProduct)
 			this.insertedRows = []
 			this.deletedRows = []
 			this.updatedRows = []
@@ -157,7 +152,7 @@ export default {
 		},
 		// Other methods (specific)------------------------------------------------
 		applyTextFilter: async function(text) {
-			this.filteredDataset = await getProductList(text)
+			this.filteredDataset = await this.productBatchService.getProductList(text)
 		},
 		getPaginatedData: function() {
 			if (this.rawDataset.length === 0) {
@@ -178,9 +173,12 @@ export default {
 			}
 		},
 		getData: async function() {
-			this.rawDataset = await getProductList()
+			this.rawDataset = await this.productBatchService.getProductList()
 			this.filteredDataset = this.rawDataset
 		}
+	},
+	created() {
+		this.productBatchService = new ProductBatchService()
 	},
 	mounted() {
 		this.getData()

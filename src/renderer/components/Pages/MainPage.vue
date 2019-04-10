@@ -19,9 +19,9 @@
 
 <script>
 import topbar from '../PageElements/TopBar'
-import { loadDbFile } from '../../../main/dal.js'
 import { configGet, configSet } from '../../../main/store'
 import { checkForUpdates } from '../../../main/updates'
+import PersistenceService from '../../../services/PersistenceService'
 import log from 'loglevel'
 var { ipcRenderer } = require('electron')
 
@@ -36,47 +36,51 @@ export default {
 	},
 	methods: {
 		loadDb: async function() {
-			var dataFile = configGet('dataFile')
-			if (!dataFile) {
-				// No selected file for running the application
-				swal({
-					title: 'Datos no cargados',
-					text:
-						'La aplicación debe cargar un fichero de datos para poder trabajar correctamente. Por favor, seleccione el fichero apropiado en el menú Archivo > Abrir archivo.',
-					icon: 'error',
-					buttons: {
-						ok: 'OK'
-					}
-				})
-				log.warn('No data file selected')
-			} else if (!(await loadDbFile())) {
-				// Something went wrong with that file
-				swal({
-					title: 'Fichero no reconocido',
-					text:
-						'El fichero que se ha seleccionado no tiene un formato válido para la aplicación. Por favor, seleccione otro.',
-					icon: 'error',
-					buttons: {
-						ok: 'OK'
-					}
-				})
-				log.warn('No valid format for the database file.')
-				configSet('dataFile', '')
-			} else {
-				// Everything is OK
+			try {
+				var dataFile = configGet('dataFile')
+				if (!dataFile) {
+					// No selected file for running the application
+					swal({
+						title: 'Datos no cargados',
+						text:
+							'La aplicación debe cargar un fichero de datos para poder trabajar correctamente. Por favor, seleccione el fichero apropiado en el menú Archivo > Abrir archivo.',
+						icon: 'error',
+						buttons: {
+							ok: 'OK'
+						}
+					})
+					log.warn('No data file selected')
+				} else if (!(await this.persistenceService.loadDbFile())) {
+					// Something went wrong with that file
+					swal({
+						title: 'Fichero no reconocido',
+						text:
+							'El fichero que se ha seleccionado no tiene un formato válido para la aplicación. Por favor, seleccione otro.',
+						icon: 'error',
+						buttons: {
+							ok: 'OK'
+						}
+					})
+					log.warn('No valid format for the database file.')
+					configSet('dataFile', '')
+				}
+			} catch (err) {
+				log.error(`Error in loadDb method of ${this.$vnode.componentOptions.tag}. Content: ${JSON.stringify(err)}`)
 			}
 		},
 		reloadDb: async function(file) {
 			configSet('dataFile', file)
 			await this.loadDb()
-			log.info(`>> navigate: /..`)
+			log.info(`>> navigate: /`)
 			this.$router.push({
 				path: '/'
 			})
 		},
 		checkForUpdates: async function() {
 			var updates = await checkForUpdates()
+			log.info('Checked for updates')
 			if (updates.newerVersion) {
+				log.info('New version of the application available for download')
 				swal({
 					title: 'Actualización disponible',
 					text: 'Existe una nueva versión de esta aplicación lista para su descarga e instalación.',
@@ -95,6 +99,7 @@ export default {
 		}
 	},
 	created() {
+		this.persistenceService = new PersistenceService()
 		this.loadDb()
 	},
 	mounted() {

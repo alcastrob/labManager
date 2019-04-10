@@ -310,8 +310,8 @@
 </template>
 
 <script>
-import WorkService from '../../../services/WorkService.js'
-import { insertAdjuntsOfWork } from '../../../main/dal.js'
+import WorkService from '../../../services/WorkService'
+import WorkAdjuntService from '../../../services/WorkAdjuntService'
 import workMixin from './WorkMixin'
 import _ from 'lodash'
 import log from 'loglevel'
@@ -384,7 +384,7 @@ export default {
 				this.$refs.workIndications.save(this.work.IdTrabajo)
 				if (this.adjunctsVisible) {
 					this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
-					insertAdjuntsOfWork(this.workAdjuncts)
+					await this.workAdjuntService.insertAdjuntsOfWork(this.workAdjuncts)
 				}
 				this.showModal()
 			}
@@ -482,7 +482,8 @@ export default {
 		}
 	},
 	created() {
-		this.workService = new WorkService()
+    this.workService = new WorkService()
+    this.workAdjuntService = new WorkAdjuntService()
 	},
 	mounted() {
 		this.$root.$on('topbar:save', () => {

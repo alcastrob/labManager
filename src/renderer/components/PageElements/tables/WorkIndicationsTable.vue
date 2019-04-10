@@ -109,12 +109,7 @@
 
 <script>
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
-import {
-	insertWorkIndications,
-	updateWorkIndications,
-	deleteWorkIndications,
-	updatePriceSum
-} from '../../../../main/dal.js'
+import WorkIndicationService from '../../../../services/WorkIndicationService.js'
 import _ from 'lodash'
 import { decimal, minLength, required } from 'vuelidate/lib/validators'
 import log from 'loglevel'
@@ -201,19 +196,16 @@ export default {
 			}
 			this.$emit('input', this.data)
 		},
-		save(masterId) {
+		async save(masterId) {
+			// TODO: Verify this function
 			if (masterId !== 0) {
 				_.forEach(this.insertedRows, function(row) {
 					row.IdTrabajo = masterId
-					insertWorkIndications(row)
+					this.workIndicationService.insertWorkIndications(row)
 				})
-				_.forEach(this.deletedRows, function(row) {
-					deleteWorkIndications(row)
-				})
-				_.forEach(this.updatedRows, function(row) {
-					updateWorkIndications(row)
-				})
-				updatePriceSum(masterId)
+				_.forEach(this.deletedRows, this.workIndicationService.deleteWorkIndications)
+				_.forEach(this.updatedRows, this.workIndicationService.updateWorkIndications)
+				await this.workIndicationService.updatePriceSum(masterId)
 				this.insertedRows = []
 				this.deletedRows = []
 				this.updatedRows = []
@@ -303,6 +295,9 @@ export default {
 		allRowEmpty: function() {
 			return this.$v.newRow.descripcion.$model.length === 0 && this.$v.newRow.precio.$model.length === 0
 		}
+	},
+	created() {
+		this.workIndicationService = new WorkIndicationService()
 	}
 }
 </script>

@@ -159,15 +159,9 @@
 
 <script>
 import myIconCard from '../PageElements/iconCards/myIconCard'
-import {
-	getWaitingInbound,
-	setInboundWorkTestToToday,
-	unsetInboundTestToToday,
-	getOutboundingTests,
-	getOutboundingWorks,
-	getWork,
-	updateWork
-} from '../../../main/dal.js'
+import DashboardService from '../../../services/DashboardService'
+import WorkService from '../../../services/WorkService'
+import WorkTestService from '../../../services/WorkTestService'
 import _ from 'lodash'
 import moment from 'moment'
 // eslint-disable-next-line
@@ -205,9 +199,9 @@ export default {
 			})
 
 			if (test.checked === true) {
-				await setInboundWorkTestToToday(test.IdTrabajo)
+				await this.workTestService.setInboundWorkTestToToday(test.IdTrabajo)
 			} else {
-				await unsetInboundTestToToday(test.IdTrabajo)
+				await this.workTestService.unsetInboundTestToToday(test.IdTrabajo)
 			}
 			this.$forceUpdate()
 		},
@@ -217,9 +211,9 @@ export default {
 			}
 		},
 		btnSetNewDateClick: async function() {
-			var workToUpdate = await getWork(this.currentTest.IdTrabajo)
+			var workToUpdate = await this.workService.getWork(this.currentTest.IdTrabajo)
 			workToUpdate.FechaPrevista = this.$refs.nuevaFechaPrevistaPrueba.value
-			await updateWork(workToUpdate)
+			await this.workService.updateWork(workToUpdate)
 
 			this.$refs.endDateModal.hide()
 		},
@@ -251,12 +245,12 @@ export default {
 			}
 		},
 		loadData: async function() {
-			this.waitingInbound = await getWaitingInbound()
+			this.waitingInbound = await this.dashboardService.getWaitingInbound()
 			for (var test of this.waitingInbound) {
 				test.checked = false
 			}
-			this.outboundTests = await getOutboundingTests()
-			this.outboundWorks = _.groupBy(await getOutboundingWorks(), o => {
+			this.outboundTests = await this.dashboardService.getOutboundingTests()
+			this.outboundWorks = _.groupBy(await this.dashboardService.getOutboundingWorks(), o => {
 				return o.FechaPrevista
 			})
 		}
@@ -272,6 +266,11 @@ export default {
 				)} | ${this.sumarizeText(this.currentTest.Paciente, 20)}`
 			}
 		}
+	},
+	created() {
+    this.dashboardService = new DashboardService()
+    this.workService = new WorkService()
+		this.workTestService = new WorkTestService()
 	},
 	mounted() {
 		this.loadData()

@@ -236,7 +236,8 @@
 </template>
 
 <script>
-import { getDentist, updateDentist, getMonthTotalsPerDentist, getSumPerDentistPerWorkType } from '../../../main/dal.js'
+import DentistService from '../../../services/DentistService'
+import KpiService from '../../../services/KpiService'
 import collapsibleLinkButton from '../PageElements/CollapsibleButtons/collapsibleLinkButton'
 import { configGet } from '../../../main/store.js'
 import { required, email, numeric, minLength, maxLength } from 'vuelidate/lib/validators'
@@ -312,7 +313,7 @@ export default {
 				}
 				return false
 			}
-			updateDentist(this.data)
+			this.dentistService.updateDentist(this.data)
 			this.$v.$reset()
 			if (url === undefined || url === '') {
 				log.info(`>> navigate: go(-1)`)
@@ -325,8 +326,8 @@ export default {
 			}
 		},
 		loadGraph: async function() {
-			var dataMonths = await getMonthTotalsPerDentist(this.dentistId)
-			var dataWorkTypes = await getSumPerDentistPerWorkType(this.dentistId)
+			var dataMonths = await this.kpiService.getMonthTotalsPerDentist(this.dentistId)
+			var dataWorkTypes = await this.kpiService.getSumPerDentistPerWorkType(this.dentistId)
 
 			this.yearsExpenseEvolutionChart = [new Date().getFullYear(), new Date().getFullYear() - 1]
 
@@ -432,20 +433,12 @@ export default {
 		},
 		getData: async function() {
 			this.dentistId = this.$route.params.id
-			this.data = await getDentist(this.dentistId)
+			this.data = await this.dentistService.getDentist(this.dentistId)
 			document.getElementById('dentista').focus()
 			if (this.$route.query.name !== undefined) {
 				this.data.NombreDentista = this.$route.query.name
 			}
 		}
-	},
-	created() {
-		this.getConfig()
-	},
-	mounted() {
-		this.getData()
-		this.loadGraph()
-		this.$root.$on('topbar:save', this.save)
 	},
 	computed: {
 		isDirty() {
@@ -454,6 +447,16 @@ export default {
 		isError() {
 			return this.$v.$anyError
 		}
+	},
+	created() {
+		this.kpiService = new KpiService()
+		this.dentistService = new DentistService()
+		this.getConfig()
+	},
+	mounted() {
+		this.getData()
+		this.loadGraph()
+		this.$root.$on('topbar:save', this.save)
 	}
 }
 </script>

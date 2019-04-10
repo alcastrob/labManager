@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-expressions
 'use strict'
 
-import _ from 'lodash'
 import log from 'loglevel'
 import PersistenceService from './PersistenceService'
 
@@ -63,5 +62,12 @@ export default class WorkService extends PersistenceService {
       work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
       work.PrecioMetal, work.Nombre, work.IdTrabajo
     ])
+  }
+
+  // Tested
+  async getWorkTypes() {
+    var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
+
+    return this.allAsync(query, [])
   }
 }

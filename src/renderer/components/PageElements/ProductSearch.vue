@@ -26,12 +26,7 @@
 </template>
 
 <script>
-import {
-	searchProductsByName,
-	searchProductByExactName,
-	getProduct,
-	insertProduct
-} from '../../../main/dal.js'
+import ProductBatchService from '../../../services/ProductBatchService'
 import { mixin as clickaway } from 'vue-clickaway'
 
 export default {
@@ -51,7 +46,7 @@ export default {
 			this.resultsVisible = true
 			this.focus = true
 			if (this.query.length > 1) {
-				searchProductsByName(this.query).then(productDetails => {
+				this.productBatchService.searchProductsByName(this.query).then(productDetails => {
 					this.candidateProductFromQuery = productDetails
 				})
 			} else {
@@ -68,10 +63,10 @@ export default {
 			this.$refs.producto.focus()
 		},
 		createNew: function() {
-			searchProductByExactName(this.query).then(row => {
+			this.productBatchService.searchProductByExactName(this.query).then(row => {
 				if (row.length === 0) {
 					// It's time to create the new product and batch
-					insertProduct(this.query).then(id => {
+					this.productBatchService.insertProduct(this.query).then(id => {
 						this.selectProduct(this.query, id)
 					})
 				}
@@ -88,10 +83,13 @@ export default {
 			this.query = ''
 		}
 	},
+	created() {
+		this.productBatchService = new ProductBatchService()
+	},
 	mounted() {
 		this.$refs.producto.focus()
 		this.$watch('value', function(newVal, oldVal) {
-			getProduct(newVal).then(dentistDetail => {
+			this.productBatchService.getProduct(newVal).then(dentistDetail => {
 				if (dentistDetail !== undefined) {
 					this.query = dentistDetail.NombreDentista
 					this.hidePopup()

@@ -40,7 +40,7 @@
 
 <script>
 import dentistTable from '../PageElements/tables/dentistExtendedTable'
-import { getDentistList } from '../../../main/dal.js'
+import DentistService from '../../../services/DentistService'
 import collapsibleLinkButton from '../PageElements/CollapsibleButtons/collapsibleLinkButton'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
 import { configGet } from '../../../main/store'
@@ -129,8 +129,11 @@ export default {
 			this.$refs.dentistTable.beginExporting()
 		},
 		getData: async function() {
-			this.$refs.dentistTable.setDataset(await getDentistList())
+			this.$refs.dentistTable.setDataset(await this.dentistService.getDentistList())
 		}
+	},
+	created() {
+		this.dentistService = new DentistService()
 	},
 	mounted() {
 		this.isAdmin = configGet('isAdmin')

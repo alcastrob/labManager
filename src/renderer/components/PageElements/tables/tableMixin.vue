@@ -91,7 +91,7 @@ export default {
 		// Called by the excel button
 		endExporting() {
 			this.isExporting = false
-			if (this.endExportingCallback !== undefined) {
+			if (this.endExportingCallback) {
 				this.endExportingCallback()
 			}
 		},

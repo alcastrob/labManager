@@ -221,17 +221,14 @@
 import Vue from 'vue'
 import FloatThead from 'vue-floatthead'
 import _ from 'lodash'
+import log from 'loglevel'
 import moment from 'moment'
 import tableMixin from './tableMixin'
 // eslint-disable-next-line
 import clearbBadge from 'bootstrap-vue'
-import {
-	getWorksAggregatedByDentist,
-	getWorksDeaggregatedByDentist,
-	setCheckToWork,
-	getWorkIndications,
-	getInvoicesPerDentist
-} from '../../../../main/dal.js'
+import InvoiceService from '../../../../services/InvoiceService.js'
+import MonthCheckService from '../../../../services/MonthCheckService'
+import WorkIndicationService from '../../../../services/WorkIndicationService.js'
 import euroInput from '../tables/euroInput'
 import percentageInput from '../tables/percentageInput'
 
@@ -314,7 +311,7 @@ export default {
 			if (event.srcElement.localName !== 'textarea' && event.srcElement.localName !== 'a') {
 				var work = _.find(works, ['IdTrabajo', idTrabajo])
 				work.Chequeado = !work.Chequeado
-				setCheckToWork(idTrabajo, work.Chequeado)
+				this.monthCheckService.setCheckToWork(idTrabajo, work.Chequeado)
 				this.updateDentistCheckbox(idDentist)
 			}
 		},
@@ -348,21 +345,26 @@ export default {
 			return moneyFormatter.format(work.SumaPrecioFinal - work.TotalDescuento)
 		},
 		calcColumnSums: function(includedColumns) {
+			log.debug('Calculating the sum of columns')
 			for (var column of this.headers) {
 				var columnName = column.dataField
 				if (includedColumns.includes(columnName)) {
 					this.sums[columnName] = 0
 					this.columnIndex[columnName] = _.findIndex(this.headers, ['dataField', columnName])
 				}
-				if (includedColumns.includes(column.dataField)) {
-					this.subheaders[column.dataField] = moneyFormatter.format(this.sums[column.dataField])
-				}
 			}
+			log.debug(`rawDataset length: ${this.rawDataset.length}`)
 			for (var row of this.rawDataset) {
 				for (var field in row) {
 					if (includedColumns.includes(field)) {
 						this.sums[field] += row[field]
 					}
+				}
+			}
+			log.debug(`Calculated sums of columns: ${JSON.stringify(this.sums)}`)
+			for (var column of this.headers) {
+				if (includedColumns.includes(column.dataField)) {
+					this.subheaders[column.dataField] = moneyFormatter.format(this.sums[column.dataField])
 				}
 			}
 		},
@@ -510,7 +512,7 @@ export default {
 
 		// Persistence--------------------------------
 		getWorksOfDentist: async function(idDentist) {
-			var works = await getWorksDeaggregatedByDentist(
+			var works = await this.monthCheckService.getWorksDeaggregatedByDentist(
 				parseInt(this.year),
 				parseInt(this.month),
 				idDentist,
@@ -528,14 +530,18 @@ export default {
 			}
 		},
 		getWorkIndications: async function(idTrabajo) {
-			var workIndications = await getWorkIndications(idTrabajo)
+			var workIndications = await this.workIndicationService.getWorkIndications(idTrabajo)
 			if (workIndications.length > 0) {
 				// var idTrabajo = workIndications[0].IdTrabajo
 				this.workIndications[idTrabajo] = workIndications
 			}
 		},
 		getWorksAggregated: async function(year, month) {
-			this.rawDataset = await getWorksAggregatedByDentist(parseInt(year), parseInt(month), this.isReadOnly)
+			this.rawDataset = await this.monthCheckService.getWorksAggregatedByDentist(
+				parseInt(year),
+				parseInt(month),
+				this.isReadOnly
+			)
 			this.calcColumnSums([
 				'SumaPrecioFinal',
 				'SumaAditamentos',
@@ -553,7 +559,11 @@ export default {
 			for (var dentist of this.rawDataset) {
 				var works = await this.getWorksOfDentist(dentist.IdDentista)
 				if (this.isReadOnly) {
-					this.invoicesPerDentist[dentist.IdDentista] = await getInvoicesPerDentist(year, month, dentist.IdDentista)
+					this.invoicesPerDentist[dentist.IdDentista] = await this.invoiceService.getInvoicesPerDentist(
+						year,
+						month,
+						dentist.IdDentista
+					)
 				}
 				if (works !== undefined) {
 					this.applyDiscount(dentist)
@@ -561,6 +571,11 @@ export default {
 			}
 			this.$forceUpdate()
 		}
+	},
+	created() {
+		this.invoiceService = new InvoiceService()
+		this.monthCheckService = new MonthCheckService()
+		this.workIndicationService = new WorkIndicationService()
 	},
 	mounted() {
 		this.getWorksAggregated(this.year, this.month)
