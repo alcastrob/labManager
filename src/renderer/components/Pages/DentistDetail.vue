@@ -238,8 +238,8 @@
 <script>
 import DentistService from '../../../services/DentistService'
 import KpiService from '../../../services/KpiService'
+import ConfigFileService from '../../../services/ConfigFileService'
 import collapsibleLinkButton from '../PageElements/CollapsibleButtons/collapsibleLinkButton'
-import { configGet } from '../../../main/store.js'
 import { required, email, numeric, minLength, maxLength } from 'vuelidate/lib/validators'
 import * as log from 'loglevel'
 
@@ -429,7 +429,7 @@ export default {
 			}: ${this.moneyFormatter.format(tooltipItem.yLabel)}`
 		},
 		getConfig: async function() {
-			this.isAdmin = configGet('isAdmin')
+			this.isAdmin = this.configFileService.configGet('isAdmin')
 		},
 		getData: async function() {
 			this.dentistId = this.$route.params.id
@@ -451,6 +451,7 @@ export default {
 	created() {
 		this.kpiService = new KpiService()
 		this.dentistService = new DentistService()
+		this.configFileService = new ConfigFileService()
 		this.getConfig()
 	},
 	mounted() {

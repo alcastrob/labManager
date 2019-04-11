@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { configGet } from '../../../main/store'
+import ConfigFileService from '../../../services/ConfigFileService'
 import _ from 'lodash'
 import log from 'loglevel'
 // eslint-disable-next-line
@@ -163,7 +163,7 @@ export default {
 			}
 		},
 		getConfig: async function() {
-			this.isAdmin = configGet('isAdmin')
+			this.isAdmin = this.configFileService.configGet('isAdmin')
 		}
 	},
 	computed: {
@@ -194,6 +194,7 @@ export default {
 		}
 	},
 	created() {
+		this.configFileService = new ConfigFileService()
 		this.getConfig()
 	}
 }

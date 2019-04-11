@@ -37,9 +37,9 @@
 
 <script>
 import WorkService from '../../../services/WorkService.js'
+import ConfigFileService from '../../../services/ConfigFileService'
 import workExtendedTable from '../PageElements/tables/workExtendedTable'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
-import { configGet } from '../../../main/store'
 import log from 'loglevel'
 
 export default {
@@ -169,6 +169,7 @@ export default {
 	created() {
 		this.listHeading = this.$route.query.title
 		this.workService = new WorkService()
+		this.configFileService = new ConfigFileService()
 	},
 	activated() {
 		// The data will be loaded even if the rest of the page is in the cache
@@ -184,7 +185,7 @@ export default {
 			this.listHeading = this.$route.query.title
 		})
 
-		this.isAdmin = configGet('isAdmin')
+		this.isAdmin = this.configFileService.configGet('isAdmin')
 		this.$refs.excelButton.setTable(this.$refs.workExtendedTable)
 	}
 }

@@ -19,9 +19,9 @@
 
 <script>
 import topbar from '../PageElements/TopBar'
-import { configGet, configSet } from '../../../main/store'
 import { checkForUpdates } from '../../../main/updates'
 import PersistenceService from '../../../services/PersistenceService'
+import ConfigFileService from '../../../services/ConfigFileService'
 import log from 'loglevel'
 var { ipcRenderer } = require('electron')
 
@@ -37,7 +37,7 @@ export default {
 	methods: {
 		loadDb: async function() {
 			try {
-				var dataFile = configGet('dataFile')
+				var dataFile = this.configFileService.configGet('dataFile')
 				if (!dataFile) {
 					// No selected file for running the application
 					swal({
@@ -62,14 +62,14 @@ export default {
 						}
 					})
 					log.warn('No valid format for the database file.')
-					configSet('dataFile', '')
+					this.configFileService.configSet('dataFile', '')
 				}
 			} catch (err) {
 				log.error(`Error in loadDb method of ${this.$vnode.componentOptions.tag}. Content: ${JSON.stringify(err)}`)
 			}
 		},
 		reloadDb: async function(file) {
-			configSet('dataFile', file)
+			this.configFileService.configSet('dataFile', file)
 			await this.loadDb()
 			log.info(`>> navigate: /`)
 			this.$router.push({
@@ -100,6 +100,7 @@ export default {
 	},
 	created() {
 		this.persistenceService = new PersistenceService()
+		this.configFileService = new ConfigFileService()
 		this.loadDb()
 	},
 	mounted() {

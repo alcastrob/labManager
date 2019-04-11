@@ -1,38 +1,36 @@
 // eslint-disable-next-line no-unused-expressions
 'use strict'
 
-import {
-  configGet
-} from '../main/store'
+import ConfigFileService from './ConfigFileService'
 import log from 'loglevel'
 import _ from 'lodash'
 
 export default class PersistenceService {
   constructor() {
     log.debug('PersistenceService initialized')
+    this.configFileService = new ConfigFileService()
   }
 
   async loadDbFile() {
     try {
-      var dbFile = configGet('dataFile')
-      log.info(`Using dbFile ${dbFile}`)
+      var dbFile = this.configFileService.configGet('dataFile')
       // eslint-disable-next-line space-unary-ops
       this.db = new(require('sqlite3').verbose()).Database(dbFile)
       this.db.configure('busyTimeout', 5000)
       var x = await this.getConfigValue('companyName')
       if (!x) {
         // Looks not to be a good sqlite database. Reject it
-        log.error(`${configGet('dataFile')} is not a good sqlite file`)
+        log.error(`${this.configFileService.configGet('dataFile')} is not a good sqlite file`)
         return undefined
       }
     } catch (err) {
       // Looks not to be a good sqlite database. Reject it
-      log.error(`${configGet('dataFile')} is not a good sqlite file`)
+      log.error(`${this.configFileService.configGet('dataFile')} is not a good sqlite file`)
       return undefined
     }
     // eslint-disable-next-line no-useless-escape
     require('electron').ipcRenderer.send('file:opened', this.db.filename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, ''))
-    log.info(`File ${this.db.filename} opened `)
+    log.debug(`File ${this.db.filename} opened `)
     return this.db
   }
 
@@ -40,7 +38,7 @@ export default class PersistenceService {
   async getConfigValue(configKey) {
     var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
     var x = await this.getAsync(query, [configKey])
-    log.debug('Retreived the config values')
+    log.debug('Retreived the shared config values stored in the DB.')
     // log.debug(`Config values: ${JSON.stringify(x)}`)
     return (x).valor
   }

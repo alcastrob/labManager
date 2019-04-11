@@ -357,7 +357,7 @@ import WorkService from '../../../services/WorkService'
 import WorkIndicationService from '../../../services/WorkIndicationService'
 import WorkTestService from '../../../services/WorkTestService'
 import WorkAdjuntService from '../../../services/WorkAdjuntService'
-import { configGet } from '../../../main/store'
+import ConfigFileService from '../../../services/ConfigFileService'
 import workMixin from './WorkMixin'
 import delivery from '../Labels/Delivery'
 import imagesFileUpload from '../PageElements/fileUploads/imagesFileUplodad'
@@ -619,13 +619,14 @@ export default {
 		this.invoiceService = new InvoiceService()
 		this.workIndicationService = new WorkIndicationService()
 		this.workTestService = new WorkTestService()
-		this.workAdjuntService = new WorkAdjuntService()
+    this.workAdjuntService = new WorkAdjuntService()
+    this.configFileService = new ConfigFileService()
 		this.work.IdTrabajo = parseInt(this.$route.params.id)
 	},
 	mounted() {
 		this.getData()
 		this.$root.$on('topbar:save', this.save)
-		this.isAdmin = configGet('isAdmin')
+		this.isAdmin = this.configFileService.configGet('isAdmin')
 	}
 }
 </script>

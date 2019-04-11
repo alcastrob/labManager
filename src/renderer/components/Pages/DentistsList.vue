@@ -39,11 +39,11 @@
 </template>
 
 <script>
-import dentistTable from '../PageElements/tables/dentistExtendedTable'
 import DentistService from '../../../services/DentistService'
+import ConfigFileService from '../../../services/ConfigFileService'
+import dentistTable from '../PageElements/tables/dentistExtendedTable'
 import collapsibleLinkButton from '../PageElements/CollapsibleButtons/collapsibleLinkButton'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
-import { configGet } from '../../../main/store'
 
 export default {
 	name: 'dentistslist',
@@ -134,9 +134,10 @@ export default {
 	},
 	created() {
 		this.dentistService = new DentistService()
+		this.configFileService = new ConfigFileService()
 	},
 	mounted() {
-		this.isAdmin = configGet('isAdmin')
+		this.isAdmin = this.configFileService.configGet('isAdmin')
 		this.$refs.excelButton.setTable(this.$refs.dentistTable)
 	},
 	activated() {

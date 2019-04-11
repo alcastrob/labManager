@@ -7,9 +7,7 @@ import {
   dialog,
   shell
 } from 'electron'
-import {
-  configGet
-} from '../main/store'
+import ConfigFileService from '../services/ConfigFileService'
 const path = require('path')
 const electron = require('electron')
 const ipc = electron.ipcMain
@@ -24,6 +22,8 @@ if (process.env.NODE_ENV !== 'development') {
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080` : `file://${__dirname}/index.html`
+
+let configFileService = new ConfigFileService()
 
 function createWindow() {
   /**
@@ -64,7 +64,7 @@ ipc.on('file:opened', function (event, content) {
   mainWindow.setTitle(`labManager (${require('../../package.json').version}) - [${content}]`)
 })
 
-var datafile = configGet('dataFile')
+var datafile = configFileService.configGet('dataFile')
 
 var menuTemplate = [{
   label: 'Archivo',
@@ -142,7 +142,7 @@ var menuTemplate = [{
     }
   ]
 }]
-if (configGet('isAdmin')) {
+if (configFileService.configGet('isAdmin')) {
   menuTemplate.push({
     label: 'Mantenimientos',
     submenu: [{
@@ -213,7 +213,7 @@ menuTemplate.push({
 // }
 
 function openFileInShell() {
-  var file = configGet('dataFile')
+  var file = configFileService.configGet('dataFile')
   if (file !== undefined) {
     shell.showItemInFolder(file)
   }
@@ -227,7 +227,7 @@ function openExistingFile() {
     // The user selected a file and did not pressed the Cancel button of the dialog
     mainWindow.webContents.send('reload:database', filePath[0])
   }
-  datafile = configGet('dataFile')
+  datafile = configFileService.configGet('dataFile')
 }
 
 // const remote = require('remote')
