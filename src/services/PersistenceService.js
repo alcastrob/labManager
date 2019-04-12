@@ -58,6 +58,7 @@ export default class PersistenceService {
   }
 
   async setConfigValue(configKey, configValue) {
+    log.debug(`Updating the config key ${configKey} with the value ${configValue}`)
     var query = 'INSERT OR REPLACE INTO Configuracion (clave, valor) VALUES (?, ?)'
     return this.runAsync(query, [configKey, configValue])
   }

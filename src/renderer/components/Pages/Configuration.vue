@@ -1,4 +1,4 @@
-  <template>
+<template>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
@@ -153,6 +153,7 @@ export default {
 	},
 	methods: {
 		save: async function(url) {
+			log.debug('Updating configuration')
 			if (this.$v.$anyError) {
 				if (this.$v.config.invoiceFooter.$anyError) {
 					this.$refs.invoiceFooter.focus()
@@ -212,7 +213,11 @@ export default {
 	},
 	computed: {
 		isDirty() {
+			// The save of this page is not controlled by the topbar, so there's no need of set the isDirty
 			return false
+		},
+		isAutoSave() {
+			return true
 		}
 	},
 	created() {

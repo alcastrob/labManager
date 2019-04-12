@@ -1,5 +1,6 @@
 <script>
 import { Printd } from 'printd'
+import log from 'loglevel'
 var path = require('path')
 var fs = require('fs')
 
@@ -30,6 +31,7 @@ export default {
 			this.$forceUpdate()
 			const d = new Printd()
 			d.print(this.$el, this.cssText)
+			log.info(`Label printed ${this.name} for workId: ${this.workData.IdTrabajo}.`)
 		},
 		setName(name) {
 			this.name = name

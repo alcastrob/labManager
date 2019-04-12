@@ -92,33 +92,48 @@ export default {
 	},
 	methods: {
 		go(url) {
-			if (!this.isPageDirty()) {
-				if (this.to.fullPath === url) {
-					log.debug('Clicked on the same URL. Cleaning the page')
-					this.cleanPage()
-				} else {
-					log.debug('Clicked on another URL. Redirecting')
-					log.info(`>> navigate: ${url}`)
-					this.$router.push({
-						path: url
-					})
-				}
-			} else {
+			if (this.isPageAutoSave()) {
+				log.debug(`Clicked on another URL in an autoSave page. Redirecting to ${url}`)
+				this.$root.$emit('topbar:save', url)
+				return
+			}
+
+			if (this.isPageDirty()) {
+				log.debug('The page is dirty')
 				this.$refs.leavePageModal.show()
 				this.leavingToUrl = url
+				return
+			}
+
+			if (this.to.fullPath === url) {
+				log.debug('Clicked on the same URL. Cleaning the page')
+				this.cleanPage()
+			} else {
+				log.debug('Clicked on another URL. Redirecting')
+				log.info(`>> navigate: ${url}`)
+				this.$router.push({
+					path: url
+				})
 			}
 		},
 		goBack() {
-			if (!this.isPageDirty()) {
-				this.cleanPage()
-				log.info(`>> navigate: ${this.from.fullPath}`)
-				this.$router.push({
-					path: this.from.fullPath
-				})
-			} else {
+			if (this.isPageAutoSave()) {
+				log.debug(`Click on the back button in a Autosave page.`)
+				this.$root.$emit('topbar:save', this.from.fullPath)
+				return
+			}
+
+			if (this.isPageDirty()) {
+				log.debug('Clicked on the back button, but the page is dirty')
 				this.$refs.leavePageModal.show()
 				this.leavingToUrl = this.from.fullPath
+				return
 			}
+			this.cleanPage()
+			log.info(`>> navigate: ${this.from.fullPath}`)
+			this.$router.push({
+				path: this.from.fullPath
+			})
 		},
 		discardButtonClick() {
 			this.lastComponentFound = undefined
@@ -141,11 +156,18 @@ export default {
 				return isError && isDirty
 			})
 			// If exists, get the isDirty computed value. If not, just return false and continue navigating
-			if (page !== undefined) {
+			if (page) {
 				return page.isDirty || page.isError
 			} else {
 				return false
 			}
+		},
+		isPageAutoSave() {
+			var pageIsAutoSave = _.find(this.$parent.$children, e => {
+				var isAutoSave = e.isAutoSave !== undefined && {}.toString.call(e.isAutoSave) !== '[object Function]'
+				return isAutoSave
+			})
+			return pageIsAutoSave
 		},
 		cleanPage() {
 			var x = _.find(this.$parent.$children, e => {
