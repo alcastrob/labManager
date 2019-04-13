@@ -52,15 +52,24 @@ export default {
 	},
 	methods: {
 		formatRow(row, formatter) {
-			if (formatter === 'date' && row !== null && row !== undefined) {
+			if (formatter === 'date' && row) {
 				return moment(row).format('DD/MM/YYYY')
-			} else if (formatter === 'money' && row !== null && row !== undefined && !this.isExporting) {
-				return this.moneyFormatter.format(row)
-			} else if (formatter === 'percentage' && row !== null && row !== undefined && !this.isExporting) {
-				return row + ' %'
-			} else {
-				return row
 			}
+			if (formatter === 'money' && !this.isExporting) {
+				if (row) {
+					return this.moneyFormatter.format(row)
+				} else {
+					return this.moneyFormatter.format(0)
+				}
+			}
+			if (formatter === 'percentage' && !this.isExporting) {
+				if (row) {
+					return parseFloat(row).toFixed(2) + ' %'
+				} else {
+					return '0.00 %'
+				}
+			}
+			return row
 		},
 		setDataset: function(dataset) {
 			this.rawDataset = dataset

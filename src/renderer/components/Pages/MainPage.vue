@@ -101,6 +101,7 @@ export default {
 	created() {
 		this.persistenceService = new PersistenceService()
 		this.configFileService = new ConfigFileService()
+		this.configFileService.dumpToLogger()
 		this.loadDb()
 	},
 	mounted() {

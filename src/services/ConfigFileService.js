@@ -11,16 +11,17 @@ export default class ConfigFileService {
   constructor() {
     this.data = {}
     this.loaded = false
+    const userDataPath = (electron.app || electron.remote.app).getPath('appData')
+    const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
+    this.data = JSON.parse(fs.readFileSync(filePath))
+    this.loaded = true
+  }
+
+  dumpToLogger() {
+    log.debug(`Loaded the local config file. Config file contents: ${JSON.stringify(this.data)}`)
   }
 
   configGet(key) {
-    if (!this.loaded) {
-      const userDataPath = (electron.app || electron.remote.app).getPath('appData')
-      const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
-      this.data = JSON.parse(fs.readFileSync(filePath))
-      this.loaded = true
-      log.info(`Loaded the local config file. Config file contents: ${JSON.stringify(this.data)}`)
-    }
     if (this.data[key] === 'true') {
       return true
     } else if (this.data[key] === 'false') {
