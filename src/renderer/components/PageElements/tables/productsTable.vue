@@ -139,10 +139,9 @@ export default {
 			this.$emit('input', this.rawDataset)
 		},
 		save() {
-			// TODO Verify this
-			_.forEach(this.insertedRows, this.productBatchService.insertProduct)
-			_.forEach(this.deletedRows, this.productBatchService.deleteProduct)
-			_.forEach(this.updatedRows, this.productBatchService.updateProduct)
+			_.forEach(this.insertedRows, async row => this.productBatchService.insertProduct(row))
+			_.forEach(this.deletedRows, async row => this.productBatchService.deleteProduct(row))
+			_.forEach(this.updatedRows, async row => this.productBatchService.updateProduct(row))
 			this.insertedRows = []
 			this.deletedRows = []
 			this.updatedRows = []

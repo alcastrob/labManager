@@ -371,14 +371,13 @@ export default {
 			this.$emit('input', this.data)
 		},
 		save(masterId) {
-      // TODO Verify this method
-      _.forEach(this.insertedRows, async function(row) {
+			// TODO Verify this method
+			_.forEach(this.insertedRows, async function(row) {
 				row.IdTrabajo = masterId
 				await this.workTestService.insertWorkTest(row)
 			})
-			_.forEach(this.deletedRows, this.workTestService.deleteWorkTest)
-			_.forEach(this.updatedRows, this.workTestService.updateWorkTest
-			)
+			_.forEach(this.deletedRows, async row => this.workTestService.deleteWorkTest(row))
+			_.forEach(this.updatedRows, async row => this.workTestService.updateWorkTest(row))
 			this.insertedRows = []
 			this.deletedRows = []
 			this.updatedRows = []

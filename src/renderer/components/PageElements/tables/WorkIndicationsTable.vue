@@ -197,14 +197,13 @@ export default {
 			this.$emit('input', this.data)
 		},
 		async save(masterId) {
-			// TODO: Verify this function
 			if (masterId !== 0) {
-				_.forEach(this.insertedRows, function(row) {
+				_.forEach(this.insertedRows, async row => {
 					row.IdTrabajo = masterId
 					this.workIndicationService.insertWorkIndications(row)
 				})
-				_.forEach(this.deletedRows, this.workIndicationService.deleteWorkIndications)
-				_.forEach(this.updatedRows, this.workIndicationService.updateWorkIndications)
+				_.forEach(this.deletedRows, async row => this.workIndicationService.deleteWorkIndications(row))
+				_.forEach(this.updatedRows, async row => this.workIndicationService.updateWorkIndications(row))
 				await this.workIndicationService.updatePriceSum(masterId)
 				this.insertedRows = []
 				this.deletedRows = []

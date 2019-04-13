@@ -173,10 +173,9 @@ export default {
 			this.$emit('input', this.rawDataset)
 		},
 		save() {
-			// TODO Verify this
-			_.forEach(this.insertedRows, this.catalogService.insertCatalogEntry)
-			_.forEach(this.deletedRows, this.catalogService.deleteCatalogEntry)
-			_.forEach(this.updatedRows, this.catalogService.updateCatalogEntry)
+			_.forEach(this.insertedRows, async row => this.catalogService.insertCatalogEntry(row))
+			_.forEach(this.deletedRows, async row => this.catalogService.deleteCatalogEntry(row))
+			_.forEach(this.updatedRows, async row => this.catalogService.updateCatalogEntry(row))
 			this.insertedRows = []
 			this.deletedRows = []
 			this.updatedRows = []
@@ -257,7 +256,7 @@ export default {
 			this.filteredDataset = this.rawDataset
 		}
 	},
-	created () {
+	created() {
 		this.catalogService = new CatalogService()
 	},
 	mounted() {
