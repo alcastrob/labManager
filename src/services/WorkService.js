@@ -10,16 +10,16 @@ export default class WorkService extends PersistenceService {
     var query = 'SELECT * FROM vTrabajos WHERE 1=1'
     if (customFilters !== undefined) {
       if (customFilters.fEntrada !== undefined) {
-        query += this._processDateQuery('FechaEntrada', customFilters.fEntrada)
+        query += this.processDateQuery('FechaEntrada', customFilters.fEntrada)
       }
       if (customFilters.fPrevista !== undefined) {
-        query += this._processDateQuery('FechaPrevista', customFilters.fPrevista)
+        query += this.processDateQuery('FechaPrevista', customFilters.fPrevista)
       }
       if (customFilters.fSalida !== undefined) {
-        query += this._processDateQuery('FechaTerminacion', customFilters.fSalida)
+        query += this.processDateQuery('FechaTerminacion', customFilters.fSalida)
       }
       if (customFilters.tipo !== undefined && customFilters.tipo.length > 0) {
-        query += this._processTypeQuery('TipoTrabajo', customFilters.tipo)
+        query += this.processTypeQuery('TipoTrabajo', customFilters.tipo)
       }
       if (customFilters.IdDentista !== undefined) {
         query += ` AND IdDentista = ${customFilters.IdDentista}`

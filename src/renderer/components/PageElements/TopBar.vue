@@ -88,6 +88,7 @@ export default {
 		$route(to, from) {
 			this.to = to
 			this.from = from
+			log.info(`### Navigate: ${from.fullPath} >> ${to.fullPath}`)
 		}
 	},
 	methods: {
@@ -110,7 +111,6 @@ export default {
 				this.cleanPage()
 			} else {
 				log.debug('Clicked on another URL. Redirecting')
-				log.info(`>> navigate: ${url}`)
 				this.$router.push({
 					path: url
 				})
@@ -130,7 +130,6 @@ export default {
 				return
 			}
 			this.cleanPage()
-			log.info(`>> navigate: ${this.from.fullPath}`)
 			this.$router.push({
 				path: this.from.fullPath
 			})
@@ -139,7 +138,6 @@ export default {
 			this.lastComponentFound = undefined
 			this.$refs.leavePageModal.hide()
 			this.cleanPage()
-			log.info(`>> navigate: ${this.leavingToUrl}`)
 			this.$router.push({
 				path: this.leavingToUrl
 			})

@@ -82,7 +82,6 @@ export default {
 			this.$emit('input', newId)
 		},
 		createNew: function(name) {
-			log.info(`>> navigate: /dentists/new?name=${name}`)
 			this.$router.push({
 				path: '/dentists/new',
 				query: {

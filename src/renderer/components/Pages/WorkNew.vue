@@ -411,10 +411,8 @@ export default {
 		goBack() {
 			this.$v.$reset()
 			if (!this.url) {
-				log.info(`>> navigate: /works/details/${this.work.IdTrabajo}`)
 				this.$router.push({ path: `/works/details/${this.work.IdTrabajo}` })
 			} else {
-				log.info(`>> navigate: ${this.url}`)
 				this.$router.push({ path: this.url })
 				log.info(`Work ${this.work.IdTrabajo} created`)
 				this.$toasted.show(`Se ha creado el trabajo ${this.work.IdTrabajo}.`, {
@@ -429,7 +427,6 @@ export default {
 						{
 							text: 'Ver',
 							onClick: (e, toastObject) => {
-								log.info(`>> navigate: /works/details/${this.work.IdTrabajo}`)
 								this.$router.push({
 									path: `/works/details/${this.work.IdTrabajo}`
 								})

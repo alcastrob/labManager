@@ -45,7 +45,6 @@ export default {
 	},
 	methods: {
 		showDetails() {
-			log.info(`>> navigate: /works/list?title=${this.listHeading}:filter=${this.filter}`)
 			this.$router.push({
 				path: '/works/list',
 				query: {

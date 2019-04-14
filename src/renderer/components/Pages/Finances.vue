@@ -260,7 +260,6 @@ export default {
 			var path = `/finances/monthCheck/${this.$refs.year.selectedOptions[0].value}/${
 				this.$refs.month.selectedOptions[0].value
 			}`
-			log.info(`>> navigate: ${path}`)
 			this.$router.push({
 				path: path
 			})

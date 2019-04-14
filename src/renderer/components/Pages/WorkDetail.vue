@@ -467,7 +467,6 @@ export default {
 			// Everything went right. Depending how do you reach this function, you'll have tow ways of leaving it
 			if (url !== undefined) {
 				// Direct click on the SAVE button. Just get redirected to the URL
-				log.info(`>> navigate: ${url}`)
 				this.$router.push({
 					path: url
 				})

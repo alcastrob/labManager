@@ -218,7 +218,6 @@ export default {
 			this.$refs.endDateModal.hide()
 		},
 		redirectToWork: function(workId) {
-			log.info(`>> navigate: /works/details/${workId}`)
 			this.$router.push({ path: `/works/details/${workId}` })
 		},
 		format(date) {

@@ -71,7 +71,6 @@ export default {
 		reloadDb: async function(file) {
 			this.configFileService.configSet('dataFile', file)
 			await this.loadDb()
-			log.info(`>> navigate: /`)
 			this.$router.push({
 				path: '/'
 			})
@@ -91,7 +90,6 @@ export default {
 					}
 				}).then(value => {
 					if (value === 'ok') {
-						log.info(`>> navigate: /about`)
 						this.$router.push({ path: '/about' })
 					}
 				})
@@ -106,7 +104,6 @@ export default {
 	},
 	mounted() {
 		ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
-			log.info(`>> navigate: ${eventData.page}`)
 			this.$router.push({
 				path: eventData.page
 			})

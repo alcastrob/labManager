@@ -86,7 +86,6 @@ export default {
 			this.filteredDataset = dataset
 		},
 		clickOn: function(index) {
-			log.info(`>> navigate: ${this.urlBase + index}`)
 			this.$router.push({
 				path: this.urlBase + index
 			})

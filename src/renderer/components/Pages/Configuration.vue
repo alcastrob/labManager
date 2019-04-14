@@ -202,7 +202,6 @@ export default {
 				await this.persistenceService.setConfigValue('sharedPath', this.config.sharedPath)
 			}
 
-			log.info(`>> navigate: ${url}`)
 			this.$router.push({ path: url })
 		},
 		getData: async function() {

@@ -6,9 +6,7 @@ import store from './store'
 import BootstrapVue from 'bootstrap-vue'
 import Vuelidate from 'vuelidate'
 import log from 'loglevel'
-import {
-	remoteLog
-} from '../main/log-helper'
+import { remoteLog } from '../main/log-helper'
 
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
@@ -17,7 +15,7 @@ try {
 	if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 	Vue.http = Vue.prototype.$http = axios
 	Vue.config.productionTip = false
-	Vue.config.errorHandler = function (err, vm, info) {
+	Vue.config.errorHandler = function(err, vm, info) {
 		log.error('[Global Error Handler]: Error in ' + info + ': ' + err)
 	}
 

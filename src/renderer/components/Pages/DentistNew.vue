@@ -243,10 +243,8 @@ export default {
 			await this.dentistService.insertDentist(this.data)
 			this.$v.$reset()
 			if (!url) {
-				log.info(`>> navigate: go(-1)`)
 				this.$router.go(-1)
 			} else {
-				log.info(`>> navigate: ${url}`)
 				this.$router.push({
 					path: url
 				})
