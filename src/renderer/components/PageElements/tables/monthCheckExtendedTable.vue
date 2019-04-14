@@ -189,6 +189,7 @@
                     class="inputInTd small-text text-right"
                     :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"
                     v-model="work.PorcentajeDescuento"
+                    :disabled="isReadOnly"
                     @change="percentageDiscountChanged(work, dentist)"
                   ></percentageInput>
                 </td>
@@ -197,9 +198,10 @@
                   :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"
                 >
                   <euroInput
-                    v-model="work.TotalDescuento"
                     class="inputInTd small-text text-right"
                     :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"
+                    v-model="work.TotalDescuento"
+                    :disabled="isReadOnly"
                     @change="totalDiscountChanged(work, dentist)"
                   ></euroInput>
                 </td>
@@ -226,9 +228,10 @@ import moment from 'moment'
 import tableMixin from './tableMixin'
 // eslint-disable-next-line
 import clearbBadge from 'bootstrap-vue'
-import InvoiceService from '../../../../services/InvoiceService.js'
+import InvoiceService from '../../../../services/InvoiceService'
 import MonthCheckService from '../../../../services/MonthCheckService'
-import WorkIndicationService from '../../../../services/WorkIndicationService.js'
+import WorkService from '../../../../services/WorkService'
+import WorkIndicationService from '../../../../services/WorkIndicationService'
 import euroInput from '../tables/euroInput'
 import percentageInput from '../tables/percentageInput'
 
@@ -316,22 +319,29 @@ export default {
 			}
 		},
 		percentageDiscountChanged(work, dentist) {
-			if (work.SumaTotalMetal === 0) {
-				work.TotalDescuento = 0
-				work.PorcentajeDescuento = 0
-			} else {
-				work.TotalDescuento = parseFloat((work.SumaTotalMetal * work.PorcentajeDescuento) / 100).toFixed(2)
+			// We prevent accidental changes of the discounts in works that could be part of an invoice. Only it's allowed to edit in read/write mode.
+			if (!this.isReadOnly) {
+				if (work.SumaTotalMetal === 0) {
+					work.TotalDescuento = 0
+					work.PorcentajeDescuento = 0
+				} else {
+					work.TotalDescuento = parseFloat((work.SumaTotalMetal * work.PorcentajeDescuento) / 100).toFixed(2)
+				}
+				this.applyDiscount(dentist)
+				this.workService.updateWork(work)
 			}
-			this.applyDiscount(dentist)
 		},
 		totalDiscountChanged(work, dentist) {
-			if (work.SumaTotalMetal === 0) {
-				work.TotalDescuento = 0
-				work.PorcentajeDescuento = 0
-			} else {
-				work.PorcentajeDescuento = parseFloat((work.TotalDescuento * 100) / work.SumaTotalMetal).toFixed(2)
+			// We prevent accidental changes of the discounts in works that could be part of an invoice. Only it's allowed to edit in read/write mode.
+			if (!this.isReadOnly) {
+				if (work.SumaTotalMetal === 0) {
+					work.TotalDescuento = 0
+					work.PorcentajeDescuento = 0
+				} else {
+					work.PorcentajeDescuento = parseFloat((work.TotalDescuento * 100) / work.SumaTotalMetal).toFixed(2)
+				}
+				this.applyDiscount(dentist)
 			}
-			this.applyDiscount(dentist)
 		},
 
 		// Calculations-------------------------------
@@ -558,16 +568,13 @@ export default {
 			])
 
 			for (var dentist of this.rawDataset) {
-				var works = await this.getWorksOfDentist(dentist.IdDentista)
+				await this.getWorksOfDentist(dentist.IdDentista)
 				if (this.isReadOnly) {
 					this.invoicesPerDentist[dentist.IdDentista] = await this.invoiceService.getInvoicesPerDentist(
 						year,
 						month,
 						dentist.IdDentista
 					)
-				}
-				if (works !== undefined) {
-					this.applyDiscount(dentist)
 				}
 			}
 			this.$forceUpdate()
@@ -576,6 +583,7 @@ export default {
 	created() {
 		this.invoiceService = new InvoiceService()
 		this.monthCheckService = new MonthCheckService()
+		this.workService = new WorkService()
 		this.workIndicationService = new WorkIndicationService()
 	},
 	mounted() {

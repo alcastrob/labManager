@@ -40,11 +40,11 @@ export default class WorkService extends PersistenceService {
   async insertWork(work) {
     var query = 'INSERT INTO Trabajos (IdDentista, IdTipoTrabajo, ' +
       'Paciente, Color, FechaTerminacion, FechaEntrada, ' +
-      'FechaPrevista, FechaPrevistaPrueba, PrecioFinal, PrecioMetal) ' +
-      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      'FechaPrevista, FechaPrevistaPrueba, PrecioFinal, PrecioMetal, PorcentajeDescuento, TotalDescuento) ' +
+      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     var id = await this.runAsync(query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
       work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
-      work.PrecioFinal, work.PrecioMetal
+      work.PrecioFinal, work.PrecioMetal, work.PorcentajeDescuento, work.TotalDescuento
     ])
     log.info(`Created the work ${id}`)
     return id
@@ -55,12 +55,13 @@ export default class WorkService extends PersistenceService {
     var query = 'UPDATE Trabajos SET IdDentista = ?, IdTipoTrabajo = ?, ' +
       'Paciente = ?, Color = ?, FechaTerminacion = ?, ' +
       'FechaEntrada = ?, FechaPrevista = ?, FechaPrevistaPrueba = ?, ' +
-      'PrecioMetal = ?, Nombre = ? ' +
+      'PrecioMetal = ?, Nombre = ?, PorcentajeDescuento = ?, ' +
+      'TotalDescuento = ? ' +
       'WHERE IdTrabajo = ?'
     log.info(`Updating the work ${work.IdTrabajo}`)
     return this.runAsync(query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
       work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
-      work.PrecioMetal, work.Nombre, work.IdTrabajo
+      work.PrecioMetal, work.Nombre, work.PorcentajeDescuento, work.TotalDescuento, work.IdTrabajo
     ])
   }
 

@@ -55,8 +55,8 @@ export default class InvoiceService extends PersistenceService {
       ')'
     var idInvoice = await this.runAsync(query1, [invoiceDate, invoiceDate, idDentist, invoiceDate])
     for (var value of works) {
-      var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo, PorcentajeDescuento, TotalDescuento) VALUES (?, ?, ?, ?)'
-      await this.runAsync(query2, [idInvoice, value.idTrabajo, value.porcentajeDescuento, value.totalDescuento])
+      var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo) VALUES (?, ?)'
+      await this.runAsync(query2, [idInvoice, value.idTrabajo])
     }
     return idInvoice
   }

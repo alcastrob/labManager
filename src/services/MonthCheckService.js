@@ -18,20 +18,27 @@ export default class MonthCheckService extends PersistenceService {
       '  sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) - ' +
       '  ifnull(sum(t.PrecioMetal), 0) AS SumaFija, ' +
       '  sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '  sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '  sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '  sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '  sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) - ' +
-      '  ifnull(sum(t.PrecioMetal), 0) AS SumaTotalMetal, ' +
-      ' 0 as percentage, ' +
-      ' 0 as SumaDescuento, ' +
+      '    sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '    sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '    sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '    sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) - ' +
+      '    ifnull(sum(t.PrecioMetal), 0) AS SumaTotalMetal, ' +
+      '  CAST((sum(t.TotalDescuento) * 100) AS FLOAT) / ' +
+      '    (sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '     sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '     sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '     sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '     sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) - ' +
+      '     ifnull(sum(t.PrecioMetal), 0)) as percentage, ' +
+      ' sum(t.TotalDescuento) as SumaDescuento, ' +
       ' ifnull(sum(t.PrecioMetal), 0) + ' +
-      ' sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
-      ' sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
-      ' sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
-      ' sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
-      ' sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) -  ' +
-      ' ifnull(sum(t.PrecioMetal), 0) - 0 AS SumaGranTotal ' +
+      '   sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '   sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '   sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '   sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
+      '   sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) -  ' +
+      '   ifnull(sum(t.PrecioMetal), 0) - ' +
+      '   sum(t.TotalDescuento) AS SumaGranTotal ' +
       'FROM Trabajos t ' +
       'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista '
 
@@ -56,13 +63,13 @@ export default class MonthCheckService extends PersistenceService {
       var query = 'SELECT * FROM vTrabajosPorDentista WHERE ' +
         'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
         'AND IdDentista = ' + idDentist
-      log.debug(`getWorksAggregatedByDentist query: ${query}`)
+      log.debug(`getWorksDeaggregatedByDentist query: ${query}`)
       return this.allAsync(query, [])
     } else {
       var query = 'SELECT * FROM vTodosTrabajosPorDentista WHERE ' +
         'FechaTerminacion BETWEEN date("' + year + '-' + sMonth + '-01") AND date("' + year + '-' + sMonth + '-01", "+1 month", "-1 day") ' +
         'AND IdDentista = ' + idDentist
-      log.debug(`getWorksAggregatedByDentist query: ${query}`)
+      log.debug(`getWorksDeaggregatedByDentist query: ${query}`)
       return this.allAsync(query, [])
     }
   }
