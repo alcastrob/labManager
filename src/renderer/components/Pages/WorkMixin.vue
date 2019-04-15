@@ -43,7 +43,9 @@ export default {
 				FechaEntrada: '',
 				FechaPrevista: '',
 				FechaPrevistaPrueba: '',
-				FechaTerminacion: ''
+				FechaTerminacion: '',
+				PorcentajeDescuento: 0,
+				TotalDescuento: 0
 			},
 			workTypes: {},
 			workIndications: [],
@@ -78,7 +80,9 @@ export default {
 			FechaEntrada: {},
 			FechaPrevista: {},
 			FechaPrevistaPrueba: {},
-			FechaTerminacion: {}
+			FechaTerminacion: {},
+			PorcentajeDescuento: { decimal },
+			TotalDescuento: { decimal }
 		},
 		workAdjuncts: {
 			IdTrabajo: {},

@@ -79,7 +79,7 @@
         </div>
       </div>
       <!-- row -->
-      <div class="row" v-if="invoice !== null && invoice !== undefined">
+      <div class="row" v-if="invoice">
         <div class="col-md-12">
           <span>
             Este trabajo está incluido en la factura
@@ -209,7 +209,43 @@
         <!-- col-md-12 -->
       </div>
       <!-- row -->
+      <div class="row mb-4" v-if="isAdmin">
+        <div class="col-md-12 mt-2">
+          <h4>Descuentos</h4>
+        </div>
+        <!-- col-md-12 -->
+        <div class="col-md-4">
+          <label>Porcentaje descuento</label>
+          <percentageInput
+            class="form-control text-right inputInForm"
+            v-model="$v.work.PorcentajeDescuento.$model"
+            @input="updatePercentageDiscount"
+            :disabled="readOnly"
+          ></percentageInput>
+        </div>
+        <!-- col-md-3 -->
+        <div class="col-md-4">
+          <label>Importe descuento</label>
+          <euroInput
+            class="form-control text-right inputInForm"
+            v-model="$v.work.TotalDescuento.$model"
+            @input="updateTotalDiscount"
+            :disabled="readOnly"
+          ></euroInput>
+        </div>
+        <!-- col-md-3 -->
+        <div class="col-md-4">
+          <label>Total trabajo</label>
+          <input type="text" class="form-control text-right" ref="grandTotal" disabled>
+        </div>
+        <!-- col-md-3 -->
+      </div>
+      <!-- row -->
       <div class="row">
+        <div class="col-md-12 mt-2">
+          <h4>Fechas</h4>
+        </div>
+        <!-- col-md-12 -->
         <div class="col-md-3">
           <label for="fEntrada">Fecha entrada</label>
           <input
@@ -359,6 +395,8 @@ import WorkTestService from '../../../services/WorkTestService'
 import WorkAdjuntService from '../../../services/WorkAdjuntService'
 import ConfigFileService from '../../../services/ConfigFileService'
 import workMixin from './WorkMixin'
+import euroInput from '../PageElements/tables/euroInput'
+import percentageInput from '../PageElements/tables/percentageInput'
 import delivery from '../Labels/Delivery'
 import imagesFileUpload from '../PageElements/fileUploads/imagesFileUplodad'
 import conformityModal from '../PageElements/ConformityModal'
@@ -374,7 +412,9 @@ export default {
 	components: {
 		conformityModal,
 		warrantyLabel,
-		imagesFileUpload
+		imagesFileUpload,
+		euroInput,
+		percentageInput
 	},
 	data() {
 		return {
@@ -382,7 +422,11 @@ export default {
 			workTests: [],
 			readOnly: false,
 			invoice: undefined,
-			isAdmin: false
+			isAdmin: false,
+			moneyFormatter: new Intl.NumberFormat('es-ES', {
+				style: 'currency',
+				currency: 'EUR'
+			})
 		}
 	},
 	methods: {
@@ -395,6 +439,8 @@ export default {
 			this.PrecioFinal = 0
 			this.work.FechaEntrada = ''
 			this.work.FechaPrevista = ''
+			this.work.PorcentajeDescuento = 0
+			this.work.TotalDescuento = 0
 			this.workIndications = {}
 			this.$refs.workIndications.cleanComponent()
 			this.workTests = {}
@@ -540,6 +586,14 @@ export default {
 				}
 			}
 		},
+		updatePercentageDiscount() {
+			this.work.TotalDescuento = (this.work.PrecioFinal * this.work.PorcentajeDescuento) / 100
+			this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+		},
+		updateTotalDiscount() {
+			this.work.PorcentajeDescuento = ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
+			this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+		},
 		doValidatorExtraChecks() {
 			this.$refs.dirtys.innerHTML = ''
 			this.$refs.dirtys.innerHTML += `IdDentista: ${this.$v.work.IdDentista.$anyError} | ${
@@ -569,14 +623,16 @@ export default {
 		},
 		getData: async function() {
 			this.work = await this.workService.getWork(this.work.IdTrabajo)
+			log.debug(`work: ${JSON.stringify(this.work)}`)
 			this.readOnly = this.work.FechaTerminacion !== null
 			this.workIndications = await this.workIndicationService.getWorkIndications(this.work.IdTrabajo)
 			this.workAdjuncts = await this.workAdjuntService.getAdjuntsOfWork(this.work.IdTrabajo)
-			if (this.workAdjuncts !== undefined) {
+			if (this.workAdjuncts) {
 				this.showAdjunts(false)
 			}
 			this.workTests = await this.workTestService.getWorkTestsList(this.work.IdTrabajo)
 			this.invoice = await this.invoiceService.getInvoicePerWork(this.work.IdTrabajo)
+			this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
 		}
 	},
 	computed: {
@@ -618,8 +674,8 @@ export default {
 		this.invoiceService = new InvoiceService()
 		this.workIndicationService = new WorkIndicationService()
 		this.workTestService = new WorkTestService()
-    this.workAdjuntService = new WorkAdjuntService()
-    this.configFileService = new ConfigFileService()
+		this.workAdjuntService = new WorkAdjuntService()
+		this.configFileService = new ConfigFileService()
 		this.work.IdTrabajo = parseInt(this.$route.params.id)
 	},
 	mounted() {
@@ -633,5 +689,8 @@ export default {
 .labeStrikethrough,
 .labeStrikethrough:hover {
 	text-decoration: line-through;
+}
+.inputInForm {
+	height: 38px !important;
 }
 </style>

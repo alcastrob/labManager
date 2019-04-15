@@ -3,6 +3,7 @@
     v-model="displayValue"
     @blur="isInputActive = false"
     @focus="isInputActive = true"
+    class="noCornerTextArea"
     ref="textArea"
   ></textarea>
 </template>
