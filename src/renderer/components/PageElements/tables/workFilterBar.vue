@@ -63,8 +63,10 @@ export default {
 	methods: {
 		doFilter() {
 			this.$parent.applyTextFilter(this.filterText)
+			log.debug(`Filter used in table ${this.$parent.$vnode.componentOptions.tag} set to ${this.filterText}.`)
 		},
 		setFilterName(name) {
+			log.debug(`Filter with name used in table ${this.$parent.$vnode.componentOptions.tag} set to ${name}.`)
 			switch (name) {
 				case 'receivedToday':
 					this.$refs.fEntrada.clear()
@@ -115,6 +117,7 @@ export default {
 			this.$refs.tipo.clear()
 			this.$parent.applyTextFilter(this.filterText)
 			this.processFilterChange()
+			log.debug(`Filter used in table ${this.$parent.$vnode.componentOptions.tag} cancelled.`)
 		},
 		processFilterChange() {
 			this.$parent.processFilterChange({

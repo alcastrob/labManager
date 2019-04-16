@@ -155,19 +155,20 @@ export default {
 			if (!this.currentSortDesc) {
 				this.filteredDataset = _.reverse(this.filteredDataset)
 			}
+			log.debug(
+				`Sort criteria in table ${this.$vnode.componentOptions.tag}: ${this.currentSortCriteria}. Sort order: ${
+					this.currentSortDesc
+				}`
+			)
 		},
 
 		// Filter -----------------------------------------------------------------
 		applyTextFilter: function(searchCriteria) {
-			if (
-				searchCriteria !== '' &&
-				searchCriteria !== undefined &&
-				searchCriteria !== null &&
-				this.searchFields.length > 0
-			) {
+			if (searchCriteria && this.searchFields.length > 0) {
 				this.currentSeachCriteria = searchCriteria
 				var lowercaseFilter = searchCriteria.toString().toLowerCase()
 				this.filteredDataset = []
+				log.debug(`Filter used in table ${this.$vnode.componentOptions.tag}: ${searchCriteria}.`)
 
 				for (var i = 0; i !== this.searchFields.length; i++) {
 					var currentSearchField = this.searchFields[i]

@@ -170,7 +170,6 @@ import InvoiceService from '../../../services/InvoiceService'
 import invoiceExtendedTable from '../PageElements/tables/invoiceExtendedTable'
 import _ from 'lodash'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
-import log from 'loglevel'
 
 /* eslint no-undef: "off" */
 
@@ -295,6 +294,10 @@ export default {
 			this.worksEndedPrevious30daysCount = works.Count
 			this.worksEndedPrevious30daysSum = works.Sum
 			this.$refs.invoiceExtendedTable.setFilter(this.$route.query.dentistName)
+			// Setting up the sort order of the invoices table
+			this.$refs.invoiceExtendedTable.currentSortCriteria = 'NumFactura'
+			this.$refs.invoiceExtendedTable.currentSortDesc = false
+			this.$refs.invoiceExtendedTable.sortBy()
 		},
 		loadGraph: async function() {
 			var dataMonths = await this.kpiService.getMonthTotals()

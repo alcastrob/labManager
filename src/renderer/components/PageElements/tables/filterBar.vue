@@ -13,32 +13,36 @@
 
 <script>
 import _ from 'lodash'
+import log from 'loglevel'
+
 export default {
-  name: 'filterBar',
-  data () {
-    return {
-      filterText: ''
-    }
-  },
-  methods: {
-    doFilter () {
-      this.$parent.applyTextFilter(this.filterText)
-      this.resetPagination()
-    },
-    resetFilter () {
-      this.filterText = ''
-      this.$parent.applyTextFilter(this.filterText)
-      this.resetPagination()
-    },
-    resetPagination () {
-      // Try to figure out if the parent component has a pagination control, and if so, reset it to page 1
-      var pagination = _.find(this.$parent.$children, (o) => {
-        return o.$options._componentTag === 'pagination'
-      })
-      if (pagination !== undefined) {
-        pagination.loadPage(1)
-      }
-    }
-  }
+	name: 'filterBar',
+	data() {
+		return {
+			filterText: ''
+		}
+	},
+	methods: {
+		doFilter() {
+			this.$parent.applyTextFilter(this.filterText)
+			this.resetPagination()
+			log.debug(`Filter used in table ${this.$parent.$vnode.componentOptions.tag} set to ${this.filterText}.`)
+		},
+		resetFilter() {
+			this.filterText = ''
+			this.$parent.applyTextFilter(this.filterText)
+			this.resetPagination()
+			log.debug(`Filter used in table ${this.$parent.$vnode.componentOptions.tag} cancelled.`)
+		},
+		resetPagination() {
+			// Try to figure out if the parent component has a pagination control, and if so, reset it to page 1
+			var pagination = _.find(this.$parent.$children, o => {
+				return o.$options._componentTag === 'pagination'
+			})
+			if (pagination !== undefined) {
+				pagination.loadPage(1)
+			}
+		}
+	}
 }
 </script>

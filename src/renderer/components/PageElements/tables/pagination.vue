@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import log from 'loglevel'
 
 export default {
   name: 'pagination',
@@ -42,6 +43,7 @@ export default {
       } else {
         this.$parent.currentPage = page
       }
+      log.debug(`Pagination used in table ${this.$parent.$vnode.componentOptions.tag} set to ${page}.`)
     },
     isCurrentPage (page) {
       return page === this.$parent.currentPage

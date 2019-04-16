@@ -6,19 +6,40 @@
         <input type="text" v-model="filterText" @keyup.enter="doFilter">
         <button class="ml-1 btn btn-secondary" @click="doFilter">Filtrar</button>
         <button class="ml-1 btn btn-outline-secondary" @click="resetFilter">Cancelar filtrado</button>
-        <a href="#" data-toggle="collapse" data-target="#filter-options" class="pl-2 text-info"><i class="fas fa-filter"></i>Otros filtros</a>
+        <a href="#" data-toggle="collapse" data-target="#filter-options" class="pl-2 text-info">
+          <i class="fas fa-filter"></i>Otros filtros
+        </a>
       </div>
       <div id="filter-options" class="collapse mt-2">
-        <option-line id="fFactura" :isMultiple="false" :options="['Hoy', 'Este mes', 'Mes pasado', 'Hace dos meses', 'Hace tres meses', 'Hace seis meses']" description="Fecha factura: " ref="fFactura">
-        </option-line>
+        <option-line
+          id="fFactura"
+          :isMultiple="false"
+          :options="['Hoy', 'Este mes', 'Mes pasado', 'Hace dos meses', 'Hace tres meses', 'Hace seis meses']"
+          description="Fecha factura: "
+          ref="fFactura"
+        ></option-line>
         <div class="row mt-2 mb-4">
           <div class="col-md-6">
             <label for="fInicio">Fecha inicio:</label>
-            <input type="date" class="form-control" id="fInicio" placeholder="dd/mm/aaaa" ref="fInicio" @change="dateChanged">
+            <input
+              type="date"
+              class="form-control"
+              id="fInicio"
+              placeholder="dd/mm/aaaa"
+              ref="fInicio"
+              @change="dateChanged"
+            >
           </div>
           <div class="col-md-6">
             <label for="fFin">Fecha fin:</label>
-            <input type="date" class="form-control" id="fFin" placeholder="dd/mm/aaaa" ref="fFin" @change="dateChanged">
+            <input
+              type="date"
+              class="form-control"
+              id="fFin"
+              placeholder="dd/mm/aaaa"
+              ref="fFin"
+              @change="dateChanged"
+            >
           </div>
         </div>
       </div>
@@ -29,48 +50,51 @@
 <script>
 import optionButton from '../optionButton'
 import optionLine from '../optionLine'
+import log from 'loglevel'
 
 export default {
-  name: 'workFilterBar',
-  components: {
-    optionButton,
-    optionLine
-  },
-  data () {
-    return {
-      filterText: ''
-    }
-  },
-  methods: {
-    doFilter () {
-      this.$parent.applyTextFilter(this.filterText)
-    },
-    setFilter (query) {
-      this.filterText = query
-      this.doFilter()
-    },
-    resetFilter () {
-      this.filterText = ''
-      this.$refs.fInicio.value = ''
-      this.$refs.fFin.value = ''
-      this.$refs.fFactura.clear()
-      this.$parent.applyTextFilter(this.filterText)
-      this.processFilterChange()
-    },
-    processFilterChange (filterData) {
-      this.$refs.fInicio.value = ''
-      this.$refs.fFin.value = ''
-      this.$parent.processFilterChange({
-        fFactura: this.$refs.fFactura.getSelected()
-      })
-    },
-    dateChanged () {
-      this.$refs.fFactura.clear()
-      this.$parent.processFilterChange({
-        fInicio: (this.$refs.fInicio.value === '') ? undefined : this.$refs.fInicio.value,
-        fFin: (this.$refs.fFin.value === '') ? undefined : this.$refs.fFin.value
-      })
-    }
-  }
+	name: 'workFilterBar',
+	components: {
+		optionButton,
+		optionLine
+	},
+	data() {
+		return {
+			filterText: ''
+		}
+	},
+	methods: {
+		doFilter() {
+			this.$parent.applyTextFilter(this.filterText)
+			log.debug(`Filter used in table ${this.$parent.$vnode.componentOptions.tag} set to ${this.filterText}.`)
+		},
+		setFilter(query) {
+			this.filterText = query
+			this.doFilter()
+		},
+		resetFilter() {
+			this.filterText = ''
+			this.$refs.fInicio.value = ''
+			this.$refs.fFin.value = ''
+			this.$refs.fFactura.clear()
+			this.$parent.applyTextFilter(this.filterText)
+			this.processFilterChange()
+			log.debug(`Filter used in table ${this.$parent.$vnode.componentOptions.tag} cancelled.`)
+		},
+		processFilterChange(filterData) {
+			this.$refs.fInicio.value = ''
+			this.$refs.fFin.value = ''
+			this.$parent.processFilterChange({
+				fFactura: this.$refs.fFactura.getSelected()
+			})
+		},
+		dateChanged() {
+			this.$refs.fFactura.clear()
+			this.$parent.processFilterChange({
+				fInicio: this.$refs.fInicio.value === '' ? undefined : this.$refs.fInicio.value,
+				fFin: this.$refs.fFin.value === '' ? undefined : this.$refs.fFin.value
+			})
+		}
+	}
 }
 </script>
