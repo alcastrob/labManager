@@ -378,7 +378,22 @@
         </button>
       </div>
     </b-modal>
-    <!-- <warrantyModal ref="warranty" :work="work"></warrantyModal> -->
+    <b-modal
+      ref="includedInInvoiceModal"
+      title="Trabajo incluido en una factura emitida"
+      hide-footer
+      v-if="invoice"
+    >
+      <div class="modal-body">
+        <label
+          for="labelText"
+        >Este trabajo forma parte de la factura {{invoice.NumFactura}}. Los cambios que se realicen en él alterarán el contenido de dicha factura. ¿Desea continuar?</label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" @click="$refs.includedInInvoiceModal.hide()">Cancelar</button>
+        <button class="btn btn-secondary" @click="save(undefined, true)">Continuar</button>
+      </div>
+    </b-modal>
     <warrantyLabel :workData="work" ref="warrantyLabel" period="TRES" class="visuallyhidden"></warrantyLabel>
     <conformityModal ref="conformity" :work="work"></conformityModal>
     <div ref="labelContainer" class="visuallyhidden"></div>
@@ -452,7 +467,7 @@ export default {
 			this.$v.$reset()
 			this.$forceUpdate()
 		},
-		save: async function(url) {
+		save: async function(url, changeInvoiceConfirmed = false) {
 			this.saveButtonPressed = true
 			this.$v.$touch()
 
@@ -479,6 +494,20 @@ export default {
 				return false
 			}
 
+			if (this.invoice && !changeInvoiceConfirmed) {
+				this.$refs.includedInInvoiceModal.show()
+				return
+			}
+
+			if (this.invoice) {
+				if (!changeInvoiceConfirmed) {
+					this.$refs.includedInInvoiceModal.show()
+					return
+				}
+				// If the work is included in a invoice, the confirmation dialog will still be on screen. We must dismiss it.
+				this.$refs.includedInInvoiceModal.hide()
+			}
+
 			if (this.$refs.workIndications.isDirty) {
 				this.$refs.workIndications.save(this.work.IdTrabajo)
 			}
@@ -497,11 +526,15 @@ export default {
 			}
 			if (this.$v.work.$anyDirty) {
 				await this.workService.updateWork(this.work)
+				if (this.invoice) {
+					// We also update the grand total of the invoice this work is included.
+					await this.invoiceService.updateInvoiceGrandTotal(this.invoice.IdFactura)
+				}
 			}
 			if (this.$refs.workTests.isDirty) {
 				this.$refs.workTests.save(this.work.IdTrabajo)
 			}
-			if (this.workAdjuncts !== undefined && this.$v.workAdjuncts.$anyDirty) {
+			if (this.workAdjuncts && this.$v.workAdjuncts.$anyDirty) {
 				this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
 				if (this.workAdjunctsJustAdded) {
 					this.workAdjuntService.insertAdjuntsOfWork(this.workAdjuncts)
@@ -511,7 +544,7 @@ export default {
 			}
 
 			// Everything went right. Depending how do you reach this function, you'll have tow ways of leaving it
-			if (url !== undefined) {
+			if (url) {
 				// Direct click on the SAVE button. Just get redirected to the URL
 				this.$router.push({
 					path: url
@@ -632,7 +665,7 @@ export default {
 			}
 			this.workTests = await this.workTestService.getWorkTestsList(this.work.IdTrabajo)
 			this.invoice = await this.invoiceService.getInvoicePerWork(this.work.IdTrabajo)
-			this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+			// this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
 		}
 	},
 	computed: {

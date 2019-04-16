@@ -92,6 +92,13 @@ export default class InvoiceService extends PersistenceService {
     return this.getAsync(query, [idWork])
   }
 
+  async updateInvoiceGrandTotal(invoiceId) {
+    var query = 'UPDATE Facturas ' +
+      'SET Total = (SELECT sum(PrecioFinalConDescuento) FROM vFacturasTrabajos WHERE IdFactura = ?) ' +
+      'WHERE IdFactura = ?'
+    return this.runAsync(query, [invoiceId, invoiceId])
+  }
+
   // updateInvoice(invoice) {
   //   var query = 'UPDATE Facturas SET IdDentista = ?, ' +
   //   'Fecha = ?, Total = ? ' +
