@@ -148,17 +148,16 @@ export default {
 		},
 		isPageDirty() {
 			// In order to say if the current page is dirty, first we have to find a component that have 'isError' and 'isDirty' computed values (not bare functions)
-			var page = _.find(this.$parent.$children, e => {
+			var elementsToCheck = this.treeToArray(this.$parent.$children, '$children')
+
+			var pages = _.filter(elementsToCheck, e => {
 				var isError = e.isError !== undefined && {}.toString.call(e.isError) !== '[object Function]'
 				var isDirty = e.isDirty !== undefined && {}.toString.call(e.isDirty) !== '[object Function]'
 				return isError && isDirty
 			})
 			// If exists, get the isDirty computed value. If not, just return false and continue navigating
-			if (page) {
-				return page.isDirty || page.isError
-			} else {
-				return false
-			}
+			var candidatePage = _.find(pages, page => page.isDirty || page.isError)
+			return Boolean(candidatePage)
 		},
 		isPageAutoSave() {
 			var pageIsAutoSave = _.find(this.$parent.$children, e => {
@@ -184,6 +183,16 @@ export default {
 		},
 		getConfig: async function() {
 			this.isAdmin = this.configFileService.configGet('isAdmin')
+		},
+		treeToArray(array, containerProperty) {
+			var result = []
+			for (var element of array) {
+				result.push(element)
+				if (containerProperty in element) {
+					Array.prototype.push.apply(result, this.treeToArray(element[containerProperty], containerProperty))
+				}
+			}
+			return result
 		}
 	},
 	computed: {

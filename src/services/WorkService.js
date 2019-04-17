@@ -65,6 +65,14 @@ export default class WorkService extends PersistenceService {
     ])
   }
 
+  async updateWorkDiscount(workId, percentageDiscount, totalDiscount) {
+    var query = 'UPDATE Trabajos SET PorcentajeDescuento = ?, ' +
+      'TotalDescuento = ? ' +
+      'WHERE IdTrabajo = ?'
+    log.info(`Updating the discounts of work ${workId}`)
+    return this.runAsync(query, [percentageDiscount, totalDiscount, workId])
+  }
+
   // Tested
   async getWorkTypes() {
     var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'

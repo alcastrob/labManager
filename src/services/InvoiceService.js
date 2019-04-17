@@ -99,6 +99,12 @@ export default class InvoiceService extends PersistenceService {
     return this.runAsync(query, [invoiceId, invoiceId])
   }
 
+  async removeWorkFromInvoice(invoiceId, workId) {
+    var query = 'DELETE FROM FacturasTrabajos ' +
+      'WHERE IdFactura = ? AND IdTrabajo = ? '
+    return this.runAsync(query, [invoiceId, workId])
+  }
+
   // updateInvoice(invoice) {
   //   var query = 'UPDATE Facturas SET IdDentista = ?, ' +
   //   'Fecha = ?, Total = ? ' +

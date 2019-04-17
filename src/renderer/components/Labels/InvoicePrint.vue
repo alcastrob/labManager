@@ -38,12 +38,13 @@ export default {
 			pageLogosLoaded: {},
 			instances: [],
 			invoiceId: -1,
-			forPrinter: true
+			forPrinter: true,
+			editing: false
 		}
 	},
 	methods: {
 		loadInvoiceData: async function(invoiceId) {
-			if (invoiceId === undefined || invoiceId === null) {
+			if (!invoiceId) {
 				throw 'Missing required parameter invoiceId on call to print method of InvoicePrint.vue'
 			}
 
@@ -120,10 +121,11 @@ export default {
 			this.renderContent(false)
 			this.realPrint()
 		},
-		show: async function(invoiceId) {
+		show: async function(invoiceId, editing = false) {
 			this.dataReset()
 			this.forPrinter = false
 			await this.loadInvoiceData(invoiceId)
+			this.editing = editing
 			this.renderContent(true)
 		},
 		insertInstance(worksToPrint, indicationsToPrint, currentPage, isLastPage, isInvoice) {
@@ -147,11 +149,15 @@ export default {
 					logo: this.logo,
 					vatNumber: this.vatNumber,
 					footer: this.footer,
-					forPrinter: this.forPrinter
+					forPrinter: this.forPrinter,
+					editing: this.editing
 				}
 			})
 			this.instances.push(instance)
 			instance.$mount()
+			// This is required for isDirty exploration of TopBar component
+			instance.$parent = this
+			this.$children.push(instance)
 			instance.waitLogo(this.waitLogoCallback)
 			this.$refs.container.appendChild(instance.$el)
 		},
