@@ -28,7 +28,7 @@ try {
 		},
 		callOriginal: true
 	})
-	log.setLevel('DEBUG')
+	log.setLevel('INFO')
 	window.onerror = (error, url, line) => {
 		console.log('onerror')
 		log.error(`Application error: ${JSON.stringify(error)}. Url: ${url}. Line: ${line}`)
