@@ -200,7 +200,7 @@ export default {
 			if (masterId !== 0) {
 				_.forEach(this.insertedRows, async row => {
 					row.IdTrabajo = masterId
-					this.workIndicationService.insertWorkIndications(row)
+					await this.workIndicationService.insertWorkIndications(row)
 				})
 				_.forEach(this.deletedRows, async row => this.workIndicationService.deleteWorkIndications(row))
 				_.forEach(this.updatedRows, async row => this.workIndicationService.updateWorkIndications(row))

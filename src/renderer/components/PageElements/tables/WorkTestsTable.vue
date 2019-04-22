@@ -370,9 +370,8 @@ export default {
 			}
 			this.$emit('input', this.data)
 		},
-		save(masterId) {
-			// TODO Verify this method
-			_.forEach(this.insertedRows, async function(row) {
+		save: async function(masterId) {
+			_.forEach(this.insertedRows, async row => {
 				row.IdTrabajo = masterId
 				await this.workTestService.insertWorkTest(row)
 			})
