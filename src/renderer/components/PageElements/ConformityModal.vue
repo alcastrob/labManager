@@ -143,8 +143,9 @@ export default {
 			this.$refs.conformityModal.hide()
 		},
 		getDeclarationOfConformity: async function() {
-			var declaration = await this.conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo)
-			var config = await this.conformityDeclarationService.getConfigValues([
+			const conformityDeclarationService = new ConformityDeclarationService()
+			var declaration = await conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo)
+			var config = await conformityDeclarationService.getConfigValues([
 				'makerNumber',
 				'personInCharge',
 				'companyName',
@@ -176,45 +177,38 @@ export default {
 			}
 			this.$refs.conformityModal.show()
 		},
-		createDeclarationOfConformity: function() {
-			this.conformityDeclarationService
-				.insertConformityDeclaration(
-					{
-						IdTrabajo: this.work.IdTrabajo,
-						Meses: this.warrantyPeriod,
-						Fecha: this.work.FechaTerminacion,
-						ProductoEspecifico: this.specificProduct
-					},
-					_.map(this.batches, 'IdProductoLote')
-				)
-				.then(() => {
-					this.conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo).then(row => {
-						this.print(row)
-						this.hide()
-					})
-				})
+		createDeclarationOfConformity: async function() {
+			const conformityDeclarationService = new ConformityDeclarationService()
+			await conformityDeclarationService.insertConformityDeclaration(
+				{
+					IdTrabajo: this.work.IdTrabajo,
+					Meses: this.warrantyPeriod,
+					Fecha: this.work.FechaTerminacion,
+					ProductoEspecifico: this.specificProduct
+				},
+				_.map(this.batches, 'IdProductoLote')
+			)
+			var row = await conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo)
+			this.print(row)
+			this.hide()
 		},
-		updateDeclarationOfConformity: function() {
+		updateDeclarationOfConformity: async function() {
+			const conformityDeclarationService = new ConformityDeclarationService()
 			if (this.isDirty) {
 				var dec = {
 					IdDeclaracion: this.declarationId,
 					Meses: this.warrantyPeriod,
 					ProductoEspecifico: this.specificProduct
 				}
-				this.conformityDeclarationService
-					.updateConformityDeclaration(dec, _.map(this.batches, 'IdProductoLote'))
-					.then(() => {
-						this.conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo).then(row => {
-							this.print(row)
-							this.hide()
-						})
-					})
+				await conformityDeclarationService.updateConformityDeclaration(dec, _.map(this.batches, 'IdProductoLote'))
+				var row = await conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo)
+				this.print(row)
+				this.hide()
 			} else {
 				// No real updates, just print
-				this.conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo).then(row => {
-					this.print(row)
-					this.hide()
-				})
+				var row = await conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo)
+				this.print(row)
+				this.hide()
 			}
 		},
 		print(conformity) {
@@ -243,9 +237,6 @@ export default {
 				this.batches.push(this.batchQueryResult)
 				this.isDirty = true
 			}
-		},
-		created() {
-			this.conformityDeclarationService = new ConformityDeclarationService()
 		}
 	}
 }

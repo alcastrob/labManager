@@ -93,11 +93,8 @@
             <span>Este trabajo está cerrado, por lo que no se puede editar.</span>
             <br>
             <span>
-              Si, excepcionalmente, desea editarlo (bajo su propia responsabilidad) pulse
-              <a
-                href="#"
-                @click="readOnly=false"
-              >aquí</a>.
+              Si, excepcionalmente, desea editarlo pulse
+              <a href="#" @click="readOnly=false">aquí</a>.
             </span>
           </em>
         </div>
@@ -664,8 +661,10 @@ export default {
 				this.showAdjunts(false)
 			}
 			this.workTests = await this.workTestService.getWorkTestsList(this.work.IdTrabajo)
-			this.invoice = await this.invoiceService.getInvoicePerWork(this.work.IdTrabajo)
-			// this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+			if (this.isAdmin) {
+				this.invoice = await this.invoiceService.getInvoicePerWork(this.work.IdTrabajo)
+				this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+			}
 		}
 	},
 	computed: {
