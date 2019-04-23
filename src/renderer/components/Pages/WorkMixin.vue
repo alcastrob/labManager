@@ -103,10 +103,8 @@ export default {
 			this.$v.$reset()
 		},
 		printLabel: function(label) {
-			var currentLabel
-			if (label === undefined) {
-				currentLabel = this.printedLabel
-			} else {
+			var currentLabel = this.printedLabel
+			if (label) {
 				currentLabel = label
 			}
 			var ComponentClass = this.mapType(currentLabel)

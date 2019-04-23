@@ -8,15 +8,10 @@
       v-model="query"
       autocomplete="off"
       v-on-clickaway="hidePopup"
-      @change="change"
       ref="clinica"
       :class="{'is-invalid': isInvalid}"
       :disabled="$attrs.disabled === true"
     >
-    <!-- @blur="blur" -->
-    <!-- v-on:focus="search" -->
-    <!-- :disabled="$attrs.disabled === true" -->
-
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead">
       <span class="list-group-item clickable" v-on:click="createNew(query)" v-if="canCreate(query)">
         <i class="fas fa-plus-circle mr-1"></i>Crear nuevo/a dentista
@@ -25,7 +20,7 @@
         <span
           class="list-group-item clickable"
           v-on:click="selectDentist(dentist.NombreDentista, dentist.IdDentista)"
-        >{{dentist.NombreDentista}}</span>
+        >{{dentist.NombreDentista}} | {{dentist.IdDentista}}</span>
       </div>
     </div>
   </div>
@@ -35,7 +30,6 @@
 import DentistService from '../../../services/DentistService'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
-import log from 'loglevel'
 
 export default {
 	name: 'dentistSearch',
@@ -58,21 +52,12 @@ export default {
 				this.candidateDentistsFromQuery = await this.dentistService.searchDentistsByName(this.query)
 			} else {
 				this.candidateDentistsFromQuery = []
-				// this.sendChangeEvents(-1)
 			}
 		},
 		selectDentist: function(name, id) {
 			this.query = name
 			this.resultsVisible = false
 			this.sendChangeEvents(id)
-		},
-		change: async function(event) {
-			var candidates = await this.dentistService.searchDentistByExactName(this.query)
-			if (candidates.length !== 1) {
-				this.sendChangeEvents(0)
-			} else if (candidates[0].IdDentista !== this.selectedDentistId) {
-				this.sendChangeEvents(candidates[0].IdDentista)
-			}
 		},
 		sendChangeEvents(newId) {
 			if (this.selectedDentistId !== newId) {
@@ -109,11 +94,11 @@ export default {
 					this.query = ''
 				} else {
 					var dentistDetail = await this.dentistService.getDentist(newVal)
-					if (dentistDetail !== undefined) {
+					if (dentistDetail) {
 						this.selectedDentistId = dentistDetail.IdDentista
 						this.query = dentistDetail.NombreDentista
-						this.hidePopup()
 					}
+					this.hidePopup()
 				}
 			})
 		}

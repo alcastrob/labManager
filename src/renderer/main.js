@@ -6,7 +6,9 @@ import store from './store'
 import BootstrapVue from 'bootstrap-vue'
 import Vuelidate from 'vuelidate'
 import log from 'loglevel'
-import { remoteLog } from '../main/log-helper'
+import {
+	remoteLog
+} from '../main/log-helper'
 
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
@@ -14,8 +16,8 @@ Vue.use(Vuelidate)
 try {
 	if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 	Vue.http = Vue.prototype.$http = axios
-	Vue.config.productionTip = false
-	Vue.config.errorHandler = function(err, vm, info) {
+	Vue.config.productionTip = true
+	Vue.config.errorHandler = function (err, vm, info) {
 		log.error('[Global Error Handler]: Error in ' + info + ': ' + err)
 	}
 
@@ -30,8 +32,12 @@ try {
 	})
 	log.setLevel('INFO')
 	window.onerror = (error, url, line) => {
-		console.log('onerror')
+		debugger
 		log.error(`Application error: ${JSON.stringify(error)}. Url: ${url}. Line: ${line}`)
+	}
+
+	Vue.config.errorHandler = error => {
+		log.error(`Application error: ${error.message}. Call stack: ${error.stack}`)
 	}
 
 	/* eslint-disable no-new */

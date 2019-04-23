@@ -70,7 +70,7 @@
               >Es necesario especificar un tipo de trabajo.</small>
             </div>
             <!-- col-md-6 -->
-            <div class="col-md-2">
+            <div class="col-md-3">
               <label for="precioMetal">Precio metal</label>
               <input
                 type="text"
@@ -479,8 +479,8 @@ export default {
 		}
 	},
 	created() {
-    this.workService = new WorkService()
-    this.workAdjuntService = new WorkAdjuntService()
+		this.workService = new WorkService()
+		this.workAdjuntService = new WorkAdjuntService()
 	},
 	mounted() {
 		this.$root.$on('topbar:save', () => {

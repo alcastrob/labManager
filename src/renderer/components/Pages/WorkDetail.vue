@@ -110,7 +110,7 @@
                 v-model="$v.work.IdDentista.$model"
                 :isInvalid="$v.work.IdDentista.$error && saveButtonPressed"
                 :disabled="readOnly"
-                @change="$refs.paciente.focus()"
+                @change="updateDentist()"
               ></dentist-search>
               <small
                 class="text-danger"
@@ -152,7 +152,7 @@
               >Es necesario especificar un tipo de trabajo.</small>
             </div>
             <!-- col-md-6 -->
-            <div class="col-md-2">
+            <div class="col-md-3">
               <label for="precioMetal">Precio metal</label>
               <input
                 type="text"
@@ -200,6 +200,7 @@
             v-model="workIndications"
             ref="workIndications"
             id="workIndications"
+            @change="indicationsTotalChanged"
             :disabled="readOnly"
           ></workIndicationsTable>
         </div>
@@ -616,13 +617,24 @@ export default {
 				}
 			}
 		},
+		indicationsTotalChanged(newTotal) {
+			this.work.PrecioFinal = newTotal
+			this.calculateGrandTotal()
+		},
 		updatePercentageDiscount() {
 			this.work.TotalDescuento = (this.work.PrecioFinal * this.work.PorcentajeDescuento) / 100
-			this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+			this.calculateGrandTotal()
 		},
 		updateTotalDiscount() {
 			this.work.PorcentajeDescuento = ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
+			this.calculateGrandTotal()
+		},
+		calculateGrandTotal() {
 			this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+		},
+		updateDentist() {
+			this.work.NombreDentista = this.$refs.clinica.query
+			this.$refs.paciente.focus()
 		},
 		doValidatorExtraChecks() {
 			this.$refs.dirtys.innerHTML = ''

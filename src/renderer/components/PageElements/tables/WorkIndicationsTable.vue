@@ -222,11 +222,12 @@ export default {
 					}
 				})
 				this.sumError = false
+				this.$emit('change', sum)
 				return 'Total: ' + this.moneyFormatter.format(sum)
 			} catch (err) {
-				log.error('Error en los datos a sumar')
+				log.info('Datos incorrectos a sumar en la tabla de indicaciones')
 				this.sumError = true
-				return 'Error en los datos a sumar'
+				return 'Datos incorrectos a sumar en la tabla de indicaciones'
 			}
 		},
 		updatePrice(event, id) {
