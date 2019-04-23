@@ -630,7 +630,9 @@ export default {
 			this.calculateGrandTotal()
 		},
 		calculateGrandTotal() {
-			this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+			if (this.isAdmin) {
+				this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+			}
 		},
 		updateDentist() {
 			this.work.NombreDentista = this.$refs.clinica.query
