@@ -15,6 +15,9 @@ npm run dev
 # build electron application for production
 npm run build
 
+# build better-sqlite3 dependencie
+node_modules/.bin/electron-rebuild -f -w better-sqlite3
+
 # run unit & end-to-end tests
 npm test
 

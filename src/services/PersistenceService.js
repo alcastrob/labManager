@@ -4,6 +4,7 @@
 import ConfigFileService from './ConfigFileService'
 import log from 'loglevel'
 import _ from 'lodash'
+import Database from 'better-sqlite3'
 
 export default class PersistenceService {
   constructor() {
@@ -15,8 +16,12 @@ export default class PersistenceService {
     try {
       var dbFile = this.configFileService.configGet('dataFile')
       // eslint-disable-next-line space-unary-ops
-      this.db = new(require('sqlite3').verbose()).Database(dbFile)
-      this.db.configure('busyTimeout', 5000)
+      // this.db = new(require('sqlite3').verbose()).Database(dbFile)
+      // this.db.configure('busyTimeout', 5000)
+      this.db = new Database(dbFile, {
+        timeout: 8000,
+        verbose: console.log
+      })
       var x = await this.getConfigValue('companyName')
       if (!x) {
         // Looks not to be a good sqlite database. Reject it
@@ -25,13 +30,14 @@ export default class PersistenceService {
       }
     } catch (err) {
       // Looks not to be a good sqlite database. Reject it
-      log.error(`${this.configFileService.configGet('dataFile')} is not a good sqlite file`)
+      log.error(JSON.stringify(err))
+      log.warn(`${this.configFileService.configGet('dataFile')} is not a good sqlite file`)
       return undefined
     }
-    // eslint-disable-next-line no-useless-escape
     require('electron').ipcRenderer.send(
       'file:opened',
-      this.db.filename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '')
+      // this.db.filename.replace(/^.*[\\/]/, '').replace(/\.[^/.]+$/, '')
+      dbFile.replace(/^.*[\\/]/, '').replace(/\.[^/.]+$/, '')
     )
     return this.db
   }
@@ -41,7 +47,6 @@ export default class PersistenceService {
     var query = 'SELECT Valor FROM Configuracion WHERE clave = ?'
     var x = await this.getAsync(query, [configKey])
     log.debug('Retreived the shared config values stored in the DB.')
-    // log.debug(`Config values: ${JSON.stringify(x)}`)
     return x.valor
   }
 
@@ -110,7 +115,7 @@ export default class PersistenceService {
   }
 
   // Runs the SQL query with the specified parameters and returns the first result row afterwards
-  async getAsync(sql, params) {
+  async getAsync2(sql, params) {
     if (!this.db) {
       await this.loadDbFile()
     }
@@ -129,8 +134,19 @@ export default class PersistenceService {
     })
   }
 
+  async getAsync(sql, params) {
+    if (!this.db) {
+      await this.loadDbFile()
+    }
+    try {
+      return this.db.prepare(sql).get(params)
+    } catch (err) {
+      log.error(`SQL GetOne Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
+    }
+  }
+
   // Runs the SQL query with the specified parameters and returns all result rows afterwards.
-  async allAsync(sql, params) {
+  async allAsync2(sql, params) {
     if (!this.db) {
       await this.loadDbFile()
     }
@@ -148,8 +164,23 @@ export default class PersistenceService {
     })
   }
 
+  async allAsync(sql, params) {
+    if (!this.db) {
+      await this.loadDbFile()
+    }
+    let returnedValue
+    try {
+      const statement = this.db.prepare(sql)
+      returnedValue = statement.all(params)
+      // return this.db.prepare(sql).all(params)
+      return returnedValue
+    } catch (err) {
+      log.error(`SQL GetAll Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
+    }
+  }
+
   // Runs the SQL query with the specified parameters. It does not retrieve any result data.
-  async runAsync(sql, params) {
+  async runAsync2(sql, params) {
     if (!this.db) {
       await this.loadDbFile()
     }
@@ -165,6 +196,18 @@ export default class PersistenceService {
       })
     })
   }
+
+  async runAsync(sql, params) {
+    if (!this.db) {
+      await this.loadDbFile()
+    }
+    try {
+      this.db.prepare(sql).run(params)
+    } catch (err) {
+      log.error(`SQL Run Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
+    }
+  }
+
   // function createTable() {
   //   db.run('CREATE TABLE TipoTrabajos (' +
   //     '    IdTipoTrabajo INTEGER PRIMARY KEY AUTOINCREMENT,' +
