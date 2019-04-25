@@ -132,7 +132,10 @@ export default class PersistenceService {
       await this.loadDbFile()
     }
     try {
-      this.db.prepare(sql).run(params)
+      var data = this.db.prepare(sql).run(params)
+      if (data) {
+        return data.lastInsertRowid
+      }
     } catch (err) {
       log.error(`SQL Run Error. Query: ${sql} | Params: ${params} | Error: ${err.stack}`)
     }

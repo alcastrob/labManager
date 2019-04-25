@@ -20,7 +20,7 @@
         <span
           class="list-group-item clickable"
           v-on:click="selectDentist(dentist.NombreDentista, dentist.IdDentista)"
-        >{{dentist.NombreDentista}} | {{dentist.IdDentista}}</span>
+        >{{dentist.NombreDentista}}</span>
       </div>
     </div>
   </div>
