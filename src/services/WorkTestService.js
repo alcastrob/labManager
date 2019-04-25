@@ -8,17 +8,13 @@ export default class WorkTestService extends PersistenceService {
   async getWorkTestsList(workId) {
     var query = 'SELECT * FROM vPruebas ' +
       'WHERE IdTrabajo = ?'
-    return this.allAsync(query, [workId]) // .then((rows) => {
-    //   return rows
-    // })
+    return this.allAsync(query, [workId])
   }
 
   // Tested
   async getDeliveryShifts() {
     var query = 'SELECT IdTurno, Descripcion FROM Turnos'
-    return this.allAsync(query, []).then((rows) => {
-      return rows
-    })
+    return this.allAsync(query, [])
   }
 
   // Tested
@@ -27,8 +23,8 @@ export default class WorkTestService extends PersistenceService {
       'FechaEntrada, Comentario, IdTurnoFechaSalida, IdTurnoFechaEntrada) ' +
       'VALUES (?, ?, ?, ?, ?, ?, ?)'
     return this.runAsync(query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
-      workTest.FechaEntrada, workTest.Comentario, workTest.IdTurnoFechaSalida,
-      workTest.IdTurnoFechaEntrada
+      workTest.FechaEntrada, workTest.Comentario, workTest.IdTurnoFechaSalida ? workTest.IdTurnoFechaSalida : null,
+      workTest.IdTurnoFechaEntrada ? workTest.IdTurnoFechaEntrada : null
     ])
   }
 
@@ -39,8 +35,8 @@ export default class WorkTestService extends PersistenceService {
       'IdTurnoFechaEntrada = ? ' +
       'WHERE IdPrueba = ?'
     return this.runAsync(query, [workTest.IdTrabajo, workTest.Descripcion, workTest.FechaSalida,
-      workTest.FechaEntrada, workTest.Comentario, workTest.IdTurnoFechaSalida,
-      workTest.IdTurnoFechaEntrada, workTest.IdPrueba
+      workTest.FechaEntrada, workTest.Comentario, workTest.IdTurnoFechaSalida ? workTest.IdTurnoFechaSalida : null,
+      workTest.IdTurnoFechaEntrada ? workTest.IdTurnoFechaEntrada : null, workTest.IdPrueba
     ])
   }
 
