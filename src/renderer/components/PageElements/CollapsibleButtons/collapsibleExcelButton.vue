@@ -75,6 +75,16 @@ export default {
 			})
 			var x = instance.getExportData()
 			var exportData = x[Object.keys(x)[0]]['xlsx']
+			// We parse all the exported data in order to ensure that numeric values are exported to excel as numbers
+			const regex = /^-?\d*[.\d]+$/
+			for (var row of exportData.data) {
+				for (var cell of row) {
+					if (regex.exec(cell.v) !== null) {
+						cell.t = 'n'
+					}
+				}
+			}
+
 			instance.export2file(
 				exportData.data,
 				exportData.mimeType,

@@ -37,7 +37,7 @@
                 <input
                   type="checkbox"
                   v-if="isButton(column.dataField) && !isExporting"
-                  @change="forceSomeWorksChechedBeforCheckingTheDentist($event, dentist.IdDentista)"
+                  @change="forceSomeWorksChechedBeforeCheckingTheDentist($event, dentist.IdDentista)"
                   :id="'chkDentist-' + dentist.IdDentista"
                   tabindex="-1"
                 >
@@ -410,7 +410,7 @@ export default {
 		},
 
 		// Updates and manipulation of the UI---------
-		forceSomeWorksChechedBeforCheckingTheDentist(event, idDentist) {
+		forceSomeWorksChechedBeforeCheckingTheDentist(event, idDentist) {
 			this.selectedDentist = idDentist
 			this.$forceUpdate()
 			if (!this.isAnyWorkOfDentistChecked(idDentist)) {
@@ -517,7 +517,7 @@ export default {
 				}
 				return dentistName
 			} else {
-				return dentist[column.dataField].replace(/(\d*).(\d+)/g, '$1,$2')
+				return dentist[column.dataField]
 			}
 		},
 

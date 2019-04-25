@@ -15,12 +15,8 @@ export default class PersistenceService {
   async loadDbFile() {
     try {
       var dbFile = this.configFileService.configGet('dataFile')
-      // eslint-disable-next-line space-unary-ops
-      // this.db = new(require('sqlite3').verbose()).Database(dbFile)
-      // this.db.configure('busyTimeout', 5000)
       this.db = new Database(dbFile, {
-        timeout: 8000,
-        verbose: console.log
+        timeout: 8000
       })
       var x = await this.getConfigValue('companyName')
       if (!x) {
@@ -30,15 +26,11 @@ export default class PersistenceService {
       }
     } catch (err) {
       // Looks not to be a good sqlite database. Reject it
-      log.error(JSON.stringify(err))
+      log.error(`Error loading the database file: ${JSON.stringify(err)}`)
       log.warn(`${this.configFileService.configGet('dataFile')} is not a good sqlite file`)
       return undefined
     }
-    require('electron').ipcRenderer.send(
-      'file:opened',
-      // this.db.filename.replace(/^.*[\\/]/, '').replace(/\.[^/.]+$/, '')
-      dbFile.replace(/^.*[\\/]/, '').replace(/\.[^/.]+$/, '')
-    )
+    require('electron').ipcRenderer.send('file:opened', dbFile.replace(/^.*[\\/]/, '').replace(/\.[^/.]+$/, ''))
     return this.db
   }
 
@@ -110,30 +102,7 @@ export default class PersistenceService {
     }
   }
 
-  async delay(milis) {
-    return new Promise(resolve => setTimeout(resolve, milis))
-  }
-
   // Runs the SQL query with the specified parameters and returns the first result row afterwards
-  async getAsync2(sql, params) {
-    if (!this.db) {
-      await this.loadDbFile()
-    }
-
-    return new Promise((resolve, reject) => {
-      this.db.get(sql, params, function (err, row) {
-        if (err) {
-          log.error(`SQL GetOne Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
-          reject(err)
-        } else {
-          // log.debug(`SQL GetOne. Query: ${sql} | Params: ${params} | Result: ${JSON.stringify(row)}`)
-          log.debug(`SQL GetOne. Query: ${sql} | Params: ${params}`)
-          resolve(row)
-        }
-      })
-    })
-  }
-
   async getAsync(sql, params) {
     if (!this.db) {
       await this.loadDbFile()
@@ -141,62 +110,23 @@ export default class PersistenceService {
     try {
       return this.db.prepare(sql).get(params)
     } catch (err) {
-      log.error(`SQL GetOne Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
+      log.error(`SQL GetOne Error. Query: ${sql} | Params: ${params} | Error: ${err.stack}`)
     }
   }
 
   // Runs the SQL query with the specified parameters and returns all result rows afterwards.
-  async allAsync2(sql, params) {
-    if (!this.db) {
-      await this.loadDbFile()
-    }
-    return new Promise((resolve, reject) => {
-      this.db.all(sql, params, function (err, rows) {
-        if (err) {
-          log.error(`SQL GetAll Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
-          reject(err)
-        } else {
-          // log.debug(`SQL GetAll. Query: ${sql} | Params: ${params} | Results: ${JSON.stringify(rows)}`)
-          log.debug(`SQL GetAll. Query: ${sql} | Params: ${params}`)
-          resolve(rows)
-        }
-      })
-    })
-  }
-
   async allAsync(sql, params) {
     if (!this.db) {
       await this.loadDbFile()
     }
-    let returnedValue
     try {
-      const statement = this.db.prepare(sql)
-      returnedValue = statement.all(params)
-      // return this.db.prepare(sql).all(params)
-      return returnedValue
+      return this.db.prepare(sql).all(params)
     } catch (err) {
-      log.error(`SQL GetAll Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
+      log.error(`SQL GetAll Error. Query: ${sql} | Params: ${params} | Error: ${err.stack}`)
     }
   }
 
   // Runs the SQL query with the specified parameters. It does not retrieve any result data.
-  async runAsync2(sql, params) {
-    if (!this.db) {
-      await this.loadDbFile()
-    }
-    return new Promise((resolve, reject) => {
-      this.db.run(sql, params, function (err, row) {
-        if (err) {
-          log.error(`SQL Run Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
-          reject(err)
-        } else {
-          log.debug(`SQL Run. Query: ${sql} | Params: ${params}`)
-          resolve(this.lastID)
-        }
-      })
-    })
-  }
-
   async runAsync(sql, params) {
     if (!this.db) {
       await this.loadDbFile()
@@ -204,7 +134,7 @@ export default class PersistenceService {
     try {
       this.db.prepare(sql).run(params)
     } catch (err) {
-      log.error(`SQL Run Error. Query: ${sql} | Params: ${params} | Error: ${JSON.stringify(err)}`)
+      log.error(`SQL Run Error. Query: ${sql} | Params: ${params} | Error: ${err.stack}`)
     }
   }
 

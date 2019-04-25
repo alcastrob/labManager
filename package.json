@@ -82,7 +82,6 @@
     "mime-types": "^2.1.21",
     "moment": "^2.22.2",
     "popper.js": "^1.14.6",
-    "sqlite3": "^4.0.4",
     "tableexport": "^5.2.0",
     "vue": "^2.5.16",
     "vue-clickaway": "^2.2.2",

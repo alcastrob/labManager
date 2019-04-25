@@ -55,14 +55,17 @@ export default {
 			if (formatter === 'date' && row) {
 				return moment(row).format('DD/MM/YYYY')
 			}
-			if (formatter === 'money' && !this.isExporting) {
+			if (this.isExporting) {
+				return row
+			}
+			if (formatter === 'money') {
 				if (row) {
 					return this.moneyFormatter.format(row)
 				} else {
 					return this.moneyFormatter.format(0)
 				}
 			}
-			if (formatter === 'percentage' && !this.isExporting) {
+			if (formatter === 'percentage') {
 				if (row) {
 					return parseFloat(row).toFixed(2) + ' %'
 				} else {
