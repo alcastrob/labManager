@@ -88,14 +88,6 @@ export default {
 	},
 	mounted() {
 		this.$refs.producto.focus()
-		this.$watch('value', function(newVal, oldVal) {
-			this.productBatchService.getProduct(newVal).then(dentistDetail => {
-				if (dentistDetail !== undefined) {
-					this.query = dentistDetail.NombreDentista
-					this.hidePopup()
-				}
-			})
-		})
 	}
 }
 </script>

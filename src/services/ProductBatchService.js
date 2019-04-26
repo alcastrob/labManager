@@ -8,25 +8,19 @@ export default class ProductBatchService extends PersistenceService {
   // Tested
   async searchProductsByName(productName) {
     var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion LIKE ? AND Activo = true'
-    return this.allAsync(query, ['%' + productName + '%']).then((rows) => {
-      return rows
-    })
+    return this.allAsync(query, ['%' + productName + '%'])
   }
 
   // Tested
   async searchProductByExactName(productName) {
     var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion = ? AND Activo = true'
-    return this.allAsync(query, ['%' + productName + '%']).then((rows) => {
-      return rows
-    })
+    return this.allAsync(query, ['%' + productName + '%'])
   }
 
   // Tested
   async getProduct(productId) {
     var query = 'SELECT * FROM ProductosLotes WHERE IdProductoLote = ?'
-    return this.getAsync(query, [productId]).then((row) => {
-      return row
-    })
+    return this.getAsync(query, [productId])
   }
 
   // Tested
