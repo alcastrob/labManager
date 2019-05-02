@@ -13,8 +13,6 @@
 </template>
 
 <script>
-import log from 'loglevel'
-
 export default {
 	name: 'myIconCard',
 	props: {

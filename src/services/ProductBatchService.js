@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-expressions
 'use strict'
 
-import _ from 'lodash'
 import PersistenceService from './PersistenceService'
 
 export default class ProductBatchService extends PersistenceService {

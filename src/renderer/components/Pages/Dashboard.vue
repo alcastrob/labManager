@@ -166,7 +166,6 @@ import _ from 'lodash'
 import moment from 'moment'
 // eslint-disable-next-line
 import bModal from 'bootstrap-vue'
-import log from 'loglevel'
 
 export default {
 	name: 'dashboard',
@@ -267,8 +266,8 @@ export default {
 		}
 	},
 	created() {
-    this.dashboardService = new DashboardService()
-    this.workService = new WorkService()
+		this.dashboardService = new DashboardService()
+		this.workService = new WorkService()
 		this.workTestService = new WorkTestService()
 	},
 	mounted() {

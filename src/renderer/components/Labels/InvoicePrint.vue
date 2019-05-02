@@ -70,6 +70,19 @@ export default {
 			var worksToPrint = []
 			var indicationsToPrint = []
 
+			// Do some calculations related with discounts.
+			var appliedDiscount = _.sumBy(this.invoiceWorks, work => {
+				return work.TotalDescuento
+			})
+			var pfcd = _.sumBy(this.invoiceWorks, work => {
+				return work.PrecioFinalConDescuento
+			})
+			var psd = _.sumBy(this.invoiceWorks, work => {
+				return work.PrecioSinDescuento
+			})
+			var appliedPercentageDiscount = (100 * (1 - pfcd / psd)).toFixed(2)
+
+			debugger
 			for (var currentWork of this.invoiceWorks) {
 				if (this.forPrinter) {
 					var toAdd = 2 + this.indications[currentWork.IdTrabajo].length
@@ -78,7 +91,15 @@ export default {
 						indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
 						currentPageLines += toAdd
 					} else {
-						this.insertInstance(worksToPrint, indicationsToPrint, currentPage, false, isInvoice)
+						this.insertInstance(
+							worksToPrint,
+							indicationsToPrint,
+							currentPage,
+							false,
+							isInvoice,
+							appliedDiscount,
+							appliedPercentageDiscount
+						)
 						// Now we reset the arrays and include the current work in the next page
 						currentPage++
 						worksToPrint = [currentWork]
@@ -94,7 +115,15 @@ export default {
 
 			if (indicationsToPrint.length !== 0) {
 				// We have something to print on the last page
-				this.insertInstance(worksToPrint, indicationsToPrint, currentPage, true, isInvoice)
+				this.insertInstance(
+					worksToPrint,
+					indicationsToPrint,
+					currentPage,
+					true,
+					isInvoice,
+					appliedDiscount,
+					appliedPercentageDiscount
+				)
 			}
 		},
 		print: async function(invoiceId) {
@@ -128,7 +157,15 @@ export default {
 			this.editing = editing
 			this.renderContent(true)
 		},
-		insertInstance(worksToPrint, indicationsToPrint, currentPage, isLastPage, isInvoice) {
+		insertInstance(
+			worksToPrint,
+			indicationsToPrint,
+			currentPage,
+			isLastPage,
+			isInvoice,
+			appliedDiscount = 0,
+			appliedPercentageDiscount = 0
+		) {
 			var ComponentClass
 			if (isInvoice) {
 				ComponentClass = Vue.extend(invoicePage)
@@ -136,6 +173,7 @@ export default {
 				ComponentClass = Vue.extend(reportPage)
 			}
 			this.pageLogosLoaded[currentPage] = false
+
 			var instance = new ComponentClass({
 				propsData: {
 					invoice: this.invoice,
@@ -150,7 +188,9 @@ export default {
 					vatNumber: this.vatNumber,
 					footer: this.footer,
 					forPrinter: this.forPrinter,
-					editing: this.editing
+					editing: this.editing,
+					appliedDiscount: appliedDiscount,
+					appliedPercentageDiscount: appliedPercentageDiscount
 				}
 			})
 			this.instances.push(instance)
