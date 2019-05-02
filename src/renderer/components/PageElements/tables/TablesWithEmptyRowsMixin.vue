@@ -16,16 +16,10 @@ export default {
 	},
 	methods: {
 		isNotANumber(data) {
-			if (this.isEmpty(data)) {
+			if (!data) {
 				return true
 			}
 			return isNaN(parseFloat(data))
-		},
-		isEmpty(value) {
-			return value === null || value === undefined || value === ''
-		},
-		isNotEmpty(value) {
-			return !this.isEmpty(value)
 		},
 		isDirty() {
 			return this.insertedRows.length !== 0 || this.updatedRows.length !== 0 || this.deletedRows.length !== 0

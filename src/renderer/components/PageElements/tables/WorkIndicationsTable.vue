@@ -4,10 +4,10 @@
       <table class="table table-bordered table-responsive-xs table-striped">
         <tr>
           <th style="width: 4%;"></th>
-          <!-- <th class="text-left" style="">Cantidad</th> -->
+          <th class="text-left" style>Cantidad</th>
           <th class="text-left" style="width: 50%;">Descripción</th>
-          <!-- <th class="text-left" style="">Notas</th>
-          <th class="text-left" style="">Descuento</th>-->
+          <th class="text-left" style>Notas</th>
+          <th class="text-left" style>Descuento</th>
           <th style="width: 16%;" class="text-right">Precio</th>
         </tr>
         <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
@@ -18,9 +18,14 @@
               v-if="$attrs.disabled !== true"
             ></i>
           </td>
-          <!-- <td class="noMargins">
-            <input type="text" class="inputInTd">
-          </td>-->
+          <td class="noMargins">
+            <input
+              type="text"
+              v-model="indication.Cantidad"
+              class="inputInTd text-right"
+              :class="{'bg-danger text-white animated flash': isNotANumber(indication.Cantidad)}"
+            >
+          </td>
           <td class="noMargins">
             <input
               type="text"
@@ -31,12 +36,12 @@
               :disabled="$attrs.disabled === true"
             >
           </td>
-          <!-- <td class="noMargins">
-            <input type="text" class="inputInTd">
+          <td class="noMargins">
+            <input type="text" class="inputInTd" v-model="indication.Notas">
           </td>
           <td class="noMargins">
-            <input type="text" class="inputInTd">
-          </td>-->
+            <input type="text" class="inputInTd text-right" v-model="indication.Descuento">
+          </td>
           <td class="noMargins">
             <input
               type="text"
@@ -53,9 +58,9 @@
         <!-- The empty row for new values -->
         <tr v-if="$attrs.disabled !== true">
           <td class="pt-3-half"></td>
-          <!-- <td class="noMargins">
-            <input type="text" class="inputInTd">
-          </td>-->
+          <td class="noMargins">
+            <input type="text" class="inputInTd text-right" v-model="$v.newRow.cantidad.$model">
+          </td>
           <td class="noMargins">
             <input
               type="text"
@@ -65,12 +70,12 @@
               :class="{'bg-danger text-white animated flash': $v.newRow.descripcion.$error && !allRowEmpty}"
             >
           </td>
-          <!-- <td class="noMargins">
-            <input type="text" class="inputInTd">
+          <td class="noMargins">
+            <input type="text" class="inputInTd" v-model="$v.newRow.notas.$model">
           </td>
           <td class="noMargins">
-            <input type="text" class="inputInTd">
-          </td>-->
+            <input type="text" class="inputInTd text-right" v-model="$v.newRow.descuento.$model">
+          </td>
           <td class="noMargins">
             <input
               type="text"
@@ -128,9 +133,19 @@ export default {
 	},
 	validations: {
 		newRow: {
+			cantidad: {
+				required,
+				minLength: minLength(1)
+			},
 			descripcion: {
 				required,
 				minLength: minLength(1)
+			},
+			notas: {
+				minLength: minLength(0)
+			},
+			descuento: {
+				decimal
 			},
 			precio: {
 				required,
@@ -177,13 +192,13 @@ export default {
 		trackChanges(event, rowId, field) {
 			// Let's start looking if the changed row is already on the inserted list
 			var temp = _.find(this.insertedRows, ['IdTrabajoDetalle', rowId])
-			if (this.isNotEmpty(temp)) {
+			if (temp) {
 				// Just update the insert with the new value. No more action required.
 				temp[field] = event.currentTarget.value
 			} else {
 				// OK, so we have to update. But maybe this field was already updated. Let's check.
 				temp = _.find(this.updatedRows, ['IdTrabajoDetalle', rowId])
-				if (this.isNotEmpty(temp)) {
+				if (temp) {
 					// The row was already updated. Make a cumulative update
 					var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
 					temp.Precio = original.Precio
@@ -232,7 +247,7 @@ export default {
 		},
 		updatePrice(event, id) {
 			var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
-			if (this.isEmpty(event.srcElement.value)) {
+			if (event.srcElement.value) {
 				elementInArray.Precio = 0
 			} else {
 				elementInArray.Precio = event.srcElement.value
