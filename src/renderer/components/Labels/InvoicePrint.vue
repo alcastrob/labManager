@@ -80,9 +80,8 @@ export default {
 			var psd = _.sumBy(this.invoiceWorks, work => {
 				return work.PrecioSinDescuento
 			})
-			var appliedPercentageDiscount = (100 * (1 - pfcd / psd)).toFixed(2)
+			var appliedPercentageDiscount = 100 * (1 - pfcd / psd)
 
-			debugger
 			for (var currentWork of this.invoiceWorks) {
 				if (this.forPrinter) {
 					var toAdd = 2 + this.indications[currentWork.IdTrabajo].length

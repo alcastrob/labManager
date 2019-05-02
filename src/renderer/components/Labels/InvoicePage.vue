@@ -94,7 +94,7 @@
             <h4>Detalle de los descuentos aplicados</h4>
             <div
               class="mb-4 font-weight-bold text-right"
-            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount}}% sobre total)</div>
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
           </div>
           <div class="text-right font-italic" v-else>...suma y sigue.</div>
         </div>
@@ -182,35 +182,9 @@
           >Total: {{moneyFormatter.format(invoice.Total)}}</div>
           <div v-if="!editing">
             <h4>Detalle de los descuentos aplicados</h4>
-            <!-- <div class="col-sm-10" style="display:block; margin: auto; width:80%;"> -->
-            <!-- <table class="table table-invoice" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th class="text-left" style="width: 40%;"></th>
-                    <th class="text-right" style="width: 20%;">Base Imponible</th>
-                    <th class="text-right" style="width: 20%;">% Dto.</th>
-                    <th class="text-right" style="width: 20%;">Total Dto.</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <template v-for="work in works">
-                    <tr
-                      v-bind:key="work.IdTrabajo"
-                      class="pagebreak"
-                      v-if="work.TotalDescuento !== 0"
-                    >
-                      <td class="text-left">Nº Trabajo: {{work.IdTrabajo}}</td>
-                      <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
-                      <td class="text-right">{{work.PorcentajeDescuento}} %</td>
-                      <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
-                    </tr>
-                  </template>
-                </tbody>
-            </table>-->
             <div
               class="mb-4 font-weight-bold text-right"
-            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount}}% sobre total)</div>
-            <!-- </div> -->
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
           </div>
         </div>
         <!-- end forScreen -->
