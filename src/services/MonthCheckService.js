@@ -77,6 +77,6 @@ export default class MonthCheckService extends PersistenceService {
   // Tested
   async setCheckToWork(idTrabajo, check) {
     var query = 'INSERT OR REPLACE INTO TrabajosChequeados (IdTrabajo, Chequeado) VALUES (?, ?)'
-    return this.runAsync(query, [idTrabajo, check])
+    return this.runAsync(query, [idTrabajo, check ? 1 : 0])
   }
 }
