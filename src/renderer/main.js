@@ -33,7 +33,7 @@ try {
 	log.setLevel('INFO')
 	window.onerror = (error, url, line) => {
 		debugger
-		log.error(`Application error: ${JSON.stringify(error)}. Url: ${url}. Line: ${line}`)
+		log.error(`Application error: ${JSON.stringify(error)}. Url: ${url}. Line: ${line}. Call stack: ${error.stack}`)
 	}
 
 	Vue.config.errorHandler = error => {

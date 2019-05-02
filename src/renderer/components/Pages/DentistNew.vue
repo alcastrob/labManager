@@ -187,7 +187,6 @@
 <script>
 import DentistService from '../../../services/DentistService'
 import { required, email, numeric, minLength, maxLength } from 'vuelidate/lib/validators'
-import log from 'loglevel'
 
 export default {
 	name: 'dentistDetail',

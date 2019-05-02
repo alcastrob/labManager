@@ -37,6 +37,7 @@
     <!-- row -->
     <div class="row mt-5">
       <div class="col-sm-12">
+        <!-- forPrinter -->
         <div style="height: 1075px;" v-if="forPrinter">
           <div
             v-if="!isFirstPage"
@@ -45,9 +46,10 @@
           <table class="table table-invoice" width="100%" cellspacing="0">
             <thead>
               <tr>
-                <th class="text-left" style="width: 60%;">Concepto</th>
+                <th class="text-left" style="width: 50%;">Concepto</th>
                 <th class="text-right" style="width: 10%;">Cantidad</th>
                 <th class="text-right" style="width: 10%;">P. Unidad</th>
+                <th class="text-right" style="width: 10%;">% Dto.</th>
                 <th class="text-right" style="width: 10%;">Dto.</th>
                 <th class="text-right" style="width: 10%;">Subtotal</th>
               </tr>
@@ -60,10 +62,10 @@
                       class="font-weight-bold"
                     >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaEntrada)}}</span>
                     <br>
-                    <span class>{{work.Paciente}}</span>
                   </td>
                   <td class="text-right">1</td>
                   <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
+                  <td class="text-right">{{work.PorcentajeDescuento}} %</td>
                   <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
                   <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
                 </tr>
@@ -79,6 +81,7 @@
                   <td class="text-right"></td>
                   <td class="text-right"></td>
                   <td class="text-right"></td>
+                  <td class="text-right"></td>
                 </tr>
               </template>
             </tbody>
@@ -87,23 +90,30 @@
             class="text-right font-weight-bold"
             v-if="isLastPage"
           >Total: {{moneyFormatter.format(invoice.Total)}}</div>
+          <div class="mt-4" v-if="appliedDiscount > 0 && isLastPage">
+            <h4>Detalle de los descuentos aplicados</h4>
+            <div
+              class="mb-4 font-weight-bold text-right"
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount}}% sobre total)</div>
+          </div>
           <div class="text-right font-italic" v-else>...suma y sigue.</div>
         </div>
-        <!-- height forPrinter -->
-
+        <!-- end forPrinter -->
+        <!-- forScreen -->
         <div v-else>
           <table class="table table-invoice" width="100%" cellspacing="0">
             <thead>
               <tr>
                 <template v-if="editing">
                   <th class="text-left" style="width: 2%;"></th>
-                  <th class="text-left" style="width: 58%;">Concepto</th>
+                  <th class="text-left" style="width: 48%;">Concepto</th>
                 </template>
                 <template v-else>
-                  <th class="text-left" style="width: 60%;">Concepto</th>
+                  <th class="text-left" style="width: 50%;">Concepto</th>
                 </template>
                 <th class="text-right" style="width: 10%;">Cantidad</th>
                 <th class="text-right" style="width: 10%;">P. Unidad</th>
+                <th class="text-right" style="width: 10%;">% Dto.</th>
                 <th class="text-right" style="width: 10%;">Dto.</th>
                 <th class="text-right" style="width: 10%;">Subtotal</th>
               </tr>
@@ -134,6 +144,11 @@
                         v-model="work.PorcentajeDescuento"
                         @input="updatePercentageDiscount(work)"
                       ></percentageInput>
+                    </template>
+                    <template v-else>{{work.PorcentajeDescuento}} %</template>
+                  </td>
+                  <td class="text-right">
+                    <template v-if="editing">
                       <euroInput
                         class="form-control text-right inputInForm"
                         v-model="work.TotalDescuento"
@@ -157,6 +172,7 @@
                   <td class="text-right"></td>
                   <td class="text-right"></td>
                   <td class="text-right"></td>
+                  <td class="text-right"></td>
                 </tr>
               </template>
             </tbody>
@@ -164,8 +180,40 @@
           <div
             class="text-right font-weight-bold pb-5"
           >Total: {{moneyFormatter.format(invoice.Total)}}</div>
+          <div v-if="!editing">
+            <h4>Detalle de los descuentos aplicados</h4>
+            <!-- <div class="col-sm-10" style="display:block; margin: auto; width:80%;"> -->
+            <!-- <table class="table table-invoice" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th class="text-left" style="width: 40%;"></th>
+                    <th class="text-right" style="width: 20%;">Base Imponible</th>
+                    <th class="text-right" style="width: 20%;">% Dto.</th>
+                    <th class="text-right" style="width: 20%;">Total Dto.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template v-for="work in works">
+                    <tr
+                      v-bind:key="work.IdTrabajo"
+                      class="pagebreak"
+                      v-if="work.TotalDescuento !== 0"
+                    >
+                      <td class="text-left">Nº Trabajo: {{work.IdTrabajo}}</td>
+                      <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
+                      <td class="text-right">{{work.PorcentajeDescuento}} %</td>
+                      <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
+                    </tr>
+                  </template>
+                </tbody>
+            </table>-->
+            <div
+              class="mb-4 font-weight-bold text-right"
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount}}% sobre total)</div>
+            <!-- </div> -->
+          </div>
         </div>
-        <!-- forScreen -->
+        <!-- end forScreen -->
         <button
           class="btn btn-secondary btn-block mb-4"
           type="button"
@@ -274,6 +322,14 @@ export default {
 		},
 		editing: {
 			type: Boolean,
+			required: true
+		},
+		appliedDiscount: {
+			type: Number,
+			required: true
+		},
+		appliedPercentageDiscount: {
+			type: Number,
 			required: true
 		}
 	},
