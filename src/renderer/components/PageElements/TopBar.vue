@@ -88,6 +88,7 @@ export default {
 		$route(to, from) {
 			this.to = to
 			this.from = from
+			window.url = to.fullPath
 			log.info(`### Navigate: ${from.fullPath} >> ${to.fullPath}`)
 		}
 	},

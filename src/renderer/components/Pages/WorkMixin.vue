@@ -1,4 +1,6 @@
 <script>
+'use strict'
+
 import Vue from 'Vue'
 import workIndicationsTable from '../PageElements/tables/workIndicationsTable'
 import workTestsTable from '../PageElements/tables/workTestsTable'
@@ -162,7 +164,7 @@ export default {
 			this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
 		},
 		showAdjunts: function(justAdded) {
-			log.debug('ShowAdjunts button clicked')
+			log.info('ShowAdjunts button clicked')
 			if (justAdded === undefined || justAdded.type === 'click') {
 				this.workAdjunctsJustAdded = true
 				this.workAdjuncts = {

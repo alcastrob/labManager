@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-expressions
 'use strict'
 
+import log from 'loglevel'
 import PersistenceService from './PersistenceService'
 
 export default class ConformityDeclarationService extends PersistenceService {
@@ -20,6 +21,7 @@ export default class ConformityDeclarationService extends PersistenceService {
   async insertConformityDeclaration(conformity, productIds) {
     var query = 'INSERT INTO DeclaracionConformidad (IdTrabajo, Fecha, Meses, ProductoEspecifico) ' +
       'VALUES (?, ?, ?, ?) '
+    log.info(`Created the conformity declaration for workId ${conformity.IdTrabajo}`)
     return this.runAsync(query, [conformity.IdTrabajo, conformity.Fecha, conformity.Meses, conformity.ProductoEspecifico]).then((conformityId) => {
       return this.insertDeclarationProducts(conformityId, productIds)
     })
@@ -28,6 +30,7 @@ export default class ConformityDeclarationService extends PersistenceService {
   // Tested
   async updateConformityDeclaration(conformity, productsIds) {
     var query = 'UPDATE DeclaracionConformidad SET Fecha = date("now"), Meses = ?, ProductoEspecifico = ? WHERE IdDeclaracion = ?'
+    log.info(`Updated the conformity declaration for workId ${conformity.IdTrabajo}`)
     return this.runAsync(query, [conformity.Meses, conformity.ProductoEspecifico, conformity.IdDeclaracion]).then(() => {
       var query2 = 'DELETE FROM DeclaracionProductos WHERE IdDeclaracion = ?'
       return this.runAsync(query2, [conformity.IdDeclaracion]).then(() => {

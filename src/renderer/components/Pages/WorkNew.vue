@@ -310,6 +310,8 @@
 </template>
 
 <script>
+'use strict'
+
 import WorkService from '../../../services/WorkService'
 import WorkAdjuntService from '../../../services/WorkAdjuntService'
 import workMixin from './WorkMixin'

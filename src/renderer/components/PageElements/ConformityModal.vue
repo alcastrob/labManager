@@ -82,8 +82,11 @@
 </template>
 
 <script>
+'use strict'
+
 import Vue from 'vue'
 import _ from 'lodash'
+import log from 'loglevel'
 import { integer, minValue } from 'vuelidate/lib/validators'
 import ConformityDeclarationService from '../../../services/ConformityDeclarationService'
 import conformityLabel from '../Labels/Conformity'
@@ -190,6 +193,7 @@ export default {
 			)
 			var row = await conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo)
 			this.print(row)
+			log.info(`Conformity Declaration for work ${this.work.IdTrabajo} was printed`)
 			this.hide()
 		},
 		updateDeclarationOfConformity: async function() {
@@ -208,6 +212,7 @@ export default {
 				// No real updates, just print
 				var row = await conformityDeclarationService.getConformityDeclaration(this.work.IdTrabajo)
 				this.print(row)
+				log.info(`Updated Conformity Declaration for work ${this.work.IdTrabajo} was printed`)
 				this.hide()
 			}
 		},

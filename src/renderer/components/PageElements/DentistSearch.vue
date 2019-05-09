@@ -27,6 +27,8 @@
 </template>
 
 <script>
+'use strict'
+
 import DentistService from '../../../services/DentistService'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'

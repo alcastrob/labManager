@@ -31,23 +31,22 @@ try {
 		callOriginal: true
 	})
 	log.setLevel('INFO')
-	window.onerror = (error, url, line) => {
+	window.onerror = (error) => {
 		debugger
-		log.error(`Application error: ${JSON.stringify(error)}. Url: ${url}. Line: ${line}. Call stack: ${error.stack}`)
+		log.error(`Application error: ${JSON.stringify(error)}. Url: ${window.url}. Call stack: ${error.stack}`)
 	}
 
 	Vue.config.errorHandler = error => {
 		log.error(`Application error: ${error.message}. Call stack: ${error.stack}`)
 	}
 
-	/* eslint-disable no-new */
 	new Vue({
-		components: {
-			App
-		},
 		router,
 		store,
-		template: '<App/>'
+		template: '<App/>',
+		components: {
+			App
+		}
 	}).$mount('#app')
 } catch (err) {
 	log.error(`Error in application. ${JSON.stringify(err)}`)

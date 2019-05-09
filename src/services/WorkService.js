@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-expressions
 'use strict'
 
 import log from 'loglevel'

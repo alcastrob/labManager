@@ -19,15 +19,15 @@
                 iconCss="fas fa-certificate"
                 text="Declaración de Conformidad"
                 :callback="showConformity"
-                title="La declaración de conformidad requiere que se establezca una fecha de terminación del trabajo"
-                :disabled="$v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$model === null || $v.work.FechaTerminacion.$anyError"
+                :title="!$v.work.FechaTerminacion.$model?'La declaración de conformidad requiere que se establezca una fecha de terminación del trabajo':''"
+                :disabled="!$v.work.FechaTerminacion.$model || $v.work.FechaTerminacion.$anyError"
               ></collapsible-action-button>
               <collapsible-action-button
                 iconCss="fas fa-dolly"
                 text="Nota de entrega"
                 :callback="getDeliveryNote"
-                title="La nota de entrega requiere que se establezca una fecha de terminación del trabajo"
-                :disabled="$v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$model === null || $v.work.FechaTerminacion.$anyError"
+                title="!$v.work.FechaTerminacion.$model?'La nota de entrega requiere que se establezca una fecha de terminación del trabajo':''"
+                :disabled="!$v.work.FechaTerminacion.$model || $v.work.FechaTerminacion.$anyError"
               ></collapsible-action-button>
               <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
                 <i class="fas fa-tags pr-1"></i>
@@ -576,6 +576,7 @@ export default {
 			this.hideModal()
 		},
 		getDeliveryNote: async function() {
+			log.info('Clicked on the Delivery Note button')
 			if (this.save()) {
 				var row = await this.workService.getConfigValues(['logo'])
 				var ComponentClass = Vue.extend(delivery)
@@ -592,9 +593,11 @@ export default {
 				})
 				instance.$mount()
 				instance.print(this.$refs.labelContainer)
+				log.info(`Printed the delivery note for work ${this.work.IdTrabajo}`)
 			}
 		},
 		showConformity() {
+			log.info('Clicked on the Conformity Declaration button')
 			if (this.save()) {
 				this.$refs.conformity.show()
 			}
