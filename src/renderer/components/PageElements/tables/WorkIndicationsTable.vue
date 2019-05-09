@@ -62,13 +62,7 @@
             <input type="text" class="inputInTd text-right" v-model="$v.newRow.cantidad.$model">
           </td>
           <td class="noMargins">
-            <input
-              type="text"
-              class="inputInTd"
-              v-model="$v.newRow.descripcion.$model"
-              ref="newDescripcion"
-              :class="{'bg-danger text-white animated flash': $v.newRow.descripcion.$error && !allRowEmpty}"
-            >
+            <catalog-search ref="catalog" v-model="$v.newRow.descripcion.$model"></catalog-search>
           </td>
           <td class="noMargins">
             <input type="text" class="inputInTd" v-model="$v.newRow.notas.$model">
@@ -118,10 +112,14 @@ import WorkIndicationService from '../../../../services/WorkIndicationService.js
 import _ from 'lodash'
 import { decimal, minLength, required } from 'vuelidate/lib/validators'
 import log from 'loglevel'
+import catalogSearch from '../typeAheads/CatalogSearch'
 
 export default {
 	name: 'workIndicationsTable',
 	mixins: [tablesWithEmptyRowMixin],
+	components: {
+		catalogSearch
+	},
 	data() {
 		return {
 			sumError: false,
