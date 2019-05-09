@@ -15,6 +15,7 @@ services:
       - 'ES_JAVA_OPTS=-Xmx256m -Xms256m'
     networks:
       - elk
+    restart: always
 
   logstash:
     build:
@@ -32,6 +33,7 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    restart: always
 
   kibana:
     build:
@@ -44,6 +46,7 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    restart: always
 
   nginx:
     image: nginx:1.13-alpine
@@ -61,6 +64,7 @@ services:
       - kibana
     networks:
       - elk
+    restart: always
 
 networks:
   elk:
