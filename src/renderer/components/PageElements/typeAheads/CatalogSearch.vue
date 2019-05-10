@@ -5,18 +5,25 @@
       class="typeahead-input inputInTd"
       placeholder="Buscar producto..."
       @keyup="search"
+      @keydown.9="hidePopup"
+      @keydown.13="selectEntry"
+      @keydown.38.prevent="entryUp"
+      @keydown.40.prevent="entryDown"
       v-model="query"
       ref="descripcion"
+      v-on-clickaway="hidePopup"
       :class="{'is-invalid': isInvalid}"
       :disabled="$attrs.disabled === true"
+      :blur="hidePopup"
     >
-    <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead target">
+    <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead popup">
       <div
-        v-for="catalogItem in candidateCatalogItemsFromQuery"
+        v-for="(catalogItem, index) in candidateCatalogItemsFromQuery"
         :key="catalogItem.IdElementoCatalogo"
       >
         <span
           class="list-group-item clickable"
+          :class="{'selected': isSelected(index)}"
           v-on:click="selectCatalogItem(catalogItem.Descripcion, catalogItem.IdElementoCatalogo)"
         >{{catalogItem.Descripcion}}</span>
       </div>
@@ -49,6 +56,7 @@ export default {
 			candidateCatalogItemsFromQuery: [],
 			tooManyCandidates: false,
 			notVisibleItems: 0,
+			selectedItemPosition: 0,
 			gotFocus: false
 		}
 	},
@@ -74,9 +82,9 @@ export default {
 			this.query = name
 			this.resultsVisible = false
 			this.$emit('input', { IdElementoCatalogo: id, Descripcion: name })
-			this.$emit('change', null)
+			this.$emit('change', _.find(this.candidateCatalogItemsFromQuery, ['IdElementoCatalogo', id]))
 			this.hidePopup()
-			this.$refs.descripcion.focus()
+			// this.$refs.descripcion.focus()
 		},
 		canDisplayDropdown: function() {
 			this.resultVisible = this.query && this.gotFocus
@@ -85,8 +93,25 @@ export default {
 		hidePopup: function() {
 			this.gotFocus = false
 		},
+		selectEntry: function() {
+			if (!this.resultsVisible) return
+			var x = this.candidateCatalogItemsFromQuery[this.selectedItemPosition]
+			this.selectCatalogItem(x.Descripcion, x.IdElementoCatalogo)
+		},
+		entryUp: function() {
+			if (!this.resultsVisible) return
+			this.selectedItemPosition = this.selectedItemPosition === 0 ? 4 : this.selectedItemPosition - 1
+		},
+		entryDown: function() {
+			if (!this.resultsVisible) return
+			this.selectedItemPosition = (this.selectedItemPosition + 1) % 5
+		},
+		isSelected: function(catalogItem) {
+			return catalogItem === this.selectedItemPosition
+		},
 		clear: function() {
 			this.query = ''
+			this.selectedItemPosition = 0
 		}
 	},
 	created() {
@@ -98,11 +123,11 @@ export default {
 <style lang="scss">
 @import url('~@/assets/css/typeaheadjs.css');
 @import url('~@/assets/css/myTypeahead.css');
-.target {
+.popup {
 	position: absolute;
-	// left: 50px;
 	top: 50px;
-	// border: 2px solid black;
-	// background-color: #ddd;
+}
+.selected {
+	background-color: #f4ecd6;
 }
 </style>

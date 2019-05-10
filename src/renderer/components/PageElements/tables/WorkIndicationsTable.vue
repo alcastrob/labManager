@@ -8,14 +8,15 @@
           <th class="text-left" style="width: 50%;">Descripción</th>
           <th class="text-left" style>Notas</th>
           <th class="text-left" style>Descuento</th>
-          <th style="width: 16%;" class="text-right">Precio</th>
+          <th style="width: 16%;" class="text-right">Precio individual</th>
+          <th style="width: 16%;" class="text-right">Subtotal</th>
         </tr>
         <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
           <td class="pt-3-half">
             <i
-              class="fa fa-times-circle"
-              v-on:click="deleteRow(indication.IdTrabajoDetalle)"
               v-if="$attrs.disabled !== true"
+              class="fa fa-times-circle"
+              :click="deleteRow(indication.IdTrabajoDetalle)"
             ></i>
           </td>
           <td class="noMargins">
@@ -43,6 +44,9 @@
             <input type="text" class="inputInTd text-right" v-model="indication.Descuento">
           </td>
           <td class="noMargins">
+            <input type="text" class="inputInTd text-right" v-model="indication.PrecioIndividual">
+          </td>
+          <td class="noMargins">
             <input
               type="text"
               class="inputInTd text-right"
@@ -62,7 +66,11 @@
             <input type="text" class="inputInTd text-right" v-model="$v.newRow.cantidad.$model">
           </td>
           <td class="noMargins">
-            <catalog-search ref="catalog" v-model="$v.newRow.descripcion.$model"></catalog-search>
+            <catalog-search
+              ref="catalog"
+              v-model="$v.newRow.descripcion.$model"
+              @change="track($event)"
+            ></catalog-search>
           </td>
           <td class="noMargins">
             <input type="text" class="inputInTd" v-model="$v.newRow.notas.$model">
@@ -75,6 +83,16 @@
               type="text"
               class="inputInTd text-right"
               v-model="$v.newRow.precio.$model"
+              :class="{'bg-danger text-white animated flash': $v.newRow.precio.$error && !allRowEmpty}"
+              @blur="addLastRow()"
+              v-on:keydown="filterJustNumberKeystrokes"
+            >
+          </td>
+          <td class="noMargins">
+            <input
+              type="text"
+              class="inputInTd text-right"
+              v-model="$v.newRow.subtotal.$model"
               :class="{'bg-danger text-white animated flash': $v.newRow.precio.$error && !allRowEmpty}"
               @blur="addLastRow()"
               v-on:keydown="filterJustNumberKeystrokes"
@@ -124,8 +142,12 @@ export default {
 		return {
 			sumError: false,
 			newRow: {
+				cantidad: '',
 				descripcion: '',
-				precio: ''
+				notas: '',
+				descuento: '',
+				precio: '',
+				subtotal: ''
 			}
 		}
 	},
@@ -146,6 +168,11 @@ export default {
 				decimal
 			},
 			precio: {
+				required,
+				decimal,
+				minLength: minLength(1)
+			},
+			subtotal: {
 				required,
 				decimal,
 				minLength: minLength(1)
@@ -223,6 +250,13 @@ export default {
 				this.updatedRows = []
 			}
 		},
+		track: function(e) {
+			this.newRow.precio = e.Precio
+			if (!this.newRow.cantidad) {
+				this.newRow.cantidad = 1
+			}
+			this.newRow.subtotal = this.newRow.precio * this.newRow.cantidad
+		},
 		// Other methods (specific)------------------------------------------------
 		getSum: function() {
 			try {
@@ -282,15 +316,10 @@ export default {
 				event.preventDefault()
 			}
 		},
-		canDisplayDropdown: function() {
-			// TODO
-			return false
-		},
 		focus: function() {
 			document.getElementById('workIndicationsTable').focus()
 		},
 		cleanComponent() {
-			// this.data = []
 			this.newIds = 10000000
 			this.insertedRows = []
 			this.deletedRows = []

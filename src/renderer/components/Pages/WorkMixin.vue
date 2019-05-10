@@ -145,7 +145,7 @@ export default {
 					throw new Error(`Unexpected label type in WorkDetail.printLabel(): ${type}`)
 			}
 		},
-		setStartDateToToday: function() {
+		getToday: function() {
 			var today = new Date()
 			var dd = today.getDate()
 
@@ -159,7 +159,8 @@ export default {
 				mm = '0' + mm
 			}
 
-			this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
+			// this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
+			return yyyy + '-' + mm + '-' + dd
 		},
 		showAdjunts: function(justAdded) {
 			log.debug('ShowAdjunts button clicked')

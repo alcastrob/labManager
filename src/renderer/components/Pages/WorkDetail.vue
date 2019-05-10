@@ -259,7 +259,7 @@
           <a
             href="#"
             class="form-text text-muted ml-2"
-            @click="setStartDateToToday()"
+            @click="work.FechaEntrada = getToday()"
             v-if="!readOnly"
           >
             <i class="far fa-calendar-alt"></i>
@@ -307,6 +307,15 @@
             @input="triggerIsDirty($event)"
             :disabled="readOnly"
           >
+          <a
+            href="#"
+            class="form-text text-muted ml-2"
+            @click="work.FechaTerminacion = getToday()"
+            v-if="!readOnly"
+          >
+            <i class="far fa-calendar-alt"></i>
+            Poner fecha de hoy
+          </a>
         </div>
         <!-- col-md-3 -->
       </div>

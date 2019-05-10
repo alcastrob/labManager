@@ -4,18 +4,19 @@
 import PersistenceService from './PersistenceService'
 
 export default class CatalogService extends PersistenceService {
+  // Tested
   async searchCatalogEntriesByName(catalogItemName) {
-    var query = 'SELECT IdElementoCatalogo, Descripcion, Precio FROM Catalogo WHERE Descripcion LIKE ? AND Activo = true'
+    var query = 'SELECT IdElementoCatalogo, Descripcion, Precio FROM vCatalogo WHERE Descripcion LIKE ?'
     return this.allAsync(query, ['%' + catalogItemName + '%'])
   }
 
   async searchCatalogEntryByExactName(catalogItemName) {
-    var query = 'SELECT IdProductoLote, Descripcion FROM ProductosLotes WHERE Descripcion = ? AND Activo = true'
+    var query = 'SELECT IdElementoCatalogo, Descripcion FROM vCatalogo WHERE Descripcion = ?'
     return this.allAsync(query, ['%' + catalogItemName + '%'])
   }
 
   async getCatalogEntry(catalogEntryId) {
-    var query = 'SELECT * FROM ProductosLotes WHERE IdProductoLote = ?'
+    var query = 'SELECT * FROM vCatalogo WHERE IdElementoCatalogo = ?'
     return this.getAsync(query, [catalogEntryId])
   }
 

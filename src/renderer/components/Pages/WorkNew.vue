@@ -327,7 +327,7 @@ export default {
 			this.work.Paciente = ''
 			this.work.Color = ''
 			this.PrecioFinal = 0
-			this.setStartDateToToday()
+			this.work.FechaEntrada = this.getToday()
 			this.work.FechaPrevista = ''
 			this.workIndications = {}
 			this.$refs.workIndications.cleanComponent()

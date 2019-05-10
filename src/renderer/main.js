@@ -22,7 +22,7 @@ try {
 	}
 
 	remoteLog(log, {
-		url: 'http://104.248.82.4:5000',
+		url: 'http://telemetry.labmanager.es:5000',
 		prefix: (severity, message) => {
 			return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}(${
 				require('../../package.json').version
