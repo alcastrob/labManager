@@ -22,21 +22,19 @@
             ></i>
           </td>
           <td class="noMargins">
-            <input
-              type="text"
+            <catalog-search
               v-model="indication.Descripcion"
-              class="inputInTd"
-              @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')"
-              :class="{'bg-danger text-white animated flash': indication.Descripcion.length === 0}"
-              :disabled="$attrs.disabled === true"
-            >
+              @change="selectFromCatalog($event, indication)"
+            ></catalog-search>
+            <!-- :class="{'bg-danger text-white animated flash': indication.Descripcion.length === 0}" -->
+            {{indication.Descripcion}} | {{indication.IdElementoCatalogo}}
           </td>
           <td class="noMargins">
             <input
               type="text"
               v-model="indication.Cantidad"
               class="inputInTd text-right"
-              @change="updatePrice(indication.Cantidad, indication.Precio, indication.IdTrabajoDetalle)"
+              @change="updatePrice(indication.IdTrabajoDetalle, indication.Cantidad, indication.Precio)"
               :class="{'bg-danger text-white animated flash': isNotANumber(indication.Cantidad)}"
             >
           </td>
@@ -52,8 +50,9 @@
             <input
               type="text"
               class="inputInTd text-right"
-              @blur="updatePrice(indication.Cantidad, indication.Precio, indication.IdTrabajoDetalle)"
+              @blur="updatePrice(indication.IdTrabajoDetalle, indication.Cantidad, indication.Precio)"
               v-model="indication.Precio"
+              :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}"
               :disabled="indication.IdElementoCatalogo"
             >
           </td>
@@ -66,16 +65,15 @@
           <td class="pt-3-half"></td>
           <td class="noMargins">
             <catalog-search
-              ref="catalog"
+              ref="catalogNew"
               v-model="$v.newRow.Descripcion.$model"
-              @change="selectFromCatalog($event)"
+              @change="selectFromCatalog($event, newRow)"
             ></catalog-search>
           </td>
           <td class="noMargins">
             <input
               type="text"
               class="inputInTd text-right"
-              ref="ammountAfterCatalog"
               v-model="$v.newRow.Cantidad.$model"
               :class="{'bg-danger text-white animated flash': $v.newRow.Cantidad.$error && !allRowEmpty}"
               @change="updatePrice()"
@@ -117,6 +115,7 @@
           class="float-right text-right pr-1"
           :class="{'d-inline-block text-danger animated shake': sumError}"
         >{{getSum()}}</p>
+        <!-- {{data}} -->
       </div>
       <!-- <div>
         <h3>Inserted</h3>
@@ -190,13 +189,17 @@ export default {
 	methods: {
 		// Related with the state and persistence----------------------------------
 		addLastRow() {
+			if (this.allRowEmpty) return
+
 			if (this.$v.newRow.$anyDirty) {
 				this.$v.newRow.$touch()
 				if (!this.$v.newRow.$anyError) {
 					var newRow = { ...this.newRow }
 					newRow.IdTrabajoDetalle = this.newIds++
-					newRow.IdElementoCatalogo = this.newRow.Descripcion.IdElementoCatalogo
-					newRow.Descripcion = this.newRow.Descripcion.Descripcion
+					newRow.Cantidad = parseFloat(newRow.Cantidad)
+					// newRow.IdElementoCatalogo = this.newRow.Descripcion.IdElementoCatalogo
+					// newRow.Descripcion = this.newRow.Descripcion.Descripcion
+					debugger
 					this.data.push(newRow)
 					this.insertedRows.push(newRow)
 					this.newRow.Cantidad = ''
@@ -204,10 +207,10 @@ export default {
 					this.newRow.Notas = ''
 					this.newRow.Precio = ''
 					this.newRow.Subtotal = ''
-					this.$v.newRow.$reset()
 					this.$emit('input', this.data)
-					this.$refs.catalog.focus()
-					this.$refs.catalog.clear()
+					this.$refs.catalogNew.focus()
+					this.$refs.catalogNew.clear()
+					this.$v.newRow.$reset()
 				}
 			}
 		},
@@ -249,7 +252,6 @@ export default {
 			this.$emit('input', this.data)
 		},
 		async save(masterId) {
-			debugger
 			if (masterId !== 0) {
 				_.forEach(this.insertedRows, async row => {
 					row.IdTrabajo = masterId
@@ -263,10 +265,20 @@ export default {
 				this.updatedRows = []
 			}
 		},
-		selectFromCatalog: function(e) {
-			this.newRow.Precio = e.Precio
-			this.updatePrice()
-			this.$refs.ammountAfterCatalog.focus()
+		selectFromCatalog: function(e, row) {
+			row.Precio = e.Precio
+
+			if (typeof row.Descripcion === 'object') {
+				if (row.Descripcion.IdElementoCatalogo) {
+					row.IdElementoCatalogo = row.Descripcion.IdElementoCatalogo
+				}
+				row.Descripcion = row.Descripcion.Descripcion
+			}
+			this.updatePrice(row.IdTrabajoDetalle, row.Cantidad, row.Precio, e.IdElementoCatalogo)
+
+			// This method works in all the rows of the table, so doing this
+			// indirection via refs is quite complicated.
+			e.src.$vnode.elm.parentNode.nextElementSibling.childNodes[0].focus()
 		},
 		// Other methods (specific)------------------------------------------------
 		getSum: function() {
@@ -288,19 +300,23 @@ export default {
 				return 'Datos incorrectos a sumar en la tabla de indicaciones'
 			}
 		},
-		updatePrice(ammount, price, id) {
-			if (id) {
-				var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
-				if (ammount && price) {
+		updatePrice(workDetailID, ammount, price, catalogElementId) {
+			if (workDetailID) {
+				let nanPrecio = isNaN(parseFloat(price))
+				let nanCantidad = isNaN(parseFloat(ammount))
+				var elementInArray = _.find(this.data, ['IdTrabajoDetalle', workDetailID])
+				if (!nanPrecio && !nanCantidad) {
 					elementInArray.Subtotal = ammount * price
 				}
+				if (catalogElementId) {
+					elementInArray.IdElementoCatalogo = catalogElementId
+				}
 				this.$emit('input', this.data)
-				this.trackChanges({ currentTarget: { value: elementInArray.Subtotal } }, id, 'Subtotal')
+				this.trackChanges({ currentTarget: { value: elementInArray.Subtotal } }, workDetailID, 'Subtotal')
 			} else {
-				// It's the new row who needs an update
 				let nanPrecio = isNaN(parseFloat(this.newRow.Precio))
 				let nanCantidad = isNaN(parseFloat(this.newRow.Cantidad))
-
+				// It's the new row who needs an update
 				if (nanPrecio || nanCantidad) {
 					this.newRow.Subtotal = ''
 				} else {
@@ -365,7 +381,7 @@ export default {
 		allRowEmpty: function() {
 			return (
 				this.$v.newRow.Cantidad.$model.length === 0 &&
-				this.$v.newRow.Descripcion.$model === -1 &&
+				this.$v.newRow.Descripcion.$model.length === 0 &&
 				this.$v.newRow.Notas.$model.length === 0 &&
 				this.$v.newRow.Precio.$model.length === 0 &&
 				this.$v.newRow.Subtotal.$model.length === 0

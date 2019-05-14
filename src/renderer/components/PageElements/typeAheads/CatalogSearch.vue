@@ -85,14 +85,16 @@ export default {
 				this.tooManyCandidates = false
 				this.notVisibleItems = 0
 				this.candidateCatalogItemsFromQuery = []
-				this.$emit('input', -1)
+				this.$emit('input', '')
 			}
 		},
 		selectCatalogItem: function(name, id, continueWithPopup) {
 			this.query = name
 			this.resultsVisible = false
 			this.$emit('input', { IdElementoCatalogo: id, Descripcion: name })
-			this.$emit('change', _.find(this.candidateCatalogItemsFromQuery, ['IdElementoCatalogo', id]))
+			let changeEvent = _.find(this.candidateCatalogItemsFromQuery, ['IdElementoCatalogo', id])
+			changeEvent.src = this
+			this.$emit('change', changeEvent)
 			if (!continueWithPopup) {
 				this.hidePopup(true)
 			}
@@ -102,25 +104,43 @@ export default {
 			return this.resultVisible
 		},
 		hidePopup: function(alreadyEmitted) {
-			if (!this.resultVisible) return
-
 			// alreadyEmmited values can be 'true', 'undefined' or even an event.
 			let notEmitted = alreadyEmitted !== true
+			// No match between query and suggestion
+			let noResults = this.candidateCatalogItemsFromQuery.length === 0
+			// Match between query and suggestion
 			let onlyOneResult = this.candidateCatalogItemsFromQuery.length === 1
-			let queryAndFirstResultAreEqual = this.query === this.candidateCatalogItemsFromQuery[0].Descripcion
+			let somethingHasChanged =
+				typeof this.value === 'object' ? this.value.Descripcion !== this.query : this.value !== this.query
+			let queryAndFirstResultAreEqual = false
+			if (this.candidateCatalogItemsFromQuery.length > 0) {
+				queryAndFirstResultAreEqual = this.query === this.candidateCatalogItemsFromQuery[0].Descripcion
+			}
+
+			if (!somethingHasChanged) {
+				this.gotFocus = false
+				return
+			}
 
 			if (notEmitted && onlyOneResult && queryAndFirstResultAreEqual) {
 				// It's almost the perfect candidate. Let's select it in advance
 				let item = this.candidateCatalogItemsFromQuery[0]
 				this.$emit('input', { IdElementoCatalogo: item.IdElementoCatalogo, Descripcion: item.Descripcion })
-				this.$emit('change', item)
+				let changeEvent = { ...item }
+				changeEvent.src = this
+				this.$emit('change', changeEvent)
+				this.gotFocus = false
+				return
 			}
 
-			if (notEmitted && onlyOneResult && !queryAndFirstResultAreEqual) {
+			if (notEmitted && (onlyOneResult || noResults) && !queryAndFirstResultAreEqual) {
 				// It's an uncatalogued item
 				this.$emit('input', { IdElementoCatalogo: null, Descripcion: this.query })
-				this.$emit('change', { IdElementoCatalogo: null, Descripcion: this.query, Precio: null })
+				this.$emit('change', { IdElementoCatalogo: null, Descripcion: this.query, Precio: 0, src: this })
+				this.gotFocus = false
+				return
 			}
+
 			this.gotFocus = false
 		},
 		selectEntry: function() {
@@ -158,6 +178,7 @@ export default {
 	},
 	created() {
 		this.catalogService = new CatalogService()
+		this.query = this.value
 	}
 }
 </script>
