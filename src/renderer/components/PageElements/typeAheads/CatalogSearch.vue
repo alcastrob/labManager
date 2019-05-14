@@ -112,6 +112,9 @@ export default {
 		clear: function() {
 			this.query = ''
 			this.selectedItemPosition = 0
+		},
+		focus: function() {
+			this.$refs.descripcion.focus()
 		}
 	},
 	created() {

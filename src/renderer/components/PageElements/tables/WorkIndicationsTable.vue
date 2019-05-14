@@ -4,28 +4,19 @@
       <table class="table table-bordered table-responsive-xs table-striped">
         <tr>
           <th style="width: 4%;"></th>
-          <th class="text-left" style>Cantidad</th>
-          <th class="text-left" style="width: 50%;">Descripción</th>
-          <th class="text-left" style>Notas</th>
-          <th class="text-left" style>Descuento</th>
-          <th style="width: 16%;" class="text-right">Precio individual</th>
-          <th style="width: 16%;" class="text-right">Subtotal</th>
+          <th class="text-left" style="width: 45%;">Descripción</th>
+          <th class="text-left" style="width: 3%;">Cantidad</th>
+          <th class="text-left" style="width: 15%;">Notas</th>
+          <th class="text-right" style="width: 11%;">P. individual</th>
+          <th class="text-right" style="width: 11%;">Subtotal</th>
         </tr>
         <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
           <td class="pt-3-half">
             <i
               v-if="$attrs.disabled !== true"
               class="fa fa-times-circle"
-              :click="deleteRow(indication.IdTrabajoDetalle)"
+              @click="deleteRow(indication.IdTrabajoDetalle)"
             ></i>
-          </td>
-          <td class="noMargins">
-            <input
-              type="text"
-              v-model="indication.Cantidad"
-              class="inputInTd text-right"
-              :class="{'bg-danger text-white animated flash': isNotANumber(indication.Cantidad)}"
-            >
           </td>
           <td class="noMargins">
             <input
@@ -38,20 +29,25 @@
             >
           </td>
           <td class="noMargins">
+            <input
+              type="text"
+              v-model="indication.Cantidad"
+              class="inputInTd text-right"
+              :class="{'bg-danger text-white animated flash': isNotANumber(indication.Cantidad)}"
+            >
+          </td>
+          <td class="noMargins">
             <input type="text" class="inputInTd" v-model="indication.Notas">
           </td>
           <td class="noMargins">
-            <input type="text" class="inputInTd text-right" v-model="indication.Descuento">
-          </td>
-          <td class="noMargins">
-            <input type="text" class="inputInTd text-right" v-model="indication.PrecioIndividual">
+            <input type="text" class="inputInTd text-right" v-model="indication.Precio">
           </td>
           <td class="noMargins">
             <input
               type="text"
               class="inputInTd text-right"
               @blur="updatePrice($event, indication.IdTrabajoDetalle)"
-              v-model="indication.Precio"
+              v-model="indication.Subtotal"
               :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}"
               v-on:keydown="filterJustNumberKeystrokes"
               @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')"
@@ -63,28 +59,30 @@
         <tr v-if="$attrs.disabled !== true">
           <td class="pt-3-half"></td>
           <td class="noMargins">
-            <input type="text" class="inputInTd text-right" v-model="$v.newRow.cantidad.$model">
-          </td>
-          <td class="noMargins">
             <catalog-search
               ref="catalog"
-              v-model="$v.newRow.descripcion.$model"
-              @change="track($event)"
+              v-model="$v.newRow.Descripcion.$model"
+              @change="selectFromCatalog($event)"
             ></catalog-search>
-          </td>
-          <td class="noMargins">
-            <input type="text" class="inputInTd" v-model="$v.newRow.notas.$model">
-          </td>
-          <td class="noMargins">
-            <input type="text" class="inputInTd text-right" v-model="$v.newRow.descuento.$model">
           </td>
           <td class="noMargins">
             <input
               type="text"
               class="inputInTd text-right"
-              v-model="$v.newRow.precio.$model"
-              :class="{'bg-danger text-white animated flash': $v.newRow.precio.$error && !allRowEmpty}"
-              @blur="addLastRow()"
+              @change="updatePrice($event)"
+              ref="ammountAfterCatalog"
+              v-model="$v.newRow.Cantidad.$model"
+            >
+          </td>
+          <td class="noMargins">
+            <input type="text" class="inputInTd" v-model="$v.newRow.Notas.$model">
+          </td>
+          <td class="noMargins">
+            <input
+              type="text"
+              class="inputInTd text-right"
+              v-model="$v.newRow.Precio.$model"
+              :class="{'bg-danger text-white animated flash': $v.newRow.Precio.$error && !allRowEmpty}"
               v-on:keydown="filterJustNumberKeystrokes"
             >
           </td>
@@ -92,8 +90,8 @@
             <input
               type="text"
               class="inputInTd text-right"
-              v-model="$v.newRow.subtotal.$model"
-              :class="{'bg-danger text-white animated flash': $v.newRow.precio.$error && !allRowEmpty}"
+              v-model="$v.newRow.Subtotal.$model"
+              :class="{'bg-danger text-white animated flash': $v.newRow.Precio.$error && !allRowEmpty}"
               @blur="addLastRow()"
               v-on:keydown="filterJustNumberKeystrokes"
             >
@@ -106,20 +104,20 @@
           :class="{'d-inline-block text-danger animated shake': sumError}"
         >{{getSum()}}</p>
       </div>
-      <!-- <div>
+      <div>
         <h3>Inserted</h3>
         <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
-          <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
+          <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Subtotal}}</li>
         </ul>
         <h3>Updated</h3>
         <ul v-for="updated in updatedRows" :key="updated.IdTrabajoDetalle">
-          <li>{{updated.IdTrabajoDetalle}}|{{updated.Descripcion}}|{{updated.Precio}}</li>
+          <li>{{updated.IdTrabajoDetalle}}|{{updated.Descripcion}}|{{updated.Subtotal}}</li>
         </ul>
         <h3>Deleted</h3>
         <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
-          <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
+          <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Subtotal}}</li>
         </ul>
-      </div>-->
+      </div>
     </div>
   </div>
 </template>
@@ -142,37 +140,33 @@ export default {
 		return {
 			sumError: false,
 			newRow: {
-				cantidad: '',
-				descripcion: '',
-				notas: '',
-				descuento: '',
-				precio: '',
-				subtotal: ''
+				Cantidad: '',
+				Descripcion: '',
+				Notas: '',
+				Precio: '',
+				Subtotal: ''
 			}
 		}
 	},
 	validations: {
 		newRow: {
-			cantidad: {
+			Cantidad: {
 				required,
 				minLength: minLength(1)
 			},
-			descripcion: {
+			Descripcion: {
 				required,
 				minLength: minLength(1)
 			},
-			notas: {
+			Notas: {
 				minLength: minLength(0)
 			},
-			descuento: {
-				decimal
-			},
-			precio: {
+			Precio: {
 				required,
 				decimal,
 				minLength: minLength(1)
 			},
-			subtotal: {
+			Subtotal: {
 				required,
 				decimal,
 				minLength: minLength(1)
@@ -185,18 +179,21 @@ export default {
 			if (this.$v.newRow.$anyDirty) {
 				this.$v.newRow.$touch()
 				if (!this.$v.newRow.$anyError) {
-					var newRow = {
-						Descripcion: this.newRow.descripcion,
-						IdTrabajoDetalle: this.newIds++,
-						Precio: this.newRow.precio
-					}
+					var newRow = { ...this.newRow }
+					newRow.IdTrabajoDetalle = this.newIds++
+					newRow.IdElementoCatalogo = this.newRow.Descripcion.IdElementoCatalogo
+					newRow.Descripcion = this.newRow.Descripcion.Descripcion
 					this.data.push(newRow)
 					this.insertedRows.push(newRow)
-					this.newRow.descripcion = ''
-					this.newRow.precio = ''
+					this.newRow.Cantidad = ''
+					this.newRow.Descripcion = ''
+					this.newRow.Notas = ''
+					this.newRow.Precio = ''
+					this.newRow.Subtotal = ''
 					this.$v.newRow.$reset()
 					this.$emit('input', this.data)
-					this.$refs.newDescripcion.focus()
+					this.$refs.catalog.focus()
+					this.$refs.catalog.clear()
 				}
 			}
 		},
@@ -209,8 +206,10 @@ export default {
 				_.remove(this.insertedRows, ['IdTrabajoDetalle', rowId])
 			} else if (_.some(this.updatedRows, ['IdTrabajoDetalle', rowId])) {
 				_.remove(this.updatedRows, ['IdTrabajoDetalle', rowId])
+				debugger
 				this.deletedRows.push({ IdTrabajoDetalle: rowId })
 			} else {
+				debugger
 				this.deletedRows.push({ IdTrabajoDetalle: rowId })
 			}
 		},
@@ -250,12 +249,13 @@ export default {
 				this.updatedRows = []
 			}
 		},
-		track: function(e) {
-			this.newRow.precio = e.Precio
-			if (!this.newRow.cantidad) {
-				this.newRow.cantidad = 1
-			}
-			this.newRow.subtotal = this.newRow.precio * this.newRow.cantidad
+		selectFromCatalog: function(e) {
+			this.newRow.Precio = e.Precio
+			// if (!this.newRow.Cantidad) {
+			// 	this.newRow.Cantidad = 1
+			// }
+			this.updatePrice()
+			this.$refs.ammountAfterCatalog.focus()
 		},
 		// Other methods (specific)------------------------------------------------
 		getSum: function() {
@@ -278,13 +278,18 @@ export default {
 			}
 		},
 		updatePrice(event, id) {
-			var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
-			if (event.srcElement.value) {
-				elementInArray.Precio = 0
+			if (id) {
+				var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
+				if (event.srcElement.value) {
+					elementInArray.Precio = 0
+				} else {
+					elementInArray.Precio = event.srcElement.value
+				}
+				this.$emit('input', this.data)
 			} else {
-				elementInArray.Precio = event.srcElement.value
+				// It's the new row who needs an update
+				this.newRow.Subtotal = this.newRow.Cantidad * this.newRow.Precio
 			}
-			this.$emit('input', this.data)
 		},
 		filterJustNumberKeystrokes(event) {
 			if (
@@ -316,17 +321,17 @@ export default {
 				event.preventDefault()
 			}
 		},
-		focus: function() {
-			document.getElementById('workIndicationsTable').focus()
-		},
+		// focus: function() {
+		// 	document.getElementById('workIndicationsTable').focus()
+		// },
 		cleanComponent() {
 			this.newIds = 10000000
 			this.insertedRows = []
 			this.deletedRows = []
 			this.updatedRows = []
 			this.sumError = false
-			this.newRow.descripcion = ''
-			this.newRow.precio = ''
+			this.newRow.Descripcion = ''
+			this.newRow.Precio = ''
 			this.$v.newRow.$reset()
 		},
 		isError() {
