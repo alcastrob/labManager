@@ -475,29 +475,38 @@ export default {
 			this.$forceUpdate()
 		},
 		save: async function(url, changeInvoiceConfirmed = false) {
+			debugger
 			this.saveButtonPressed = true
 			this.$v.$touch()
 
 			// If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
 			this.$refs.workIndications.addLastRow()
 			this.$refs.workTests.addLastRow()
-			if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()) {
-				if (this.$refs.workTests.isError()) {
-					this.$refs.workTests.focus()
-					this.$scrollTo(this.$refs.btnSave, 1000)
-				}
-				if (this.$refs.workIndications.isError()) {
-					this.$refs.workIndications.focus()
-				}
-				if (this.$v.work.PrecioMetal.$anyError) {
-					this.$refs.precioMetal.focus()
-				}
-				if (this.$v.work.IdTipoTrabajo.$anyError) {
-					this.$refs.tipoTrabajo.focus()
-				}
-				if (this.$v.work.IdDentista.$anyError) {
-					this.$refs.clinica.focus()
-				}
+
+			const focusAndScroll = function(item, anchorItem) {
+				log.debug(`Data validation error on ${item.$vnode.tag}`)
+				item.focus()
+				item.$parent.$scrollTo(anchorItem || item, 1000)
+				return false
+			}
+
+			// Looking for errors in inbound data
+			if (this.$refs.workTests.isError()) {
+				return focusAndScroll(this.$refs.workTests, this.$refs.btnSave)
+			}
+			if (this.$refs.workIndications.isError()) {
+				return focusAndScroll(this.$refs.workIndications)
+			}
+			if (this.$v.work.PrecioMetal.$anyError) {
+				return focusAndScroll(this.$refs.precioMetal)
+			}
+			if (this.$v.work.IdTipoTrabajo.$anyError) {
+				return focusAndScroll(this.$refs.tipoTrabajo)
+			}
+			if (this.$v.work.IdDentista.$anyError) {
+				return focusAndScroll(this.$refs.clinica)
+			}
+			if (this.$v.$anyError) {
 				return false
 			}
 
@@ -517,19 +526,19 @@ export default {
 
 			if (this.$refs.workIndications.isDirty) {
 				this.$refs.workIndications.save(this.work.IdTrabajo)
-			}
-			var sum = parseFloat(
-				_.sumBy(this.workIndications, function(n) {
-					var temp = parseFloat(n.Precio)
-					if (isNaN(temp)) {
-						throw 'NaN'
-					} else {
-						return temp
-					}
-				})
-			)
-			if (sum !== this.work.PrecioFinal) {
-				this.work.PrecioFinal = sum
+				var sum = parseFloat(
+					_.sumBy(this.workIndications, function(n) {
+						var temp = parseFloat(n.Precio)
+						if (isNaN(temp)) {
+							throw 'NaN'
+						} else {
+							return temp
+						}
+					})
+				)
+				if (sum !== this.work.PrecioFinal) {
+					this.work.PrecioFinal = sum
+				}
 			}
 			if (this.$v.work.$anyDirty) {
 				await this.workService.updateWork(this.work)

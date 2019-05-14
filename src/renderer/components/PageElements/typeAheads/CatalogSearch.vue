@@ -45,6 +45,8 @@ import CatalogService from '../../../../services/CatalogService'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 
+const MINIMUMQUERYLENGTH = 4
+
 export default {
 	name: 'catalogSearch',
 	mixins: [clickaway],
@@ -64,7 +66,7 @@ export default {
 	methods: {
 		search: async function() {
 			this.gotFocus = true
-			if (this.query.length > 4) {
+			if (this.query.length > MINIMUMQUERYLENGTH) {
 				this.resultsVisible = true
 				var items = await this.catalogService.searchCatalogEntriesByName(this.query)
 				this.candidateCatalogItemsFromQuery = _.slice(items, 0, 5)
@@ -75,22 +77,34 @@ export default {
 				this.tooManyCandidates = false
 				this.notVisibleItems = 0
 				this.candidateCatalogItemsFromQuery = []
-				this.$emit('input', -1)
 			}
+			this.$emit('input', -1)
 		},
-		selectCatalogItem: function(name, id) {
+		selectCatalogItem: function(name, id, continueWithPopup) {
 			this.query = name
 			this.resultsVisible = false
 			this.$emit('input', { IdElementoCatalogo: id, Descripcion: name })
 			this.$emit('change', _.find(this.candidateCatalogItemsFromQuery, ['IdElementoCatalogo', id]))
-			this.hidePopup()
+			if (!continueWithPopup) {
+				this.hidePopup(true)
+			}
 			// this.$refs.descripcion.focus()
 		},
 		canDisplayDropdown: function() {
-			this.resultVisible = this.query && this.gotFocus
+			this.resultVisible = this.query && this.query.length > MINIMUMQUERYLENGTH && this.gotFocus
 			return this.resultVisible
 		},
-		hidePopup: function() {
+		hidePopup: function(alreadyEmitted) {
+			if (!this.resultVisible) return
+
+			// alreadyEmmited values can be 'true', 'undefined' or even an event.
+			if (alreadyEmitted !== true && this.candidateCatalogItemsFromQuery.length === 1) {
+				// It's almost the perfect candidate. Let's select it in advance
+				let item = this.candidateCatalogItemsFromQuery[0]
+				this.$emit('input', { IdElementoCatalogo: item.IdElementoCatalogo, Descripcion: item.Descripcion })
+				this.$emit('change', item)
+				console.log('emmited', item)
+			}
 			this.gotFocus = false
 		},
 		selectEntry: function() {

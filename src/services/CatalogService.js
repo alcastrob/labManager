@@ -10,9 +10,10 @@ export default class CatalogService extends PersistenceService {
     return this.allAsync(query, ['%' + catalogItemName + '%'])
   }
 
+  // Tested
   async searchCatalogEntryByExactName(catalogItemName) {
     var query = 'SELECT IdElementoCatalogo, Descripcion FROM vCatalogo WHERE Descripcion = ?'
-    return this.allAsync(query, ['%' + catalogItemName + '%'])
+    return this.getAsync(query, [catalogItemName])
   }
 
   async getCatalogEntry(catalogEntryId) {

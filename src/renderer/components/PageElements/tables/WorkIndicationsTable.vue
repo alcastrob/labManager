@@ -1,7 +1,10 @@
 <template>
-  <div id="workIndicationsTable" class="table-editable">
+  <div class="table-editable">
     <div>
-      <table class="table table-bordered table-responsive-xs table-striped">
+      <table
+        class="table table-bordered table-responsive-xs table-striped"
+        ref="workIndicationsTable"
+      >
         <tr>
           <th style="width: 4%;"></th>
           <th class="text-left" style="width: 45%;">Descripción</th>
@@ -33,26 +36,28 @@
               type="text"
               v-model="indication.Cantidad"
               class="inputInTd text-right"
+              @change="updatePrice(indication.Cantidad, indication.Precio, indication.IdTrabajoDetalle)"
               :class="{'bg-danger text-white animated flash': isNotANumber(indication.Cantidad)}"
             >
           </td>
           <td class="noMargins">
-            <input type="text" class="inputInTd" v-model="indication.Notas">
-          </td>
-          <td class="noMargins">
-            <input type="text" class="inputInTd text-right" v-model="indication.Precio">
+            <input
+              type="text"
+              class="inputInTd"
+              @change="trackChanges($event, indication.IdTrabajoDetalle, 'Notas')"
+              v-model="indication.Notas"
+            >
           </td>
           <td class="noMargins">
             <input
               type="text"
               class="inputInTd text-right"
-              @blur="updatePrice($event, indication.IdTrabajoDetalle)"
-              v-model="indication.Subtotal"
-              :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}"
-              v-on:keydown="filterJustNumberKeystrokes"
-              @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')"
-              :disabled="$attrs.disabled === true"
+              @blur="updatePrice(indication.Cantidad, indication.Precio, indication.IdTrabajoDetalle)"
+              v-model="indication.Precio"
             >
+          </td>
+          <td class="noMargins">
+            <input type="text" class="inputInTd text-right" v-model="indication.Subtotal" disabled>
           </td>
         </tr>
         <!-- The empty row for new values -->
@@ -69,13 +74,20 @@
             <input
               type="text"
               class="inputInTd text-right"
-              @change="updatePrice($event)"
               ref="ammountAfterCatalog"
               v-model="$v.newRow.Cantidad.$model"
+              :class="{'bg-danger text-white animated flash': $v.newRow.Cantidad.$error && !allRowEmpty}"
+              @change="updatePrice()"
+              v-on:keydown="filterJustNumberKeystrokes"
             >
           </td>
           <td class="noMargins">
-            <input type="text" class="inputInTd" v-model="$v.newRow.Notas.$model">
+            <input
+              type="text"
+              class="inputInTd"
+              v-model="$v.newRow.Notas.$model"
+              @blur="onDescriptionBlur()"
+            >
           </td>
           <td class="noMargins">
             <input
@@ -83,7 +95,9 @@
               class="inputInTd text-right"
               v-model="$v.newRow.Precio.$model"
               :class="{'bg-danger text-white animated flash': $v.newRow.Precio.$error && !allRowEmpty}"
+              @blur="addLastRow()"
               v-on:keydown="filterJustNumberKeystrokes"
+              :disabled="$v.newRow.Descripcion.$model !== -1"
             >
           </td>
           <td class="noMargins">
@@ -91,9 +105,7 @@
               type="text"
               class="inputInTd text-right"
               v-model="$v.newRow.Subtotal.$model"
-              :class="{'bg-danger text-white animated flash': $v.newRow.Precio.$error && !allRowEmpty}"
-              @blur="addLastRow()"
-              v-on:keydown="filterJustNumberKeystrokes"
+              disabled
             >
           </td>
         </tr>
@@ -126,7 +138,7 @@
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import WorkIndicationService from '../../../../services/WorkIndicationService.js'
 import _ from 'lodash'
-import { decimal, minLength, required } from 'vuelidate/lib/validators'
+import { decimal, minLength, minValue, required } from 'vuelidate/lib/validators'
 import log from 'loglevel'
 import catalogSearch from '../typeAheads/CatalogSearch'
 
@@ -152,7 +164,7 @@ export default {
 		newRow: {
 			Cantidad: {
 				required,
-				minLength: minLength(1)
+				minValue: minValue(1)
 			},
 			Descripcion: {
 				required,
@@ -164,7 +176,7 @@ export default {
 			Precio: {
 				required,
 				decimal,
-				minLength: minLength(1)
+				minValue: minValue(0)
 			},
 			Subtotal: {
 				required,
@@ -206,10 +218,8 @@ export default {
 				_.remove(this.insertedRows, ['IdTrabajoDetalle', rowId])
 			} else if (_.some(this.updatedRows, ['IdTrabajoDetalle', rowId])) {
 				_.remove(this.updatedRows, ['IdTrabajoDetalle', rowId])
-				debugger
 				this.deletedRows.push({ IdTrabajoDetalle: rowId })
 			} else {
-				debugger
 				this.deletedRows.push({ IdTrabajoDetalle: rowId })
 			}
 		},
@@ -219,23 +229,25 @@ export default {
 			if (temp) {
 				// Just update the insert with the new value. No more action required.
 				temp[field] = event.currentTarget.value
-			} else {
-				// OK, so we have to update. But maybe this field was already updated. Let's check.
-				temp = _.find(this.updatedRows, ['IdTrabajoDetalle', rowId])
-				if (temp) {
-					// The row was already updated. Make a cumulative update
-					var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
-					temp.Precio = original.Precio
-					temp.Descripcion = original.Descripcion
-				} else {
-					// First time updated. So jot it down.
-					var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
-					this.updatedRows.push(original)
-				}
+				return
 			}
+			// OK, so we have to update. But maybe this field was already updated. Let's check.
+			temp = _.find(this.updatedRows, ['IdTrabajoDetalle', rowId])
+			if (temp) {
+				// The row was already updated. Make a cumulative update
+				var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+				temp.Precio = original.Precio
+				temp.Descripcion = original.Descripcion
+			} else {
+				// First time updated. So jot it down.
+				var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+				this.updatedRows.push(original)
+			}
+
 			this.$emit('input', this.data)
 		},
 		async save(masterId) {
+			debugger
 			if (masterId !== 0) {
 				_.forEach(this.insertedRows, async row => {
 					row.IdTrabajo = masterId
@@ -261,7 +273,7 @@ export default {
 		getSum: function() {
 			try {
 				var sum = _.sumBy(this.data, function(n) {
-					var temp = parseFloat(n.Precio)
+					var temp = parseFloat(n.Subtotal)
 					if (isNaN(temp)) {
 						throw 'NaN'
 					} else {
@@ -277,18 +289,22 @@ export default {
 				return 'Datos incorrectos a sumar en la tabla de indicaciones'
 			}
 		},
-		updatePrice(event, id) {
+		updatePrice(ammount, price, id) {
 			if (id) {
 				var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
-				if (event.srcElement.value) {
-					elementInArray.Precio = 0
-				} else {
-					elementInArray.Precio = event.srcElement.value
+				if (ammount && price) {
+					elementInArray.Subtotal = ammount * price
 				}
 				this.$emit('input', this.data)
+				this.trackChanges({ currentTarget: { value: elementInArray.Subtotal } }, id, 'Subtotal')
 			} else {
 				// It's the new row who needs an update
 				this.newRow.Subtotal = this.newRow.Cantidad * this.newRow.Precio
+			}
+		},
+		onDescriptionBlur: function() {
+			if (this.$v.newRow.Descripcion.$model !== -1) {
+				this.addLastRow()
 			}
 		},
 		filterJustNumberKeystrokes(event) {
@@ -321,9 +337,10 @@ export default {
 				event.preventDefault()
 			}
 		},
-		// focus: function() {
-		// 	document.getElementById('workIndicationsTable').focus()
-		// },
+		focus: function() {
+			// Used by external container to set the focus in the component
+			this.$refs.workIndicationsTable.focus()
+		},
 		cleanComponent() {
 			this.newIds = 10000000
 			this.insertedRows = []
@@ -335,12 +352,18 @@ export default {
 			this.$v.newRow.$reset()
 		},
 		isError() {
-			return document.getElementsByClassName('bg-danger').length > 0 || this.$v.newRow.$anyError
+			return document.getElementsByClassName('bg-danger').length > 0 || (!this.allRowEmpty && this.$v.newRow.$anyError)
 		}
 	},
 	computed: {
 		allRowEmpty: function() {
-			return this.$v.newRow.descripcion.$model.length === 0 && this.$v.newRow.precio.$model.length === 0
+			return (
+				this.$v.newRow.Cantidad.$model.length === 0 &&
+				this.$v.newRow.Descripcion.$model === -1 &&
+				this.$v.newRow.Notas.$model.length === 0 &&
+				this.$v.newRow.Precio.$model.length === 0 &&
+				this.$v.newRow.Subtotal.$model.length === 0
+			)
 		}
 	},
 	created() {

@@ -16,7 +16,7 @@ export default {
 	},
 	methods: {
 		isNotANumber(data) {
-			if (!data) {
+			if (data !== 0 && !data) {
 				return true
 			}
 			return isNaN(parseFloat(data))
