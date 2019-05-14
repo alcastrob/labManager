@@ -3,7 +3,6 @@
     <input
       type="text"
       class="typeahead-input inputInTd"
-      placeholder="Buscar producto..."
       @keyup="search"
       @keydown.9.prevent="hidePopup"
       @keydown.13="selectEntry"

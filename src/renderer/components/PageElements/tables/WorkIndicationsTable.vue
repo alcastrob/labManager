@@ -17,7 +17,7 @@
           <td class="pt-3-half">
             <i
               v-if="$attrs.disabled !== true"
-              class="fa fa-times-circle"
+              class="fa fa-times-circle pt-1"
               @click="deleteRow(indication.IdTrabajoDetalle)"
             ></i>
           </td>
@@ -54,6 +54,7 @@
               class="inputInTd text-right"
               @blur="updatePrice(indication.Cantidad, indication.Precio, indication.IdTrabajoDetalle)"
               v-model="indication.Precio"
+              :disabled="indication.IdElementoCatalogo"
             >
           </td>
           <td class="noMargins">
@@ -117,7 +118,7 @@
           :class="{'d-inline-block text-danger animated shake': sumError}"
         >{{getSum()}}</p>
       </div>
-      <div>
+      <!-- <div>
         <h3>Inserted</h3>
         <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
           <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Subtotal}}</li>
@@ -130,7 +131,7 @@
         <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
           <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Subtotal}}</li>
         </ul>
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
