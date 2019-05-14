@@ -97,7 +97,8 @@
               :class="{'bg-danger text-white animated flash': $v.newRow.Precio.$error && !allRowEmpty}"
               @blur="addLastRow()"
               v-on:keydown="filterJustNumberKeystrokes"
-              :disabled="$v.newRow.Descripcion.$model !== -1"
+              @change="updatePrice()"
+              :disabled="$v.newRow.Descripcion.$model.IdElementoCatalogo"
             >
           </td>
           <td class="noMargins">
@@ -263,9 +264,6 @@ export default {
 		},
 		selectFromCatalog: function(e) {
 			this.newRow.Precio = e.Precio
-			// if (!this.newRow.Cantidad) {
-			// 	this.newRow.Cantidad = 1
-			// }
 			this.updatePrice()
 			this.$refs.ammountAfterCatalog.focus()
 		},
@@ -299,7 +297,14 @@ export default {
 				this.trackChanges({ currentTarget: { value: elementInArray.Subtotal } }, id, 'Subtotal')
 			} else {
 				// It's the new row who needs an update
-				this.newRow.Subtotal = this.newRow.Cantidad * this.newRow.Precio
+				let nanPrecio = isNaN(parseFloat(this.newRow.Precio))
+				let nanCantidad = isNaN(parseFloat(this.newRow.Cantidad))
+
+				if (nanPrecio || nanCantidad) {
+					this.newRow.Subtotal = ''
+				} else {
+					this.newRow.Subtotal = this.newRow.Cantidad * this.newRow.Precio
+				}
 			}
 		},
 		onDescriptionBlur: function() {

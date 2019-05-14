@@ -5,7 +5,7 @@
       class="typeahead-input inputInTd"
       placeholder="Buscar producto..."
       @keyup="search"
-      @keydown.9="hidePopup"
+      @keydown.9.prevent="hidePopup"
       @keydown.13="selectEntry"
       @keydown.38.prevent="entryUp"
       @keydown.40.prevent="entryDown"
@@ -69,6 +69,15 @@ export default {
 			if (this.query.length > MINIMUMQUERYLENGTH) {
 				this.resultsVisible = true
 				var items = await this.catalogService.searchCatalogEntriesByName(this.query)
+				if (items.length === 1) {
+					// Perfect match. Ensure to select this item in advance
+					this.$emit('input', { IdElementoCatalogo: items[0].IdElementoCatalogo, Descripcion: items[0].Descripcion })
+					this.candidateCatalogItemsFromQuery = items
+					this.tooManyCandidates = false
+					this.notVisibleItems = 0
+					return
+				}
+
 				this.candidateCatalogItemsFromQuery = _.slice(items, 0, 5)
 				this.tooManyCandidates = items.length > 5
 				this.notVisibleItems = items.length - 5
@@ -77,8 +86,8 @@ export default {
 				this.tooManyCandidates = false
 				this.notVisibleItems = 0
 				this.candidateCatalogItemsFromQuery = []
+				this.$emit('input', -1)
 			}
-			this.$emit('input', -1)
 		},
 		selectCatalogItem: function(name, id, continueWithPopup) {
 			this.query = name
@@ -88,7 +97,6 @@ export default {
 			if (!continueWithPopup) {
 				this.hidePopup(true)
 			}
-			// this.$refs.descripcion.focus()
 		},
 		canDisplayDropdown: function() {
 			this.resultVisible = this.query && this.query.length > MINIMUMQUERYLENGTH && this.gotFocus
@@ -98,27 +106,45 @@ export default {
 			if (!this.resultVisible) return
 
 			// alreadyEmmited values can be 'true', 'undefined' or even an event.
-			if (alreadyEmitted !== true && this.candidateCatalogItemsFromQuery.length === 1) {
+			let notEmitted = alreadyEmitted !== true
+			let onlyOneResult = this.candidateCatalogItemsFromQuery.length === 1
+			let queryAndFirstResultAreEqual = this.query === this.candidateCatalogItemsFromQuery[0].Descripcion
+
+			if (notEmitted && onlyOneResult && queryAndFirstResultAreEqual) {
 				// It's almost the perfect candidate. Let's select it in advance
 				let item = this.candidateCatalogItemsFromQuery[0]
 				this.$emit('input', { IdElementoCatalogo: item.IdElementoCatalogo, Descripcion: item.Descripcion })
 				this.$emit('change', item)
-				console.log('emmited', item)
+			}
+
+			if (notEmitted && onlyOneResult && !queryAndFirstResultAreEqual) {
+				// It's an uncatalogued item
+				this.$emit('input', { IdElementoCatalogo: null, Descripcion: this.query })
+				this.$emit('change', { IdElementoCatalogo: null, Descripcion: this.query, Precio: null })
 			}
 			this.gotFocus = false
 		},
 		selectEntry: function() {
 			if (!this.resultsVisible) return
-			var x = this.candidateCatalogItemsFromQuery[this.selectedItemPosition]
-			this.selectCatalogItem(x.Descripcion, x.IdElementoCatalogo)
+			let entry = this.candidateCatalogItemsFromQuery[this.selectedItemPosition]
+			this.selectCatalogItem(entry.Descripcion, entry.IdElementoCatalogo)
 		},
 		entryUp: function() {
 			if (!this.resultsVisible) return
-			this.selectedItemPosition = this.selectedItemPosition === 0 ? 4 : this.selectedItemPosition - 1
+			if (this.candidateCatalogItemsFromQuery === 1) {
+				this.selectedItemPosition = 0
+				return
+			}
+			this.selectedItemPosition =
+				this.selectedItemPosition === 0 ? this.candidateCatalogItemsFromQuery.length - 1 : this.selectedItemPosition - 1
 		},
 		entryDown: function() {
 			if (!this.resultsVisible) return
-			this.selectedItemPosition = (this.selectedItemPosition + 1) % 5
+			if (this.candidateCatalogItemsFromQuery === 1) {
+				this.selectedItemPosition = 0
+				return
+			}
+			this.selectedItemPosition = (this.selectedItemPosition + 1) % this.candidateCatalogItemsFromQuery.length
 		},
 		isSelected: function(catalogItem) {
 			return catalogItem === this.selectedItemPosition
