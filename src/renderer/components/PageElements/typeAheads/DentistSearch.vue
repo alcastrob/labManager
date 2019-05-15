@@ -29,11 +29,12 @@
 <script>
 import DentistService from '../../../../services/DentistService'
 import { mixin as clickaway } from 'vue-clickaway'
+import typeaheadMixin from './typeAheadMixin'
 import _ from 'lodash'
 
 export default {
 	name: 'dentistSearch',
-	mixins: [clickaway],
+	mixins: [clickaway, typeaheadMixin],
 	data() {
 		return {
 			resultsVisible: false,
@@ -112,8 +113,3 @@ export default {
 	}
 }
 </script>
-
-<style lang="scss">
-@import url('~@/assets/css/typeaheadjs.css');
-@import url('~@/assets/css/myTypeahead.css');
-</style>

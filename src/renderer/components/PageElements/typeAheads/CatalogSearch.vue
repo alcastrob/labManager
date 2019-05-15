@@ -41,12 +41,14 @@
 
 import CatalogService from '../../../../services/CatalogService'
 import _ from 'lodash'
+import typeaheadMixin from './typeAheadMixin'
 import { required } from 'vuelidate/lib/validators'
 
 const MINIMUMQUERYLENGTH = 4
 
 export default {
 	name: 'catalogSearch',
+	mixins: [typeaheadMixin],
 	data() {
 		return {
 			resultsVisible: false,
@@ -163,14 +165,21 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@import url('~@/assets/css/typeaheadjs.css');
-@import url('~@/assets/css/myTypeahead.css');
-.popup {
+<style>
+.inputInTd {
+	width: 100%;
+
+	padding: 10px;
+	margin: 0px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+
 	position: absolute;
-	top: 50px;
-}
-.selected {
-	background-color: #f4ecd6;
+	top: 0px;
+	height: 100%;
+
+	border: 0px;
+	background: transparent;
 }
 </style>

@@ -30,10 +30,11 @@
 
 import ProductBatchService from '../../../../services/ProductBatchService'
 import { mixin as clickaway } from 'vue-clickaway'
+import typeaheadMixin from './typeAheadMixin'
 
 export default {
 	name: 'productSearch',
-	mixins: [clickaway],
+	mixins: [clickaway, typeaheadMixin],
 	data() {
 		return {
 			resultsVisible: false,
@@ -93,8 +94,3 @@ export default {
 	}
 }
 </script>
-
-<style lang="scss">
-@import url('~@/assets/css/typeaheadjs.css');
-@import url('~@/assets/css/myTypeahead.css');
-</style>
