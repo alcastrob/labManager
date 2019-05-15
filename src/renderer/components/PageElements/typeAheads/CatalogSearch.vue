@@ -1,10 +1,10 @@
 <template>
-  <div @blur="selectEntry">
+  <div>
     <input
       type="text"
       class="typeahead-input inputInTd"
       @keyup="search"
-      @keydown.9="selectEntry"
+      @keydown.9="selectEntry()"
       @keydown.13="selectEntry(true)"
       @keydown.38.prevent="entryUp"
       @keydown.40.prevent="entryDown"
@@ -12,6 +12,7 @@
       ref="descripcion"
       :disabled="$attrs.disabled === true"
       :class="{'bg-danger text-white animated flash': !value && !query && !canBeEmpty}"
+      @blur="selectEntry()"
     >
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead popup">
       <div
@@ -104,12 +105,7 @@ export default {
 				this.$vnode.elm.parentNode.nextElementSibling.childNodes[0].focus()
 			}
 		},
-		canDisplayDropdown: function() {
-			this.resultsVisible = this.query && this.query.length > MINIMUMQUERYLENGTH && this.gotFocus
-			return this.resultsVisible
-		},
-
-		selectEntry: function(needExtraTab) {
+		selectEntry: function(needExtraTab, source) {
 			if (!this.resultsVisible) return
 			let entry = this.candidateCatalogItemsFromQuery[this.selectedItemPosition]
 
@@ -147,6 +143,10 @@ export default {
 		},
 		isSelected: function(catalogItem) {
 			return catalogItem === this.selectedItemPosition
+		},
+		canDisplayDropdown: function() {
+			this.resultsVisible = this.query && this.query.length > MINIMUMQUERYLENGTH && this.gotFocus
+			return this.resultsVisible
 		},
 		clear: function() {
 			this.query = ''
