@@ -8,7 +8,6 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <!-- <a href="#" class="btn btn-warning btn-collapsible"  @click="doValidatorExtraChecks">Validacion</a> -->
               <collapsible-action-button
                 iconCss="fas fa-map-pin"
                 text="Aditamentos"
@@ -475,7 +474,6 @@ export default {
 			this.$forceUpdate()
 		},
 		save: async function(url, changeInvoiceConfirmed = false) {
-			debugger
 			this.saveButtonPressed = true
 			this.$v.$touch()
 

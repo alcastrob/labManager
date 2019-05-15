@@ -25,8 +25,8 @@
             <catalog-search
               v-model="indication.Descripcion"
               @change="selectFromCatalog($event, indication)"
+              :class="{'bg-danger text-white animated flash': indication.Descripcion.length === 0}"
             ></catalog-search>
-            <!-- :class="{'bg-danger text-white animated flash': indication.Descripcion.length === 0}" -->
             {{indication.Descripcion}} | {{indication.IdElementoCatalogo}}
           </td>
           <td class="noMargins">
@@ -197,9 +197,6 @@ export default {
 					var newRow = { ...this.newRow }
 					newRow.IdTrabajoDetalle = this.newIds++
 					newRow.Cantidad = parseFloat(newRow.Cantidad)
-					// newRow.IdElementoCatalogo = this.newRow.Descripcion.IdElementoCatalogo
-					// newRow.Descripcion = this.newRow.Descripcion.Descripcion
-					debugger
 					this.data.push(newRow)
 					this.insertedRows.push(newRow)
 					this.newRow.Cantidad = ''
@@ -266,15 +263,19 @@ export default {
 			}
 		},
 		selectFromCatalog: function(e, row) {
-			row.Precio = e.Precio
-
 			if (typeof row.Descripcion === 'object') {
 				if (row.Descripcion.IdElementoCatalogo) {
 					row.IdElementoCatalogo = row.Descripcion.IdElementoCatalogo
+				} else {
+					row.IdElementoCatalogo = null
 				}
 				row.Descripcion = row.Descripcion.Descripcion
 			}
-			this.updatePrice(row.IdTrabajoDetalle, row.Cantidad, row.Precio, e.IdElementoCatalogo)
+
+			if (e.Precio !== undefined) {
+				row.Precio = e.Precio
+				this.updatePrice(row.IdTrabajoDetalle, row.Cantidad, row.Precio, e.IdElementoCatalogo)
+			}
 
 			// This method works in all the rows of the table, so doing this
 			// indirection via refs is quite complicated.

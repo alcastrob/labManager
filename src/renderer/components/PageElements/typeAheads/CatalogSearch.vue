@@ -8,7 +8,7 @@
       @keydown.13="selectEntry"
       @keydown.38.prevent="entryUp"
       @keydown.40.prevent="entryDown"
-      v-model="query"
+      v-model="$v.query.$model"
       ref="descripcion"
       v-on-clickaway="hidePopup"
       :class="{'is-invalid': isInvalid}"
@@ -43,6 +43,7 @@
 import CatalogService from '../../../../services/CatalogService'
 import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
+import { required } from 'vuelidate/lib/validators'
 
 const MINIMUMQUERYLENGTH = 4
 
@@ -62,6 +63,11 @@ export default {
 		}
 	},
 	props: ['value', 'isInvalid'],
+	validations: {
+		query: {
+			required
+		}
+	},
 	methods: {
 		search: async function() {
 			this.gotFocus = true
@@ -100,29 +106,31 @@ export default {
 			}
 		},
 		canDisplayDropdown: function() {
-			this.resultVisible = this.query && this.query.length > MINIMUMQUERYLENGTH && this.gotFocus
-			return this.resultVisible
+			this.resultsVisible = this.query && this.query.length > MINIMUMQUERYLENGTH && this.gotFocus
+			return this.resultsVisible
 		},
 		hidePopup: function(alreadyEmitted) {
 			// alreadyEmmited values can be 'true', 'undefined' or even an event.
 			let notEmitted = alreadyEmitted !== true
-			// No match between query and suggestion
-			let noResults = this.candidateCatalogItemsFromQuery.length === 0
 			// Match between query and suggestion
 			let onlyOneResult = this.candidateCatalogItemsFromQuery.length === 1
-			let somethingHasChanged =
-				typeof this.value === 'object' ? this.value.Descripcion !== this.query : this.value !== this.query
 			let queryAndFirstResultAreEqual = false
 			if (this.candidateCatalogItemsFromQuery.length > 0) {
 				queryAndFirstResultAreEqual = this.query === this.candidateCatalogItemsFromQuery[0].Descripcion
 			}
 
-			if (!somethingHasChanged) {
+			if (this.gotFocus && !this.$v.query.$anyDirty) {
+				this.$emit('change', { src: this })
 				this.gotFocus = false
 				return
 			}
 
-			if (notEmitted && onlyOneResult && queryAndFirstResultAreEqual) {
+			if (!this.$v.query.$anyDirty || !this.query || !notEmitted) {
+				this.gotFocus = false
+				return
+			}
+			debugger
+			if (onlyOneResult && queryAndFirstResultAreEqual) {
 				// It's almost the perfect candidate. Let's select it in advance
 				let item = this.candidateCatalogItemsFromQuery[0]
 				this.$emit('input', { IdElementoCatalogo: item.IdElementoCatalogo, Descripcion: item.Descripcion })
@@ -133,7 +141,7 @@ export default {
 				return
 			}
 
-			if (notEmitted && (onlyOneResult || noResults) && !queryAndFirstResultAreEqual) {
+			if (!queryAndFirstResultAreEqual) {
 				// It's an uncatalogued item
 				this.$emit('input', { IdElementoCatalogo: null, Descripcion: this.query })
 				this.$emit('change', { IdElementoCatalogo: null, Descripcion: this.query, Precio: 0, src: this })
