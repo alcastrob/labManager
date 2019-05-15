@@ -579,10 +579,11 @@ export default {
 		showLabelModal(labelType) {
 			if (this.save()) {
 				this.printedLabel = labelType
+				this.workIndicationsText = ''
 				if (this.workIndications !== undefined) {
-					this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
-				} else {
-					this.workIndicationsText = ''
+					_.forEach(this.workIndications, x => {
+						this.workIndicationsText += `${x.Descripcion} (${x.Notas})\n`
+					})
 				}
 				this.$refs.printLabelModal.show()
 			}

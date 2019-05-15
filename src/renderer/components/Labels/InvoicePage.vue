@@ -152,6 +152,7 @@
                   <td class="text-left" v-if="editing"></td>
                   <td class="text-left">
                     <span class="text-monospace">{{indication.Descripcion}}</span>
+                    <span v-if="indication.Notas">({{indication.Notas}})</span>
                   </td>
                   <td class="text-right"></td>
                   <td class="text-right"></td>
