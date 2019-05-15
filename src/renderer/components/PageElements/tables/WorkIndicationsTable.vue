@@ -21,13 +21,15 @@
               @click="deleteRow(indication.IdTrabajoDetalle)"
             ></i>
           </td>
-          <td class="noMargins">
+          <td
+            class="noMargins"
+            :class="{'bg-danger text-white animated flash': !indication.Descripcion}"
+          >
             <catalog-search
               v-model="indication.Descripcion"
               @change="selectFromCatalog($event, indication)"
-              :class="{'bg-danger text-white animated flash': indication.Descripcion.length === 0}"
             ></catalog-search>
-            {{indication.Descripcion}} | {{indication.IdElementoCatalogo}}
+            {{indication.Descripcion}} | {{indication.IdElementoCatalogo}} | {{!indication.Descripcion}}
           </td>
           <td class="noMargins">
             <input
@@ -263,6 +265,7 @@ export default {
 			}
 		},
 		selectFromCatalog: function(e, row) {
+			// debugger
 			if (typeof row.Descripcion === 'object') {
 				if (row.Descripcion.IdElementoCatalogo) {
 					row.IdElementoCatalogo = row.Descripcion.IdElementoCatalogo
@@ -272,14 +275,14 @@ export default {
 				row.Descripcion = row.Descripcion.Descripcion
 			}
 
-			if (e.Precio !== undefined) {
-				row.Precio = e.Precio
-				this.updatePrice(row.IdTrabajoDetalle, row.Cantidad, row.Precio, e.IdElementoCatalogo)
-			}
+			row.Precio = e.Precio !== undefined ? e.Precio : 0
 
-			// This method works in all the rows of the table, so doing this
-			// indirection via refs is quite complicated.
-			e.src.$vnode.elm.parentNode.nextElementSibling.childNodes[0].focus()
+			this.updatePrice(row.IdTrabajoDetalle, row.Cantidad, row.Precio, e.IdElementoCatalogo)
+
+			// console.log(e)
+			// if (e.src) {
+			// 	e.src.$vnode.elm.parentNode.nextElementSibling.childNodes[0].focus()
+			// }
 		},
 		// Other methods (specific)------------------------------------------------
 		getSum: function() {

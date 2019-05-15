@@ -1,19 +1,17 @@
 <template>
-  <div>
+  <div @blur="selectEntry">
     <input
       type="text"
       class="typeahead-input inputInTd"
       @keyup="search"
-      @keydown.9.prevent="hidePopup"
-      @keydown.13="selectEntry"
+      @keydown.9="selectEntry"
+      @keydown.13="selectEntry(true)"
       @keydown.38.prevent="entryUp"
       @keydown.40.prevent="entryDown"
       v-model="$v.query.$model"
       ref="descripcion"
-      v-on-clickaway="hidePopup"
       :class="{'is-invalid': isInvalid}"
       :disabled="$attrs.disabled === true"
-      :blur="hidePopup"
     >
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead popup">
       <div
@@ -23,7 +21,7 @@
         <span
           class="list-group-item clickable"
           :class="{'selected': isSelected(index)}"
-          v-on:click="selectCatalogItem(catalogItem.Descripcion, catalogItem.IdElementoCatalogo)"
+          v-on:click="selectCatalogItem(catalogItem.Descripcion, catalogItem.IdElementoCatalogo, catalogItem.Precio, true)"
         >{{catalogItem.Descripcion}}</span>
       </div>
       <div v-if="tooManyCandidates">
@@ -59,7 +57,8 @@ export default {
 			tooManyCandidates: false,
 			notVisibleItems: 0,
 			selectedItemPosition: 0,
-			gotFocus: false
+			gotFocus: false,
+			lastEmmited: ''
 		}
 	},
 	props: ['value', 'isInvalid'],
@@ -94,67 +93,102 @@ export default {
 				this.$emit('input', '')
 			}
 		},
-		selectCatalogItem: function(name, id, continueWithPopup) {
+		selectCatalogItem: function(name, id, price, requiresExtraTab) {
 			this.query = name
 			this.resultsVisible = false
-			this.$emit('input', { IdElementoCatalogo: id, Descripcion: name })
-			let changeEvent = _.find(this.candidateCatalogItemsFromQuery, ['IdElementoCatalogo', id])
-			changeEvent.src = this
+
+			// debugger
+			let changeEvent = { IdElementoCatalogo: id, Descripcion: name }
+			if (price) changeEvent.Precio = price
+			this.$emit('input', changeEvent)
 			this.$emit('change', changeEvent)
-			if (!continueWithPopup) {
-				this.hidePopup(true)
+			this.gotFocus = false
+			if (requiresExtraTab) {
+				// This method works in all the rows of the table, so doing this
+				// indirection via refs is quite complicated.
+				this.$vnode.elm.parentNode.nextElementSibling.childNodes[0].focus()
 			}
 		},
 		canDisplayDropdown: function() {
 			this.resultsVisible = this.query && this.query.length > MINIMUMQUERYLENGTH && this.gotFocus
 			return this.resultsVisible
 		},
-		hidePopup: function(alreadyEmitted) {
+		hidePopupKK: function(selectedViaClick) {
 			// alreadyEmmited values can be 'true', 'undefined' or even an event.
-			let notEmitted = alreadyEmitted !== true
+			// let notEmitted = alreadyEmitted !== true
 			// Match between query and suggestion
-			let onlyOneResult = this.candidateCatalogItemsFromQuery.length === 1
+			// let onlyOneResult = this.candidateCatalogItemsFromQuery.length === 1
 			let queryAndFirstResultAreEqual = false
 			if (this.candidateCatalogItemsFromQuery.length > 0) {
 				queryAndFirstResultAreEqual = this.query === this.candidateCatalogItemsFromQuery[0].Descripcion
 			}
 
 			if (this.gotFocus && !this.$v.query.$anyDirty) {
-				this.$emit('change', { src: this })
+				// this.$emit('change', { src: this })
+				console.log('a')
+				this.$emit('change', {})
 				this.gotFocus = false
 				return
 			}
 
-			if (!this.$v.query.$anyDirty || !this.query || !notEmitted) {
+			if (!this.$v.query.$anyDirty || !this.query || this.lastEmmited === this.query) {
+				console.log('b')
 				this.gotFocus = false
 				return
 			}
-			debugger
-			if (onlyOneResult && queryAndFirstResultAreEqual) {
-				// It's almost the perfect candidate. Let's select it in advance
+
+			if (selectedViaClick) {
 				let item = this.candidateCatalogItemsFromQuery[0]
 				this.$emit('input', { IdElementoCatalogo: item.IdElementoCatalogo, Descripcion: item.Descripcion })
 				let changeEvent = { ...item }
 				changeEvent.src = this
 				this.$emit('change', changeEvent)
+				this.lastEmmited = item.Descripcion
 				this.gotFocus = false
 				return
 			}
-
-			if (!queryAndFirstResultAreEqual) {
+			// debugger
+			if (queryAndFirstResultAreEqual) {
+				// It's almost the perfect candidate. Let's select it in advance
+				let item = this.candidateCatalogItemsFromQuery[0]
+				this.$emit('input', { IdElementoCatalogo: item.IdElementoCatalogo, Descripcion: item.Descripcion })
+				let changeEvent = { ...item }
+				// changeEvent.src = this
+				this.$emit('change', changeEvent)
+				this.lastEmmited = item.Descripcion
+				this.gotFocus = false
+				// return
+			} else {
 				// It's an uncatalogued item
 				this.$emit('input', { IdElementoCatalogo: null, Descripcion: this.query })
 				this.$emit('change', { IdElementoCatalogo: null, Descripcion: this.query, Precio: 0, src: this })
+				// this.$emit('change', { IdElementoCatalogo: null, Descripcion: this.query, Precio: 0 })
+				this.lastEmmited = this.query
 				this.gotFocus = false
-				return
+				// return
 			}
 
-			this.gotFocus = false
+			// this.gotFocus = false
 		},
-		selectEntry: function() {
+		selectEntry: function(needExtraTab) {
 			if (!this.resultsVisible) return
 			let entry = this.candidateCatalogItemsFromQuery[this.selectedItemPosition]
-			this.selectCatalogItem(entry.Descripcion, entry.IdElementoCatalogo)
+
+			let queryAndFirstResultAreEqual = false
+			if (this.candidateCatalogItemsFromQuery.length > 0) {
+				queryAndFirstResultAreEqual = this.query === this.candidateCatalogItemsFromQuery[0].Descripcion
+			}
+
+			// debugger
+			if (entry && needExtraTab) {
+				this.selectCatalogItem(entry.Descripcion, entry.IdElementoCatalogo, entry.Precio, true)
+				return
+			}
+			if (entry && queryAndFirstResultAreEqual) {
+				this.selectCatalogItem(entry.Descripcion, entry.IdElementoCatalogo, entry.Precio, false)
+			} else {
+				this.selectCatalogItem(this.query, null, null, false)
+			}
 		},
 		entryUp: function() {
 			if (!this.resultsVisible) return
