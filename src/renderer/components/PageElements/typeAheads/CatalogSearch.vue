@@ -10,8 +10,8 @@
       @keydown.40.prevent="entryDown"
       v-model="$v.query.$model"
       ref="descripcion"
-      :class="{'is-invalid': isInvalid}"
       :disabled="$attrs.disabled === true"
+      :class="{'bg-danger text-white animated flash': !value && !query && !canBeEmpty}"
     >
     <div v-if="canDisplayDropdown()" class="typeahead-dropdown list-group myTypeahead popup">
       <div
@@ -39,7 +39,6 @@
 'use strict'
 
 import CatalogService from '../../../../services/CatalogService'
-import { mixin as clickaway } from 'vue-clickaway'
 import _ from 'lodash'
 import { required } from 'vuelidate/lib/validators'
 
@@ -47,21 +46,18 @@ const MINIMUMQUERYLENGTH = 4
 
 export default {
 	name: 'catalogSearch',
-	mixins: [clickaway],
 	data() {
 		return {
 			resultsVisible: false,
 			query: '',
-			selectedCatalogItemId: undefined,
 			candidateCatalogItemsFromQuery: [],
 			tooManyCandidates: false,
 			notVisibleItems: 0,
 			selectedItemPosition: 0,
-			gotFocus: false,
-			lastEmmited: ''
+			gotFocus: false
 		}
 	},
-	props: ['value', 'isInvalid'],
+	props: ['value', 'canBeEmpty'],
 	validations: {
 		query: {
 			required
@@ -97,7 +93,6 @@ export default {
 			this.query = name
 			this.resultsVisible = false
 
-			// debugger
 			let changeEvent = { IdElementoCatalogo: id, Descripcion: name }
 			if (price) changeEvent.Precio = price
 			this.$emit('input', changeEvent)
@@ -113,63 +108,7 @@ export default {
 			this.resultsVisible = this.query && this.query.length > MINIMUMQUERYLENGTH && this.gotFocus
 			return this.resultsVisible
 		},
-		hidePopupKK: function(selectedViaClick) {
-			// alreadyEmmited values can be 'true', 'undefined' or even an event.
-			// let notEmitted = alreadyEmitted !== true
-			// Match between query and suggestion
-			// let onlyOneResult = this.candidateCatalogItemsFromQuery.length === 1
-			let queryAndFirstResultAreEqual = false
-			if (this.candidateCatalogItemsFromQuery.length > 0) {
-				queryAndFirstResultAreEqual = this.query === this.candidateCatalogItemsFromQuery[0].Descripcion
-			}
 
-			if (this.gotFocus && !this.$v.query.$anyDirty) {
-				// this.$emit('change', { src: this })
-				console.log('a')
-				this.$emit('change', {})
-				this.gotFocus = false
-				return
-			}
-
-			if (!this.$v.query.$anyDirty || !this.query || this.lastEmmited === this.query) {
-				console.log('b')
-				this.gotFocus = false
-				return
-			}
-
-			if (selectedViaClick) {
-				let item = this.candidateCatalogItemsFromQuery[0]
-				this.$emit('input', { IdElementoCatalogo: item.IdElementoCatalogo, Descripcion: item.Descripcion })
-				let changeEvent = { ...item }
-				changeEvent.src = this
-				this.$emit('change', changeEvent)
-				this.lastEmmited = item.Descripcion
-				this.gotFocus = false
-				return
-			}
-			// debugger
-			if (queryAndFirstResultAreEqual) {
-				// It's almost the perfect candidate. Let's select it in advance
-				let item = this.candidateCatalogItemsFromQuery[0]
-				this.$emit('input', { IdElementoCatalogo: item.IdElementoCatalogo, Descripcion: item.Descripcion })
-				let changeEvent = { ...item }
-				// changeEvent.src = this
-				this.$emit('change', changeEvent)
-				this.lastEmmited = item.Descripcion
-				this.gotFocus = false
-				// return
-			} else {
-				// It's an uncatalogued item
-				this.$emit('input', { IdElementoCatalogo: null, Descripcion: this.query })
-				this.$emit('change', { IdElementoCatalogo: null, Descripcion: this.query, Precio: 0, src: this })
-				// this.$emit('change', { IdElementoCatalogo: null, Descripcion: this.query, Precio: 0 })
-				this.lastEmmited = this.query
-				this.gotFocus = false
-				// return
-			}
-
-			// this.gotFocus = false
-		},
 		selectEntry: function(needExtraTab) {
 			if (!this.resultsVisible) return
 			let entry = this.candidateCatalogItemsFromQuery[this.selectedItemPosition]
@@ -179,7 +118,6 @@ export default {
 				queryAndFirstResultAreEqual = this.query === this.candidateCatalogItemsFromQuery[0].Descripcion
 			}
 
-			// debugger
 			if (entry && needExtraTab) {
 				this.selectCatalogItem(entry.Descripcion, entry.IdElementoCatalogo, entry.Precio, true)
 				return

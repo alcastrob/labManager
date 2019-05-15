@@ -21,15 +21,11 @@
               @click="deleteRow(indication.IdTrabajoDetalle)"
             ></i>
           </td>
-          <td
-            class="noMargins"
-            :class="{'bg-danger text-white animated flash': !indication.Descripcion}"
-          >
+          <td class="noMargins">
             <catalog-search
               v-model="indication.Descripcion"
               @change="selectFromCatalog($event, indication)"
             ></catalog-search>
-            {{indication.Descripcion}} | {{indication.IdElementoCatalogo}} | {{!indication.Descripcion}}
           </td>
           <td class="noMargins">
             <input
@@ -70,6 +66,7 @@
               ref="catalogNew"
               v-model="$v.newRow.Descripcion.$model"
               @change="selectFromCatalog($event, newRow)"
+              canBeEmpty="true"
             ></catalog-search>
           </td>
           <td class="noMargins">
@@ -265,7 +262,6 @@ export default {
 			}
 		},
 		selectFromCatalog: function(e, row) {
-			// debugger
 			if (typeof row.Descripcion === 'object') {
 				if (row.Descripcion.IdElementoCatalogo) {
 					row.IdElementoCatalogo = row.Descripcion.IdElementoCatalogo
@@ -278,11 +274,6 @@ export default {
 			row.Precio = e.Precio !== undefined ? e.Precio : 0
 
 			this.updatePrice(row.IdTrabajoDetalle, row.Cantidad, row.Precio, e.IdElementoCatalogo)
-
-			// console.log(e)
-			// if (e.src) {
-			// 	e.src.$vnode.elm.parentNode.nextElementSibling.childNodes[0].focus()
-			// }
 		},
 		// Other methods (specific)------------------------------------------------
 		getSum: function() {
