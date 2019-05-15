@@ -25,6 +25,7 @@
             <catalog-search
               v-model="indication.Descripcion"
               @change="selectFromCatalog($event, indication)"
+              :disabled="$attrs.disabled === true"
             ></catalog-search>
           </td>
           <td class="noMargins">
@@ -34,6 +35,7 @@
               class="inputInTd text-right"
               @change="updatePrice(indication.IdTrabajoDetalle, indication.Cantidad, indication.Precio)"
               :class="{'bg-danger text-white animated flash': isNotANumber(indication.Cantidad)}"
+              :disabled="$attrs.disabled === true"
             >
           </td>
           <td class="noMargins">
@@ -42,6 +44,7 @@
               class="inputInTd"
               @change="trackChanges($event, indication.IdTrabajoDetalle, 'Notas')"
               v-model="indication.Notas"
+              :disabled="$attrs.disabled === true"
             >
           </td>
           <td class="noMargins">
@@ -51,7 +54,7 @@
               @blur="updatePrice(indication.IdTrabajoDetalle, indication.Cantidad, indication.Precio)"
               v-model="indication.Precio"
               :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}"
-              :disabled="indication.IdElementoCatalogo"
+              :disabled="indication.IdElementoCatalogo || $attrs.disabled === true"
             >
           </td>
           <td class="noMargins">
