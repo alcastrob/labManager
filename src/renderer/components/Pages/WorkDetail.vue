@@ -491,7 +491,6 @@ export default {
 				}
 				return false
 			}
-
 			if (this.invoice && !changeInvoiceConfirmed) {
 				this.$refs.includedInInvoiceModal.show()
 				return
@@ -622,7 +621,8 @@ export default {
 		},
 		indicationsTotalChanged(newTotal) {
 			this.work.PrecioFinal = newTotal
-			this.work.PorcentajeDescuento = ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
+			this.work.PorcentajeDescuento =
+				this.work.PrecioFinal === 0 ? 0 : ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		updatePercentageDiscount() {
