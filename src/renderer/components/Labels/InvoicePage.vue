@@ -37,6 +37,7 @@
     <!-- row -->
     <div class="row mt-5">
       <div class="col-sm-12">
+        <!-- forPrinter -->
         <div style="height: 1075px;" v-if="forPrinter">
           <div
             v-if="!isFirstPage"
@@ -45,10 +46,10 @@
           <table class="table table-invoice" width="100%" cellspacing="0">
             <thead>
               <tr>
-                <th class="text-left" style="width: 60%;">Concepto</th>
+                <th class="text-left" style="width: 50%;">Concepto</th>
                 <th class="text-right" style="width: 10%;">Cantidad</th>
                 <th class="text-right" style="width: 10%;">P. Unidad</th>
-                <th class="text-right" style="width: 10%;">Dto.</th>
+                <th class="text-right" style="width: 11%;">Importe</th>
                 <th class="text-right" style="width: 10%;">Subtotal</th>
               </tr>
             </thead>
@@ -62,10 +63,14 @@
                     <br>
                     <span class>{{work.Paciente}}</span>
                   </td>
-                  <td class="text-right">1</td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
+                  <td class="text-right"></td>
+                  <!-- <td class="text-right">1</td> -->
+                  <!-- <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
                   <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
+                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>-->
+                  <td class="text-right"></td>
+                  <td class="text-right"></td>
+                  <td class="text-right"></td>
                 </tr>
                 <tr
                   class="leapTr dontBreakHere"
@@ -74,11 +79,57 @@
                 >
                   <td class="text-left">
                     <span class="text-monospace">{{indication.Descripcion}}</span>
+                    <span v-if="indication.Notas">({{indication.Notas}})</span>
                   </td>
+                  <!-- <td class="text-right"></td>
+                  <td class="text-right"></td>-->
+                  <td class="text-right">{{indication.Cantidad}}</td>
+                  <td class="text-right">{{moneyFormatter.format(indication.Precio)}}</td>
+                  <!-- <td class="text-right"></td> -->
+                  <td
+                    class="text-right"
+                  >{{moneyFormatter.format(indication.Precio * indication.Cantidad)}}</td>
                   <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
+                </tr>
+                <tr class="leapTr">
+                  <td class="text-left" v-if="editing"></td>
+                  <td class="text-left">
+                    <span class="text-monospace">Descuento</span>
+                    <span v-if="!editing">({{work.PorcentajeDescuento}}%)</span>
+                  </td>
+                  <td></td>
+
+                  <template v-if="editing">
+                    <td class="text-right">
+                      <euroInput
+                        class="form-control text-right inputInForm"
+                        v-model="work.TotalDescuento"
+                        @input="updateTotalDiscount(work)"
+                      ></euroInput>
+                    </td>
+                    <td class="text-right">
+                      <percentageInput
+                        class="form-control text-right inputInForm"
+                        v-model="work.PorcentajeDescuento"
+                        @input="updatePercentageDiscount(work)"
+                      ></percentageInput>
+                    </td>
+                  </template>
+                  <template v-else>
+                    <td class="text-right">-{{moneyFormatter.format(work.TotalDescuento)}}</td>
+                  </template>
+
+                  <td class="text-right">-{{moneyFormatter.format(work.TotalDescuento)}}</td>
+                  <td></td>
+                  <!-- <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td> -->
+                </tr>
+                <tr class="leapTr">
+                  <td class="text-left" v-if="editing"></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
                 </tr>
               </template>
             </tbody>
@@ -87,24 +138,30 @@
             class="text-right font-weight-bold"
             v-if="isLastPage"
           >Total: {{moneyFormatter.format(invoice.Total)}}</div>
+          <div class="mt-4" v-if="appliedDiscount > 0 && isLastPage">
+            <h4>Detalle de los descuentos aplicados</h4>
+            <div
+              class="mb-4 font-weight-bold text-right"
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
+          </div>
           <div class="text-right font-italic" v-else>...suma y sigue.</div>
         </div>
-        <!-- height forPrinter -->
-
+        <!-- end forPrinter -->
+        <!-- forScreen -->
         <div v-else>
           <table class="table table-invoice" width="100%" cellspacing="0">
             <thead>
               <tr>
                 <template v-if="editing">
                   <th class="text-left" style="width: 2%;"></th>
-                  <th class="text-left" style="width: 58%;">Concepto</th>
+                  <th class="text-left" style="width: 48%;">Concepto</th>
                 </template>
                 <template v-else>
-                  <th class="text-left" style="width: 60%;">Concepto</th>
+                  <th class="text-left" style="width: 50%;">Concepto</th>
                 </template>
                 <th class="text-right" style="width: 10%;">Cantidad</th>
                 <th class="text-right" style="width: 10%;">P. Unidad</th>
-                <th class="text-right" style="width: 10%;">Dto.</th>
+                <th class="text-right" style="width: 11%;">Importe</th>
                 <th class="text-right" style="width: 10%;">Subtotal</th>
               </tr>
             </thead>
@@ -125,10 +182,12 @@
                     <br>
                     <span class>{{work.Paciente}}</span>
                   </td>
-                  <td class="text-right">1</td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
+                  <td class="text-right"></td>
+                  <!-- <td class="text-right">1</td> -->
+                  <!-- <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td> -->
+                  <td class="text-right"></td>
                   <td class="text-right">
-                    <template v-if="editing">
+                    <!-- <template v-if="editing">
                       <percentageInput
                         class="form-control text-right inputInForm"
                         v-model="work.PorcentajeDescuento"
@@ -140,9 +199,10 @@
                         @input="updateTotalDiscount(work)"
                       ></euroInput>
                     </template>
-                    <template v-else>{{moneyFormatter.format(work.TotalDescuento)}}</template>
+                    <template v-else>{{moneyFormatter.format(work.TotalDescuento)}}</template>-->
                   </td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
+                  <!-- <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td> -->
+                  <td class="text-right"></td>
                 </tr>
                 <tr
                   class="leapTr dontBreakHere"
@@ -154,10 +214,53 @@
                     <span class="text-monospace">{{indication.Descripcion}}</span>
                     <span v-if="indication.Notas">({{indication.Notas}})</span>
                   </td>
+                  <td class="text-right">{{indication.Cantidad}}</td>
+                  <td class="text-right">{{moneyFormatter.format(indication.Precio)}}</td>
+
+                  <td
+                    class="text-right"
+                  >{{moneyFormatter.format(indication.Precio * indication.Cantidad)}}</td>
                   <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
+                </tr>
+                <tr class="leapTr">
+                  <td class="text-left" v-if="editing"></td>
+                  <td class="text-left">
+                    <span class="text-monospace">Descuento</span>
+                    <span v-if="!editing">({{work.PorcentajeDescuento}}%)</span>
+                  </td>
+                  <td></td>
+
+                  <template v-if="editing">
+                    <td class="text-right">
+                      <euroInput
+                        class="form-control text-right inputInForm"
+                        v-model="work.TotalDescuento"
+                        @input="updateTotalDiscount(work)"
+                      ></euroInput>
+                    </td>
+                    <td class="text-right">
+                      <percentageInput
+                        class="form-control text-right inputInForm"
+                        v-model="work.PorcentajeDescuento"
+                        @input="updatePercentageDiscount(work)"
+                      ></percentageInput>
+                    </td>
+                  </template>
+                  <template v-else>
+                    <td class="text-right">-{{moneyFormatter.format(work.TotalDescuento)}}</td>
+                  </template>
+
+                  <td class="text-right">-{{moneyFormatter.format(work.TotalDescuento)}}</td>
+                  <td></td>
+                  <!-- <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td> -->
+                </tr>
+                <tr class="leapTr">
+                  <td class="text-left" v-if="editing"></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
                 </tr>
               </template>
             </tbody>
@@ -165,8 +268,14 @@
           <div
             class="text-right font-weight-bold pb-5"
           >Total: {{moneyFormatter.format(invoice.Total)}}</div>
+          <div v-if="!editing">
+            <h4>Detalle de los descuentos aplicados</h4>
+            <div
+              class="mb-4 font-weight-bold text-right"
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
+          </div>
         </div>
-        <!-- forScreen -->
+        <!-- end forScreen -->
         <button
           class="btn btn-secondary btn-block mb-4"
           type="button"
@@ -276,6 +385,14 @@ export default {
 		editing: {
 			type: Boolean,
 			required: true
+		},
+		appliedDiscount: {
+			type: Number,
+			required: true
+		},
+		appliedPercentageDiscount: {
+			type: Number,
+			required: true
 		}
 	},
 	methods: {
@@ -308,20 +425,14 @@ export default {
 		},
 		updatePercentageDiscount(work) {
 			work.TotalDescuento = (work.PrecioSinDescuento * work.PorcentajeDescuento) / 100
-
 			work.PrecioFinalConDescuento = work.PrecioSinDescuento - work.TotalDescuento
-
 			this.worksUpdated = true
-
 			this.updateGrandTotal()
 		},
 		updateTotalDiscount(work) {
 			work.PorcentajeDescuento = ((work.TotalDescuento * 100) / work.PrecioSinDescuento).toFixed(2)
-
 			work.PrecioFinalConDescuento = work.PrecioSinDescuento - work.TotalDescuento
-
 			this.worksUpdated = true
-
 			this.updateGrandTotal()
 		},
 		updateGrandTotal() {
