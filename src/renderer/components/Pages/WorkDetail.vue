@@ -622,6 +622,7 @@ export default {
 		},
 		indicationsTotalChanged(newTotal) {
 			this.work.PrecioFinal = newTotal
+			this.work.PorcentajeDescuento = ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		updatePercentageDiscount() {
