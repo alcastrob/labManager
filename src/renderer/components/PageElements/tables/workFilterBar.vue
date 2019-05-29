@@ -127,6 +127,9 @@ export default {
 				tipo: this.$refs.tipo.getSelected()
 			})
 		}
+	},
+	activated() {
+		this.filterText = ''
 	}
 }
 </script>

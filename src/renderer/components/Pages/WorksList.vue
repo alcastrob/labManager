@@ -1,12 +1,12 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-8">
         <h1 v-if="showCustomHeader">{{listHeading}}</h1>
         <h1 v-else>Listado de Trabajos</h1>
       </div>
       <!-- col-md-6 -->
-      <div class="col-md-6 mt-2">
+      <div class="col-md-4 mt-2">
         <div class="float-right">
           <collapsibleExcelButton
             fileName="trabajos"
@@ -159,6 +159,16 @@ export default {
 		updateListAfterNavigating: async function() {
 			await this.updateDatasetWithFilters(this.lastFilterUsed)
 			this.$refs.workExtendedTable.sortBy()
+		},
+		refreshFilters() {
+			this.$refs.workExtendedTable.setFilters(this.$route.query.filter)
+			if (this.$route.path.startsWith('/works/list/dentist/')) {
+				this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter, Number(this.$route.params['id'])))
+			} else {
+				this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
+			}
+			this.listHeading = this.$route.query.title
+			this.filterChanged = false
 		}
 	},
 	computed: {
@@ -174,15 +184,11 @@ export default {
 	activated() {
 		// The data will be loaded even if the rest of the page is in the cache
 		this.updateListAfterNavigating()
+		this.refreshFilters()
 	},
 	mounted() {
-		this.$refs.workExtendedTable.setFilters(this.$route.query.filter)
-
 		this.$root.$on('workList:ReloadRequest', () => {
-			this.$refs.workExtendedTable.setFilters(this.$route.query.filter)
-			this.updateDatasetWithFilters(this.translateFilter(this.$route.query.filter))
-			this.filterChanged = false
-			this.listHeading = this.$route.query.title
+			this.refreshFilters()
 		})
 
 		this.isAdmin = this.configFileService.configGet('isAdmin')
