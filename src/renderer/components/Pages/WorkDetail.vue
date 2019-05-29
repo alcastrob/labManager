@@ -691,12 +691,12 @@ export default {
 				return false
 			}
 			var result = this.$v.$anyDirty
-			if (this.$refs.workIndications !== undefined) {
+			if (this.$refs.workIndications) {
 				// If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
 				this.$refs.workIndications.addLastRow()
 				result = result || this.$refs.workIndications.isDirty()
 			}
-			if (this.$refs.workTests !== undefined) {
+			if (this.$refs.workTests) {
 				// If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
 				this.$refs.workTests.addLastRow()
 				result = result || this.$refs.workTests.isDirty()
@@ -705,13 +705,13 @@ export default {
 		},
 		isError() {
 			var result = this.$v.$anyError
-			if (this.$refs.workIndications !== undefined) {
+			if (this.$refs.workIndications) {
 				// If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
 				this.$refs.workIndications.addLastRow()
 				result = result || this.$refs.workIndications.isError()
 				return result
 			}
-			if (this.$refs.workTests !== undefined) {
+			if (this.$refs.workTests) {
 				// If the row is not dirty, nothing will happen. If not, at least the info is persisted, or the errors in validation will show up.
 				this.$refs.workTests.addLastRow()
 				result = result || this.$refs.workTests.isError()
