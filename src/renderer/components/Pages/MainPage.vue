@@ -108,7 +108,7 @@ export default {
 				path: eventData.page
 			})
 		})
-		setInterval(this.checkForUpdates(), UPDATE_INTERVAL)
+		setInterval(this.checkForUpdates, UPDATE_INTERVAL)
 		ipcRenderer.on('reload:database', (event, file) => {
 			this.reloadDb(file)
 		})
