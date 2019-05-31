@@ -22,6 +22,7 @@ import topbar from '../PageElements/TopBar'
 import { checkForUpdates } from '../../../main/updates'
 import PersistenceService from '../../../services/PersistenceService'
 import ConfigFileService from '../../../services/ConfigFileService'
+import { webFrame } from 'electron'
 import log from 'loglevel'
 var { ipcRenderer } = require('electron')
 
@@ -33,6 +34,11 @@ export default {
 	name: 'mainPage',
 	components: {
 		topbar
+	},
+	data() {
+		return {
+			currentZoomLevel: undefined
+		}
 	},
 	methods: {
 		loadDb: async function() {
@@ -111,6 +117,31 @@ export default {
 		setInterval(this.checkForUpdates, UPDATE_INTERVAL)
 		ipcRenderer.on('reload:database', (event, file) => {
 			this.reloadDb(file)
+		})
+		this.currentZoomLevel = this.configFileService.configGet('zoomLevel')
+		if (!this.currentZoomLevel) {
+			this.currentZoomLevel = 1
+		}
+		webFrame.setZoomLevel(this.currentZoomLevel)
+
+		ipcRenderer.on('zoomlevel:up', () => {
+			if (this.currentZoomLevel < 5) {
+				this.currentZoomLevel += 0.1
+			}
+			webFrame.setZoomFactor(this.currentZoomLevel)
+			this.configFileService.configSet('zoomLevel', this.currentZoomLevel)
+		})
+		ipcRenderer.on('zoomlevel:down', () => {
+			if (this.currentZoomLevel > 0.2) {
+				this.currentZoomLevel -= 0.1
+			}
+			webFrame.setZoomFactor(this.currentZoomLevel)
+			this.configFileService.configSet('zoomLevel', this.currentZoomLevel)
+		})
+		ipcRenderer.on('zoomlevel:reset', () => {
+			this.currentZoomLevel = 1
+			webFrame.setZoomFactor(this.currentZoomLevel)
+			this.configFileService.configSet('zoomLevel', this.currentZoomLevel)
 		})
 	}
 }

@@ -87,12 +87,6 @@ var menuTemplate = [{
       },
       enabled: !(datafile === undefined || datafile === '')
     },
-    // {
-    //   label: 'Guardar copia de seguridad',
-    //   click () {
-    //     // mainWindow.webContents.send('todo:clear')
-    //   }
-    // },
     {
       type: 'separator'
     },
@@ -139,6 +133,32 @@ var menuTemplate = [{
       label: 'Buscar',
       accelerator: 'Ctrl+B',
       click() {}
+    }
+  ]
+}, {
+  label: 'Vista',
+  submenu: [{
+      label: 'Ampliar',
+      accelerator: 'Ctrl+++',
+      click() {
+        mainWindow.webContents.send('zoomlevel:up')
+      }
+    },
+    {
+      label: 'Reducir',
+      accelerator: 'Ctrl+-',
+      click() {
+        mainWindow.webContents.send('zoomlevel:down')
+      }
+    },
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Restaurar vista',
+      click() {
+        mainWindow.webContents.send('zoomlevel:reset')
+      }
     }
   ]
 }]
@@ -229,49 +249,3 @@ function openExistingFile() {
   }
   datafile = configFileService.configGet('dataFile')
 }
-
-// const remote = require('remote')
-// const Menu1 = remote.require('menu')
-// const MenuItem1 = remote.require('menu-item')
-
-// let rightClickPosition = null
-
-// const contextualMenu = new Menu1()
-// const menuItem = new MenuItem1(
-//   {
-//     label: 'Inspeccionar elemento',
-//     click () {
-//       remote.getCurrentWindow().inspectElement(rightClickPosition.x, rightClickPosition.y)
-//     }
-//   }
-// )
-// contextualMenu.append(menuItem)
-
-// window.addEventListener('contextmenu', (e) => {
-//   e.preventDefault()
-//   rightClickPosition = {
-//     x: event.x,
-//     y: event.y
-//   }
-//   contextualMenu.popup(remote.getCurrentWindow())
-// }, false)
-
-/**
- * Auto Updater
- *
- * Uncomment the following code below and install `electron-updater` to
- * support auto updating. Code Signing with a valid certificate is required.
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
- */
-
-/*
-import { autoUpdater } from 'electron-updater'
-
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall()
-})
-
-app.on('ready', () => {
-  if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
-})
- */
