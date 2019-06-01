@@ -100,6 +100,18 @@ export default {
 					}
 				})
 			}
+		},
+		setZoomLevel(delta, value) {
+			if (value) {
+				this.currentZoomLevel = value
+			} else {
+				if (this.currentZoomLevel > 0.2 && this.currentZoomLevel < 2 && delta) {
+					this.currentZoomLevel += delta
+				}
+			}
+
+			webFrame.setZoomFactor(this.currentZoomLevel)
+			this.configFileService.configSet('zoomLevel', this.currentZoomLevel)
 		}
 	},
 	created() {
@@ -122,26 +134,16 @@ export default {
 		if (!this.currentZoomLevel) {
 			this.currentZoomLevel = 1
 		}
-		webFrame.setZoomLevel(this.currentZoomLevel)
+		this.setZoomLevel(null, this.currentZoomLevel)
 
 		ipcRenderer.on('zoomlevel:up', () => {
-			if (this.currentZoomLevel < 5) {
-				this.currentZoomLevel += 0.1
-			}
-			webFrame.setZoomFactor(this.currentZoomLevel)
-			this.configFileService.configSet('zoomLevel', this.currentZoomLevel)
+			this.setZoomLevel(0.1)
 		})
 		ipcRenderer.on('zoomlevel:down', () => {
-			if (this.currentZoomLevel > 0.2) {
-				this.currentZoomLevel -= 0.1
-			}
-			webFrame.setZoomFactor(this.currentZoomLevel)
-			this.configFileService.configSet('zoomLevel', this.currentZoomLevel)
+			this.setZoomLevel(-0.1)
 		})
 		ipcRenderer.on('zoomlevel:reset', () => {
-			this.currentZoomLevel = 1
-			webFrame.setZoomFactor(this.currentZoomLevel)
-			this.configFileService.configSet('zoomLevel', this.currentZoomLevel)
+			this.setZoomLevel(null, 1)
 		})
 	}
 }

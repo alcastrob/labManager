@@ -269,7 +269,7 @@ export default {
 			// The sums of all the dataset(grouped by column, i.e. SumaFija, SumaOrtodoncia...)
 			sums: {},
 
-			// A mapping of column indexes and column name
+			// A mapping of column indexes and column names
 			columnIndex: {},
 
 			// The sum values that are contained on the column headers (including the money format)

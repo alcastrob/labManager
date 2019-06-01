@@ -58,7 +58,6 @@ export default class WorkService extends PersistenceService {
       'TotalDescuento = ?, PrecioFinal = ? ' +
       'WHERE IdTrabajo = ?'
     log.info(`Updating the work ${work.IdTrabajo}`)
-    debugger
     return this.runAsync(query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
       work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
       work.PrecioMetal, work.Nombre, work.PorcentajeDescuento, work.TotalDescuento, work.PrecioFinal, work.IdTrabajo
