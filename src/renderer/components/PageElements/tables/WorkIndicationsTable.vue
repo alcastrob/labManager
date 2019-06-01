@@ -204,7 +204,7 @@ export default {
 				})
 				_.forEach(this.deletedRows, async row => this.workIndicationService.deleteWorkIndications(row))
 				_.forEach(this.updatedRows, async row => this.workIndicationService.updateWorkIndications(row))
-				await this.workIndicationService.updatePriceSum(masterId)
+				// await this.workIndicationService.updatePriceSum(masterId)
 				this.insertedRows = []
 				this.deletedRows = []
 				this.updatedRows = []

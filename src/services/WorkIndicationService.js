@@ -17,21 +17,21 @@ export default class WorkService extends PersistenceService {
   // Tested
   async insertWorkIndications(workIndication) {
     var query = 'INSERT INTO TrabajosDetalle (IdTrabajo, ' +
-      'Descripcion, Precio) ' +
-      'VALUES (?, ?, ?)'
+      'Descripcion, Precio, Cantidad, Subtotal) ' +
+      'VALUES (?, ?, ?, 1, ?)'
     log.info(`Creating the work indication for work ${workIndication.IdTrabajo}`)
     return this.runAsync(query, [workIndication.IdTrabajo,
-      workIndication.Descripcion, workIndication.Precio
+      workIndication.Descripcion, workIndication.Precio, workIndication.Precio
     ])
   }
 
   // Tested
   async updateWorkIndications(workIndication) {
     var query = 'UPDATE TrabajosDetalle ' +
-      'SET Descripcion = ?, Precio = ? ' +
+      'SET Descripcion = ?, Precio = ?, Subtotal = ? ' +
       'WHERE IdTrabajoDetalle = ?'
     log.info(`Updating the work indication ${workIndication.IdTrabajoDetalle} for work ${workIndication.IdTrabajo}`)
-    return this.runAsync(query, [workIndication.Descripcion, workIndication.Precio, workIndication.IdTrabajoDetalle])
+    return this.runAsync(query, [workIndication.Descripcion, workIndication.Precio, workIndication.IdTrabajoDetalle, workIndication.Precio])
   }
 
   // Tested
@@ -41,9 +41,9 @@ export default class WorkService extends PersistenceService {
     return this.runAsync(query, [workIndication.IdTrabajoDetalle])
   }
 
-  async updatePriceSum(workId) {
-    var query = 'UPDATE Trabajos SET PrecioFinal = (SELECT SUM(Precio) FROM TrabajosDetalle WHERE IdTrabajo = ?) WHERE IdTrabajo = ?'
-    log.info(`Updating the final price for work ${workId}`)
-    return this.runAsync(query, [workId, workId])
-  }
+  // async updatePriceSum(workId) {
+  //   var query = 'UPDATE Trabajos SET PrecioFinal = (SELECT SUM(Precio) FROM TrabajosDetalle WHERE IdTrabajo = ?) WHERE IdTrabajo = ?'
+  //   log.info(`Updating the final price for work ${workId}`)
+  //   return this.runAsync(query, [workId, workId])
+  // }
 }

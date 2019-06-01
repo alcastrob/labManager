@@ -46,6 +46,9 @@ export default class WorkService extends PersistenceService {
       work.PrecioFinal, work.PrecioMetal, work.PorcentajeDescuento, work.TotalDescuento
     ])
     log.info(`Created the work ${id}`)
+    if (work.PrecioFinal === null || work.PrecioFinal === undefined) {
+      log.error(`Inserted work ${id} has the PrecioFinal empty`)
+    }
     return id
   }
 
@@ -58,6 +61,9 @@ export default class WorkService extends PersistenceService {
       'TotalDescuento = ?, PrecioFinal = ? ' +
       'WHERE IdTrabajo = ?'
     log.info(`Updating the work ${work.IdTrabajo}`)
+    if (work.PrecioFinal === null || work.PrecioFinal === undefined) {
+      log.error(`Updated work ${work.IdTrabajo} has the PrecioFinal empty`)
+    }
     return this.runAsync(query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
       work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
       work.PrecioMetal, work.Nombre, work.PorcentajeDescuento, work.TotalDescuento, work.PrecioFinal, work.IdTrabajo
