@@ -16,23 +16,14 @@ export default {
 	},
 	methods: {
 		isNotANumber(data) {
-			if (this.isEmpty(data)) {
+			if (data !== 0 && !data) {
 				return true
 			}
 			return isNaN(parseFloat(data))
 		},
-		isEmpty(value) {
-			return value === null || value === undefined || value === ''
-		},
-		isNotEmpty(value) {
-			return !this.isEmpty(value)
-		},
 		isDirty() {
 			return this.insertedRows.length !== 0 || this.updatedRows.length !== 0 || this.deletedRows.length !== 0
 		}
-		// isError() {
-		//   return document.getElementsByClassName('bg-danger').length > 0
-		// }
 	},
 	mounted() {
 		// Data is not loaded here because the container component (i.e. WorkDetail) would need also the dataset for this component and another child one (tha label ones). Therefore, for saving one call to the db, the dataset is loaded once there and propagated to the child components like this.

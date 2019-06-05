@@ -5,7 +5,7 @@ import Vue from 'Vue'
 import workIndicationsTable from '../PageElements/tables/workIndicationsTable'
 import workTestsTable from '../PageElements/tables/workTestsTable'
 import collapsibleActionButton from '../PageElements/CollapsibleButtons/collapsibleActionButton'
-import dentistSearch from '../PageElements/DentistSearch'
+import dentistSearch from '../PageElements//typeAheads/DentistSearch'
 import workAdjuncts from '../PageElements/WorkAdjuncts'
 import labelEsqueleticos from '../Labels/LabelEsqueleticos'
 import labelCompostura from '../Labels/labelCompostura'
@@ -147,7 +147,7 @@ export default {
 					throw new Error(`Unexpected label type in WorkDetail.printLabel(): ${type}`)
 			}
 		},
-		setStartDateToToday: function() {
+		getToday: function() {
 			var today = new Date()
 			var dd = today.getDate()
 
@@ -161,7 +161,8 @@ export default {
 				mm = '0' + mm
 			}
 
-			this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
+			// this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
+			return yyyy + '-' + mm + '-' + dd
 		},
 		showAdjunts: function(justAdded) {
 			log.info('ShowAdjunts button clicked')
