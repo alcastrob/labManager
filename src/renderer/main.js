@@ -14,20 +14,15 @@ Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
 
 try {
-	// if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
+	if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 	Vue.http = Vue.prototype.$http = axios
 	Vue.config.productionTip = true
-	Vue.config.errorHandler = error => {
-		log.error(`Application error: ${error.message}. Call stack: ${error.stack}`)
-	}
-
-	window.onerror = (message, url, line, col, error) => {
-		// debugger
-		log.error(`Application error: ${message}. ${JSON.stringify(error)}. Url: ${url}. Line: ${line}`)
+	Vue.config.errorHandler = function (err, vm, info) {
+		log.error('[Global Error Handler]: Error in ' + info + ': ' + err)
 	}
 
 	remoteLog(log, {
-		url: 'http://telemetry.labmanager.es:5000',
+		url: 'http://104.248.82.4:5000',
 		prefix: (severity, message) => {
 			return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}(${
 				require('../../package.json').version
@@ -36,6 +31,14 @@ try {
 		callOriginal: true
 	})
 	log.setLevel('INFO')
+	window.onerror = (error) => {
+		debugger
+		log.error(`Application error: ${JSON.stringify(error)}. Url: ${window.url}. Call stack: ${error.stack}`)
+	}
+
+	Vue.config.errorHandler = error => {
+		log.error(`Application error: ${error.message}. Call stack: ${error.stack}`)
+	}
 
 	new Vue({
 		router,
@@ -45,7 +48,6 @@ try {
 			App
 		}
 	}).$mount('#app')
-
 } catch (err) {
 	log.error(`Error in application. ${JSON.stringify(err)}`)
 }

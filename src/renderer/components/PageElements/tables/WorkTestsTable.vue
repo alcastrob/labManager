@@ -338,13 +338,13 @@ export default {
 		trackChanges(event, rowId, field) {
 			// Let's start looking if the changed row is already on the inserted list
 			var temp = _.find(this.insertedRows, ['IdPrueba', rowId])
-			if (temp) {
+			if (this.isNotEmpty(temp)) {
 				// Just update the insert with the new value. No more action required.
 				temp[field] = event.currentTarget.value
 			} else {
 				// OK, so we have to update. But maybe this field was already updated. Let's check.
 				temp = _.find(this.updatedRows, ['IdPrueba', rowId])
-				if (temp) {
+				if (this.isNotEmpty(temp)) {
 					// The row was already updated. Make a cumulative update
 					var original = _.find(this.data, ['IdPrueba', rowId])
 					temp.IdTrabajo = original.IdTrabajo

@@ -8,6 +8,7 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
+              <!-- <a href="#" class="btn btn-warning btn-collapsible"  @click="doValidatorExtraChecks">Validacion</a> -->
               <collapsible-action-button
                 iconCss="fas fa-map-pin"
                 text="Aditamentos"
@@ -258,7 +259,7 @@
           <a
             href="#"
             class="form-text text-muted ml-2"
-            @click="work.FechaEntrada = getToday()"
+            @click="setStartDateToToday()"
             v-if="!readOnly"
           >
             <i class="far fa-calendar-alt"></i>
@@ -306,15 +307,6 @@
             @input="triggerIsDirty($event)"
             :disabled="readOnly"
           >
-          <a
-            href="#"
-            class="form-text text-muted ml-2"
-            @click="work.FechaTerminacion = getToday()"
-            v-if="!readOnly"
-          >
-            <i class="far fa-calendar-alt"></i>
-            Poner fecha de hoy
-          </a>
         </div>
         <!-- col-md-3 -->
       </div>
@@ -480,31 +472,23 @@ export default {
 			// If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
 			this.$refs.workIndications.addLastRow()
 			this.$refs.workTests.addLastRow()
-
-			const focusAndScroll = function(item, anchorItem) {
-				log.debug(`Data validation error on ${item.$vnode.tag}`)
-				item.focus()
-				item.$parent.$scrollTo(anchorItem || item, 1000)
-				return false
-			}
-
-			// Looking for errors in inbound data
-			if (this.$refs.workTests.isError()) {
-				return focusAndScroll(this.$refs.workTests, this.$refs.btnSave)
-			}
-			if (this.$refs.workIndications.isError()) {
-				return focusAndScroll(this.$refs.workIndications)
-			}
-			if (this.$v.work.PrecioMetal.$anyError) {
-				return focusAndScroll(this.$refs.precioMetal)
-			}
-			if (this.$v.work.IdTipoTrabajo.$anyError) {
-				return focusAndScroll(this.$refs.tipoTrabajo)
-			}
-			if (this.$v.work.IdDentista.$anyError) {
-				return focusAndScroll(this.$refs.clinica)
-			}
-			if (this.$v.$anyError) {
+			if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()) {
+				if (this.$refs.workTests.isError()) {
+					this.$refs.workTests.focus()
+					this.$scrollTo(this.$refs.btnSave, 1000)
+				}
+				if (this.$refs.workIndications.isError()) {
+					this.$refs.workIndications.focus()
+				}
+				if (this.$v.work.PrecioMetal.$anyError) {
+					this.$refs.precioMetal.focus()
+				}
+				if (this.$v.work.IdTipoTrabajo.$anyError) {
+					this.$refs.tipoTrabajo.focus()
+				}
+				if (this.$v.work.IdDentista.$anyError) {
+					this.$refs.clinica.focus()
+				}
 				return false
 			}
 			if (this.invoice && !changeInvoiceConfirmed) {
@@ -523,19 +507,19 @@ export default {
 
 			if (this.$refs.workIndications.isDirty) {
 				this.$refs.workIndications.save(this.work.IdTrabajo)
-				var sum = parseFloat(
-					_.sumBy(this.workIndications, function(n) {
-						var temp = parseFloat(n.Precio)
-						if (isNaN(temp)) {
-							throw 'NaN'
-						} else {
-							return temp
-						}
-					})
-				)
-				if (sum !== this.work.PrecioFinal) {
-					this.work.PrecioFinal = sum
-				}
+			}
+			var sum = parseFloat(
+				_.sumBy(this.workIndications, function(n) {
+					var temp = parseFloat(n.Precio)
+					if (isNaN(temp)) {
+						throw 'NaN'
+					} else {
+						return temp
+					}
+				})
+			)
+			if (sum !== this.work.PrecioFinal) {
+				this.work.PrecioFinal = sum
 			}
 			if (this.$v.work.$anyDirty) {
 				await this.workService.updateWork(this.work)
@@ -578,11 +562,10 @@ export default {
 		showLabelModal(labelType) {
 			if (this.save()) {
 				this.printedLabel = labelType
-				this.workIndicationsText = ''
 				if (this.workIndications !== undefined) {
-					_.forEach(this.workIndications, x => {
-						this.workIndicationsText += `${x.Descripcion} (${x.Notas})\n`
-					})
+					this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
+				} else {
+					this.workIndicationsText = ''
 				}
 				this.$refs.printLabelModal.show()
 			}

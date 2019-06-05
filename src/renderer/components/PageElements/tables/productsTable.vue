@@ -87,7 +87,7 @@ export default {
 	methods: {
 		// Related with the state and persistence----------------------------------
 		addLastRow() {
-			if (this.$refs.newDescripcion.value) {
+			if (this.isNotEmpty(this.$refs.newDescripcion.value)) {
 				var newRow = {
 					IdProductoLote: this.newIds++,
 					Descripcion: this.$refs.newDescripcion.value
@@ -118,13 +118,13 @@ export default {
 		trackChanges(event, rowId, field) {
 			// Let's start looking if the changed row is already on the inserted list
 			var temp = _.find(this.insertedRows, ['IdProductoLote', rowId])
-			if (temp) {
+			if (this.isNotEmpty(temp)) {
 				// Just update the insert with the new value. No more action required.
 				temp[field] = event.currentTarget.value
 			} else {
 				// OK, so we have to update. But maybe this field was already updated. Let's check.
 				temp = _.find(this.updatedRows, ['IdProductoLote', rowId])
-				if (temp) {
+				if (this.isNotEmpty(temp)) {
 					// The row was already updated. Make a cumulative update
 					var original = _.find(this.rawDataset, ['IdProductoLote', rowId])
 					temp[field] = event.currentTarget.value

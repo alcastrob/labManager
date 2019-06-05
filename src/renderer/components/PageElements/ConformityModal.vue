@@ -92,7 +92,7 @@ import ConformityDeclarationService from '../../../services/ConformityDeclaratio
 import conformityLabel from '../Labels/Conformity'
 // eslint-disable-next-line
 import bModal from 'bootstrap-vue'
-import productSearch from '../PageElements/typeAheads/ProductSearch'
+import productSearch from '../PageElements/ProductSearch'
 
 export default {
 	name: 'conformityModal',
