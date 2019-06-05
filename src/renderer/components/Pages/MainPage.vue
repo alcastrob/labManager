@@ -56,7 +56,10 @@ export default {
 						}
 					})
 					log.warn('No data file selected')
-				} else if (!(await this.persistenceService.loadDbFile())) {
+					return
+				}
+				var db = await this.persistenceService.loadDbFile(dataFile)
+				if (!db) {
 					// Something went wrong with that file
 					swal({
 						title: 'Fichero no reconocido',
@@ -75,11 +78,13 @@ export default {
 			}
 		},
 		reloadDb: async function(file) {
-			this.configFileService.configSet('dataFile', file)
-			await this.loadDb()
-			this.$router.push({
-				path: '/'
-			})
+			if (file) {
+				this.configFileService.configSet('dataFile', file)
+				await this.loadDb()
+				// this.$router.push({
+				// 	path: '/'
+				// })
+			}
 		},
 		checkForUpdates: async function() {
 			var updates = await checkForUpdates()

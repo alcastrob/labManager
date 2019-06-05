@@ -247,5 +247,5 @@ function openExistingFile() {
     // The user selected a file and did not pressed the Cancel button of the dialog
     mainWindow.webContents.send('reload:database', filePath[0])
   }
-  datafile = configFileService.configGet('dataFile')
+  datafile = filePath[0]
 }
