@@ -1,6 +1,10 @@
 {
   "name": "labmanager",
+<<<<<<< HEAD
   "version": "1.0.10",
+=======
+  "version": "1.1.0",
+>>>>>>> catalog
   "author": "Angel Castro <al.castro@gmail.com>",
   "description": "An application for managing a dental prosthetic laboratory",
   "license": "MIT",

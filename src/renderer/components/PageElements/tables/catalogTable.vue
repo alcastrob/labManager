@@ -114,7 +114,7 @@ export default {
 	methods: {
 		// Related with the state and persistence----------------------------------
 		addLastRow() {
-			if (this.isNotEmpty(this.$refs.newDescripcion.value) || this.isNotEmpty(this.$refs.newPrecio.value)) {
+			if (this.$refs.newDescripcion.value || this.$refs.newPrecio.value) {
 				var newRow = {
 					IdElementoCatalogo: this.newIds++,
 					Descripcion: this.$refs.newDescripcion.value,
@@ -147,13 +147,13 @@ export default {
 		trackChanges(event, rowId, field) {
 			// Let's start looking if the changed row is already on the inserted list
 			var temp = _.find(this.insertedRows, ['IdElementoCatalogo', rowId])
-			if (this.isNotEmpty(temp)) {
+			if (temp) {
 				// Just update the insert with the new value. No more action required.
 				temp[field] = event.currentTarget.value
 			} else {
 				// OK, so we have to update. But maybe this field was already updated. Let's check.
 				temp = _.find(this.updatedRows, ['IdElementoCatalogo', rowId])
-				if (this.isNotEmpty(temp)) {
+				if (temp) {
 					// The row was already updated. Make a cumulative update
 					var original = _.find(this.rawDataset, ['IdElementoCatalogo', rowId])
 					temp.Precio = original.Precio
@@ -189,10 +189,10 @@ export default {
 
 			if (elementInArray !== undefined) {
 				// The catalog element is not expired yet, so we can update its price
-				if (this.isEmpty(event.srcElement.value)) {
-					elementInArray.Precio = 0
-				} else {
+				if (event.srcElement.value) {
 					elementInArray.Precio = event.srcElement.value
+				} else {
+					elementInArray.Precio = 0
 				}
 				this.$emit('input', this.rawDataset)
 			}
