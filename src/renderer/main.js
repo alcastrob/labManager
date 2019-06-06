@@ -22,7 +22,6 @@ try {
 	}
 
 	window.onerror = (message, url, line, col, error) => {
-		// debugger
 		log.error(`Application error: ${message}. ${JSON.stringify(error)}. Url: ${url}. Line: ${line}`)
 	}
 
