@@ -10,7 +10,7 @@ export default class WorkService extends PersistenceService {
     var query = 'SELECT IdTrabajoDetalle, IdTrabajo, Descripcion, Precio ' +
       'FROM TrabajosDetalle ' +
       'WHERE IdTrabajo = ? ' +
-      'ORDER BY IdTrabajoDetalle'
+      'ORDER BY IdTrabajoDetalle DESC'
     return this.allAsync(query, [workId])
   }
 

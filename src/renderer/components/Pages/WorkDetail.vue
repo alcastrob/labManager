@@ -8,7 +8,6 @@
         <div class="col-md-8 mt-2">
           <div class="float-right">
             <div>
-              <!-- <a href="#" class="btn btn-warning btn-collapsible"  @click="doValidatorExtraChecks">Validacion</a> -->
               <collapsible-action-button
                 iconCss="fas fa-map-pin"
                 text="Aditamentos"
@@ -307,6 +306,15 @@
             @input="triggerIsDirty($event)"
             :disabled="readOnly"
           >
+          <a
+            href="#"
+            class="form-text text-muted ml-2"
+            @click="setEndDateToToday()"
+            v-if="!readOnly"
+          >
+            <i class="far fa-calendar-alt"></i>
+            Poner fecha de hoy
+          </a>
         </div>
         <!-- col-md-3 -->
       </div>
@@ -521,6 +529,9 @@ export default {
 			if (sum !== this.work.PrecioFinal) {
 				this.work.PrecioFinal = sum
 			}
+      if (this.work.FechaTerminacion) {
+        this.work.FechaPrevista = null
+      }
 			if (this.$v.work.$anyDirty) {
 				await this.workService.updateWork(this.work)
 				if (this.invoice) {
