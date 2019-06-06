@@ -24,7 +24,6 @@ export default class PersistenceService {
           timeout: 8000
         })
       }
-      debugger
       var x = await this.getConfigValue('companyName')
       if (!x) {
         // Looks not to be a good sqlite database. Reject it
