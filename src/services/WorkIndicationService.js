@@ -28,7 +28,7 @@ export default class WorkService extends PersistenceService {
   // Tested
   async updateWorkIndications(workIndication) {
     var query = 'UPDATE TrabajosDetalle ' +
-      'SET Descripcion = ?, Precio = ?, Subtotal = ? ' +
+      'SET Descripcion = ?, Precio = ?, Subtotal = ?, Cantidad = 1 ' +
       'WHERE IdTrabajoDetalle = ?'
     log.info(`Updating the work indication ${workIndication.IdTrabajoDetalle} for work ${workIndication.IdTrabajo}`)
     return this.runAsync(query, [workIndication.Descripcion, workIndication.Precio, workIndication.Precio, workIndication.IdTrabajoDetalle])
