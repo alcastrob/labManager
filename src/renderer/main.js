@@ -32,7 +32,6 @@ try {
 	})
 	log.setLevel('INFO')
 	window.onerror = (error) => {
-		debugger
 		log.error(`Application error: ${JSON.stringify(error)}. Url: ${window.url}. Call stack: ${error.stack}`)
 	}
 

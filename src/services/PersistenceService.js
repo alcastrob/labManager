@@ -13,17 +13,15 @@ export default class PersistenceService {
   }
 
   async loadDbFile(file) {
+    var dbFile = file
     try {
       if (!file) {
-        var dbFile = this.configFileService.configGet('dataFile')
-        this.db = new Database(dbFile, {
-          timeout: 8000
-        })
-      } else {
-        this.db = new Database(file, {
-          timeout: 8000
-        })
+        dbFile = this.configFileService.configGet('dataFile')
       }
+      this.db = new Database(dbFile, {
+        timeout: 8000
+      })
+      
       var x = await this.getConfigValue('companyName')
       if (!x) {
         // Looks not to be a good sqlite database. Reject it
