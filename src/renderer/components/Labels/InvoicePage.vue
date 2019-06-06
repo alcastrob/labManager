@@ -61,8 +61,8 @@
                     <span
                       class="font-weight-bold"
                     >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaSalida)}}</span>
-                    <!-- <br>
-                    <span class>{{work.Paciente}}</span> -->
+                    <br>
+                    <span class>{{work.Paciente}}</span>
                   </td>
                   <td class="text-right">1</td>
                   <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
@@ -133,8 +133,8 @@
                     <span
                       class="font-weight-bold"
                     >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaSalida)}}</span>
-                    <!-- <br>
-                    <span class>{{work.Paciente}}</span> -->
+                    <br>
+                    <span class>{{work.Paciente}}</span>
                   </td>
                   <td class="text-right">1</td>
                   <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
