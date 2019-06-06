@@ -34,12 +34,20 @@
       <div class="col-sm-12">
         <table class="table table-bordered" width="95%" cellspacing="0">
           <tr>
-            <th width="68%">Descripción</th>
-            <th class="text-right" width="28%">Precio</th>
+            <th class="text-right" width="2%">Cantidad</th>
+            <th width="80%">Descripción</th>
+            <th class="text-right" width="8%">Precio Individual</th>
+            <th class="text-right" width="8%">Subtotal</th>
           </tr>
           <tr v-for="indication in Detalles" v-bind:key="indication.IdTrabajoDetalle">
-            <td>{{indication.Descripcion}}</td>
+            <td class="text-right">{{indication.Cantidad}}</td>
+            <td>
+              {{indication.Descripcion}}
+              <br>
+              {{indication.Notas}}
+            </td>
             <td class="text-right">{{moneyFormatter.format(indication.Precio)}}</td>
+            <td class="text-right">{{moneyFormatter.format(indication.Subtotal)}}</td>
           </tr>
         </table>
       </div>
