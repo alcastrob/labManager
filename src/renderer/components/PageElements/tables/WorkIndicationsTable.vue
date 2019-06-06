@@ -1,49 +1,27 @@
 <template>
-  <div class="table-editable">
+  <div id="workIndicationsTable" class="table-editable">
     <div>
-      <table
-        class="table table-bordered table-responsive-xs table-striped"
-        ref="workIndicationsTable"
-      >
+      <table class="table table-bordered table-responsive-xs table-striped">
         <tr>
           <th style="width: 4%;"></th>
-          <th class="text-left" style="width: 45%;">Descripción</th>
-          <th class="text-left" style="width: 3%;">Cantidad</th>
-          <th class="text-left" style="width: 15%;">Notas</th>
-          <th class="text-right" style="width: 11%;">P. individual</th>
-          <th class="text-right" style="width: 11%;">Subtotal</th>
+          <th class="text-left" style="width: 50%;">Descripción</th>
+          <th style="width: 16%;" class="text-right">Precio</th>
         </tr>
         <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
           <td class="pt-3-half">
             <i
+              class="fa fa-times-circle"
+              v-on:click="deleteRow(indication.IdTrabajoDetalle)"
               v-if="$attrs.disabled !== true"
-              class="fa fa-times-circle pt-1"
-              @click="deleteRow(indication.IdTrabajoDetalle)"
             ></i>
           </td>
           <td class="noMargins">
-            <catalog-search
+            <input
+              type="text"
               v-model="indication.Descripcion"
-              @change="selectFromCatalog($event, indication)"
-              :disabled="$attrs.disabled === true"
-            ></catalog-search>
-          </td>
-          <td class="noMargins">
-            <input
-              type="text"
-              v-model="indication.Cantidad"
-              class="inputInTd text-right"
-              @change="updatePrice(indication.IdTrabajoDetalle, indication.Cantidad, indication.Precio)"
-              :class="{'bg-danger text-white animated flash': isNotANumber(indication.Cantidad)}"
-              :disabled="$attrs.disabled === true"
-            >
-          </td>
-          <td class="noMargins">
-            <input
-              type="text"
               class="inputInTd"
-              @change="trackChanges($event, indication.IdTrabajoDetalle, 'Notas')"
-              v-model="indication.Notas"
+              @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')"
+              :class="{'bg-danger text-white animated flash': indication.Descripcion.length === 0}"
               :disabled="$attrs.disabled === true"
             >
           </td>
@@ -51,63 +29,35 @@
             <input
               type="text"
               class="inputInTd text-right"
-              @blur="updatePrice(indication.IdTrabajoDetalle, indication.Cantidad, indication.Precio)"
+              @blur="updatePrice($event, indication.IdTrabajoDetalle)"
               v-model="indication.Precio"
               :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}"
-              :disabled="indication.IdElementoCatalogo || $attrs.disabled === true"
+              v-on:keydown="filterJustNumberKeystrokes"
+              @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')"
+              :disabled="$attrs.disabled === true"
             >
-          </td>
-          <td class="noMargins">
-            <input type="text" class="inputInTd text-right" v-model="indication.Subtotal" disabled>
           </td>
         </tr>
         <!-- The empty row for new values -->
         <tr v-if="$attrs.disabled !== true">
           <td class="pt-3-half"></td>
           <td class="noMargins">
-            <catalog-search
-              ref="catalogNew"
-              v-model="$v.newRow.Descripcion.$model"
-              @change="selectFromCatalog($event, newRow)"
-              canBeEmpty="true"
-            ></catalog-search>
-          </td>
-          <td class="noMargins">
-            <input
-              type="text"
-              class="inputInTd text-right"
-              v-model="$v.newRow.Cantidad.$model"
-              :class="{'bg-danger text-white animated flash': $v.newRow.Cantidad.$error && !allRowEmpty}"
-              @change="updatePrice()"
-              v-on:keydown="filterJustNumberKeystrokes"
-            >
-          </td>
-          <td class="noMargins">
             <input
               type="text"
               class="inputInTd"
-              v-model="$v.newRow.Notas.$model"
-              @blur="onDescriptionBlur()"
+              v-model="$v.newRow.descripcion.$model"
+              ref="newDescripcion"
+              :class="{'bg-danger text-white animated flash': $v.newRow.descripcion.$error && !allRowEmpty}"
             >
           </td>
           <td class="noMargins">
             <input
               type="text"
               class="inputInTd text-right"
-              v-model="$v.newRow.Precio.$model"
-              :class="{'bg-danger text-white animated flash': $v.newRow.Precio.$error && !allRowEmpty}"
+              v-model="$v.newRow.precio.$model"
+              :class="{'bg-danger text-white animated flash': $v.newRow.precio.$error && !allRowEmpty}"
               @blur="addLastRow()"
               v-on:keydown="filterJustNumberKeystrokes"
-              @change="updatePrice()"
-              :disabled="$v.newRow.Descripcion.$model.IdElementoCatalogo"
-            >
-          </td>
-          <td class="noMargins">
-            <input
-              type="text"
-              class="inputInTd text-right"
-              v-model="$v.newRow.Subtotal.$model"
-              disabled
             >
           </td>
         </tr>
@@ -117,20 +67,19 @@
           class="float-right text-right pr-1"
           :class="{'d-inline-block text-danger animated shake': sumError}"
         >{{getSum()}}</p>
-        <!-- {{data}} -->
       </div>
       <!-- <div>
         <h3>Inserted</h3>
         <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
-          <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Subtotal}}</li>
+          <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
         </ul>
         <h3>Updated</h3>
         <ul v-for="updated in updatedRows" :key="updated.IdTrabajoDetalle">
-          <li>{{updated.IdTrabajoDetalle}}|{{updated.Descripcion}}|{{updated.Subtotal}}</li>
+          <li>{{updated.IdTrabajoDetalle}}|{{updated.Descripcion}}|{{updated.Precio}}</li>
         </ul>
         <h3>Deleted</h3>
         <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
-          <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Subtotal}}</li>
+          <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
         </ul>
       </div>-->
     </div>
@@ -141,47 +90,28 @@
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import WorkIndicationService from '../../../../services/WorkIndicationService.js'
 import _ from 'lodash'
-import { decimal, minLength, minValue, required } from 'vuelidate/lib/validators'
+import { decimal, minLength, required } from 'vuelidate/lib/validators'
 import log from 'loglevel'
-import catalogSearch from '../typeAheads/CatalogSearch'
 
 export default {
 	name: 'workIndicationsTable',
 	mixins: [tablesWithEmptyRowMixin],
-	components: {
-		catalogSearch
-	},
 	data() {
 		return {
 			sumError: false,
 			newRow: {
-				Cantidad: '',
-				Descripcion: '',
-				Notas: '',
-				Precio: '',
-				Subtotal: ''
+				descripcion: '',
+				precio: ''
 			}
 		}
 	},
 	validations: {
 		newRow: {
-			Cantidad: {
-				required,
-				minValue: minValue(1)
-			},
-			Descripcion: {
+			descripcion: {
 				required,
 				minLength: minLength(1)
 			},
-			Notas: {
-				minLength: minLength(0)
-			},
-			Precio: {
-				required,
-				decimal,
-				minValue: minValue(0)
-			},
-			Subtotal: {
+			precio: {
 				required,
 				decimal,
 				minLength: minLength(1)
@@ -191,25 +121,21 @@ export default {
 	methods: {
 		// Related with the state and persistence----------------------------------
 		addLastRow() {
-			if (this.allRowEmpty) return
-
 			if (this.$v.newRow.$anyDirty) {
 				this.$v.newRow.$touch()
 				if (!this.$v.newRow.$anyError) {
-					var newRow = { ...this.newRow }
-					newRow.IdTrabajoDetalle = this.newIds++
-					newRow.Cantidad = parseFloat(newRow.Cantidad)
+					var newRow = {
+						Descripcion: this.newRow.descripcion,
+						IdTrabajoDetalle: this.newIds++,
+						Precio: this.newRow.precio
+					}
 					this.data.push(newRow)
 					this.insertedRows.push(newRow)
-					this.newRow.Cantidad = ''
-					this.newRow.Descripcion = ''
-					this.newRow.Notas = ''
-					this.newRow.Precio = ''
-					this.newRow.Subtotal = ''
-					this.$emit('input', this.data)
-					this.$refs.catalogNew.focus()
-					this.$refs.catalogNew.clear()
+					this.newRow.descripcion = ''
+					this.newRow.precio = ''
 					this.$v.newRow.$reset()
+					this.$emit('input', this.data)
+					this.$refs.newDescripcion.focus()
 				}
 			}
 		},
@@ -230,24 +156,23 @@ export default {
 		trackChanges(event, rowId, field) {
 			// Let's start looking if the changed row is already on the inserted list
 			var temp = _.find(this.insertedRows, ['IdTrabajoDetalle', rowId])
-			if (temp) {
+			if (this.isNotEmpty(temp)) {
 				// Just update the insert with the new value. No more action required.
 				temp[field] = event.currentTarget.value
-				return
-			}
-			// OK, so we have to update. But maybe this field was already updated. Let's check.
-			temp = _.find(this.updatedRows, ['IdTrabajoDetalle', rowId])
-			if (temp) {
-				// The row was already updated. Make a cumulative update
-				var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
-				temp.Precio = original.Precio
-				temp.Descripcion = original.Descripcion
 			} else {
-				// First time updated. So jot it down.
-				var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
-				this.updatedRows.push(original)
+				// OK, so we have to update. But maybe this field was already updated. Let's check.
+				temp = _.find(this.updatedRows, ['IdTrabajoDetalle', rowId])
+				if (this.isNotEmpty(temp)) {
+					// The row was already updated. Make a cumulative update
+					var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+					temp.Precio = original.Precio
+					temp.Descripcion = original.Descripcion
+				} else {
+					// First time updated. So jot it down.
+					var original = _.find(this.data, ['IdTrabajoDetalle', rowId])
+					this.updatedRows.push(original)
+				}
 			}
-
 			this.$emit('input', this.data)
 		},
 		async save(masterId) {
@@ -264,25 +189,11 @@ export default {
 				this.updatedRows = []
 			}
 		},
-		selectFromCatalog: function(e, row) {
-			if (typeof row.Descripcion === 'object') {
-				if (row.Descripcion.IdElementoCatalogo) {
-					row.IdElementoCatalogo = row.Descripcion.IdElementoCatalogo
-				} else {
-					row.IdElementoCatalogo = null
-				}
-				row.Descripcion = row.Descripcion.Descripcion
-			}
-
-			row.Precio = e.Precio !== undefined ? e.Precio : 0
-
-			this.updatePrice(row.IdTrabajoDetalle, row.Cantidad, row.Precio, e.IdElementoCatalogo)
-		},
 		// Other methods (specific)------------------------------------------------
 		getSum: function() {
 			try {
 				var sum = _.sumBy(this.data, function(n) {
-					var temp = parseFloat(n.Subtotal)
+					var temp = parseFloat(n.Precio)
 					if (isNaN(temp)) {
 						throw 'NaN'
 					} else {
@@ -298,34 +209,14 @@ export default {
 				return 'Datos incorrectos a sumar en la tabla de indicaciones'
 			}
 		},
-		updatePrice(workDetailID, ammount, price, catalogElementId) {
-			if (workDetailID) {
-				let nanPrecio = isNaN(parseFloat(price))
-				let nanCantidad = isNaN(parseFloat(ammount))
-				var elementInArray = _.find(this.data, ['IdTrabajoDetalle', workDetailID])
-				if (!nanPrecio && !nanCantidad) {
-					elementInArray.Subtotal = ammount * price
-				}
-				if (catalogElementId) {
-					elementInArray.IdElementoCatalogo = catalogElementId
-				}
-				this.$emit('input', this.data)
-				this.trackChanges({ currentTarget: { value: elementInArray.Subtotal } }, workDetailID, 'Subtotal')
+		updatePrice(event, id) {
+			var elementInArray = _.find(this.data, ['IdTrabajoDetalle', id])
+			if (this.isEmpty(event.srcElement.value)) {
+				elementInArray.Precio = 0
 			} else {
-				let nanPrecio = isNaN(parseFloat(this.newRow.Precio))
-				let nanCantidad = isNaN(parseFloat(this.newRow.Cantidad))
-				// It's the new row who needs an update
-				if (nanPrecio || nanCantidad) {
-					this.newRow.Subtotal = ''
-				} else {
-					this.newRow.Subtotal = this.newRow.Cantidad * this.newRow.Precio
-				}
+				elementInArray.Precio = event.srcElement.value
 			}
-		},
-		onDescriptionBlur: function() {
-			if (this.$v.newRow.Descripcion.$model !== -1) {
-				this.addLastRow()
-			}
+			this.$emit('input', this.data)
 		},
 		filterJustNumberKeystrokes(event) {
 			if (
@@ -357,33 +248,31 @@ export default {
 				event.preventDefault()
 			}
 		},
+		canDisplayDropdown: function() {
+			// TODO
+			return false
+		},
 		focus: function() {
-			// Used by external container to set the focus in the component
-			this.$refs.workIndicationsTable.focus()
+			document.getElementById('workIndicationsTable').focus()
 		},
 		cleanComponent() {
+			// this.data = []
 			this.newIds = 10000000
 			this.insertedRows = []
 			this.deletedRows = []
 			this.updatedRows = []
 			this.sumError = false
-			this.newRow.Descripcion = ''
-			this.newRow.Precio = ''
+			this.newRow.descripcion = ''
+			this.newRow.precio = ''
 			this.$v.newRow.$reset()
 		},
 		isError() {
-			return document.getElementsByClassName('bg-danger').length > 0 || (!this.allRowEmpty && this.$v.newRow.$anyError)
+			return document.getElementsByClassName('bg-danger').length > 0 || this.$v.newRow.$anyError
 		}
 	},
 	computed: {
 		allRowEmpty: function() {
-			return (
-				this.$v.newRow.Cantidad.$model.length === 0 &&
-				this.$v.newRow.Descripcion.$model.length === 0 &&
-				this.$v.newRow.Notas.$model.length === 0 &&
-				this.$v.newRow.Precio.$model.length === 0 &&
-				this.$v.newRow.Subtotal.$model.length === 0
-			)
+			return this.$v.newRow.descripcion.$model.length === 0 && this.$v.newRow.precio.$model.length === 0
 		}
 	},
 	created() {

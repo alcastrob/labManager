@@ -81,9 +81,9 @@ export default {
 			if (file) {
 				this.configFileService.configSet('dataFile', file)
 				await this.loadDb()
-				// this.$router.push({
-				// 	path: '/'
-				// })
+				this.$router.push({
+					path: '/'
+				})
 			}
 		},
 		checkForUpdates: async function() {

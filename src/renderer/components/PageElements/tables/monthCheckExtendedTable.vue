@@ -139,7 +139,7 @@
                         v-for="indication in workIndications[work.IdTrabajo]"
                         v-bind:key="indication.IdTrabajoDetalle"
                       >
-                        <li>({{indication.Cantidad}}x) {{indication.Descripcion}} | {{moneyFormatter.format(indication.Precio)}}</li>
+                        <li>{{indication.Descripcion}} | {{moneyFormatter.format(indication.Precio)}}</li>
                       </ul>
                     </div>
                   </b-tooltip>

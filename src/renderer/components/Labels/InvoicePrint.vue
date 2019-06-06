@@ -84,7 +84,7 @@ export default {
 
 			for (var currentWork of this.invoiceWorks) {
 				if (this.forPrinter) {
-					var toAdd = 3 + this.indications[currentWork.IdTrabajo].length + (currentWork.TotalDescuento > 0 ? 1 : 0)
+					var toAdd = 2 + this.indications[currentWork.IdTrabajo].length
 					if (currentPageLines + toAdd <= MAX_NUMBER_OF_LINES_PER_PAGE) {
 						worksToPrint.push(currentWork)
 						indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
