@@ -347,7 +347,9 @@ export default {
 			this.$v.$touch()
 
 			// If the row is not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
-			this.$refs.workIndications.addLastRow()
+			if (this.$refs.workIndications) {
+        this.$refs.workIndications.addLastRow()
+      }
 			if (this.$v.$anyError || this.$refs.workIndications.isError()) {
 				if (this.$refs.workIndications.isError()) {
 					this.$refs.workIndications.focus()

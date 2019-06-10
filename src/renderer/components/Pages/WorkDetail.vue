@@ -477,9 +477,13 @@ export default {
 			this.saveButtonPressed = true
 			this.$v.$touch()
 
-			// If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
-			this.$refs.workIndications.addLastRow()
-			this.$refs.workTests.addLastRow()
+      // If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
+      if (this.$refs.workIndications) {
+        this.$refs.workIndications.addLastRow()
+      }
+      if (this.$refs.workTests) {
+        this.$refs.workTests.addLastRow()
+      }
 			if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()) {
 				if (this.$refs.workTests.isError()) {
 					this.$refs.workTests.focus()
