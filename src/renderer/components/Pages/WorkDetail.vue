@@ -478,8 +478,12 @@ export default {
 			this.$v.$touch()
 
 			// If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
-			this.$refs.workIndications.addLastRow()
-			this.$refs.workTests.addLastRow()
+			if (this.$refs.workIndications) {			
+				this.$refs.workIndications.addLastRow()
+			}
+			if (this.$refs.workTests) {
+				this.$refs.workTests.addLastRow()
+			}
 
 			const focusAndScroll = function(item, anchorItem) {
 				log.debug(`Data validation error on ${item.$vnode.tag}`)
@@ -536,6 +540,8 @@ export default {
 				if (sum !== this.work.PrecioFinal) {
 					this.work.PrecioFinal = sum
 				}
+			if (this.work.FechaTerminacion) {
+        			this.work.FechaPrevista = null
 			}
 			if (this.$v.work.$anyDirty) {
 				await this.workService.updateWork(this.work)
