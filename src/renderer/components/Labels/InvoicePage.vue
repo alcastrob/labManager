@@ -97,7 +97,7 @@
               class="mb-4 font-weight-bold text-right"
             >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
           </div>
-          <div class="text-right font-italic" v-else>...suma y sigue.</div>
+          <div class="text-right font-italic" v-if="!isLastPage">...suma y sigue.</div>
         </div>
         <!-- end forPrinter -->
         <!-- forScreen -->
