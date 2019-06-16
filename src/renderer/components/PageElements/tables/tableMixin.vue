@@ -95,14 +95,13 @@ export default {
 		},
 		// Called by MonthCheck (or other containing page)
 		beginExporting(callback) {
-			this.selectedDentist = 0
 			this.isExporting = true
 			this.endExportingCallback = callback
 		},
 		// Called by the excel button
 		endExporting() {
 			this.isExporting = false
-			if (this.endExportingCallback) {
+			if (this.endExportingCallback && typeof this.endExportingCallback === 'function') {
 				this.endExportingCallback()
 			}
 		},
