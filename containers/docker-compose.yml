@@ -27,8 +27,6 @@ services:
       - ./logstash/template:/usr/share/logstash/template:ro
     ports:
       - '5000:5000'
-      - '5044:5044'
-      - '3514:3514/udp'
     networks:
       - elk
     depends_on:
