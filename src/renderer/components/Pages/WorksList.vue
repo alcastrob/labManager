@@ -5,7 +5,7 @@
         <h1 v-if="showCustomHeader">{{listHeading}}</h1>
         <h1 v-else>Listado de Trabajos</h1>
       </div>
-      <!-- col-md-6 -->
+      <!-- col-md-8 -->
       <div class="col-md-4 mt-2">
         <div class="float-right">
           <collapsibleExcelButton
@@ -20,7 +20,7 @@
           ></collapsibleExcelButton>
         </div>
       </div>
-      <!-- col-md-6 -->
+      <!-- col-md-4 -->
     </div>
     <!-- row -->
     <div>
@@ -117,7 +117,7 @@ export default {
 					formatter: 'money'
 				}
 			],
-			searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
+			searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color', 'Indicaciones'],
 			filterChanged: false,
 			lastFilterUsed: {},
 			listHeading: '',
@@ -144,7 +144,6 @@ export default {
 			}
 		},
 		updateDatasetWithFilters: async function(filterData) {
-			// var workService = new WorkService()
 			this.$refs.workExtendedTable.updateDataset(await this.workService.getWorksList(filterData))
 			log.debug(`UpdateDatasetWithFilters: ${JSON.stringify(filterData)}`)
 			this.lastFilterUsed = filterData
