@@ -101,7 +101,7 @@
                 id="fechaFacturas"
                 placeholder="dd/mm/aaaa"
                 v-model="invoiceDate"
-              >
+              />
             </div>
             <!-- col-md-6 -->
           </div>
@@ -401,7 +401,7 @@ export default {
 		sumBasePrice: function(dentistData) {
 			var total = 0
 			for (var work of dentistData.selectedWorks) {
-				total += work.SumaPrecioFinal
+				total += parseFloat(work.SumaPrecioFinal) + parseFloat(work.TotalDescuento)
 			}
 			return this.moneyFormatter.format(total)
 		},
@@ -415,7 +415,7 @@ export default {
 		sumTotals: function(dentistData) {
 			var total = 0
 			for (var work of dentistData.selectedWorks) {
-				total += parseFloat(work.SumaPrecioFinal) - parseFloat(work.TotalDescuento)
+				total += parseFloat(work.SumaPrecioFinal)
 			}
 			return this.moneyFormatter.format(total)
 		}
