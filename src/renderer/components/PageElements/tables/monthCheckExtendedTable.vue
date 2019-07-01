@@ -328,7 +328,7 @@ export default {
 					work.TotalDescuento = parseFloat((work.SumaTotalMetal * work.PorcentajeDescuento) / 100).toFixed(2)
 				}
 				this.applyDiscount(dentist)
-				this.workService.updateWork(work)
+				this.workService.updateWorkDiscount(work.IdTrabajo, work.PorcentajeDescuento, work.TotalDescuento)
 			}
 		},
 		totalDiscountChanged(work, dentist) {
@@ -341,6 +341,7 @@ export default {
 					work.PorcentajeDescuento = parseFloat((work.TotalDescuento * 100) / work.SumaTotalMetal).toFixed(2)
 				}
 				this.applyDiscount(dentist)
+				this.workService.updateWorkDiscount(work.IdTrabajo, work.PorcentajeDescuento, work.TotalDescuento)
 			}
 		},
 

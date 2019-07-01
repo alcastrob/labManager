@@ -19,6 +19,9 @@ export default class WorkService extends PersistenceService {
       'Descripcion, Precio, Cantidad, Notas, Subtotal, IdElementoCatalogo) ' +
       'VALUES (?, ?, ?, ?, ?, ?, ?)'
     log.info(`Creating the work indication for work ${workIndication.IdTrabajo}`)
+    if (workIndication.Precio === undefined || workIndication.Precio === null) {
+      throw 'Empty price in INSERT operation'
+    }
     return this.runAsync(query, [workIndication.IdTrabajo,
       workIndication.Descripcion, workIndication.Precio, workIndication.Cantidad, workIndication.Notas, workIndication.Subtotal, workIndication.IdElementoCatalogo
     ])
@@ -31,7 +34,10 @@ export default class WorkService extends PersistenceService {
       'Subtotal = ?, IdElementoCatalogo = ? ' +
       'WHERE IdTrabajoDetalle = ?'
     log.info(`Updating the work indication ${workIndication.IdTrabajoDetalle} for work ${workIndication.IdTrabajo}`)
-    return this.runAsync(query, [workIndication.Descripcion, workIndication.Precio, workIndication.Cantidad, workIndication.Notas, workIndication.Subtotal, workIndication.IdElementoCatalogo, workIndication.IdTrabajoDetalle])
+    if (workIndication.Precio === undefined || workIndication.Precio === null) {
+      throw 'Empty price in UPDATE operation'
+    }
+    return this.runAsync(query, [workIndication.Descripcion, workIndication.Precio, workIndication.Precio, workIndication.IdTrabajoDetalle])
   }
 
   // Tested

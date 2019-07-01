@@ -644,16 +644,22 @@ export default {
 		},
 		indicationsTotalChanged(newTotal) {
 			this.work.PrecioFinal = newTotal
-			this.work.PorcentajeDescuento =
-				this.work.PrecioFinal === 0 ? 0 : ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
+			if (this.work.PrecioFinal !== 0) {
+				var sumaTotalMetal = this.work.PrecioMetal
+					? this.work.PrecioFinal - this.work.PrecioMetal
+					: this.work.PrecioFinal
+				this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
+			}
 			this.calculateGrandTotal()
 		},
 		updatePercentageDiscount() {
-			this.work.TotalDescuento = (this.work.PrecioFinal * this.work.PorcentajeDescuento) / 100
+			var sumaTotalMetal = this.work.PrecioMetal ? this.work.PrecioFinal - this.work.PrecioMetal : this.work.PrecioFinal
+			this.work.TotalDescuento = parseFloat((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		updateTotalDiscount() {
-			this.work.PorcentajeDescuento = ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
+			var sumaTotalMetal = this.work.PrecioMetal ? this.work.PrecioFinal - this.work.PrecioMetal : this.work.PrecioFinal
+			this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		calculateGrandTotal() {
