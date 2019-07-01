@@ -90,7 +90,7 @@
         <div class="col-md-12">
           <em>
             <span>Este trabajo está cerrado, por lo que no se puede editar.</span>
-            <br>
+            <br />
             <span>
               Si, excepcionalmente, desea editarlo pulse
               <a href="#" @click="readOnly=false">aquí</a>.
@@ -125,7 +125,7 @@
                 v-model="$v.work.Paciente.$model"
                 :disabled="readOnly"
                 ref="paciente"
-              >
+              />
             </div>
             <!-- col-md-6 -->
             <div class="col-md-3">
@@ -162,7 +162,7 @@
                 v-model="$v.work.PrecioMetal.$model"
                 :class="{'is-invalid': $v.work.PrecioMetal.$error}"
                 :disabled="readOnly"
-              >
+              />
               <small
                 class="text-danger"
                 v-if="$v.work.PrecioMetal.$error"
@@ -178,7 +178,7 @@
                 placeholder="Indique el color"
                 v-model="$v.work.Color.$model"
                 :disabled="readOnly"
-              >
+              />
             </div>
             <!-- col-md-4 -->
           </div>
@@ -233,7 +233,7 @@
         <!-- col-md-3 -->
         <div class="col-md-4">
           <label>Total trabajo</label>
-          <input type="text" class="form-control text-right" ref="grandTotal" disabled>
+          <input type="text" class="form-control text-right" ref="grandTotal" disabled />
         </div>
         <!-- col-md-3 -->
       </div>
@@ -254,11 +254,11 @@
             @blur="triggerIsDirty($event)"
             @input="triggerIsDirty($event)"
             :disabled="readOnly"
-          >
+          />
           <a
             href="#"
             class="form-text text-muted ml-2"
-            @click="work.FechaEntrada = getToday()"
+            @click="$v.work.FechaEntrada.$model = getToday()"
             v-if="!readOnly"
           >
             <i class="far fa-calendar-alt"></i>
@@ -277,7 +277,7 @@
             @blur="triggerIsDirty($event)"
             @input="triggerIsDirty($event)"
             :disabled="readOnly"
-          >
+          />
         </div>
         <!-- col-md-3 -->
         <div class="col-md-3">
@@ -291,7 +291,7 @@
             @blur="triggerIsDirty($event)"
             @input="triggerIsDirty($event)"
             :disabled="readOnly"
-          >
+          />
         </div>
         <!-- col-md-3 -->
         <div class="col-md-3">
@@ -305,11 +305,11 @@
             @blur="triggerIsDirty($event)"
             @input="triggerIsDirty($event)"
             :disabled="readOnly"
-          >
+          />
           <a
             href="#"
             class="form-text text-muted ml-2"
-            @click="work.FechaTerminacion = getToday()"
+            @click="$v.work.FechaTerminacion.$model = getToday()"
             v-if="!readOnly"
           >
             <i class="far fa-calendar-alt"></i>
@@ -478,7 +478,7 @@ export default {
 			this.$v.$touch()
 
 			// If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
-			if (this.$refs.workIndications) {			
+			if (this.$refs.workIndications) {
 				this.$refs.workIndications.addLastRow()
 			}
 			if (this.$refs.workTests) {
@@ -540,38 +540,39 @@ export default {
 				if (sum !== this.work.PrecioFinal) {
 					this.work.PrecioFinal = sum
 				}
-			if (this.work.FechaTerminacion) {
-        			this.work.FechaPrevista = null
-			}
-			if (this.$v.work.$anyDirty) {
-				await this.workService.updateWork(this.work)
-				if (this.invoice) {
-					// We also update the grand total of the invoice this work is included.
-					await this.invoiceService.updateInvoiceGrandTotal(this.invoice.IdFactura)
+				if (this.work.FechaTerminacion) {
+					this.work.FechaPrevista = null
 				}
-			}
-			if (this.$refs.workTests.isDirty) {
-				this.$refs.workTests.save(this.work.IdTrabajo)
-			}
-			if (this.workAdjuncts && this.$v.workAdjuncts.$anyDirty) {
-				this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
-				if (this.workAdjunctsJustAdded) {
-					this.workAdjuntService.insertAdjuntsOfWork(this.workAdjuncts)
-				} else {
-					this.workAdjuntService.updateAdjuntsOfWork(this.workAdjuncts)
+				if (this.$v.work.$anyDirty) {
+					await this.workService.updateWork(this.work)
+					if (this.invoice) {
+						// We also update the grand total of the invoice this work is included.
+						await this.invoiceService.updateInvoiceGrandTotal(this.invoice.IdFactura)
+					}
 				}
-			}
+				if (this.$refs.workTests.isDirty) {
+					this.$refs.workTests.save(this.work.IdTrabajo)
+				}
+				if (this.workAdjuncts && this.$v.workAdjuncts.$anyDirty) {
+					this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
+					if (this.workAdjunctsJustAdded) {
+						this.workAdjuntService.insertAdjuntsOfWork(this.workAdjuncts)
+					} else {
+						this.workAdjuntService.updateAdjuntsOfWork(this.workAdjuncts)
+					}
+				}
 
-			// Everything went right. Depending how do you reach this function, you'll have tow ways of leaving it
-			if (url) {
-				// Direct click on the SAVE button. Just get redirected to the URL
-				this.$router.push({
-					path: url
-				})
-			} else {
-				// You clicked on a print label button thar requires a previous save (and to get informed if the save was successfully or not). Get a true as return
-				this.$v.$reset()
-				return true
+				// Everything went right. Depending how do you reach this function, you'll have tow ways of leaving it
+				if (url) {
+					// Direct click on the SAVE button. Just get redirected to the URL
+					this.$router.push({
+						path: url
+					})
+				} else {
+					// You clicked on a print label button thar requires a previous save (and to get informed if the save was successfully or not). Get a true as return
+					this.$v.$reset()
+					return true
+				}
 			}
 		},
 		showWarrantyLabelModal() {
@@ -673,29 +674,15 @@ export default {
 		},
 		doValidatorExtraChecks() {
 			this.$refs.dirtys.innerHTML = ''
-			this.$refs.dirtys.innerHTML += `IdDentista: ${this.$v.work.IdDentista.$anyError} | ${
-				this.$v.work.IdDentista.$anyDirty
-			} <br> `
-			this.$refs.dirtys.innerHTML += `Paciente: ${this.$v.work.Paciente.$anyError} | ${
-				this.$v.work.Paciente.$anyDirty
-			} <br> `
-			this.$refs.dirtys.innerHTML += `TipoTrabajo: ${this.$v.work.IdTipoTrabajo.$anyError} | ${
-				this.$v.work.IdTipoTrabajo.$anyDirty
-			} <br> `
-			this.$refs.dirtys.innerHTML += `PrecioMetal: ${this.$v.work.PrecioMetal.$anyError} | ${
-				this.$v.work.PrecioMetal.$anyDirty
-			} <br> `
+			this.$refs.dirtys.innerHTML += `IdDentista: ${this.$v.work.IdDentista.$anyError} | ${this.$v.work.IdDentista.$anyDirty} <br> `
+			this.$refs.dirtys.innerHTML += `Paciente: ${this.$v.work.Paciente.$anyError} | ${this.$v.work.Paciente.$anyDirty} <br> `
+			this.$refs.dirtys.innerHTML += `TipoTrabajo: ${this.$v.work.IdTipoTrabajo.$anyError} | ${this.$v.work.IdTipoTrabajo.$anyDirty} <br> `
+			this.$refs.dirtys.innerHTML += `PrecioMetal: ${this.$v.work.PrecioMetal.$anyError} | ${this.$v.work.PrecioMetal.$anyDirty} <br> `
 			this.$refs.dirtys.innerHTML += `Color: ${this.$v.work.Color.$anyError} | ${this.$v.work.Color.$anyDirty} <br> `
 			this.$refs.dirtys.innerHTML += `Indicaciones: ${this.$refs.workIndications.isError()} | ${this.$refs.workIndications.isDirty()} <br> `
-			this.$refs.dirtys.innerHTML += `FechaEntrada: ${this.$v.work.FechaEntrada.$anyError} | ${
-				this.$v.work.FechaEntrada.$anyDirty
-			} <br> `
-			this.$refs.dirtys.innerHTML += `FechaPrevista: ${this.$v.work.FechaPrevista.$anyError} | ${
-				this.$v.work.FechaPrevista.$anyDirty
-			} <br> `
-			this.$refs.dirtys.innerHTML += `FechaTerminacion: ${this.$v.work.FechaTerminacion.$anyError} | ${
-				this.$v.work.FechaTerminacion.$anyDirty
-			} <br> `
+			this.$refs.dirtys.innerHTML += `FechaEntrada: ${this.$v.work.FechaEntrada.$anyError} | ${this.$v.work.FechaEntrada.$anyDirty} <br> `
+			this.$refs.dirtys.innerHTML += `FechaPrevista: ${this.$v.work.FechaPrevista.$anyError} | ${this.$v.work.FechaPrevista.$anyDirty} <br> `
+			this.$refs.dirtys.innerHTML += `FechaTerminacion: ${this.$v.work.FechaTerminacion.$anyError} | ${this.$v.work.FechaTerminacion.$anyDirty} <br> `
 			this.$refs.dirtys.innerHTML += `Pruebas: ${this.$refs.workTests.isError()} | ${this.$refs.workTests.isDirty()} <br> `
 		},
 		getData: async function() {
