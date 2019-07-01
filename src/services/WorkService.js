@@ -72,10 +72,11 @@ export default class WorkService extends PersistenceService {
 
   async updateWorkDiscount(workId, percentageDiscount, totalDiscount) {
     var query = 'UPDATE Trabajos SET PorcentajeDescuento = ?, ' +
-      'TotalDescuento = ? ' +
+      'TotalDescuento = ?, ' +
+      'PrecioFinal = (SELECT SUM(Subtotal) FROM TrabajosDetalle WHERE IdTrabajo = ?) - ? ' +
       'WHERE IdTrabajo = ?'
     log.info(`Updating the discounts of work ${workId}`)
-    return this.runAsync(query, [percentageDiscount, totalDiscount, workId])
+    return this.runAsync(query, [percentageDiscount, totalDiscount, workId, totalDiscount, workId])
   }
 
   // Tested

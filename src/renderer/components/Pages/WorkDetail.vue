@@ -477,13 +477,13 @@ export default {
 			this.saveButtonPressed = true
 			this.$v.$touch()
 
-      // If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
-      if (this.$refs.workIndications) {
-        this.$refs.workIndications.addLastRow()
-      }
-      if (this.$refs.workTests) {
-        this.$refs.workTests.addLastRow()
-      }
+			// If the rows are not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
+			if (this.$refs.workIndications) {
+				this.$refs.workIndications.addLastRow()
+			}
+			if (this.$refs.workTests) {
+				this.$refs.workTests.addLastRow()
+			}
 			if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()) {
 				if (this.$refs.workTests.isError()) {
 					this.$refs.workTests.focus()
@@ -533,9 +533,9 @@ export default {
 			if (sum !== this.work.PrecioFinal) {
 				this.work.PrecioFinal = sum
 			}
-      if (this.work.FechaTerminacion) {
-        this.work.FechaPrevista = null
-      }
+			if (this.work.FechaTerminacion) {
+				this.work.FechaPrevista = null
+			}
 			if (this.$v.work.$anyDirty) {
 				await this.workService.updateWork(this.work)
 				if (this.invoice) {
@@ -636,16 +636,22 @@ export default {
 		},
 		indicationsTotalChanged(newTotal) {
 			this.work.PrecioFinal = newTotal
-			this.work.PorcentajeDescuento =
-				this.work.PrecioFinal === 0 ? 0 : ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
+			if (this.work.PrecioFinal !== 0) {
+				var sumaTotalMetal = this.work.PrecioMetal
+					? this.work.PrecioFinal - this.work.PrecioMetal
+					: this.work.PrecioFinal
+				this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
+			}
 			this.calculateGrandTotal()
 		},
 		updatePercentageDiscount() {
-			this.work.TotalDescuento = (this.work.PrecioFinal * this.work.PorcentajeDescuento) / 100
+			var sumaTotalMetal = this.work.PrecioMetal ? this.work.PrecioFinal - this.work.PrecioMetal : this.work.PrecioFinal
+			this.work.TotalDescuento = parseFloat((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		updateTotalDiscount() {
-			this.work.PorcentajeDescuento = ((this.work.TotalDescuento * 100) / this.work.PrecioFinal).toFixed(2)
+			var sumaTotalMetal = this.work.PrecioMetal ? this.work.PrecioFinal - this.work.PrecioMetal : this.work.PrecioFinal
+			this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		calculateGrandTotal() {
