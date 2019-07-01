@@ -45,7 +45,7 @@
                 class="form-control"
                 v-model="$v.work.Paciente.$model"
                 ref="paciente"
-              >
+              />
             </div>
             <!-- col-md-6 -->
             <div class="col-md-3">
@@ -80,7 +80,7 @@
                 placeholder="€"
                 v-model="$v.work.PrecioMetal.$model"
                 :class="{'is-invalid': $v.work.PrecioMetal.$error}"
-              >
+              />
               <small
                 class="text-danger"
                 v-if="$v.work.PrecioMetal.$error"
@@ -95,7 +95,7 @@
                 id="color"
                 placeholder="Indique el color"
                 v-model="$v.work.Color.$model"
-              >
+              />
             </div>
             <!-- col-md-4 -->
           </div>
@@ -121,7 +121,7 @@
             id="fEntrada"
             placeholder="dd/mm/aaaa"
             v-model="$v.work.FechaEntrada.$model"
-          >
+          />
         </div>
         <!-- col-md-4 -->
         <div class="col-md-4 mt-3">
@@ -132,7 +132,7 @@
             id="fPrevistaPrueba"
             placeholder="dd/mm/aaaa"
             v-model="$v.work.FechaPrevistaPrueba.$model"
-          >
+          />
         </div>
         <!-- col-md-4 -->
         <div class="col-md-4 mt-3">
@@ -143,7 +143,7 @@
             id="fPrevista"
             placeholder="dd/mm/aaaa"
             v-model="$v.work.FechaPrevista.$model"
-          >
+          />
         </div>
         <!-- col-md-4 -->
       </div>
@@ -190,7 +190,7 @@
                   type="checkbox"
                   ref="cbResina"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbResina">Resina</label>
               </div>
               <div class="form-check">
@@ -200,7 +200,7 @@
                   type="checkbox"
                   ref="cbCompostura"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbCompostura">Compostura</label>
               </div>
               <div class="form-check" v-if="adjunctsVisible">
@@ -210,7 +210,7 @@
                   type="checkbox"
                   ref="cbAditamentos"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbAditamentos">Aditamentos</label>
               </div>
               <div class="form-check">
@@ -220,7 +220,7 @@
                   type="checkbox"
                   ref="cbEsqueletico"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbEsqueletico">Esqueléticos</label>
               </div>
               <div class="form-check">
@@ -230,7 +230,7 @@
                   type="checkbox"
                   ref="cbOrtodoncia"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbOrtodoncia">Ortodoncia</label>
               </div>
             </div>
@@ -242,7 +242,7 @@
                   type="checkbox"
                   ref="cbZirconio"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbZirconio">Zirconio</label>
               </div>
               <div class="form-check">
@@ -252,7 +252,7 @@
                   type="checkbox"
                   ref="cbImplantes"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbImplantes">Implantes</label>
               </div>
               <div class="form-check">
@@ -262,7 +262,7 @@
                   type="checkbox"
                   ref="cbEmax"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbEmax">E-Max</label>
               </div>
               <div class="form-check">
@@ -272,7 +272,7 @@
                   type="checkbox"
                   ref="cbComposite"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbComposite">Composite</label>
               </div>
               <div class="form-check">
@@ -282,7 +282,7 @@
                   type="checkbox"
                   ref="cbMetalCeramica"
                   @change="setBtnPrintEnabled"
-                >
+                />
                 <label class="form-check-label" for="cbMetalCeramica">Metal-Cerámica</label>
               </div>
             </div>
@@ -329,7 +329,7 @@ export default {
 			this.work.Paciente = ''
 			this.work.Color = ''
 			this.PrecioFinal = 0
-			this.setStartDateToToday()
+			this.work.FechaEntrada = this.getToday()
 			this.work.FechaPrevista = ''
 			this.workIndications = {}
 			this.$refs.workIndications.cleanComponent()
@@ -348,8 +348,8 @@ export default {
 
 			// If the row is not dirty, nothing will happen. If not, at least the info will be persisted, or the errors in validation will show up.
 			if (this.$refs.workIndications) {
-        this.$refs.workIndications.addLastRow()
-      }
+				this.$refs.workIndications.addLastRow()
+			}
 			if (this.$v.$anyError || this.$refs.workIndications.isError()) {
 				if (this.$refs.workIndications.isError()) {
 					this.$refs.workIndications.focus()

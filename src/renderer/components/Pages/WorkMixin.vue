@@ -147,7 +147,7 @@ export default {
 					throw new Error(`Unexpected label type in WorkDetail.printLabel(): ${type}`)
 			}
 		},
-		setStartDateToToday: function() {
+		getToday: function() {
 			var today = new Date()
 			var dd = today.getDate()
 
@@ -160,25 +160,7 @@ export default {
 			if (mm < 10) {
 				mm = '0' + mm
 			}
-
-			this.work.FechaEntrada = yyyy + '-' + mm + '-' + dd
-		},
-		setEndDateToToday: function() {
-			var today = new Date()
-			var dd = today.getDate()
-
-			var mm = today.getMonth() + 1
-			var yyyy = today.getFullYear()
-			if (dd < 10) {
-				dd = '0' + dd
-			}
-
-			if (mm < 10) {
-				mm = '0' + mm
-			}
-
-			this.work.FechaTerminacion = yyyy + '-' + mm + '-' + dd
-			this.work.FechaPrevista = null
+			return `${yyyy}-${mm}-${dd}`
 		},
 		showAdjunts: function(justAdded) {
 			log.info('ShowAdjunts button clicked')
