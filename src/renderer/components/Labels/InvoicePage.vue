@@ -2,8 +2,8 @@
   <div class="container printed pagebreak" :class="{'pageBorder': !forPrinter}">
     <div class="row">
       <div class="col-sm-6">
-        <img @load="logoLoaded" :src="logo" class="mt-3">
-        <br>
+        <img @load="logoLoaded" :src="logo" class="mt-3" />
+        <br />
         CIF: {{vatNumber}}
       </div>
       <!-- col-sm-6 -->
@@ -22,13 +22,13 @@
         <div class="clientBox">
           <h3 class="text-uppercase">Cliente</h3>
           {{invoice.NombreDentista}}
-          <br>
+          <br />
           {{invoice.NombreClinica}}
-          <br>
+          <br />
           {{invoice.DatosFiscales}}
-          <br>
+          <br />
           {{invoice.Direccion}}
-          <br>
+          <br />
           {{invoice.CP}} {{invoice.Poblacion}}
         </div>
       </div>
@@ -60,8 +60,8 @@
                   <td class="text-left">
                     <span
                       class="font-weight-bold"
-                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaSalida)}}</span>
-                    <br>
+                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaTerminacion)}}</span>
+                    <br />
                     <span class>{{work.Paciente}}</span>
                   </td>
                   <td class="text-right">1</td>
@@ -95,7 +95,7 @@
             <h4>Detalle de los descuentos aplicados</h4>
             <div
               class="mb-4 font-weight-bold text-right"
-            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}}</div>
           </div>
           <div class="text-right font-italic" v-if="!isLastPage">...suma y sigue.</div>
         </div>
@@ -132,8 +132,8 @@
                   <td class="text-left">
                     <span
                       class="font-weight-bold"
-                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaSalida)}}</span>
-                    <br>
+                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaTerminacion)}}</span>
+                    <br />
                     <span class>{{work.Paciente}}</span>
                   </td>
                   <td class="text-right">1</td>
@@ -185,7 +185,7 @@
             <h4>Detalle de los descuentos aplicados</h4>
             <div
               class="mb-4 font-weight-bold text-right"
-            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}}</div>
           </div>
         </div>
         <!-- end forScreen -->
@@ -376,9 +376,7 @@ export default {
 			// Now we update the discounts of the remaining works
 			for (const currentWork of this.works) {
 				log.info(
-					`Invoice edited. WorkId ${currentWork.IdTrabajo} updated from invoice ${this.invoice.IdFactura} (${
-						this.invoice.NumFactura
-					})`
+					`Invoice edited. WorkId ${currentWork.IdTrabajo} updated from invoice ${this.invoice.IdFactura} (${this.invoice.NumFactura})`
 				)
 				await this.workService.updateWorkDiscount(
 					currentWork.IdTrabajo,
