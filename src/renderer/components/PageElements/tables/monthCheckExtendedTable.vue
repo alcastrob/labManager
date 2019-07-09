@@ -148,7 +148,7 @@
                 <td
                   class="small-text text-right"
                   :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"
-                >{{moneyFormatter.format(work.SumaPrecioFinal)}}</td>
+                >{{moneyFormatter.format(work.SumaPrecioSinDescuento)}}</td>
                 <td
                   class="small-text text-right"
                   :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"
@@ -208,7 +208,9 @@
                 <td
                   class="small-text text-right noMargins"
                   :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"
-                >{{calcProductTotal(work)}}</td>
+                >
+								{{moneyFormatter.format(work.SumaPrecioConDescuento)}}
+								</td>
               </tr>
             </transition>
           </template>
@@ -324,11 +326,14 @@ export default {
 				if (work.SumaTotalMetal === 0) {
 					work.TotalDescuento = 0
 					work.PorcentajeDescuento = 0
+					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento
 				} else {
 					work.TotalDescuento = parseFloat((work.SumaTotalMetal * work.PorcentajeDescuento) / 100).toFixed(2)
+					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento - work.TotalDescuento
 				}
-				this.applyDiscount(dentist)
-				this.workService.updateWorkDiscount(work.IdTrabajo, work.PorcentajeDescuento, work.TotalDescuento)
+				this.applyDiscountsToDentist(dentist)
+				this.workService.updateWorkDiscount(work.IdTrabajo, work.PorcentajeDescuento, work.TotalDescuento,
+				work.SumaPrecioConDescuento)
 			}
 		},
 		totalDiscountChanged(work, dentist) {
@@ -337,11 +342,13 @@ export default {
 				if (work.SumaTotalMetal === 0) {
 					work.TotalDescuento = 0
 					work.PorcentajeDescuento = 0
+					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento
 				} else {
 					work.PorcentajeDescuento = parseFloat((work.TotalDescuento * 100) / work.SumaTotalMetal).toFixed(2)
+					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento - work.TotalDescuento
 				}
-				this.applyDiscount(dentist)
-				this.workService.updateWorkDiscount(work.IdTrabajo, work.PorcentajeDescuento, work.TotalDescuento)
+				this.applyDiscountsToDentist(dentist)
+				this.workService.updateWorkDiscount(work.IdTrabajo, work.PorcentajeDescuento, work.TotalDescuento, work.SumaPrecioConDescuento)
 			}
 		},
 
@@ -353,7 +360,7 @@ export default {
 			return remainingCandidates.length === 0 ? '' : remainingCandidates.length
 		},
 		calcProductTotal: function(work) {
-			return moneyFormatter.format(work.SumaPrecioFinal - work.TotalDescuento)
+			return moneyFormatter.format(work.SumaPrecioConDescuento)
 		},
 		calcColumnSums: function(includedColumns) {
 			log.debug('Calculating the sum of columns')
@@ -379,7 +386,7 @@ export default {
 				}
 			}
 		},
-		applyDiscount: function(dentist) {
+		applyDiscountsToDentist: function(dentist) {
 			dentist.SumaDescuento = 0
 			dentist.SumaGranTotal = 0
 

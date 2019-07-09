@@ -10,6 +10,7 @@ import invoicePage from './invoicePage'
 import reportPage from './reportPage'
 import DentistService from '../../../services/DentistService'
 import InvoiceService from '../../../services/InvoiceService'
+import WorkService from '../../../services/WorkService'
 import WorkIndicationService from '../../../services/WorkIndicationService'
 var path = require('path')
 var fs = require('fs')
@@ -141,9 +142,26 @@ export default {
 			this.invoiceWorks = invoiceData.selectedWorks
 			for (var work of this.invoiceWorks) {
 				this.indications[work.IdTrabajo] = await this.workIndicationService.getWorkIndications(work.IdTrabajo)
-				work.PrecioSinDescuento = work.SumaPrecioFinal
-				work.PrecioFinalConDescuento = work.SumaPrecioFinal - work.TotalDescuento
+				// let cleanWork = this.workService.cleanWorkFromView(work)
+
+				work.PrecioSinDescuento = work.SumaPrecioSinDescuento
+				delete work.SumaPrecioSinDescuento
+
+				work.PrecioFinalConDescuento = work.SumaPrecioConDescuento
+				delete work.SumaPrecioConDescuento
+
+				delete work.SumaAditamentos
+				delete work.SumaCeramica
+				delete work.SumaResina
+				delete work.SumaOrtodoncia
+				delete work.SumaEsqueletico
+				delete work.SumaZirconio
+				delete work.SumaFija
+				delete work.SumaTotalMetal
+				delete work.Chequeado
+
 				this.invoice.Total += work.PrecioFinalConDescuento
+				// this.invoice.Total += cleanWork.PrecioFinalConDescuento
 			}
 
 			this.renderContent(false)
@@ -237,6 +255,7 @@ export default {
 	},
 	created() {
 		this.invoiceService = new InvoiceService()
+		this.workService = new WorkService()
 		this.workIndicationService = new WorkIndicationService()
 		this.dentistService = new DentistService()
 		this.loadData()

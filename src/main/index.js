@@ -246,6 +246,7 @@ function openExistingFile() {
   if (filePath !== undefined) {
     // The user selected a file and did not pressed the Cancel button of the dialog
     mainWindow.webContents.send('reload:database', filePath[0])
+    mainWindow.loadURL(winURL)
   }
   datafile = filePath[0]
 }

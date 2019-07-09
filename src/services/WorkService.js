@@ -70,13 +70,13 @@ export default class WorkService extends PersistenceService {
     ])
   }
 
-  async updateWorkDiscount(workId, percentageDiscount, totalDiscount) {
+  async updateWorkDiscount(workId, percentageDiscount, totalDiscount, grandTotal) {
     var query = 'UPDATE Trabajos SET PorcentajeDescuento = ?, ' +
       'TotalDescuento = ?, ' +
-      'PrecioFinal = (SELECT SUM(Subtotal) FROM TrabajosDetalle WHERE IdTrabajo = ?) - ? ' +
+      'PrecioFinal = ? ' +
       'WHERE IdTrabajo = ?'
     log.info(`Updating the discounts of work ${workId}`)
-    return this.runAsync(query, [percentageDiscount, totalDiscount, workId, totalDiscount, workId])
+    return this.runAsync(query, [percentageDiscount, totalDiscount, grandTotal, workId])
   }
 
   // Tested
@@ -84,5 +84,46 @@ export default class WorkService extends PersistenceService {
     var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
 
     return this.allAsync(query, [])
+  }
+
+  cleanWorkFromView(work) {
+    let returnedValue = this.iterationCopy(work)
+    returnedValue.PrecioSinDescuento = returnedValue.SumaPrecioSinDescuento
+    delete returnedValue.SumaPrecioSinDescuento
+
+    returnedValue.PrecioFinalConDescuento = returnedValue.SumaPrecioConDescuento
+    delete returnedValue.SumaPrecioConDescuento
+
+    delete returnedValue.SumaAditamentos
+    delete returnedValue.SumaCeramica
+    delete returnedValue.SumaResina
+    delete returnedValue.SumaOrtodoncia
+    delete returnedValue.SumaEsqueletico
+    delete returnedValue.SumaZirconio
+    delete returnedValue.SumaFija
+    delete returnedValue.SumaTotalMetal
+    delete returnedValue.Chequeado
+
+    return returnedValue
+  }
+
+  isObject(obj) {
+    var type = typeof obj
+    return type === 'function' || (type === 'object' && !!obj)
+  }
+
+  iterationCopy(src) {
+    let target = {}
+    for (let prop in src) {
+      if (src.hasOwnProperty(prop)) {
+        // if the value is a nested object, recursively copy all it's properties
+        if (this.isObject(src[prop])) {
+          target[prop] = this.iterationCopy(src[prop])
+        } else {
+          target[prop] = src[prop]
+        }
+      }
+    }
+    return target
   }
 }
