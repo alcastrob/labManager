@@ -8,7 +8,7 @@ export default class MonthCheckService extends PersistenceService {
   // Tested
   async getWorksAggregatedByDentist(year, month, readOnly) {
     var query = 'SELECT d.IdDentista AS Key, d.IdDentista AS IdDentista, d.NombreDentista, ' +
-      '  sum(t.PrecioFinal) AS SumaPrecioFinal, ' +
+      '  sum(t.PrecioSinDescuento) AS SumaPrecioSinDescuento, ' +
       '  ifnull(sum(t.PrecioMetal), 0) AS SumaAditamentos, ' +
       '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaCeramica, ' +
       '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaResina, ' +
@@ -17,28 +17,11 @@ export default class MonthCheckService extends PersistenceService {
       '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaZirconio, ' +
       '  sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) - ' +
       '  ifnull(sum(t.PrecioMetal), 0) AS SumaFija, ' +
-      '  sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '    sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '    sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '    sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '    sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) - ' +
-      '    ifnull(sum(t.PrecioMetal), 0) AS SumaTotalMetal, ' +
-      '  CAST((sum(t.TotalDescuento) * 100) AS FLOAT) / ' +
-      '    (sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '     sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '     sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '     sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '     sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) - ' +
-      '     ifnull(sum(t.PrecioMetal), 0)) as percentage, ' +
-      ' sum(t.TotalDescuento) as SumaDescuento, ' +
-      ' ifnull(sum(t.PrecioMetal), 0) + ' +
-      '   sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '   sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '   sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '   sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END) + ' +
-      '   sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END) -  ' +
-      '   ifnull(sum(t.PrecioMetal), 0) - ' +
-      '   sum(t.TotalDescuento) AS SumaGranTotal ' +
+      '  sum(ifnull(t.PrecioSinDescuento, 0) - ifnull(t.PrecioMetal, 0)) AS SumaTotalMetal, ' +
+      '  CAST((sum(t.TotalDescuento) * 100) AS FLOAT) / (sum(ifnull(t.PrecioSinDescuento, 0) - ' +
+      '    ifnull(t.PrecioMetal, 0))) as Porcentaje, ' +
+      '  sum(t.TotalDescuento) as SumaDescuento, ' +
+      '  sum(ifnull(t.PrecioFinal, 0)) AS SumaGranTotal ' +
       'FROM Trabajos t ' +
       'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista '
 

@@ -9,7 +9,7 @@
             v-bind:class="header.titleClass"
           >
             {{header.title}}
-            <br>
+            <br />
             {{subheaders[header.dataField]}}
           </th>
         </tr>
@@ -40,7 +40,7 @@
                   @change="forceSomeWorksChechedBeforeCheckingTheDentist($event, dentist.IdDentista)"
                   :id="'chkDentist-' + dentist.IdDentista"
                   tabindex="-1"
-                >
+                />
 
                 <div v-else-if="!isExporting">
                   <span>{{formatRow(dentist[column.dataField], column.formatter)}}</span>
@@ -93,7 +93,7 @@
                     v-model="work.Chequeado"
                     @change="updateDentistCheckbox(dentist.IdDentista)"
                     tabindex="-1"
-                  >
+                  />
                 </td>
 
                 <td
@@ -129,12 +129,12 @@
                         :class="work.TipoTrabajo.toLowerCase() + '-color'"
                       ></i>
                       {{work.TipoTrabajo}}
-                      <br>
+                      <br />
                       Color: {{work.Color}}
-                      <br>
+                      <br />
                       Fecha Entrada: {{formatDate(work, 'FechaEntrada')}}
-                      <br>Indicaciones:
-                      <br>
+                      <br />Indicaciones:
+                      <br />
                       <ul
                         v-for="indication in workIndications[work.IdTrabajo]"
                         v-bind:key="indication.IdTrabajoDetalle"
@@ -208,9 +208,7 @@
                 <td
                   class="small-text text-right noMargins"
                   :class="{'strikethrough': work.Chequeado, 'bold': !work.Chequeado}"
-                >
-								{{moneyFormatter.format(work.SumaPrecioConDescuento)}}
-								</td>
+                >{{moneyFormatter.format(work.SumaPrecioConDescuento)}}</td>
               </tr>
             </transition>
           </template>
@@ -332,8 +330,12 @@ export default {
 					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento - work.TotalDescuento
 				}
 				this.applyDiscountsToDentist(dentist)
-				this.workService.updateWorkDiscount(work.IdTrabajo, work.PorcentajeDescuento, work.TotalDescuento,
-				work.SumaPrecioConDescuento)
+				this.workService.updateWorkDiscount(
+					work.IdTrabajo,
+					work.PorcentajeDescuento,
+					work.TotalDescuento,
+					work.SumaPrecioConDescuento
+				)
 			}
 		},
 		totalDiscountChanged(work, dentist) {
@@ -348,7 +350,12 @@ export default {
 					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento - work.TotalDescuento
 				}
 				this.applyDiscountsToDentist(dentist)
-				this.workService.updateWorkDiscount(work.IdTrabajo, work.PorcentajeDescuento, work.TotalDescuento, work.SumaPrecioConDescuento)
+				this.workService.updateWorkDiscount(
+					work.IdTrabajo,
+					work.PorcentajeDescuento,
+					work.TotalDescuento,
+					work.SumaPrecioConDescuento
+				)
 			}
 		},
 
@@ -392,14 +399,14 @@ export default {
 
 			for (var currentWork of this.worksPerDentist[dentist.IdDentista]) {
 				dentist.SumaDescuento += parseFloat(currentWork.TotalDescuento)
-				dentist.SumaGranTotal += parseFloat(currentWork.SumaPrecioFinal) - parseFloat(currentWork.TotalDescuento)
+				dentist.SumaGranTotal += parseFloat(currentWork.SumaPrecioConDescuento)
 			}
 
-			if (dentist.SumaPrecioFinal === 0) {
-				dentist.percentage = (0).toFixed(2)
+			if (dentist.SumaPrecioSinDescuento === 0) {
+				dentist.Porcentaje = (0).toFixed(2)
 			} else {
-				dentist.percentage = (
-					(100 * (dentist.SumaPrecioFinal - dentist.SumaGranTotal)) /
+				dentist.Porcentaje = (
+					(100 * (dentist.SumaPrecioSinDescuento - dentist.SumaGranTotal)) /
 					dentist.SumaTotalMetal
 				).toFixed(2)
 			}
@@ -562,7 +569,7 @@ export default {
 				this.isReadOnly
 			)
 			this.calcColumnSums([
-				'SumaPrecioFinal',
+				'SumaPrecioSinDescuento',
 				'SumaAditamentos',
 				'SumaCeramica',
 				'SumaResina',

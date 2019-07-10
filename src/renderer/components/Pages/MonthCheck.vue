@@ -227,7 +227,7 @@ export default {
 				},
 				{
 					title: 'P. Final',
-					dataField: 'SumaPrecioFinal',
+					dataField: 'SumaPrecioSinDescuento',
 					titleClass: 'text-right small-text column5 align-top tableexport-string target',
 					rowClass: 'text-right small-text tableexport-number target',
 					formatter: 'money'
@@ -290,7 +290,7 @@ export default {
 				},
 				{
 					title: '% Dto.',
-					dataField: 'percentage',
+					dataField: 'Porcentaje',
 					titleClass: 'text-right small-text column5 align-top tableexport-string target',
 					rowClass: 'text-right small-text tableexport-number target',
 					formatter: 'percentage'
@@ -401,7 +401,7 @@ export default {
 		sumBasePrice: function(dentistData) {
 			var total = 0
 			for (var work of dentistData.selectedWorks) {
-				total += parseFloat(work.SumaPrecioFinal) + parseFloat(work.TotalDescuento)
+				total += parseFloat(work.SumaPrecioSinDescuento)
 			}
 			return this.moneyFormatter.format(total)
 		},
@@ -415,7 +415,7 @@ export default {
 		sumTotals: function(dentistData) {
 			var total = 0
 			for (var work of dentistData.selectedWorks) {
-				total += parseFloat(work.SumaPrecioFinal)
+				total += parseFloat(work.SumaPrecioConDescuento)
 			}
 			return this.moneyFormatter.format(total)
 		}
