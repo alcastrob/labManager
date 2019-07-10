@@ -69,7 +69,7 @@
                   <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
                   <td class="text-right">{{work.PorcentajeDescuento.toFixed(2).replace('.', ',')}} %</td>
                   <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
+                  <td class="text-right">{{moneyFormatter.format(work.PrecioConDescuento)}}</td>
                 </tr>
                 <tr
                   class="leapTr dontBreakHere"

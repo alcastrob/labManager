@@ -457,7 +457,8 @@ export default {
 			this.work.IdTipoTrabajo = ''
 			this.work.Paciente = ''
 			this.work.Color = ''
-			this.PrecioFinal = 0
+			this.PrecioConDescuento = 0
+			this.PrecioSinDescuento = 0
 			this.work.FechaEntrada = ''
 			this.work.FechaPrevista = ''
 			this.work.PorcentajeDescuento = 0
@@ -530,9 +531,16 @@ export default {
 					}
 				})
 			)
-			if (sum !== this.work.PrecioFinal) {
-				this.work.PrecioFinal = sum
+			if (!this.isAdmin) {
+				// The user is modifying the ammount of the work, but has no visibility on the discounts. So, we reset them in
+				// order to warn the admin up during the month check operation
+				this.work.TotalDescuento = 0
+				this.work.PorcentajeDescuento = 0
 			}
+
+			this.work.PrecioSinDescuento = sum
+			this.work.PrecioConDescuento = this.work.PrecioSinDescuento - this.work.TotalDescuento
+
 			if (this.work.FechaTerminacion) {
 				this.work.FechaPrevista = null
 			}
@@ -601,7 +609,7 @@ export default {
 						Paciente: this.work.Paciente,
 						FechaTerminacion: new Date(this.work.FechaTerminacion),
 						Detalles: this.workIndications,
-						PrecioFinal: this.work.PrecioFinal,
+						PrecioSinDescuento: this.work.PrecioSinDescuento,
 						logo: 'data:image/png;base64,' + row[0].valor
 					}
 				})
@@ -635,28 +643,34 @@ export default {
 			}
 		},
 		indicationsTotalChanged(newTotal) {
-			this.work.PrecioFinal = newTotal
-			if (this.work.PrecioFinal !== 0) {
+			this.work.PrecioSinDescuento = newTotal
+			if (this.work.PrecioSinDescuento !== 0) {
 				var sumaTotalMetal = this.work.PrecioMetal
-					? this.work.PrecioFinal - this.work.PrecioMetal
-					: this.work.PrecioFinal
+					? this.work.PrecioSinDescuento - this.work.PrecioMetal
+					: this.work.PrecioSinDescuento
 				this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
 			}
 			this.calculateGrandTotal()
 		},
 		updatePercentageDiscount() {
-			var sumaTotalMetal = this.work.PrecioMetal ? this.work.PrecioFinal - this.work.PrecioMetal : this.work.PrecioFinal
+			var sumaTotalMetal = this.work.PrecioMetal
+				? this.work.PrecioSinDescuento - this.work.PrecioMetal
+				: this.work.PrecioSinDescuento
 			this.work.TotalDescuento = parseFloat((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		updateTotalDiscount() {
-			var sumaTotalMetal = this.work.PrecioMetal ? this.work.PrecioFinal - this.work.PrecioMetal : this.work.PrecioFinal
+			var sumaTotalMetal = this.work.PrecioMetal
+				? this.work.PrecioSinDescuento - this.work.PrecioMetal
+				: this.work.PrecioSinDescuento
 			this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		calculateGrandTotal() {
 			if (this.isAdmin) {
-				this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+				this.$refs.grandTotal.value = this.moneyFormatter.format(
+					this.work.PrecioSinDescuento - this.work.TotalDescuento
+				)
 			}
 		},
 		updateDentist() {
@@ -688,7 +702,9 @@ export default {
 			this.workTests = await this.workTestService.getWorkTestsList(this.work.IdTrabajo)
 			if (this.isAdmin) {
 				this.invoice = await this.invoiceService.getInvoicePerWork(this.work.IdTrabajo)
-				this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+				this.$refs.grandTotal.value = this.moneyFormatter.format(
+					this.work.PrecioSinDescuento - this.work.TotalDescuento
+				)
 			}
 		}
 	},

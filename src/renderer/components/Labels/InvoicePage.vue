@@ -68,7 +68,7 @@
                   <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
                   <td class="text-right">{{work.PorcentajeDescuento.toFixed(2).replace('.', ',')}} %</td>
                   <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
+                  <td class="text-right">{{moneyFormatter.format(work.PrecioConDescuento)}}</td>
                 </tr>
                 <tr
                   class="leapTr dontBreakHere"
@@ -158,7 +158,7 @@
                     </template>
                     <template v-else>{{moneyFormatter.format(work.TotalDescuento)}}</template>
                   </td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
+                  <td class="text-right">{{moneyFormatter.format(work.PrecioConDescuento)}}</td>
                 </tr>
                 <tr
                   class="leapTr dontBreakHere"
@@ -337,25 +337,25 @@ export default {
 			this.$forceUpdate()
 		},
 		updatePercentageDiscount(work) {
-			work.TotalDescuento = (work.PrecioSinDescuento * work.PorcentajeDescuento) / 100
+			work.TotalDescuento = ((work.PrecioSinDescuento - work.PrecioMetal) * work.PorcentajeDescuento) / 100
 
-			work.PrecioFinalConDescuento = work.PrecioSinDescuento - work.TotalDescuento
+			work.PrecioConDescuento = work.PrecioSinDescuento - work.TotalDescuento
 
 			this.worksUpdated = true
 
 			this.updateGrandTotal()
 		},
 		updateTotalDiscount(work) {
-			work.PorcentajeDescuento = ((work.TotalDescuento * 100) / work.PrecioSinDescuento).toFixed(2)
+			work.PorcentajeDescuento = ((work.TotalDescuento * 100) / (work.PrecioSinDescuento - work.PrecioMetal)).toFixed(2)
 
-			work.PrecioFinalConDescuento = work.PrecioSinDescuento - work.TotalDescuento
+			work.PrecioConDescuento = work.PrecioSinDescuento - work.TotalDescuento
 
 			this.worksUpdated = true
 
 			this.updateGrandTotal()
 		},
 		updateGrandTotal() {
-			this.invoice.Total = _.sumBy(this.works, 'PrecioFinalConDescuento')
+			this.invoice.Total = _.sumBy(this.works, 'PrecioConDescuento')
 		},
 		save: async function(confirmed = false) {
 			if (!confirmed) {

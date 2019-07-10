@@ -76,7 +76,7 @@ export default {
 				return work.TotalDescuento
 			})
 			var pfcd = _.sumBy(this.invoiceWorks, work => {
-				return work.PrecioFinalConDescuento
+				return work.PrecioConDescuento
 			})
 			var psd = _.sumBy(this.invoiceWorks, work => {
 				return work.PrecioSinDescuento
@@ -142,26 +142,9 @@ export default {
 			this.invoiceWorks = invoiceData.selectedWorks
 			for (var work of this.invoiceWorks) {
 				this.indications[work.IdTrabajo] = await this.workIndicationService.getWorkIndications(work.IdTrabajo)
-				// let cleanWork = this.workService.cleanWorkFromView(work)
-
 				work.PrecioSinDescuento = work.SumaPrecioSinDescuento
-				delete work.SumaPrecioSinDescuento
-
-				work.PrecioFinalConDescuento = work.SumaPrecioConDescuento
-				delete work.SumaPrecioConDescuento
-
-				delete work.SumaAditamentos
-				delete work.SumaCeramica
-				delete work.SumaResina
-				delete work.SumaOrtodoncia
-				delete work.SumaEsqueletico
-				delete work.SumaZirconio
-				delete work.SumaFija
-				delete work.SumaTotalMetal
-				delete work.Chequeado
-
-				this.invoice.Total += work.PrecioFinalConDescuento
-				// this.invoice.Total += cleanWork.PrecioFinalConDescuento
+				work.PrecioConDescuento = work.SumaPrecioConDescuento
+				this.invoice.Total += work.PrecioConDescuento
 			}
 
 			this.renderContent(false)

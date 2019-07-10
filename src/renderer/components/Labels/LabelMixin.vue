@@ -20,7 +20,7 @@ export default {
 			type: String,
 			required: false
 		},
-		workAdjunts: {
+		workAdjuncts: {
 			type: Object,
 			required: false
 		}

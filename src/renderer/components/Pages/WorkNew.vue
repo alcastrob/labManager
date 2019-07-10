@@ -328,7 +328,7 @@ export default {
 			this.work.IdTipoTrabajo = ''
 			this.work.Paciente = ''
 			this.work.Color = ''
-			this.PrecioFinal = 0
+			this.PrecioConDescuento = 0
 			this.work.FechaEntrada = this.getToday()
 			this.work.FechaPrevista = ''
 			this.workIndications = {}
@@ -379,9 +379,12 @@ export default {
 					}
 				})
 			)
-			if (sum !== this.work.PrecioFinal) {
-				this.work.PrecioFinal = sum
-			}
+
+			this.work.TotalDescuento = 0
+			this.work.PorcentajeDescuento = 0
+
+			this.work.PrecioSinDescuento = sum
+			this.work.PrecioConDescuento = this.work.PrecioSinDescuento
 
 			if (this.$v.work.$anyDirty) {
 				this.work.IdTrabajo = await this.workService.insertWork(this.work)

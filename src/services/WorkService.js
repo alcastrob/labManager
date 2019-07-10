@@ -39,15 +39,15 @@ export default class WorkService extends PersistenceService {
   async insertWork(work) {
     var query = 'INSERT INTO Trabajos (IdDentista, IdTipoTrabajo, ' +
       'Paciente, Color, FechaTerminacion, FechaEntrada, ' +
-      'FechaPrevista, FechaPrevistaPrueba, PrecioFinal, PrecioMetal, PorcentajeDescuento, TotalDescuento) ' +
-      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      'FechaPrevista, FechaPrevistaPrueba, PrecioConDescuento, PrecioMetal, PorcentajeDescuento, TotalDescuento, PrecioSinDescuento) ' +
+      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     var id = await this.runAsync(query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
       work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
-      work.PrecioFinal, work.PrecioMetal, work.PorcentajeDescuento, work.TotalDescuento
+      work.PrecioConDescuento, work.PrecioMetal, work.PorcentajeDescuento, work.TotalDescuento, work.PrecioSinDescuento
     ])
     log.info(`Created the work ${id}`)
-    if (work.PrecioFinal === null || work.PrecioFinal === undefined) {
-      log.error(`Inserted work ${id} has the PrecioFinal empty`)
+    if (work.PrecioConDescuento === null || work.PrecioConDescuento === undefined) {
+      log.error(`Inserted work ${id} has the PrecioConDescuento empty`)
     }
     return id
   }
@@ -58,22 +58,24 @@ export default class WorkService extends PersistenceService {
       'Paciente = ?, Color = ?, FechaTerminacion = ?, ' +
       'FechaEntrada = ?, FechaPrevista = ?, FechaPrevistaPrueba = ?, ' +
       'PrecioMetal = ?, Nombre = ?, PorcentajeDescuento = ?, ' +
-      'TotalDescuento = ?, PrecioFinal = ? ' +
+      'TotalDescuento = ?, PrecioConDescuento = ?, ' +
+      'PrecioSinDescuento = ? ' +
       'WHERE IdTrabajo = ?'
     log.info(`Updating the work ${work.IdTrabajo}`)
-    if (work.PrecioFinal === null || work.PrecioFinal === undefined) {
-      log.error(`Updated work ${work.IdTrabajo} has the PrecioFinal empty`)
+    if (work.PrecioConDescuento === null || work.PrecioConDescuento === undefined) {
+      log.error(`Updated work ${work.IdTrabajo} has the PrecioConDescuento empty`)
     }
     return this.runAsync(query, [work.IdDentista, work.IdTipoTrabajo, work.Paciente,
       work.Color, work.FechaTerminacion, work.FechaEntrada, work.FechaPrevista, work.FechaPrevistaPrueba,
-      work.PrecioMetal, work.Nombre, work.PorcentajeDescuento, work.TotalDescuento, work.PrecioFinal, work.IdTrabajo
+      work.PrecioMetal, work.Nombre, work.PorcentajeDescuento, work.TotalDescuento, work.PrecioConDescuento,
+      work.PrecioSinDescuento, work.IdTrabajo
     ])
   }
 
   async updateWorkDiscount(workId, percentageDiscount, totalDiscount, grandTotal) {
     var query = 'UPDATE Trabajos SET PorcentajeDescuento = ?, ' +
       'TotalDescuento = ?, ' +
-      'PrecioFinal = ? ' +
+      'PrecioConDescuento = ? ' +
       'WHERE IdTrabajo = ?'
     log.info(`Updating the discounts of work ${workId}`)
     return this.runAsync(query, [percentageDiscount, totalDiscount, grandTotal, workId])
@@ -91,7 +93,7 @@ export default class WorkService extends PersistenceService {
     returnedValue.PrecioSinDescuento = returnedValue.SumaPrecioSinDescuento
     delete returnedValue.SumaPrecioSinDescuento
 
-    returnedValue.PrecioFinalConDescuento = returnedValue.SumaPrecioConDescuento
+    returnedValue.PrecioConDescuento = returnedValue.SumaPrecioConDescuento
     delete returnedValue.SumaPrecioConDescuento
 
     delete returnedValue.SumaAditamentos
@@ -105,25 +107,5 @@ export default class WorkService extends PersistenceService {
     delete returnedValue.Chequeado
 
     return returnedValue
-  }
-
-  isObject(obj) {
-    var type = typeof obj
-    return type === 'function' || (type === 'object' && !!obj)
-  }
-
-  iterationCopy(src) {
-    let target = {}
-    for (let prop in src) {
-      if (src.hasOwnProperty(prop)) {
-        // if the value is a nested object, recursively copy all it's properties
-        if (this.isObject(src[prop])) {
-          target[prop] = this.iterationCopy(src[prop])
-        } else {
-          target[prop] = src[prop]
-        }
-      }
-    }
-    return target
   }
 }

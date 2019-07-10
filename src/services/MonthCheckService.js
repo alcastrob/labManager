@@ -10,18 +10,18 @@ export default class MonthCheckService extends PersistenceService {
     var query = 'SELECT d.IdDentista AS Key, d.IdDentista AS IdDentista, d.NombreDentista, ' +
       '  sum(t.PrecioSinDescuento) AS SumaPrecioSinDescuento, ' +
       '  ifnull(sum(t.PrecioMetal), 0) AS SumaAditamentos, ' +
-      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaCeramica, ' +
-      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaResina, ' +
-      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaOrtodoncia, ' +
-      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaEsqueletico, ' +
-      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioFinal ELSE 0 END), 0) AS SumaZirconio, ' +
-      '  sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioFinal ELSE 0 END) - ' +
+      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioSinDescuento ELSE 0 END), 0) AS SumaCeramica, ' +
+      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "2" THEN t.PrecioSinDescuento ELSE 0 END), 0) AS SumaResina, ' +
+      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "3" THEN t.PrecioSinDescuento ELSE 0 END), 0) AS SumaOrtodoncia, ' +
+      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "4" THEN t.PrecioSinDescuento ELSE 0 END), 0) AS SumaEsqueletico, ' +
+      '  ifnull(sum(CASE WHEN t.IdTipoTrabajo = "5" THEN t.PrecioSinDescuento ELSE 0 END), 0) AS SumaZirconio, ' +
+      '  sum(CASE WHEN t.IdTipoTrabajo = "1" THEN t.PrecioSinDescuento ELSE 0 END) - ' +
       '  ifnull(sum(t.PrecioMetal), 0) AS SumaFija, ' +
       '  sum(ifnull(t.PrecioSinDescuento, 0) - ifnull(t.PrecioMetal, 0)) AS SumaTotalMetal, ' +
       '  CAST((sum(t.TotalDescuento) * 100) AS FLOAT) / (sum(ifnull(t.PrecioSinDescuento, 0) - ' +
       '    ifnull(t.PrecioMetal, 0))) as Porcentaje, ' +
       '  sum(t.TotalDescuento) as SumaDescuento, ' +
-      '  sum(ifnull(t.PrecioFinal, 0)) AS SumaGranTotal ' +
+      '  sum(ifnull(t.PrecioConDescuento, 0)) AS SumaGranTotal ' +
       'FROM Trabajos t ' +
       'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista '
 
