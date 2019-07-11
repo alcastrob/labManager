@@ -117,7 +117,7 @@ export default {
 					formatter: 'money'
 				}
 			],
-			searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
+			searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color', 'Indicaciones'],
 			filterChanged: false,
 			lastFilterUsed: {},
 			listHeading: '',

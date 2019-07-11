@@ -7,20 +7,20 @@ export default class WorkService extends PersistenceService {
   // Tested
   async getWorksList(customFilters) {
     var query = 'SELECT * FROM vTrabajos WHERE 1=1'
-    if (customFilters !== undefined) {
-      if (customFilters.fEntrada !== undefined) {
+    if (customFilters) {
+      if (customFilters.fEntrada) {
         query += this.processDateQuery('FechaEntrada', customFilters.fEntrada)
       }
-      if (customFilters.fPrevista !== undefined) {
+      if (customFilters.fPrevista) {
         query += this.processDateQuery('FechaPrevista', customFilters.fPrevista)
       }
-      if (customFilters.fSalida !== undefined) {
+      if (customFilters.fSalida) {
         query += this.processDateQuery('FechaTerminacion', customFilters.fSalida)
       }
-      if (customFilters.tipo !== undefined && customFilters.tipo.length > 0) {
+      if (customFilters.tipo && customFilters.tipo.length > 0) {
         query += this.processTypeQuery('TipoTrabajo', customFilters.tipo)
       }
-      if (customFilters.IdDentista !== undefined) {
+      if (customFilters.IdDentista) {
         query += ` AND IdDentista = ${customFilters.IdDentista}`
       }
     }
@@ -30,8 +30,7 @@ export default class WorkService extends PersistenceService {
 
   // Tested
   async getWork(workId) {
-    var query = 'SELECT * FROM vTrabajos ' +
-      'WHERE IdTrabajo = ?'
+    var query = 'SELECT * FROM vTrabajos ' + 'WHERE IdTrabajo = ?'
     return this.getAsync(query, [workId])
   }
 
@@ -84,7 +83,6 @@ export default class WorkService extends PersistenceService {
   // Tested
   async getWorkTypes() {
     var query = 'SELECT IdTipoTrabajo, Descripcion FROM TipoTrabajos'
-
     return this.allAsync(query, [])
   }
 
