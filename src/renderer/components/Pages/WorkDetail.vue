@@ -681,7 +681,7 @@ export default {
 				? this.work.PrecioSinDescuento - this.work.PrecioMetal
 				: this.work.PrecioSinDescuento
 			this.work.TotalDescuento = parseFloat((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
-			this.work.PrecioConDescuento = (sumaTotalMetal * (1 - this.work.PorcentajeDescuento / 100)).toFixed(2)
+			this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		updateTotalDiscount(totalDiscount) {
