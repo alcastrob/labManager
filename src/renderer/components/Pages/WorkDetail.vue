@@ -158,6 +158,7 @@
                 class="form-control"
                 id="precioMetal"
                 ref="precioMetal"
+                @input="metalPriceChanged"
                 placeholder="€"
                 v-model="$v.work.PrecioMetal.$model"
                 :class="{'is-invalid': $v.work.PrecioMetal.$error}"
@@ -531,12 +532,12 @@ export default {
 					}
 				})
 			)
-			if (!this.isAdmin) {
-				// The user is modifying the ammount of the work, but has no visibility on the discounts. So, we reset them in
-				// order to warn the admin up during the month check operation
-				this.work.TotalDescuento = 0
-				this.work.PorcentajeDescuento = 0
-			}
+			// if (!this.isAdmin) {
+			// 	// The user is modifying the ammount of the work, but has no visibility on the discounts. So, we reset them in
+			// 	// order to warn the admin up during the month check operation
+			// 	this.work.TotalDescuento = 0
+			// 	this.work.PorcentajeDescuento = 0
+			// }
 
 			this.work.PrecioSinDescuento = sum
 			this.work.PrecioConDescuento = this.work.PrecioSinDescuento - this.work.TotalDescuento
@@ -642,35 +643,59 @@ export default {
 				}
 			}
 		},
-		indicationsTotalChanged(newTotal) {
-			this.work.PrecioSinDescuento = newTotal
-			if (this.work.PrecioSinDescuento !== 0) {
-				var sumaTotalMetal = this.work.PrecioMetal
-					? this.work.PrecioSinDescuento - this.work.PrecioMetal
-					: this.work.PrecioSinDescuento
-				this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
+		metalPriceChanged(event) {
+			// This function receives an event, because the control used is directly an input field, and not a
+			// percentegeInput or an euroInput.
+			var newValue = parseFloat(event.data).toFixed(2)
+
+			// Short-circuit any colateral ecent triggered from updatePercentageDiscount or updateTotalDiscount
+			if (this.work.PrecioMetal !== newValue) {
+				if (this.work.PrecioSinDescuento !== 0) {
+					var sumaTotalMetal = this.work.PrecioMetal
+						? this.work.PrecioSinDescuento - this.work.PrecioMetal
+						: this.work.PrecioSinDescuento
+					this.work.TotalDescuento = ((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
+					this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
+				}
+				this.calculateGrandTotal()
 			}
-			this.calculateGrandTotal()
 		},
-		updatePercentageDiscount() {
+		indicationsTotalChanged(newTotal) {
+			// Short-circuit any colateral ecent triggered from updatePercentageDiscount or updateTotalDiscount
+			if (this.work.PrecioSinDescuento !== newTotal) {
+				this.work.PrecioSinDescuento = newTotal
+				if (this.work.PrecioSinDescuento !== 0) {
+					var sumaTotalMetal = this.work.PrecioMetal
+						? this.work.PrecioSinDescuento - this.work.PrecioMetal
+						: this.work.PrecioSinDescuento
+					this.work.PorcentajeDescuento = (this.work.PorcentajeDescuento ? this.work.PorcentajeDescuento : 0).toFixed(2)
+					this.work.TotalDescuento = ((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
+					this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
+				}
+				this.calculateGrandTotal()
+			}
+		},
+		updatePercentageDiscount(percentageDiscount) {
+			this.work.PorcentajeDescuento = percentageDiscount
 			var sumaTotalMetal = this.work.PrecioMetal
 				? this.work.PrecioSinDescuento - this.work.PrecioMetal
 				: this.work.PrecioSinDescuento
 			this.work.TotalDescuento = parseFloat((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
+			this.work.PrecioConDescuento = (sumaTotalMetal * (1 - this.work.PorcentajeDescuento / 100)).toFixed(2)
 			this.calculateGrandTotal()
 		},
-		updateTotalDiscount() {
+		updateTotalDiscount(totalDiscount) {
+			this.work.TotalDescuento = totalDiscount
 			var sumaTotalMetal = this.work.PrecioMetal
 				? this.work.PrecioSinDescuento - this.work.PrecioMetal
 				: this.work.PrecioSinDescuento
 			this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
+			this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		calculateGrandTotal() {
 			if (this.isAdmin) {
-				this.$refs.grandTotal.value = this.moneyFormatter.format(
-					this.work.PrecioSinDescuento - this.work.TotalDescuento
-				)
+				this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioConDescuento)
 			}
 		},
 		updateDentist() {
