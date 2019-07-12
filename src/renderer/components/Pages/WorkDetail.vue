@@ -158,6 +158,7 @@
                 class="form-control"
                 id="precioMetal"
                 ref="precioMetal"
+                @input="metalPriceChanged"
                 placeholder="€"
                 v-model="$v.work.PrecioMetal.$model"
                 :class="{'is-invalid': $v.work.PrecioMetal.$error}"
@@ -457,7 +458,8 @@ export default {
 			this.work.IdTipoTrabajo = ''
 			this.work.Paciente = ''
 			this.work.Color = ''
-			this.PrecioFinal = 0
+			this.PrecioConDescuento = 0
+			this.PrecioSinDescuento = 0
 			this.work.FechaEntrada = ''
 			this.work.FechaPrevista = ''
 			this.work.PorcentajeDescuento = 0
@@ -484,31 +486,23 @@ export default {
 			if (this.$refs.workTests) {
 				this.$refs.workTests.addLastRow()
 			}
-
-			const focusAndScroll = function(item, anchorItem) {
-				log.debug(`Data validation error on ${item.$vnode.tag}`)
-				item.focus()
-				item.$parent.$scrollTo(anchorItem || item, 1000)
-				return false
-			}
-
-			// Looking for errors in inbound data
-			if (this.$refs.workTests.isError()) {
-				return focusAndScroll(this.$refs.workTests, this.$refs.btnSave)
-			}
-			if (this.$refs.workIndications.isError()) {
-				return focusAndScroll(this.$refs.workIndications)
-			}
-			if (this.$v.work.PrecioMetal.$anyError) {
-				return focusAndScroll(this.$refs.precioMetal)
-			}
-			if (this.$v.work.IdTipoTrabajo.$anyError) {
-				return focusAndScroll(this.$refs.tipoTrabajo)
-			}
-			if (this.$v.work.IdDentista.$anyError) {
-				return focusAndScroll(this.$refs.clinica)
-			}
-			if (this.$v.$anyError) {
+			if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()) {
+				if (this.$refs.workTests.isError()) {
+					this.$refs.workTests.focus()
+					this.$scrollTo(this.$refs.btnSave, 1000)
+				}
+				if (this.$refs.workIndications.isError()) {
+					this.$refs.workIndications.focus()
+				}
+				if (this.$v.work.PrecioMetal.$anyError) {
+					this.$refs.precioMetal.focus()
+				}
+				if (this.$v.work.IdTipoTrabajo.$anyError) {
+					this.$refs.tipoTrabajo.focus()
+				}
+				if (this.$v.work.IdDentista.$anyError) {
+					this.$refs.clinica.focus()
+				}
 				return false
 			}
 			if (this.invoice && !changeInvoiceConfirmed) {
@@ -527,52 +521,53 @@ export default {
 
 			if (this.$refs.workIndications.isDirty) {
 				this.$refs.workIndications.save(this.work.IdTrabajo)
-				var sum = parseFloat(
-					_.sumBy(this.workIndications, function(n) {
-						var temp = parseFloat(n.Precio)
-						if (isNaN(temp)) {
-							throw 'NaN'
-						} else {
-							return temp
-						}
-					})
-				)
-				if (sum !== this.work.PrecioFinal) {
-					this.work.PrecioFinal = sum
-				}
-				if (this.work.FechaTerminacion) {
-					this.work.FechaPrevista = null
-				}
-				if (this.$v.work.$anyDirty) {
-					await this.workService.updateWork(this.work)
-					if (this.invoice) {
-						// We also update the grand total of the invoice this work is included.
-						await this.invoiceService.updateInvoiceGrandTotal(this.invoice.IdFactura)
-					}
-				}
-				if (this.$refs.workTests.isDirty) {
-					this.$refs.workTests.save(this.work.IdTrabajo)
-				}
-				if (this.workAdjuncts && this.$v.workAdjuncts.$anyDirty) {
-					this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
-					if (this.workAdjunctsJustAdded) {
-						this.workAdjuntService.insertAdjuntsOfWork(this.workAdjuncts)
+			}
+			var sum = parseFloat(
+				_.sumBy(this.workIndications, function(n) {
+					var temp = parseFloat(n.Subtotal)
+					if (isNaN(temp)) {
+						throw 'NaN'
 					} else {
-						this.workAdjuntService.updateAdjuntsOfWork(this.workAdjuncts)
+						return temp
 					}
-				}
+				})
+			)
 
-				// Everything went right. Depending how do you reach this function, you'll have tow ways of leaving it
-				if (url) {
-					// Direct click on the SAVE button. Just get redirected to the URL
-					this.$router.push({
-						path: url
-					})
-				} else {
-					// You clicked on a print label button thar requires a previous save (and to get informed if the save was successfully or not). Get a true as return
-					this.$v.$reset()
-					return true
+			this.work.PrecioSinDescuento = sum
+			this.work.PrecioConDescuento = this.work.PrecioSinDescuento - this.work.TotalDescuento
+
+			if (this.work.FechaTerminacion) {
+				this.work.FechaPrevista = null
+			}
+			if (this.$v.work.$anyDirty) {
+				await this.workService.updateWork(this.work)
+				if (this.invoice) {
+					// We also update the grand total of the invoice this work is included.
+					await this.invoiceService.updateInvoiceGrandTotal(this.invoice.IdFactura)
 				}
+			}
+			if (this.$refs.workTests.isDirty) {
+				this.$refs.workTests.save(this.work.IdTrabajo)
+			}
+			if (this.workAdjuncts && this.$v.workAdjuncts.$anyDirty) {
+				this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
+				if (this.workAdjunctsJustAdded) {
+					this.workAdjuntService.insertAdjuntsOfWork(this.workAdjuncts)
+				} else {
+					this.workAdjuntService.updateAdjuntsOfWork(this.workAdjuncts)
+				}
+			}
+
+			// Everything went right. Depending how do you reach this function, you'll have tow ways of leaving it
+			if (url) {
+				// Direct click on the SAVE button. Just get redirected to the URL
+				this.$router.push({
+					path: url
+				})
+			} else {
+				// You clicked on a print label button thar requires a previous save (and to get informed if the save was successfully or not). Get a true as return
+				this.$v.$reset()
+				return true
 			}
 		},
 		showWarrantyLabelModal() {
@@ -585,11 +580,10 @@ export default {
 		showLabelModal(labelType) {
 			if (this.save()) {
 				this.printedLabel = labelType
-				this.workIndicationsText = ''
 				if (this.workIndications !== undefined) {
-					_.forEach(this.workIndications, x => {
-						this.workIndicationsText += `${x.Descripcion} (${x.Notas})\n`
-					})
+					this.workIndicationsText = _.map(this.workIndications, 'Descripcion').join('\n')
+				} else {
+					this.workIndicationsText = ''
 				}
 				this.$refs.printLabelModal.show()
 			}
@@ -610,7 +604,7 @@ export default {
 						Paciente: this.work.Paciente,
 						FechaTerminacion: new Date(this.work.FechaTerminacion),
 						Detalles: this.workIndications,
-						PrecioFinal: this.work.PrecioFinal,
+						PrecioSinDescuento: this.work.PrecioSinDescuento,
 						logo: 'data:image/png;base64,' + row[0].valor
 					}
 				})
@@ -643,29 +637,58 @@ export default {
 				}
 			}
 		},
-		indicationsTotalChanged(newTotal) {
-			this.work.PrecioFinal = newTotal
-			if (this.work.PrecioFinal !== 0) {
-				var sumaTotalMetal = this.work.PrecioMetal
-					? this.work.PrecioFinal - this.work.PrecioMetal
-					: this.work.PrecioFinal
-				this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
+		metalPriceChanged(event) {
+			// This function receives an event, because the control used is directly an input field, and not a
+			// percentegeInput or an euroInput.
+			var newValue = parseFloat(event.data).toFixed(2)
+
+			// Short-circuit any colateral ecent triggered from updatePercentageDiscount or updateTotalDiscount
+			if (this.work.PrecioMetal !== newValue) {
+				if (this.work.PrecioSinDescuento !== 0) {
+					var sumaTotalMetal = this.work.PrecioMetal
+						? this.work.PrecioSinDescuento - this.work.PrecioMetal
+						: this.work.PrecioSinDescuento
+					this.work.TotalDescuento = ((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
+					this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
+				}
+				this.calculateGrandTotal()
 			}
-			this.calculateGrandTotal()
 		},
-		updatePercentageDiscount() {
-			var sumaTotalMetal = this.work.PrecioMetal ? this.work.PrecioFinal - this.work.PrecioMetal : this.work.PrecioFinal
+		indicationsTotalChanged(newTotal) {
+			// Short-circuit any colateral ecent triggered from updatePercentageDiscount or updateTotalDiscount
+			if (this.work.PrecioSinDescuento !== newTotal) {
+				this.work.PrecioSinDescuento = newTotal
+				if (this.work.PrecioSinDescuento !== 0) {
+					var sumaTotalMetal = this.work.PrecioMetal
+						? this.work.PrecioSinDescuento - this.work.PrecioMetal
+						: this.work.PrecioSinDescuento
+					this.work.TotalDescuento = ((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
+					this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
+				}
+				this.calculateGrandTotal()
+			}
+		},
+		updatePercentageDiscount(percentageDiscount) {
+			this.work.PorcentajeDescuento = percentageDiscount
+			var sumaTotalMetal = this.work.PrecioMetal
+				? this.work.PrecioSinDescuento - this.work.PrecioMetal
+				: this.work.PrecioSinDescuento
 			this.work.TotalDescuento = parseFloat((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
+			this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
 			this.calculateGrandTotal()
 		},
-		updateTotalDiscount() {
-			var sumaTotalMetal = this.work.PrecioMetal ? this.work.PrecioFinal - this.work.PrecioMetal : this.work.PrecioFinal
+		updateTotalDiscount(totalDiscount) {
+			this.work.TotalDescuento = totalDiscount
+			var sumaTotalMetal = this.work.PrecioMetal
+				? this.work.PrecioSinDescuento - this.work.PrecioMetal
+				: this.work.PrecioSinDescuento
 			this.work.PorcentajeDescuento = parseFloat((this.work.TotalDescuento * 100) / sumaTotalMetal).toFixed(2)
+			this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
 			this.calculateGrandTotal()
 		},
 		calculateGrandTotal() {
 			if (this.isAdmin) {
-				this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+				this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioConDescuento)
 			}
 		},
 		updateDentist() {
@@ -697,7 +720,9 @@ export default {
 			this.workTests = await this.workTestService.getWorkTestsList(this.work.IdTrabajo)
 			if (this.isAdmin) {
 				this.invoice = await this.invoiceService.getInvoicePerWork(this.work.IdTrabajo)
-				this.$refs.grandTotal.value = this.moneyFormatter.format(this.work.PrecioFinal - this.work.TotalDescuento)
+				this.$refs.grandTotal.value = this.moneyFormatter.format(
+					this.work.PrecioSinDescuento - this.work.TotalDescuento
+				)
 			}
 		}
 	},

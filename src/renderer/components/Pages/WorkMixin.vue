@@ -41,7 +41,7 @@ export default {
 				Paciente: '',
 				Color: '',
 				PrecioMetal: 0,
-				PrecioFinal: 0,
+				PrecioConDescuento: 0,
 				FechaEntrada: '',
 				FechaPrevista: '',
 				FechaPrevistaPrueba: '',
@@ -78,7 +78,7 @@ export default {
 			Paciente: {},
 			Color: {},
 			PrecioMetal: { decimal },
-			PrecioFinal: { decimal },
+			PrecioConDescuento: { decimal },
 			FechaEntrada: {},
 			FechaPrevista: {},
 			FechaPrevistaPrueba: {},
@@ -160,7 +160,7 @@ export default {
 			if (mm < 10) {
 				mm = '0' + mm
 			}
-			return yyyy + '-' + mm + '-' + dd
+			return `${yyyy}-${mm}-${dd}`
 		},
 		showAdjunts: function(justAdded) {
 			log.info('ShowAdjunts button clicked')

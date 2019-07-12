@@ -1,10 +1,7 @@
 <template>
-  <div class="table-editable">
+  <div id="workIndicationsTable" class="table-editable">
     <div>
-      <table
-        class="table table-bordered table-responsive-xs table-striped"
-        ref="workIndicationsTable"
-      >
+      <table class="table table-bordered table-responsive-xs table-striped">
         <tr>
           <th style="width: 4%;"></th>
           <th class="text-left" style="width: 45%;">Descripción</th>
@@ -16,8 +13,9 @@
         <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
           <td class="pt-3-half">
             <i
+              class="fa fa-times-circle"
+              v-on:click="deleteRow(indication.IdTrabajoDetalle)"
               v-if="$attrs.disabled !== true"
-              class="fa fa-times-circle pt-1"
               @click="deleteRow(indication.IdTrabajoDetalle)"
             ></i>
           </td>
@@ -36,7 +34,7 @@
               @change="updatePrice(indication.IdTrabajoDetalle, indication.Cantidad, indication.Precio)"
               :class="{'bg-danger text-white animated flash': isNotANumber(indication.Cantidad)}"
               :disabled="$attrs.disabled === true"
-            >
+            />
           </td>
           <td class="noMargins">
             <input
@@ -45,7 +43,7 @@
               @change="trackChanges($event, indication.IdTrabajoDetalle, 'Notas')"
               v-model="indication.Notas"
               :disabled="$attrs.disabled === true"
-            >
+            />
           </td>
           <td class="noMargins">
             <input
@@ -55,10 +53,10 @@
               v-model="indication.Precio"
               :class="{'bg-danger text-white animated flash': isNotANumber(indication.Precio)}"
               :disabled="indication.IdElementoCatalogo || $attrs.disabled === true"
-            >
+            />
           </td>
           <td class="noMargins">
-            <input type="text" class="inputInTd text-right" v-model="indication.Subtotal" disabled>
+            <input type="text" class="inputInTd text-right" v-model="indication.Subtotal" disabled />
           </td>
         </tr>
         <!-- The empty row for new values -->
@@ -80,7 +78,7 @@
               :class="{'bg-danger text-white animated flash': $v.newRow.Cantidad.$error && !allRowEmpty}"
               @change="updatePrice()"
               v-on:keydown="filterJustNumberKeystrokes"
-            >
+            />
           </td>
           <td class="noMargins">
             <input
@@ -88,7 +86,7 @@
               class="inputInTd"
               v-model="$v.newRow.Notas.$model"
               @blur="onDescriptionBlur()"
-            >
+            />
           </td>
           <td class="noMargins">
             <input
@@ -98,9 +96,7 @@
               :class="{'bg-danger text-white animated flash': $v.newRow.Precio.$error && !allRowEmpty}"
               @blur="addLastRow()"
               v-on:keydown="filterJustNumberKeystrokes"
-              @change="updatePrice()"
-              :disabled="$v.newRow.Descripcion.$model.IdElementoCatalogo"
-            >
+            />
           </td>
           <td class="noMargins">
             <input
@@ -108,7 +104,7 @@
               class="inputInTd text-right"
               v-model="$v.newRow.Subtotal.$model"
               disabled
-            >
+            />
           </td>
         </tr>
       </table>
@@ -118,20 +114,20 @@
           :class="{'d-inline-block text-danger animated shake': sumError}"
         >{{getSum()}}</p>
       </div>
-      <!-- <div>
-        <h3>Inserted</h3>
+      <div>
+        <!-- <h3>Inserted</h3>
         <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
-          <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Subtotal}}</li>
+          <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
         </ul>
         <h3>Updated</h3>
         <ul v-for="updated in updatedRows" :key="updated.IdTrabajoDetalle">
-          <li>{{updated.IdTrabajoDetalle}}|{{updated.Descripcion}}|{{updated.Subtotal}}</li>
+          <li>{{updated.IdTrabajoDetalle}}|{{updated.Descripcion}}|{{updated.Precio}}</li>
         </ul>
         <h3>Deleted</h3>
         <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
-          <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Subtotal}}</li>
-        </ul>
-      </div>-->
+          <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
+        </ul>-->
+      </div>
     </div>
   </div>
 </template>

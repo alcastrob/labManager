@@ -111,13 +111,13 @@ export default {
 				},
 				{
 					title: 'Importe',
-					dataField: 'PrecioFinal',
+					dataField: 'PrecioSinDescuento',
 					titleClass: 'text-right mr-2',
 					rowClass: 'text-right',
 					formatter: 'money'
 				}
 			],
-			searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color'],
+			searchFields: ['IdTrabajo', 'NombreDentista', 'Paciente', 'Color', 'Indicaciones'],
 			filterChanged: false,
 			lastFilterUsed: {},
 			listHeading: '',

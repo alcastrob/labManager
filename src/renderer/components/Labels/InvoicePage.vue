@@ -2,8 +2,8 @@
   <div class="container printed pagebreak" :class="{'pageBorder': !forPrinter}">
     <div class="row">
       <div class="col-sm-6">
-        <img @load="logoLoaded" :src="logo" class="mt-3">
-        <br>
+        <img @load="logoLoaded" :src="logo" class="mt-3" />
+        <br />
         CIF: {{vatNumber}}
       </div>
       <!-- col-sm-6 -->
@@ -22,13 +22,13 @@
         <div class="clientBox">
           <h3 class="text-uppercase">Cliente</h3>
           {{invoice.NombreDentista}}
-          <br>
+          <br />
           {{invoice.NombreClinica}}
-          <br>
+          <br />
           {{invoice.DatosFiscales}}
-          <br>
+          <br />
           {{invoice.Direccion}}
-          <br>
+          <br />
           {{invoice.CP}} {{invoice.Poblacion}}
         </div>
       </div>
@@ -49,7 +49,8 @@
                 <th class="text-left" style="width: 50%;">Concepto</th>
                 <th class="text-right" style="width: 10%;">Cantidad</th>
                 <th class="text-right" style="width: 10%;">P. Unidad</th>
-                <th class="text-right" style="width: 11%;">Importe</th>
+                <th class="text-right" style="width: 10%;">% Dto.</th>
+                <th class="text-right" style="width: 10%;">Dto.</th>
                 <th class="text-right" style="width: 10%;">Subtotal</th>
               </tr>
             </thead>
@@ -59,9 +60,9 @@
                   <td class="text-left">
                     <span
                       class="font-weight-bold"
-                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaSalida)}}</span>
-                    <br>
-                    <span class>{{work.Paciente}}</span>
+                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaTerminacion)}}</span>
+                    <br />
+                    <span>{{work.Paciente}}</span>
                   </td>
                   <td class="text-right"></td>
                   <td class="text-right"></td>
@@ -75,54 +76,12 @@
                 >
                   <td class="text-left">
                     <span class="text-monospace">{{indication.Descripcion}}</span>
-                    <span v-if="indication.Notas">({{indication.Notas}})</span>
                   </td>
-                  <td class="text-right">{{indication.Cantidad}}</td>
-                  <td class="text-right">{{moneyFormatter.format(indication.Precio)}}</td>
-                  <td
-                    class="text-right"
-                  >{{moneyFormatter.format(indication.Precio * indication.Cantidad)}}</td>
                   <td class="text-right"></td>
-                </tr>
-                <tr class="leapTr">
-                  <td class="text-left" v-if="editing"></td>
-                  <td class="text-left">
-                    <span class="text-monospace">Descuento</span>
-                    <span v-if="!editing">({{work.PorcentajeDescuento}}%)</span>
-                  </td>
-                  <td></td>
-
-                  <template v-if="editing">
-                    <td class="text-right">
-                      <euroInput
-                        class="form-control text-right inputInForm"
-                        v-model="work.TotalDescuento"
-                        @input="updateTotalDiscount(work)"
-                      ></euroInput>
-                    </td>
-                    <td class="text-right">
-                      <percentageInput
-                        class="form-control text-right inputInForm"
-                        v-model="work.PorcentajeDescuento"
-                        @input="updatePercentageDiscount(work)"
-                      ></percentageInput>
-                    </td>
-                  </template>
-                  <template v-else>
-                    <td class="text-right">-{{moneyFormatter.format(work.TotalDescuento)}}</td>
-                  </template>
-
-                  <td class="text-right">-{{moneyFormatter.format(work.TotalDescuento)}}</td>
-                  <td></td>
-                  <!-- <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td> -->
-                </tr>
-                <tr class="leapTr">
-                  <td class="text-left" v-if="editing"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioFinalConDescuento)}}</td>
+                  <td class="text-right"></td>
+                  <td class="text-right"></td>
+                  <td class="text-right"></td>
+                  <td class="text-right"></td>
                 </tr>
               </template>
             </tbody>
@@ -135,7 +94,7 @@
             <h4>Detalle de los descuentos aplicados</h4>
             <div
               class="mb-4 font-weight-bold text-right"
-            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}}</div>
           </div>
           <div class="text-right font-italic" v-if="!isLastPage">...suma y sigue.</div>
         </div>
@@ -154,7 +113,8 @@
                 </template>
                 <th class="text-right" style="width: 10%;">Cantidad</th>
                 <th class="text-right" style="width: 10%;">P. Unidad</th>
-                <th class="text-right" style="width: 11%;">Importe</th>
+                <th class="text-right" style="width: 10%;">% Dto.</th>
+                <th class="text-right" style="width: 10%;">Dto.</th>
                 <th class="text-right" style="width: 10%;">Subtotal</th>
               </tr>
             </thead>
@@ -171,9 +131,9 @@
                   <td class="text-left">
                     <span
                       class="font-weight-bold"
-                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaSalida)}}</span>
-                    <br>
-                    <span class>{{work.Paciente}}</span>
+                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaTerminacion)}}</span>
+                    <br />
+                    <span>{{work.Paciente}}</span>
                   </td>
                   <td class="text-right"></td>
                   <td class="text-right"></td>
@@ -249,7 +209,7 @@
             <h4>Detalle de los descuentos aplicados</h4>
             <div
               class="mb-4 font-weight-bold text-right"
-            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}} ({{appliedPercentageDiscount.toFixed(2)}}% sobre total)</div>
+            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}}</div>
           </div>
         </div>
         <!-- end forScreen -->
@@ -401,25 +361,25 @@ export default {
 			this.$forceUpdate()
 		},
 		updatePercentageDiscount(work) {
-			work.TotalDescuento = (work.PrecioSinDescuento * work.PorcentajeDescuento) / 100
+			work.TotalDescuento = ((work.PrecioSinDescuento - work.PrecioMetal) * work.PorcentajeDescuento) / 100
 
-			work.PrecioFinalConDescuento = work.PrecioSinDescuento - work.TotalDescuento
+			work.PrecioConDescuento = work.PrecioSinDescuento - work.TotalDescuento
 
 			this.worksUpdated = true
 
 			this.updateGrandTotal()
 		},
 		updateTotalDiscount(work) {
-			work.PorcentajeDescuento = ((work.TotalDescuento * 100) / work.PrecioSinDescuento).toFixed(2)
+			work.PorcentajeDescuento = ((work.TotalDescuento * 100) / (work.PrecioSinDescuento - work.PrecioMetal)).toFixed(2)
 
-			work.PrecioFinalConDescuento = work.PrecioSinDescuento - work.TotalDescuento
+			work.PrecioConDescuento = work.PrecioSinDescuento - work.TotalDescuento
 
 			this.worksUpdated = true
 
 			this.updateGrandTotal()
 		},
 		updateGrandTotal() {
-			this.invoice.Total = _.sumBy(this.works, 'PrecioFinalConDescuento')
+			this.invoice.Total = _.sumBy(this.works, 'PrecioConDescuento')
 		},
 		save: async function(confirmed = false) {
 			if (!confirmed) {
@@ -440,9 +400,7 @@ export default {
 			// Now we update the discounts of the remaining works
 			for (const currentWork of this.works) {
 				log.info(
-					`Invoice edited. WorkId ${currentWork.IdTrabajo} updated from invoice ${this.invoice.IdFactura} (${
-						this.invoice.NumFactura
-					})`
+					`Invoice edited. WorkId ${currentWork.IdTrabajo} updated from invoice ${this.invoice.IdFactura} (${this.invoice.NumFactura})`
 				)
 				await this.workService.updateWorkDiscount(
 					currentWork.IdTrabajo,

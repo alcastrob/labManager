@@ -24,7 +24,7 @@ export default class KpiService extends PersistenceService {
 
   // Tested
   async getWorksEndedLast30days() {
-    var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
+    var query = 'SELECT COUNT(1) AS Count, SUM(PrecioConDescuento) AS Sum ' +
       'FROM Trabajos ' +
       'WHERE FechaTerminacion >= date("now", "localtime", "-30 days")'
     return this.getAsync(query, [])
@@ -32,7 +32,7 @@ export default class KpiService extends PersistenceService {
 
   // Tested
   async getWorksEndedPrevious30days() {
-    var query = 'SELECT COUNT(1) AS Count, SUM(PrecioFinal) AS Sum ' +
+    var query = 'SELECT COUNT(1) AS Count, SUM(PrecioConDescuento) AS Sum ' +
       'FROM Trabajos ' +
       'WHERE FechaTerminacion >= date("now", "localtime", "-60 days") ' +
       'AND FechaTerminacion <= date("now", "localtime", "-30 days")'
@@ -42,7 +42,7 @@ export default class KpiService extends PersistenceService {
   // Tested
   async getMonthTotals() {
     var query = 'SELECT strftime("%m", FechaTerminacion) AS Month, ' +
-      'strftime("%Y", FechaTerminacion) AS Year, SUM(PrecioFinal) AS Sum ' +
+      'strftime("%Y", FechaTerminacion) AS Year, SUM(PrecioConDescuento) AS Sum ' +
       'FROM Trabajos ' +
       'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" ' +
       'GROUP BY Month, Year'
@@ -64,7 +64,7 @@ export default class KpiService extends PersistenceService {
   // Tested
   async getMonthTotalsPerDentist(dentistId) {
     var query = 'SELECT strftime("%m", FechaTerminacion) AS Month, ' +
-      'strftime("%Y", FechaTerminacion) AS Year, SUM(PrecioFinal) AS Sum ' +
+      'strftime("%Y", FechaTerminacion) AS Year, SUM(PrecioConDescuento) AS Sum ' +
       'FROM Trabajos ' +
       'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" AND IdDentista = ? ' +
       'GROUP BY Month, Year'
@@ -85,7 +85,7 @@ export default class KpiService extends PersistenceService {
 
   async getSumPerDentistPerWorkType(dentistId) {
     var query = 'SELECT tt.Descripcion AS TipoTrabajo, ' +
-      'SUM(PrecioFinal) AS Sum ' +
+      'SUM(PrecioConDescuento) AS Sum ' +
       'FROM Trabajos t ' +
       'INNER JOIN TipoTrabajos tt ON t.IdTipoTrabajo = tt.IdTipoTrabajo ' +
       'WHERE FechaTerminacion IS NOT NULL AND FechaTerminacion != "" AND IdDentista = ? ' +
@@ -104,7 +104,7 @@ export default class KpiService extends PersistenceService {
   // Tested
   async getLeaderboard(limit) {
     var query = 'SELECT d.NombreDentista, ' +
-      'SUM(t.PrecioFinal) AS Sum ' +
+      'SUM(t.PrecioConDescuento) AS Sum ' +
       'FROM Trabajos t ' +
       'INNER JOIN Dentistas d ON d.IdDentista = t.IdDentista ' +
       'WHERE FechaTerminacion >= date("now", "localtime", "-1 year") ' +

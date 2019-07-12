@@ -3,11 +3,11 @@
     <div class="row">
       <div class="col-sm-6">
         <h1 class="text-uppercase">Nota de entrega</h1>
-        <br>
+        <br />
       </div>
       <div class="col-sm-6">
-        <img @load="logoLoaded" :src="logo">
-        <br>
+        <img @load="logoLoaded" :src="logo" />
+        <br />
       </div>
     </div>
     <!-- row -->
@@ -15,17 +15,17 @@
       <div class="col-sm-6">
         CLINICA - Dr/Dra:
         {{NombreDentista}}
-        <br>
+        <br />
         Paciente:
         {{Paciente}}
-        <br>
+        <br />
       </div>
       <div class="col-sm-6">
         <div class="row">
           <div class="col-sm-6">FECHA: {{format(FechaTerminacion)}}</div>
           <div class="col-sm-6 text-right">Nº ALBARÁN: {{IdTrabajo}}</div>
         </div>
-        <br>
+        <br />
       </div>
     </div>
     <!-- row -->
@@ -34,19 +34,19 @@
       <div class="col-sm-12">
         <table class="table table-bordered" width="95%" cellspacing="0">
           <tr>
-            <th class="text-right" width="2%">Cantidad</th>
             <th width="80%">Descripción</th>
             <th class="text-right" width="8%">Precio Individual</th>
+            <th class="text-right" width="2%">Cantidad</th>
             <th class="text-right" width="8%">Subtotal</th>
           </tr>
           <tr v-for="indication in Detalles" v-bind:key="indication.IdTrabajoDetalle">
-            <td class="text-right">{{indication.Cantidad}}</td>
             <td>
               {{indication.Descripcion}}
-              <br>
+              <br />
               {{indication.Notas}}
             </td>
             <td class="text-right">{{moneyFormatter.format(indication.Precio)}}</td>
+            <td class="text-right">{{indication.Cantidad}}</td>
             <td class="text-right">{{moneyFormatter.format(indication.Subtotal)}}</td>
           </tr>
         </table>
@@ -57,7 +57,7 @@
     <div class="row">
       <div
         class="col-sm-12 text-right font-weight-bold"
-      >Total: {{moneyFormatter.format(PrecioFinal)}}</div>
+      >Total: {{moneyFormatter.format(PrecioSinDescuento)}}</div>
     </div>
     <!-- row -->
   </div>
@@ -103,7 +103,7 @@ export default {
 			type: Array,
 			required: true
 		},
-		PrecioFinal: {
+		PrecioSinDescuento: {
 			type: Number,
 			required: true
 		},

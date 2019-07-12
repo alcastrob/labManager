@@ -38,7 +38,7 @@
                 placeholder="Nombre de el/la dentista"
                 v-model="$v.data.NombreDentista.$model"
                 :class="{'is-invalid': $v.data.NombreDentista.$error}"
-              >
+              />
               <small
                 class="text-danger"
                 v-if="$v.data.NombreDentista.$error"
@@ -54,7 +54,7 @@
                 placeholder="Nombre de la clínica"
                 v-model="$v.data.NombreClinica.$model"
                 ref="inputClinica"
-              >
+              />
             </div>
             <!-- col-md-6 -->
           </div>
@@ -86,7 +86,7 @@
                 placeholder="CP"
                 v-model="$v.data.CP.$model"
                 :class="{'is-invalid': $v.data.CP.$error}"
-              >
+              />
               <small
                 class="text-danger"
                 v-if="$v.data.CP.$error"
@@ -101,7 +101,7 @@
                 id="ciudad"
                 placeholder="Ciudad"
                 v-model="$v.data.Poblacion.$model"
-              >
+              />
             </div>
             <!-- col-md-4 -->
             <div class="col-md-6 mt-3">
@@ -113,7 +113,7 @@
                 placeholder="xxx@yyy.zzz"
                 v-model="$v.data.CorreoElectronico.$model"
                 :class="{'is-invalid': $v.data.CorreoElectronico.$error}"
-              >
+              />
               <small
                 class="text-danger"
                 v-if="$v.data.CorreoElectronico.$error"
@@ -128,7 +128,7 @@
                 id="telefono1"
                 placeholder="123 456 789"
                 v-model="$v.data.Telefono.$model"
-              >
+              />
             </div>
             <!-- col-md-3 -->
             <div class="col-md-3 mt-3">
@@ -139,7 +139,7 @@
                 id="telefono2"
                 placeholder="123 456 789"
                 v-model="$v.data.Telefono2.$model"
-              >
+              />
             </div>
             <!-- col-md-3 -->
           </div>
@@ -160,7 +160,7 @@
                 id="datosFiscales"
                 placeholder="CIF / NIF"
                 v-model="$v.data.DatosFiscales.$model"
-              >
+              />
             </div>
             <!-- col-md-4 -->
             <div class="col-md-4">
@@ -171,7 +171,7 @@
                 id="datosBancarios"
                 placeholder="Número de cuenta"
                 v-model="$v.data.DatosBancarios.$model"
-              >
+              />
             </div>
             <!-- col-md-4 -->
           </div>
@@ -189,7 +189,7 @@
                 rows="3"
                 v-model="$v.data.DatosInteres.$model"
               ></textarea>
-              <br>
+              <br />
             </div>
           </div>
           <!-- row -->
@@ -299,7 +299,7 @@ export default {
 			return `/finances?dentistName=${encodeURIComponent(this.data.NombreDentista)}`
 		},
 		save: function(url) {
-			log.info('save')
+			log.info(`Saved the dentist ${this.data.IdDentista} info`)
 			this.$v.data.$touch()
 			if (this.$v.data.$anyError) {
 				if (this.$v.data.CorreoElectronico.$anyError) {

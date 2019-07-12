@@ -37,7 +37,7 @@ export default class WorkService extends PersistenceService {
     if (workIndication.Precio === undefined || workIndication.Precio === null) {
       throw 'Empty price in UPDATE operation'
     }
-    return this.runAsync(query, [workIndication.Descripcion, workIndication.Precio, workIndication.Precio, workIndication.IdTrabajoDetalle])
+    return this.runAsync(query, [workIndication.Descripcion, workIndication.Precio, workIndication.Cantidad, workIndication.Notas, workIndication.Subtotal, workIndication.IdElementoCatalogo, workIndication.IdTrabajoDetalle])
   }
 
   // Tested

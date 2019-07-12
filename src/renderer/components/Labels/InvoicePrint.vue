@@ -10,6 +10,7 @@ import invoicePage from './invoicePage'
 import reportPage from './reportPage'
 import DentistService from '../../../services/DentistService'
 import InvoiceService from '../../../services/InvoiceService'
+import WorkService from '../../../services/WorkService'
 import WorkIndicationService from '../../../services/WorkIndicationService'
 var path = require('path')
 var fs = require('fs')
@@ -75,7 +76,7 @@ export default {
 				return work.TotalDescuento
 			})
 			var pfcd = _.sumBy(this.invoiceWorks, work => {
-				return work.PrecioFinalConDescuento
+				return work.PrecioConDescuento
 			})
 			var psd = _.sumBy(this.invoiceWorks, work => {
 				return work.PrecioSinDescuento
@@ -141,9 +142,9 @@ export default {
 			this.invoiceWorks = invoiceData.selectedWorks
 			for (var work of this.invoiceWorks) {
 				this.indications[work.IdTrabajo] = await this.workIndicationService.getWorkIndications(work.IdTrabajo)
-				work.PrecioSinDescuento = work.SumaPrecioFinal
-				work.PrecioFinalConDescuento = work.SumaPrecioFinal - work.TotalDescuento
-				this.invoice.Total += work.PrecioFinalConDescuento
+				work.PrecioSinDescuento = work.SumaPrecioSinDescuento
+				work.PrecioConDescuento = work.SumaPrecioConDescuento
+				this.invoice.Total += work.PrecioConDescuento
 			}
 
 			this.renderContent(false)
@@ -237,6 +238,7 @@ export default {
 	},
 	created() {
 		this.invoiceService = new InvoiceService()
+		this.workService = new WorkService()
 		this.workIndicationService = new WorkIndicationService()
 		this.dentistService = new DentistService()
 		this.loadData()

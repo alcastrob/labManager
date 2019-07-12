@@ -30,10 +30,6 @@ export default class InvoiceService extends PersistenceService {
     }
     worksString = worksString.substr(0, worksString.length - 1)
 
-    var totalDiscount = _.sumBy(works, (work) => {
-      return parseFloat(work.totalDescuento)
-    })
-
     var query1 = 'INSERT INTO Facturas(NumFactura, IdDentista, Fecha, Total) ' +
       'VALUES ( ' +
       '  (SELECT CASE WHEN ( ' +
@@ -51,7 +47,7 @@ export default class InvoiceService extends PersistenceService {
       '  END), ' +
       '  ?, ' +
       '  date(?), ' +
-      `  (SELECT SUM(PrecioFinal) - ${totalDiscount} FROM Trabajos WHERE IdTrabajo IN (${worksString})) ` +
+      `  (SELECT SUM(PrecioConDescuento) FROM Trabajos WHERE IdTrabajo IN (${worksString})) ` +
       ')'
     var idInvoice = await this.runAsync(query1, [invoiceDate, invoiceDate, idDentist, invoiceDate])
     for (var value of works) {
@@ -94,7 +90,7 @@ export default class InvoiceService extends PersistenceService {
 
   async updateInvoiceGrandTotal(invoiceId) {
     var query = 'UPDATE Facturas ' +
-      'SET Total = (SELECT sum(PrecioFinalConDescuento) FROM vFacturasTrabajos WHERE IdFactura = ?) ' +
+      'SET Total = (SELECT sum(PrecioConDescuento) FROM vFacturasTrabajos WHERE IdFactura = ?) ' +
       'WHERE IdFactura = ?'
     return this.runAsync(query, [invoiceId, invoiceId])
   }

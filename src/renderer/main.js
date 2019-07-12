@@ -17,12 +17,8 @@ try {
 	if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 	Vue.http = Vue.prototype.$http = axios
 	Vue.config.productionTip = true
-	Vue.config.errorHandler = error => {
-		log.error(`Application error: ${error.message}. Call stack: ${error.stack}`)
-	}
-
-	window.onerror = (message, url, line, col, error) => {
-		log.error(`Application error: ${message}. ${JSON.stringify(error)}. Url: ${url}. Line: ${line}`)
+	Vue.config.errorHandler = function (err, vm, info) {
+		log.error('[Global Error Handler]: Error in ' + info + ': ' + err)
 	}
 
 	remoteLog(log, {
@@ -35,6 +31,13 @@ try {
 		callOriginal: true
 	})
 	log.setLevel('INFO')
+	window.onerror = (error) => {
+		log.error(`Application error: ${JSON.stringify(error)}. Url: ${window.url}. Call stack: ${error.stack}`)
+	}
+
+	Vue.config.errorHandler = error => {
+		log.error(`Application error: ${error.message}. Call stack: ${error.stack}`)
+	}
 
 	new Vue({
 		router,
