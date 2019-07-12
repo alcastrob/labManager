@@ -111,7 +111,7 @@ export default {
 				},
 				{
 					title: 'Importe',
-					dataField: 'PrecioConDescuento',
+					dataField: 'PrecioSinDescuento',
 					titleClass: 'text-right mr-2',
 					rowClass: 'text-right',
 					formatter: 'money'

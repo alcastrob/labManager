@@ -668,7 +668,6 @@ export default {
 					var sumaTotalMetal = this.work.PrecioMetal
 						? this.work.PrecioSinDescuento - this.work.PrecioMetal
 						: this.work.PrecioSinDescuento
-					this.work.PorcentajeDescuento = (this.work.PorcentajeDescuento ? this.work.PorcentajeDescuento : 0).toFixed(2)
 					this.work.TotalDescuento = ((sumaTotalMetal * this.work.PorcentajeDescuento) / 100).toFixed(2)
 					this.work.PrecioConDescuento = (this.work.PrecioSinDescuento - this.work.TotalDescuento).toFixed(2)
 				}
