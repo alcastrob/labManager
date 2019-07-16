@@ -1,76 +1,75 @@
 <template>
-  <div id="workIndicationsTable" class="table-editable">
-    <div>
-      <table class="table table-bordered table-responsive-xs table-striped">
-        <tr>
-          <th style="width: 4%;"></th>
-          <th class="text-left" style="width: 50%;">Descripción</th>
-          <th style="width: 16%;" class="text-right">Precio</th>
-        </tr>
-        <tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
-          <td class="pt-3-half">
-            <i
-              class="fa fa-times-circle"
-              v-on:click="deleteRow(indication.IdTrabajoDetalle)"
-              v-if="$attrs.disabled !== true"
-            ></i>
-          </td>
-          <td class="noMargins">
-            <input
-              type="text"
-              v-model="indication.Descripcion"
-              class="inputInTd"
-              @change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')"
-              :class="{ 'bg-danger text-white animated flash': indication.Descripcion.length === 0 }"
-              :disabled="$attrs.disabled === true"
-            >
-          </td>
-          <td class="noMargins">
-            <input
-              type="text"
-              class="inputInTd text-right"
-              @blur="updatePrice($event, indication.IdTrabajoDetalle)"
-              v-model="indication.Precio"
-              :class="{ 'bg-danger text-white animated flash': isNotANumber(indication.Precio) }"
-              v-on:keydown="filterJustNumberKeystrokes"
-              @change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')"
-              :disabled="$attrs.disabled === true"
-            >
-          </td>
-        </tr>
-        <!-- The empty row for new values -->
-        <tr v-if="$attrs.disabled !== true">
-          <td class="pt-3-half"></td>
-          <td class="noMargins">
-            <input
-              type="text"
-              class="inputInTd"
-              v-model="$v.newRow.descripcion.$model"
-              ref="newDescripcion"
-              :class="{ 'bg-danger text-white animated flash': $v.newRow.descripcion.$error && !allRowEmpty }"
-            >
-          </td>
-          <td class="noMargins">
-            <input
-              type="text"
-              class="inputInTd text-right"
-              v-model="$v.newRow.precio.$model"
-              :class="{ 'bg-danger text-white animated flash': $v.newRow.precio.$error && !allRowEmpty }"
-              @blur="addLastRow()"
-              v-on:keydown="filterJustNumberKeystrokes"
-            >
-          </td>
-        </tr>
-      </table>
+	<div id="workIndicationsTable" class="table-editable">
+		<div>
+			<table class="table table-bordered table-responsive-xs table-striped">
+				<tr>
+					<th style="width: 4%;"></th>
+					<th class="text-left" style="width: 50%;">Descripción</th>
+					<th style="width: 16%;" class="text-right">Precio</th>
+				</tr>
+				<tr v-for="indication in data" v-bind:key="indication.IdTrabajoDetalle">
+					<td class="pt-3-half">
+						<i
+							class="fa fa-times-circle"
+							v-on:click="deleteRow(indication.IdTrabajoDetalle)"
+							v-if="$attrs.disabled !== true"
+						></i>
+					</td>
+					<td class="noMargins">
+						<input
+							type="text"
+							v-model="indication.Descripcion"
+							class="inputInTd"
+							@change="trackChanges($event, indication.IdTrabajoDetalle, 'Descripcion')"
+							:class="{ 'bg-danger text-white animated flash': indication.Descripcion.length === 0 }"
+							:disabled="$attrs.disabled === true"
+						/>
+					</td>
+					<td class="noMargins">
+						<input
+							type="text"
+							class="inputInTd text-right"
+							@blur="updatePrice($event, indication.IdTrabajoDetalle)"
+							v-model="indication.Precio"
+							:class="{ 'bg-danger text-white animated flash': isNotANumber(indication.Precio) }"
+							v-on:keydown="filterJustNumberKeystrokes"
+							@change="trackChanges($event, indication.IdTrabajoDetalle, 'Precio')"
+							:disabled="$attrs.disabled === true"
+						/>
+					</td>
+				</tr>
+				<!-- The empty row for new values -->
+				<tr v-if="$attrs.disabled !== true">
+					<td class="pt-3-half"></td>
+					<td class="noMargins">
+						<input
+							type="text"
+							class="inputInTd"
+							v-model="$v.newRow.descripcion.$model"
+							ref="newDescripcion"
+							:class="{ 'bg-danger text-white animated flash': $v.newRow.descripcion.$error && !allRowEmpty }"
+						/>
+					</td>
+					<td class="noMargins">
+						<input
+							type="text"
+							class="inputInTd text-right"
+							v-model="$v.newRow.precio.$model"
+							:class="{ 'bg-danger text-white animated flash': $v.newRow.precio.$error && !allRowEmpty }"
+							@blur="addLastRow()"
+							v-on:keydown="filterJustNumberKeystrokes"
+						/>
+					</td>
+				</tr>
+			</table>
 
-      <div>
-        <p
-          class="float-right text-right pr-1"
-          :class="{ 'd-inline-block text-danger animated shake': sumError }"
-        >{{ getSum() }}</p>
-      </div>
-      <div>
-        <!-- <h3>Inserted</h3>
+			<div>
+				<p class="float-right text-right pr-1" :class="{ 'd-inline-block text-danger animated shake': sumError }">
+					{{ getSum() }}
+				</p>
+			</div>
+			<div>
+				<!-- <h3>Inserted</h3>
         <ul v-for="inserted in insertedRows" :key="inserted.IdTrabajoDetalle">
           <li>{{inserted.IdTrabajoDetalle}}|{{inserted.Descripcion}}|{{inserted.Precio}}</li>
         </ul>
@@ -82,9 +81,9 @@
         <ul v-for="deleted in deletedRows" :key="deleted.IdTrabajoDetalle">
           <li>{{deleted.IdTrabajoDetalle}}|{{deleted.Descripcion}}|{{deleted.Precio}}</li>
         </ul>-->
-      </div>
-    </div>
-  </div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -265,7 +264,10 @@ export default {
 			this.$v.newRow.$reset()
 		},
 		isError() {
-			return document.getElementsByClassName('bg-danger').length > 0 || this.$v.newRow.$anyError
+			return (
+				document.getElementById('workIndicationsTable').getElementsByClassName('bg-danger').length > 0 ||
+				this.$v.newRow.$anyError
+			)
 		}
 	},
 	computed: {
