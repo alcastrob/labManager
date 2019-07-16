@@ -366,7 +366,7 @@ export default {
 			this.$v.newRow.$reset()
 		},
 		isError() {
-			return document.getElementsByClassName('bg-danger').length > 0 || (!this.allRowEmpty && this.$v.newRow.$anyError)
+			return document.getElementById('workIndicationsTable').getElementsByClassName('bg-danger').length > 0 || (!this.allRowEmpty && this.$v.newRow.$anyError)
 		}
 	},
 	computed: {

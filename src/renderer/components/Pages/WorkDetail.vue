@@ -199,7 +199,6 @@
           <workIndicationsTable
             v-model="workIndications"
             ref="workIndications"
-            id="workIndications"
             @change="indicationsTotalChanged"
             :disabled="readOnly"
           ></workIndicationsTable>
