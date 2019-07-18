@@ -1,11 +1,14 @@
 <template>
-  <textarea
-    v-model="displayValue"
-    @blur="blur($event)"
-    @focus="isInputActive = true"
-    class="noCornerTextArea"
-    ref="textArea"
-  ></textarea>
+	<textarea
+		v-model="displayValue"
+		@blur="blur($event)"
+		@focus="
+			isInputActive = true
+			$event.target.select()
+		"
+		class="noCornerTextArea"
+		ref="textArea"
+	></textarea>
 </template>
 
 <script>

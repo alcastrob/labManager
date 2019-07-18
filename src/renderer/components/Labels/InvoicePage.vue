@@ -377,11 +377,12 @@ export default {
 			for (const currentWork of this.works) {
 				log.info(
 					`Invoice edited. WorkId ${currentWork.IdTrabajo} updated from invoice ${this.invoice.IdFactura} (${this.invoice.NumFactura})`
-				)
+        )
 				await this.workService.updateWorkDiscount(
 					currentWork.IdTrabajo,
-					currentWork.PorcentajeDescuento,
-					currentWork.TotalDescuento
+          currentWork.PorcentajeDescuento,
+          currentWork.TotalDescuento,
+					currentWork.PrecioConDescuento
 				)
 			}
 
