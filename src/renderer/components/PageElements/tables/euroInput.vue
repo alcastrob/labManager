@@ -2,10 +2,8 @@
 	<textarea
 		v-model="displayValue"
 		@blur="blur($event)"
-		@focus="
-			isInputActive = true
-			$event.target.select()
-		"
+		@focus="isInputActive = true"
+		@focusin="focused"
 		class="noCornerTextArea"
 		ref="textArea"
 	></textarea>
@@ -33,6 +31,11 @@ export default {
 				}
 			})
 			this.$emit('blur', event)
+		},
+		focused(event) {
+			this.$nextTick(() => {
+				event.target.select()
+			})
 		}
 	},
 	computed: {

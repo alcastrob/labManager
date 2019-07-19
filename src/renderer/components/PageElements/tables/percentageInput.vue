@@ -2,10 +2,8 @@
 	<textarea
 		v-model="displayValue"
 		@blur="isInputActive = false"
-		@focus="
-			isInputActive = true
-			$event.target.select()
-		"
+		@focus="isInputActive = true"
+		@focusin="focused"
 		class="noCornerTextArea"
 		ref="textArea"
 	></textarea>
@@ -25,6 +23,7 @@ export default {
 			get: function() {
 				if (this.isInputActive) {
 					// Cursor is inside the input field. unformat display value for user
+					// this.$el.select()
 					return this.value.toString()
 				} else {
 					// User is not modifying now. Format display value for user interface
@@ -44,6 +43,13 @@ export default {
 				this.$emit('input', newValue)
 				this.$emit('change', null)
 			}
+		}
+	},
+	methods: {
+		focused(event) {
+			this.$nextTick(() => {
+				event.target.select()
+			})
 		}
 	},
 	mounted() {
