@@ -402,7 +402,13 @@ export default {
 		this.workService = new WorkService()
 		this.invoiceService = new InvoiceService()
 		log.debug('Created')
-	},
+  },
+  mounted() {
+    this.$root.$on('topbar:save', () => {
+			log.debug('Requested to save from the topbar')
+			this.save(true)
+		})
+  },
 	computed: {
 		isDirty() {
 			return this.worksDeleted.length !== 0 || this.worksUpdated

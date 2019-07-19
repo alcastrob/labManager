@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" :class="{'visuallyhidden': forPrinter}"></div>
+	<div ref="container" :class="{ visuallyhidden: forPrinter }"></div>
 </template>
 
 <script>
@@ -193,6 +193,8 @@ export default {
 					appliedPercentageDiscount: appliedPercentageDiscount
 				}
 			})
+			// In order to receive messages from the topbar, the $root property must be the same as the InvoicePrint root, not the InvoicePrinter itseft.
+			instance.$root = this.$root
 			this.instances.push(instance)
 			instance.$mount()
 			// This is required for isDirty exploration of TopBar component
