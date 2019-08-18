@@ -71,7 +71,7 @@ export default {
 						}
 					})
 					log.warn('No valid format for the database file.')
-					this.configFileService.configSet('dataFile', '')
+					// this.configFileService.configSet('dataFile', '')
 				}
 			} catch (err) {
 				log.error(`Error in loadDb method of ${this.$vnode.componentOptions.tag}. Content: ${JSON.stringify(err)}`)
