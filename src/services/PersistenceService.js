@@ -18,10 +18,17 @@ export default class PersistenceService {
       if (!file) {
         dbFile = this.configFileService.configGet('dataFile')
       }
+      const fs = require('fs')
+      if (!fs.existsSync(dbFile)) {
+        // No file to open
+        log.error(`${this.configFileService.configGet('dataFile')} doesn't exists or not accesible`)
+        return undefined
+      }
+
       this.db = new Database(dbFile, {
         timeout: 8000
       })
-      
+
       var x = await this.getConfigValue('companyName')
       if (!x) {
         // Looks not to be a good sqlite database. Reject it

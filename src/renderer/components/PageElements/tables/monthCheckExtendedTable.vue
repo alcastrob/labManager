@@ -326,7 +326,7 @@ export default {
 					work.PorcentajeDescuento = 0
 					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento
 				} else {
-					work.TotalDescuento = parseFloat((work.SumaTotalMetal * work.PorcentajeDescuento) / 100).toFixed(2)
+					work.TotalDescuento = parseFloat(parseFloat((work.SumaTotalMetal * work.PorcentajeDescuento) / 100).toFixed(2))
 					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento - work.TotalDescuento
 				}
 				this.applyDiscountsToDentist(dentist)
@@ -346,7 +346,7 @@ export default {
 					work.PorcentajeDescuento = 0
 					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento
 				} else {
-					work.PorcentajeDescuento = parseFloat((work.TotalDescuento * 100) / work.SumaTotalMetal).toFixed(2)
+					work.PorcentajeDescuento = parseFloat(parseFloat((work.TotalDescuento * 100) / work.SumaTotalMetal).toFixed(2))
 					work.SumaPrecioConDescuento = work.SumaPrecioSinDescuento - work.TotalDescuento
 				}
 				this.applyDiscountsToDentist(dentist)
@@ -410,7 +410,7 @@ export default {
 					dentist.SumaTotalMetal
 				).toFixed(2)
 			}
-
+			dentist.Porcentaje = parseFloat(dentist.Porcentaje)
 			this.calcColumnSums(['SumaDescuento', 'SumaGranTotal'])
 		},
 

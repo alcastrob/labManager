@@ -66,6 +66,17 @@ ipc.on('file:opened', function (event, content) {
 
 var datafile = configFileService.configGet('dataFile')
 
+var recentFilesMenu = {
+  label: 'Archivos recientes',
+  submenu: [{
+    label: datafile,
+    click() {
+      openFile(datafile)
+    }
+  }],
+  enabled: !(datafile === undefined || datafile === '')
+}
+
 var menuTemplate = [{
   label: 'Archivo',
   submenu: [{
@@ -87,6 +98,10 @@ var menuTemplate = [{
       },
       enabled: !(datafile === undefined || datafile === '')
     },
+    {
+      type: 'separator'
+    },
+    recentFilesMenu,
     {
       type: 'separator'
     },
@@ -162,6 +177,7 @@ var menuTemplate = [{
     }
   ]
 }]
+
 if (configFileService.configGet('isAdmin')) {
   menuTemplate.push({
     label: 'Mantenimientos',
@@ -243,10 +259,21 @@ function openExistingFile() {
   var filePath = dialog.showOpenDialog({
     properties: ['openFile']
   })
+  // openFile(filePath[0])
   if (filePath !== undefined) {
     // The user selected a file and did not pressed the Cancel button of the dialog
+
     mainWindow.webContents.send('reload:database', filePath[0])
     mainWindow.loadURL(winURL)
   }
   datafile = filePath[0]
+}
+
+function openFile(filePath) {
+  if (filePath) {
+    // The user selected a file and did not pressed the Cancel button of the dialog
+    mainWindow.webContents.send('reload:database', filePath)
+    mainWindow.loadURL(winURL)
+  }
+  datafile = filePath
 }
