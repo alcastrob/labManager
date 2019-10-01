@@ -91,21 +91,29 @@ export default {
 						indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
 						currentPageLines += toAdd
 					} else {
-						this.insertInstance(
-							worksToPrint,
-							indicationsToPrint,
-							currentPage,
-							false,
-							isInvoice,
-							appliedDiscount,
-							appliedPercentageDiscount
-						)
-						// Now we reset the arrays and include the current work in the next page
-						currentPage++
-						worksToPrint = [currentWork]
-						indicationsToPrint = []
-						indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
-						currentPageLines = 2 + this.indications[currentWork.IdTrabajo].length
+						// There's not enough room in the page for the work
+						if (currentPageLines === 0) {
+							// This is an edge case. If nothing is in the page but the work is bigger, don't try to put it on the next one and render it here.
+							worksToPrint.push(currentWork)
+							indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
+							currentPageLines += toAdd
+						} else {
+							this.insertInstance(
+								worksToPrint,
+								indicationsToPrint,
+								currentPage,
+								false,
+								isInvoice,
+								appliedDiscount,
+								appliedPercentageDiscount
+							)
+							// Now we reset the arrays and include the current work in the next page
+							currentPage++
+							worksToPrint = [currentWork]
+							indicationsToPrint = []
+							indicationsToPrint[currentWork.IdTrabajo] = this.indications[currentWork.IdTrabajo]
+							currentPageLines = 2 + this.indications[currentWork.IdTrabajo].length
+						}
 					}
 				} else {
 					worksToPrint.push(currentWork)
