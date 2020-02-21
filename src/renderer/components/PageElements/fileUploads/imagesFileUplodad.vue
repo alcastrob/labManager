@@ -1,59 +1,55 @@
 <template>
-  <div class>
-    <div class="row">
-      <fileUploadBase class="col-md-12" type="image/*" :multipleFiles="true" ref="fileUpload"></fileUploadBase>
-    </div>
-    <!-- row -->
-    <div class="row text-center text-lg-left">
-      <div
-        class="col-md-4 pb-3 text-center"
-        v-for="(image, idx) in imageArray"
-        v-bind:key="image.path"
-      >
-        <a href="#" class="mb-4" @click="viewImage(image.content, idx)">
-          <img
-            class="img-fluid img-thumbnail thumbnail"
-            :src="image.content"
-            title="Haga click para visualizar"
-          >
-        </a>
-        <button
-          class="btn btn-secondary btn-sm"
-          title="Descargar la imagen al ordenador"
-          @click="downloadImage(image)"
-        >
-          <i class="fas fa-download"></i>
-        </button>
-        <button
-          class="btn btn-secondary btn-sm"
-          title="Borrar la imagen"
-          @click="deleteImage(image)"
-        >
-          <i class="fas fa-times-circle"></i>
-        </button>
-      </div>
-      <!-- col-md-4 -->
-    </div>
-    <!-- row -->
-    <b-carousel
-      id="carousel1"
-      ref="carousel1"
-      controls
-      indicators
-      background="#ababab"
-      :interval="0"
-      v-model="currentSlide"
-      class="overlay"
-      :class="{'displayNone': !fullscreen}"
-    >
-      <b-carousel-slide
-        v-for="(image, idx) in imageArray"
-        :img-src="imageArray[idx].content"
-        v-bind:key="'b-' + idx"
-        @clidk="exitFullscreen"
-      ></b-carousel-slide>
-    </b-carousel>
-  </div>
+	<div class>
+		<div class="row">
+			<fileUploadBase class="col-md-12" type="image/*" :multipleFiles="true" ref="fileUpload"></fileUploadBase>
+		</div>
+		<!-- row -->
+		<div class="row text-center text-lg-left max200">
+			<div
+				class="col-md-4 pb-3 text-center"
+				v-for="(image, idx) in imageArray"
+				v-bind:key="image.path"
+			>
+				<a href="#" class="mb-4" @click="viewImage(image.content, idx)">
+					<img
+						class="img-fluid img-thumbnail thumbnail"
+						:src="image.content"
+						title="Haga click para visualizar"
+					/>
+				</a>
+				<button
+					class="btn btn-secondary btn-sm"
+					title="Descargar la imagen al ordenador"
+					@click="downloadImage(image)"
+				>
+					<i class="fas fa-download"></i>
+				</button>
+				<button class="btn btn-secondary btn-sm" title="Borrar la imagen" @click="deleteImage(image)">
+					<i class="fas fa-times-circle"></i>
+				</button>
+			</div>
+			<!-- col-md-4 -->
+		</div>
+		<!-- row -->
+		<b-carousel
+			id="carousel1"
+			ref="carousel1"
+			controls
+			indicators
+			background="#ababab"
+			:interval="0"
+			v-model="currentSlide"
+			class="overlay"
+			:class="{'displayNone': !fullscreen}"
+		>
+			<b-carousel-slide
+				v-for="(image, idx) in imageArray"
+				:img-src="imageArray[idx].content"
+				v-bind:key="'b-' + idx"
+				@clidk="exitFullscreen"
+			></b-carousel-slide>
+		</b-carousel>
+	</div>
 </template>
 
 <script>
@@ -206,5 +202,10 @@ img.thumbnail {
 	top: 0;
 	background: rgba(51, 51, 51, 0.7);
 	z-index: 100;
+}
+
+.max200 {
+	max-height: 200px;
+	overflow-y: scroll;
 }
 </style>

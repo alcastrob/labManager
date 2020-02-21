@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-expressions
 'use strict'
 
-import _ from 'lodash'
 import PersistenceService from './PersistenceService'
 
 export default class InvoiceService extends PersistenceService {
@@ -100,17 +99,4 @@ export default class InvoiceService extends PersistenceService {
       'WHERE IdFactura = ? AND IdTrabajo = ? '
     return this.runAsync(query, [invoiceId, workId])
   }
-
-  // updateInvoice(invoice) {
-  //   var query = 'UPDATE Facturas SET IdDentista = ?, ' +
-  //   'Fecha = ?, Total = ? ' +
-  //   'WHERE IdFactura = ?'
-  //   return this.runAsync(query, [invoice.IdDentista, invoice.Fecha,
-  //     invoice.Total, invoice.Descuento, invoice.Banco, invoice.Efectivo])
-  // }
-
-  // deleteInvoice(invoiceId) {
-  //   var query = 'DELETE FROM Facturas WHERE IdFactura = ?'
-  //   return this.runAsync(query, [invoiceId])
-  // }
 }

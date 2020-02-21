@@ -2,6 +2,7 @@
 'use strict'
 
 import PersistenceService from './PersistenceService'
+import log from 'loglevel'
 
 export default class DentistService extends PersistenceService {
   // Tested
@@ -22,11 +23,12 @@ export default class DentistService extends PersistenceService {
       'DatosFiscales, Direccion, DatosBancarios, DatosInteres, ' +
       'CorreoElectronico, CP, Poblacion, Telefono, Telefono2) ' +
       'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    this.runAsync(query, [dentist.NombreDentista, dentist.NombreClinica, dentist.DatosFiscales,
+    var id = await this.runAsync(query, [dentist.NombreDentista, dentist.NombreClinica, dentist.DatosFiscales,
       dentist.Direccion, dentist.DatosBancarios, dentist.DatosInteres,
       dentist.CorreoElectronico, dentist.CP, dentist.Poblacion,
       dentist.Telefono, dentist.Telefono2
     ])
+    log.info(`Created the dentist ${id} - ${dentist.NombreDentista}`)
   }
 
   // Tested
