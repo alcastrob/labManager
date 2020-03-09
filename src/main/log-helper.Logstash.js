@@ -1,4 +1,4 @@
-export function remoteLog(logger, options) {
+export function remoteLogLogstash(logger, options) {
 	try {
 		if (!logger || !logger.methodFactory) {
 			throw new Error('loglevel instance has to be specified in order to be extended')

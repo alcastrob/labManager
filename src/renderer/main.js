@@ -7,8 +7,14 @@ import BootstrapVue from 'bootstrap-vue'
 import Vuelidate from 'vuelidate'
 import log from 'loglevel'
 import {
-	remoteLog
-} from '../main/log-helper'
+	remoteLogDatadog
+} from '../main/log-helper.Datadog'
+import {
+	remoteLogLogstash
+} from '../main/log-helper.Logstash'
+import {
+	datadogLogs
+} from '@datadog/browser-logs'
 
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
@@ -21,14 +27,27 @@ try {
 		log.error('[Global Error Handler]: Error in ' + info + ': ' + err)
 	}
 
-	remoteLog(log, {
-		url: 'http://telemetry.labmanager.es:5000',
-		prefix: (severity, message) => {
-			return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}(${
-				require('../../package.json').version
-			}): ${message}`
-		},
-		callOriginal: true
+	datadogLogs.init({
+		clientToken: 'pubb8287858b4d94cab0397667111d5f116',
+		datacenter: 'eu',
+		forwardErrorsToLogs: true,
+		sampleRate: 100
+	})
+
+	// remoteLogLogstash(log, {
+	// 	url: 'http://telemetry.labmanager.es:5000',
+	// 	prefix: (severity, message) => {
+	// 		return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}(${
+	// 			require('../../package.json').version
+	// 		}): ${message}`
+	// 	},
+	// 	callOriginal: true
+	// })
+
+	remoteLogDatadog(log, {
+		callOriginal: true,
+		host: require('os').hostname(),
+		version: require('../../package.json').version
 	})
 	log.setLevel('INFO')
 	window.onerror = (error) => {
