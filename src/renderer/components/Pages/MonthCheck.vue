@@ -1,194 +1,194 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-5">
-        <h1>Cierre - {{monthName}} {{year}}</h1>
-      </div>
-      <!-- col-md-5 -->
-      <div class="col-md-7 mt-2">
-        <div class="float-right">
-          <collapsible-action-button
-            iconCss="fas fa-clipboard-list"
-            text="Modo verificación (sólo lectura)"
-            :callback="setReadOnly"
-            v-if="!readOnly"
-          ></collapsible-action-button>
-          <collapsible-action-button
-            iconCss="fas fa-check"
-            text="Modo normal"
-            :callback="unsetReadOnly"
-            v-else
-          ></collapsible-action-button>
-          <collapsibleExcelButton
-            fileName="cierreMensual"
-            :isCollapsible="true"
-            :collapsed="false"
-            :isDark="false"
-            ref="excelButton"
-            :class="{'displayNone': !readOnly}"
-            @click="beginExporting"
-          ></collapsibleExcelButton>
-          <button
-            class="btn btn-warning"
-            :disabled="selectedDentists.length === 0"
-            @click="generateReport"
-            v-if="!readOnly"
-          >
-            <i class="fas fa-receipt mr-2"></i>Generar resúmenes
-          </button>
-          <button
-            class="btn btn-warning"
-            :disabled="selectedDentists.length === 0"
-            @click="generateInvoice"
-            v-if="!readOnly"
-          >
-            <i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas
-          </button>
-        </div>
-      </div>
-      <!-- col-md-7 -->
-    </div>
-    <!-- row -->
-    <div class="row">
-      <div class="col-md-12">
-        <p
-          class="text-justify"
-          v-if="!readOnly"
-        >Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Generar facturas. Para poder marcar un dentista hay que marcar previamente alguno sus trabajos. Una vez generada la correspondiente factura, los trabajos ya no aparecerán en esta lista. Si todos los trabajos de un dentista ya estuvieran incorporados a una factura, tampoco aparecería el propio dentista en este listado.</p>
-        <p
-          class="text-justify"
-          v-else
-        >Aquí figuran todos los datos de los trabajos del mes agrupados por dentista. Este modo de verificación permite comprobar la asignación de trabajos y facturas, agrupadas por dentista. Sin embargo, en este modo no se pueden asignar trabajos a nuevas facturas.</p>
-      </div>
-      <!-- col-md-12 -->
-    </div>
-    <!-- row -->
-    <div class="row">
-      <monthCheckExtendedTable
-        :headers="headers"
-        :searchFields="[]"
-        ref="theTable"
-        urlBase="/works/details/"
-        :year="year"
-        :month="month"
-        masterKey="IdDentista"
-        v-model="selectedDentists"
-      />
-    </div>
-    <!-- row -->
-    <b-modal ref="modal" size="lg" title="Emisión de facturas" hide-footer>
-      <div class="modal-body">
-        <div class="containter">
-          <div class="row">
-            <div class="col-md-12">
-              <span>Se van a emitir facturas para los siguientes clientes. Por favor, verifique que los datos de los posibles descuentos aplicados son correctos. Una vez emitidas las facturas, se podrán consultar y volver a imprimir desde la sección Facturas del área de Gestión Económica.</span>
-              <ul class="pt-3">
-                <li
-                  v-for="dentist in selectedDentists"
-                  v-bind:key="dentist.IdDentista"
-                >{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto.: {{sumDiscounts(dentist)}} | Total factura: {{sumTotals(dentist)}}</li>
-              </ul>
-            </div>
-            <!-- col-md-12 -->
-          </div>
-          <!-- row -->
-          <div class="row" v-if="!generateInvoiceInProgress">
-            <div class="col-md-6">
-              <label for="fechaFacturas">Verifique la fecha de las facturas a emitir:</label>
-              <input
-                type="date"
-                class="form-control"
-                id="fechaFacturas"
-                placeholder="dd/mm/aaaa"
-                v-model="invoiceDate"
-              />
-            </div>
-            <!-- col-md-6 -->
-          </div>
-          <!-- row -->
-          <div class="row" v-if="generateInvoiceInProgress">
-            <div class="col-md-12 pt-2 pb-3">
-              Procesando...
-              <div class="progress">
-                <div
-                  class="progress-bar bg-info"
-                  :style="'width:' + currentProgress +'%'"
-                >{{currentProgress}}%</div>
-              </div>
-            </div>
-            <!-- col-md-12 -->
-          </div>
-          <!-- row -->
-        </div>
-        <!-- containter -->
-      </div>
-      <!-- modal-body -->
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="hideModal">
-          <i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar
-        </button>
-        <button
-          class="btn btn-secondary"
-          @click="confirmGeneration(false)"
-          ref="btnPrint"
-          :disabled="invoiceDate === ''"
-        >
-          <i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas
-        </button>
-        <button
-          class="btn btn-secondary"
-          @click="confirmGeneration(true)"
-          ref="btnPrint"
-          :disabled="invoiceDate === ''"
-        >
-          <i class="fas fa-print mr-2"></i>Generar e imprimir facturas
-        </button>
-      </div>
-    </b-modal>
-    <b-modal ref="modalReport" size="lg" title="Emisión de resúmenes" hide-footer>
-      <div class="modal-body">
-        <div class="containter">
-          <div class="row">
-            <div class="col-md-12">
-              <span>Se van a emitir resúmenes para los siguientes clientes.</span>
-              <ul class="pt-3">
-                <li
-                  v-for="dentist in selectedDentists"
-                  v-bind:key="dentist.IdDentista"
-                >{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto.: {{sumDiscounts(dentist)}} | Total: {{sumTotals(dentist)}}</li>
-              </ul>
-            </div>
-            <!-- col-md-12 -->
-          </div>
-          <!-- row -->
-          <div class="row" v-if="generateReportInProgress">
-            <div class="col-md-12 pt-2 pb-3">
-              Procesando...
-              <div class="progress">
-                <div
-                  class="progress-bar bg-info"
-                  :style="'width:' + currentProgress +'%'"
-                >{{currentProgress}}%</div>
-              </div>
-            </div>
-            <!-- col-md-12 -->
-          </div>
-          <!-- row -->
-        </div>
-        <!-- containter -->
-      </div>
-      <!-- modal-body -->
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="hideReportModal">
-          <i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar
-        </button>
-        <button class="btn btn-secondary" @click="printReport">
-          <i class="fas fa-print mr-2"></i>Imprimir resúmenes
-        </button>
-      </div>
-    </b-modal>
-    <invoicePrint ref="invoice"></invoicePrint>
-  </div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-5">
+				<h1>Cierre - {{monthName}} {{year}}</h1>
+			</div>
+			<!-- col-md-5 -->
+			<div class="col-md-7 mt-2">
+				<div class="float-right">
+					<collapsible-action-button
+						iconCss="fas fa-clipboard-list"
+						text="Modo verificación (sólo lectura)"
+						:callback="setReadOnly"
+						v-if="!readOnly"
+					></collapsible-action-button>
+					<collapsible-action-button
+						iconCss="fas fa-check"
+						text="Modo normal"
+						:callback="unsetReadOnly"
+						v-else-if="!dbReadOnly"
+					></collapsible-action-button>
+					<collapsibleExcelButton
+						fileName="cierreMensual"
+						:isCollapsible="true"
+						:collapsed="false"
+						:isDark="false"
+						ref="excelButton"
+						:class="{'displayNone': !readOnly}"
+						@click="beginExporting"
+					></collapsibleExcelButton>
+					<button
+						class="btn btn-warning"
+						:disabled="selectedDentists.length === 0"
+						@click="generateReport"
+						v-if="!readOnly"
+					>
+						<i class="fas fa-receipt mr-2"></i>Generar resúmenes
+					</button>
+					<button
+						class="btn btn-warning"
+						:disabled="selectedDentists.length === 0"
+						@click="generateInvoice"
+						v-if="!readOnly"
+					>
+						<i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas
+					</button>
+				</div>
+			</div>
+			<!-- col-md-7 -->
+		</div>
+		<!-- row -->
+		<div class="row">
+			<div class="col-md-12">
+				<p
+					class="text-justify"
+					v-if="!readOnly"
+				>Aquí figuran los datos de los trabajos del mes agrupados por dentista. Para generar una factura hay que seleccionar los dentistas a los que deseemos emitirle factura (marcando su cuadro de selección) y pulsar el botón Generar facturas. Para poder marcar un dentista hay que marcar previamente alguno sus trabajos. Una vez generada la correspondiente factura, los trabajos ya no aparecerán en esta lista. Si todos los trabajos de un dentista ya estuvieran incorporados a una factura, tampoco aparecería el propio dentista en este listado.</p>
+				<p
+					class="text-justify"
+					v-else
+				>Aquí figuran todos los datos de los trabajos del mes agrupados por dentista. Este modo de verificación permite comprobar la asignación de trabajos y facturas, agrupadas por dentista. Sin embargo, en este modo no se pueden asignar trabajos a nuevas facturas.</p>
+			</div>
+			<!-- col-md-12 -->
+		</div>
+		<!-- row -->
+		<div class="row">
+			<monthCheckExtendedTable
+				:headers="headers"
+				:searchFields="[]"
+				ref="theTable"
+				urlBase="/works/details/"
+				:year="year"
+				:month="month"
+				masterKey="IdDentista"
+				v-model="selectedDentists"
+			/>
+		</div>
+		<!-- row -->
+		<b-modal ref="modal" size="lg" title="Emisión de facturas" hide-footer>
+			<div class="modal-body">
+				<div class="containter">
+					<div class="row">
+						<div class="col-md-12">
+							<span>Se van a emitir facturas para los siguientes clientes. Por favor, verifique que los datos de los posibles descuentos aplicados son correctos. Una vez emitidas las facturas, se podrán consultar y volver a imprimir desde la sección Facturas del área de Gestión Económica.</span>
+							<ul class="pt-3">
+								<li
+									v-for="dentist in selectedDentists"
+									v-bind:key="dentist.IdDentista"
+								>{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto.: {{sumDiscounts(dentist)}} | Total factura: {{sumTotals(dentist)}}</li>
+							</ul>
+						</div>
+						<!-- col-md-12 -->
+					</div>
+					<!-- row -->
+					<div class="row" v-if="!generateInvoiceInProgress">
+						<div class="col-md-6">
+							<label for="fechaFacturas">Verifique la fecha de las facturas a emitir:</label>
+							<input
+								type="date"
+								class="form-control"
+								id="fechaFacturas"
+								placeholder="dd/mm/aaaa"
+								v-model="invoiceDate"
+							/>
+						</div>
+						<!-- col-md-6 -->
+					</div>
+					<!-- row -->
+					<div class="row" v-if="generateInvoiceInProgress">
+						<div class="col-md-12 pt-2 pb-3">
+							Procesando...
+							<div class="progress">
+								<div
+									class="progress-bar bg-info"
+									:style="'width:' + currentProgress +'%'"
+								>{{currentProgress}}%</div>
+							</div>
+						</div>
+						<!-- col-md-12 -->
+					</div>
+					<!-- row -->
+				</div>
+				<!-- containter -->
+			</div>
+			<!-- modal-body -->
+			<div class="modal-footer">
+				<button class="btn btn-secondary" @click="hideModal">
+					<i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar
+				</button>
+				<button
+					class="btn btn-secondary"
+					@click="confirmGeneration(false)"
+					ref="btnPrint"
+					:disabled="invoiceDate === ''"
+				>
+					<i class="fas fa-file-invoice-dollar mr-2"></i>Generar facturas
+				</button>
+				<button
+					class="btn btn-secondary"
+					@click="confirmGeneration(true)"
+					ref="btnPrint"
+					:disabled="invoiceDate === ''"
+				>
+					<i class="fas fa-print mr-2"></i>Generar e imprimir facturas
+				</button>
+			</div>
+		</b-modal>
+		<b-modal ref="modalReport" size="lg" title="Emisión de resúmenes" hide-footer>
+			<div class="modal-body">
+				<div class="containter">
+					<div class="row">
+						<div class="col-md-12">
+							<span>Se van a emitir resúmenes para los siguientes clientes.</span>
+							<ul class="pt-3">
+								<li
+									v-for="dentist in selectedDentists"
+									v-bind:key="dentist.IdDentista"
+								>{{dentist.NombreDentista}} | Importe base: {{sumBasePrice(dentist)}} | Dto.: {{sumDiscounts(dentist)}} | Total: {{sumTotals(dentist)}}</li>
+							</ul>
+						</div>
+						<!-- col-md-12 -->
+					</div>
+					<!-- row -->
+					<div class="row" v-if="generateReportInProgress">
+						<div class="col-md-12 pt-2 pb-3">
+							Procesando...
+							<div class="progress">
+								<div
+									class="progress-bar bg-info"
+									:style="'width:' + currentProgress +'%'"
+								>{{currentProgress}}%</div>
+							</div>
+						</div>
+						<!-- col-md-12 -->
+					</div>
+					<!-- row -->
+				</div>
+				<!-- containter -->
+			</div>
+			<!-- modal-body -->
+			<div class="modal-footer">
+				<button class="btn btn-secondary" @click="hideReportModal">
+					<i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar
+				</button>
+				<button class="btn btn-secondary" @click="printReport">
+					<i class="fas fa-print mr-2"></i>Imprimir resúmenes
+				</button>
+			</div>
+		</b-modal>
+		<invoicePrint ref="invoice"></invoicePrint>
+	</div>
 </template>
 
 <script>
@@ -322,7 +322,8 @@ export default {
 				style: 'currency',
 				currency: 'EUR'
 			}),
-			readOnly: false
+			readOnly: false,
+			dbReadOnly: false
 		}
 	},
 	methods: {
@@ -388,9 +389,11 @@ export default {
 		},
 		setReadOnly() {
 			this.readOnly = true
-			this.$refs.theTable.setReadOnlyMode(true)
-			this.$refs.theTable.forceFullReload()
-			this.$refs.theTable.forceTableHeaderReflow()
+			if (this.$refs.theTable) {
+				this.$refs.theTable.setReadOnlyMode(true)
+				this.$refs.theTable.forceFullReload()
+				this.$refs.theTable.forceTableHeaderReflow()
+			}
 		},
 		unsetReadOnly() {
 			this.readOnly = false
@@ -431,6 +434,13 @@ export default {
 		this.invoiceService = new InvoiceService()
 		this.year = this.$route.params.year
 		this.month = this.$route.params.month
+		// No operation was made with the db in the invoiceService, so we have to take the
+		// readonly parameter directly from the configFileService
+		this.dbReadOnly = this.invoiceService.configFileService.configGetReadOnly()
+		debugger
+		if (this.dbReadOnly) {
+			this.setReadOnly()
+		}
 	},
 	mounted() {
 		this.$refs.excelButton.setTable(this.$refs.theTable)

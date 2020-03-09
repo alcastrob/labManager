@@ -14,6 +14,7 @@ export default class PersistenceService {
 
   async loadDbFile(file) {
     var dbFile = file
+    this.readonly = this.configFileService.configGetReadOnly()
     try {
       if (!file) {
         dbFile = this.configFileService.configGet('dataFile')
@@ -139,6 +140,10 @@ export default class PersistenceService {
 
   // Runs the SQL query with the specified parameters. It does not retrieve any result data.
   async runAsync(sql, params) {
+    if (this.readonly) {
+      // Nothing to do. The database was opened in read-only mode.
+      return null
+    }
     if (!this.db) {
       await this.loadDbFile()
     }
@@ -151,27 +156,4 @@ export default class PersistenceService {
       log.error(`SQL Run Error. Query: ${sql} | Params: ${params} | Error: ${err.stack}`)
     }
   }
-
-  // function createTable() {
-  //   db.run('CREATE TABLE TipoTrabajos (' +
-  //     '    IdTipoTrabajo INTEGER PRIMARY KEY AUTOINCREMENT,' +
-  //     '    Descripcion   TEXTO   NOT NULL);', insertValueObjects)
-  // }
-
-  // function insertValueObjects() {
-  //   var batch = db.prepare('INSERT INTO TipoTrabajos (IdTipoTrabajo, Descripcion) VALUES (?, ?)')
-  //   batch.run(1, 'Fija')
-  //   batch.run(2, 'Resina')
-  //   batch.run(3, 'Ortodoncia')
-  //   batch.run(4, 'Esquelético')
-  //   batch.run(5, 'Zirconio')
-  //   batch.run(6, 'Compostura')
-  //   batch.run(7, 'Implante')
-  //   batch.finalize()
-  //   db.close()
-  // }
-
-  // export function createNewDatabase() {
-  //   db = new sqlite3.Database(configGet('dataFile'), createTable)
-  // }
 }

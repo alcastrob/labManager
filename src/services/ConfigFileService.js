@@ -8,26 +8,48 @@ const path = require('path')
 const fs = require('fs')
 
 export default class ConfigFileService {
+  static data = {}
+  static loaded = false
+
   constructor() {
-    this.data = {}
-    this.loaded = false
-    const userDataPath = (electron.app || electron.remote.app).getPath('appData')
-    const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
-    this.data = JSON.parse(fs.readFileSync(filePath))
-    this.loaded = true
+    // ConfigFileService.data = {}
+    // ConfigFileService.loaded = false
+    if (!ConfigFileService.lodaded) {
+      const userDataPath = (electron.app || electron.remote.app).getPath('appData')
+      const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
+      this.loadDataFile(filePath)
+    }
   }
 
   dumpToLogger() {
     log.debug(`Loaded the local config file. Config file contents: ${JSON.stringify(this.data)}`)
   }
 
+  loadDataFile(filePath) {
+    if (fs.existsSync(filePath)) {
+      ConfigFileService.data = JSON.parse(fs.readFileSync(filePath))
+      log.debug(`Loaded the local config file. Config file contents: ${JSON.stringify(ConfigFileService.data)}`)
+    } else {
+      // The config file does not exist. Let's create a dummy one.
+      ConfigFileService.data = {
+        isAdmin: false,
+        dataFile: '.',
+        productCatalog: true,
+        zoomLevel: 1
+      }
+      fs.writeFileSync(filePath, JSON.stringify(ConfigFileService.data))
+      log.info(`Created a dummy config file. Config file contents: ${JSON.stringify(ConfigFileService.data)}`)
+    }
+    ConfigFileService.loaded = true
+  }
+
   configGet(key) {
-    if (this.data[key] === 'true') {
+    if (ConfigFileService.data[key] === 'true') {
       return true
-    } else if (this.data[key] === 'false') {
+    } else if (ConfigFileService.data[key] === 'false') {
       return false
     } else {
-      return this.data[key]
+      return ConfigFileService.data[key]
     }
   }
 
@@ -35,11 +57,20 @@ export default class ConfigFileService {
     const userDataPath = (electron.app || electron.remote.app).getPath('appData')
     const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
     if (fs.existsSync(filePath)) {
-      this.data = JSON.parse(fs.readFileSync(filePath))
+      ConfigFileService.data = JSON.parse(fs.readFileSync(filePath))
     }
-    this.data[key] = val
-    this.loaded = true
-    fs.writeFileSync(filePath, JSON.stringify(this.data))
-    log.info(`Updated the local config file. Config file contents: ${JSON.stringify(this.data)}`)
+    ConfigFileService.data[key] = val
+    ConfigFileService.loaded = true
+    fs.writeFileSync(filePath, JSON.stringify(ConfigFileService.data))
+    log.info(`Updated the local config file. Config file contents: ${JSON.stringify(ConfigFileService.data)}`)
+  }
+
+  // Readonly is not stored in the configuration file, so it needs its own specialized getter & setter
+  configGetReadOnly() {
+    return ConfigFileService.data['readonly'] === true
+  }
+
+  configSetReadOnly(value) {
+    ConfigFileService.data['readonly'] = value
   }
 }
