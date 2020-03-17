@@ -33,7 +33,7 @@ export default class GoogleDriveService {
     }
   }
 
-  async authorize(credentials, path, downloadedPath, callback) {
+  async authorize(credentialsData, downloadedPath, callback) {
     try {
       const {
         // eslint-disable-next-line camelcase
@@ -42,12 +42,11 @@ export default class GoogleDriveService {
         client_id,
         // eslint-disable-next-line camelcase
         redirect_uris
-      } = credentials.installed
+      } = credentialsData.credentials.installed
       const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
 
-      const content = JSON.parse(fs.readFileSync(`${path}\\${TOKEN_PATH}`))
-      oAuth2Client.setCredentials(content)
-      await callback(oAuth2Client, content.fileId, downloadedPath)
+      oAuth2Client.setCredentials(credentialsData.token)
+      await callback(oAuth2Client, credentialsData.fileId, downloadedPath)
     } catch (err) {
       log.error(`Error authorizing the call to Google Drive: ${err}`)
     }
