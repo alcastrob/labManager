@@ -1,41 +1,42 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-6">
-        <h1>Listado de dentistas</h1>
-      </div>
-      <div class="col-md-6 mt-3">
-        <div class="float-right">
-          <collapsible-link-button
-            iconCss="fas fa-plus-circle"
-            text="Nuevo dentista"
-            pathTo="/dentists/new"
-          ></collapsible-link-button>
-          <collapsibleExcelButton
-            fileName="dentistas"
-            :isCollapsible="true"
-            :collapsed="false"
-            :isDark="false"
-            ref="excelButton"
-            :class="{'displayNone': !isAdmin}"
-            @click="beginExporting"
-          ></collapsibleExcelButton>
-        </div>
-      </div>
-      <!-- col-md-6 -->
-    </div>
-    <!-- row -->
-    <div>
-      <dentistTable
-        :headers="headers"
-        :searchFields="searchFields"
-        ref="dentistTable"
-        urlBase="/dentists/details/"
-        masterKey="IdDentista"
-      />
-    </div>
-    <!-- row -->
-  </div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-6">
+				<h1>Listado de dentistas</h1>
+			</div>
+			<div class="col-md-6 mt-3">
+				<div class="float-right">
+					<collapsible-link-button
+						iconCss="fas fa-plus-circle"
+						text="Nuevo dentista"
+						pathTo="/dentists/new"
+						v-if="!dbReadOnly"
+					></collapsible-link-button>
+					<collapsibleExcelButton
+						fileName="dentistas"
+						:isCollapsible="true"
+						:collapsed="false"
+						:isDark="false"
+						ref="excelButton"
+						:class="{'displayNone': !isAdmin}"
+						@click="beginExporting"
+					></collapsibleExcelButton>
+				</div>
+			</div>
+			<!-- col-md-6 -->
+		</div>
+		<!-- row -->
+		<div>
+			<dentistTable
+				:headers="headers"
+				:searchFields="searchFields"
+				ref="dentistTable"
+				urlBase="/dentists/details/"
+				masterKey="IdDentista"
+			/>
+		</div>
+		<!-- row -->
+	</div>
 </template>
 
 <script>
@@ -121,7 +122,8 @@ export default {
 				'Telefono',
 				'Telefono2'
 			],
-			isAdmin: false
+			isAdmin: false,
+			dbReadOnly: undefined
 		}
 	},
 	methods: {
@@ -138,6 +140,7 @@ export default {
 	},
 	mounted() {
 		this.isAdmin = this.configFileService.configGet('isAdmin')
+		this.dbReadOnly = this.configFileService.configGet('readonly')
 		this.$refs.excelButton.setTable(this.$refs.dentistTable)
 	},
 	activated() {

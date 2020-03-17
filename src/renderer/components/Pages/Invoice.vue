@@ -1,44 +1,45 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <h1 v-if="!editing">Ver Factura</h1>
-        <h1 v-else>Editar Factura</h1>
-      </div>
-      <!-- col-md-6 -->
-      <div class="col-md-6 mt-2">
-        <div class="float-right">
-          <collapsible-action-button
-            iconCss="fas fa-print"
-            text="Imprimir factura"
-            :callback="printInvoice"
-          ></collapsible-action-button>
-          <collapsible-action-button
-            iconCss="fas fa-edit"
-            text="Editar factura"
-            :callback="editInvoice"
-            v-if="!editing"
-          ></collapsible-action-button>
-        </div>
-      </div>
-      <!-- col-md-6 -->
-    </div>
-    <!-- row -->
-    <div class="row">
-      <div class="col-md-12">
-        <invoicePrint ref="invoiceShow" :class="{'visuallyhidden': editing}"></invoicePrint>
-        <invoicePrint ref="invoiceEdit" :class="{'visuallyhidden': !editing}"></invoicePrint>
-        <invoicePrint ref="invoicePrint"></invoicePrint>
-      </div>
-      <!-- col-md-12 -->
-    </div>
-    <!-- row -->
-  </div>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6">
+				<h1 v-if="!editing">Ver Factura</h1>
+				<h1 v-else>Editar Factura</h1>
+			</div>
+			<!-- col-md-6 -->
+			<div class="col-md-6 mt-2">
+				<div class="float-right">
+					<collapsible-action-button
+						iconCss="fas fa-print"
+						text="Imprimir factura"
+						:callback="printInvoice"
+					></collapsible-action-button>
+					<collapsible-action-button
+						iconCss="fas fa-edit"
+						text="Editar factura"
+						:callback="editInvoice"
+						v-if="!editing && !dbReadOnly"
+					></collapsible-action-button>
+				</div>
+			</div>
+			<!-- col-md-6 -->
+		</div>
+		<!-- row -->
+		<div class="row">
+			<div class="col-md-12">
+				<invoicePrint ref="invoiceShow" :class="{'visuallyhidden': editing}"></invoicePrint>
+				<invoicePrint ref="invoiceEdit" :class="{'visuallyhidden': !editing}"></invoicePrint>
+				<invoicePrint ref="invoicePrint"></invoicePrint>
+			</div>
+			<!-- col-md-12 -->
+		</div>
+		<!-- row -->
+	</div>
 </template>
 
 <script>
 import invoicePrint from '../Labels/InvoicePrint'
 import collapsibleActionButton from '../PageElements/CollapsibleButtons/collapsibleActionButton'
+import ConfigFileService from '../../../services/ConfigFileService'
 import log from 'loglevel'
 
 export default {
@@ -49,7 +50,8 @@ export default {
 	},
 	data() {
 		return {
-			editing: false
+			editing: false,
+			dbReadOnly: false
 		}
 	},
 	methods: {
@@ -65,6 +67,8 @@ export default {
 	},
 	mounted() {
 		this.$refs.invoiceShow.show(this.$route.params.id)
+		this.configFileService = new ConfigFileService()
+		this.dbReadOnly = this.configFileService.configGet('readonly')
 	}
 }
 </script>

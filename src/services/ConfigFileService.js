@@ -9,16 +9,35 @@ const fs = require('fs')
 
 export default class ConfigFileService {
   constructor() {
-    this.data = {}
-    this.loaded = false
-    const userDataPath = (electron.app || electron.remote.app).getPath('appData')
-    const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
-    this.data = JSON.parse(fs.readFileSync(filePath))
-    this.loaded = true
+    if (!this.lodaded) {
+      const userDataPath = (electron.app || electron.remote.app).getPath('appData')
+      const filePath = path.join(userDataPath, 'labManager', 'labManager.json')
+      this.data = {}
+      this.loaded = false
+      this.loadDataFile(filePath)
+    }
   }
 
   dumpToLogger() {
     log.debug(`Loaded the local config file. Config file contents: ${JSON.stringify(this.data)}`)
+  }
+
+  loadDataFile(filePath) {
+    if (fs.existsSync(filePath)) {
+      this.data = JSON.parse(fs.readFileSync(filePath))
+      log.debug(`Loaded the local config file. Config file contents: ${JSON.stringify(this.data)}`)
+    } else {
+      // The config file does not exist. Let's create a dummy one.
+      this.data = {
+        isAdmin: false,
+        dataFile: '.',
+        productCatalog: true,
+        zoomLevel: 1
+      }
+      fs.writeFileSync(filePath, JSON.stringify(this.data))
+      log.info(`Created a dummy config file. Config file contents: ${JSON.stringify(this.data)}`)
+    }
+    this.loaded = true
   }
 
   configGet(key) {
