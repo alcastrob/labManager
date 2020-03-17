@@ -47,7 +47,8 @@ try {
 	remoteLogDatadog(log, {
 		callOriginal: true,
 		host: require('os').hostname(),
-		version: require('../../package.json').version
+		version: require('../../package.json').version,
+		system: 'labManager'
 	})
 	log.setLevel('INFO')
 	window.onerror = (error) => {

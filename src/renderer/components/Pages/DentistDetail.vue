@@ -429,7 +429,7 @@ export default {
 		},
 		getConfig: async function() {
 			this.isAdmin = this.configFileService.configGet('isAdmin')
-			this.dbReadonly = this.configFileService.configGetReadOnly()
+			this.dbReadonly = this.configFileService.configGet('readonly')
 		},
 		getData: async function() {
 			this.dentistId = this.$route.params.id

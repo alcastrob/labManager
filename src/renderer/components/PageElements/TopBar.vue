@@ -185,7 +185,7 @@ export default {
 		},
 		getConfig: async function() {
 			this.isAdmin = this.configFileService.configGet('isAdmin')
-			this.dbReadOnly = this.configFileService.configGetReadOnly()
+			this.dbReadOnly = this.configFileService.configGet('readonly')
 		},
 		treeToArray(array, containerProperty) {
 			var result = []

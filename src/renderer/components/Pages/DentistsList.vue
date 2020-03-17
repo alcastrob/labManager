@@ -140,7 +140,7 @@ export default {
 	},
 	mounted() {
 		this.isAdmin = this.configFileService.configGet('isAdmin')
-		this.dbReadOnly = this.configFileService.configGetReadOnly()
+		this.dbReadOnly = this.configFileService.configGet('readonly')
 		this.$refs.excelButton.setTable(this.$refs.dentistTable)
 	},
 	activated() {

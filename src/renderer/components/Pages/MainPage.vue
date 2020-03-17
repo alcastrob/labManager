@@ -1,20 +1,20 @@
 <template>
-  <div id="page-top">
-    <topbar ref="topBar"></topbar>
-    <div class="mt-3">
-      <div id="wrapper">
-        <div id="content-wrapper">
-          <div class="container-fluid">
-            <keep-alive
-              exclude="workNew,workDetail,dentistDetail,worksListUncached,invoice,monthCheck,about,products,catalog,dashboard"
-            >
-              <router-view></router-view>
-            </keep-alive>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+	<div id="page-top">
+		<topbar ref="topBar"></topbar>
+		<div class="mt-3">
+			<div id="wrapper">
+				<div id="content-wrapper">
+					<div class="container-fluid">
+						<keep-alive
+							exclude="workNew,workDetail,dentistDetail,worksListUncached,invoice,monthCheck,about,products,catalog,dashboard"
+						>
+							<router-view></router-view>
+						</keep-alive>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -44,7 +44,7 @@ export default {
 		loadDb: async function() {
 			try {
 				var dataFile = this.configFileService.configGet('dataFile')
-				if (!dataFile) {
+				if (!dataFile || dataFile === '.') {
 					// No selected file for running the application
 					swal({
 						title: 'Datos no cargados',
@@ -58,6 +58,13 @@ export default {
 					log.warn('No data file selected')
 					return
 				}
+				await this.loadSpecificDBFile(dataFile)
+			} catch (err) {
+				log.error(`Error in loadDb method of ${this.$vnode.componentOptions.tag}. Content: ${JSON.stringify(err)}`)
+			}
+		},
+		loadSpecificDBFile: async function(dataFile) {
+			try {
 				var db = await this.persistenceService.loadDbFile(dataFile)
 				if (!db) {
 					// Something went wrong with that file
@@ -73,17 +80,19 @@ export default {
 					log.warn('No valid format for the database file.')
 					// this.configFileService.configSet('dataFile', '')
 				}
+				this.$router.push({
+					path: '/'
+				})
 			} catch (err) {
-				log.error(`Error in loadDb method of ${this.$vnode.componentOptions.tag}. Content: ${JSON.stringify(err)}`)
+				log.error(
+					`Error in loadSpecificDBFile method of ${this.$vnode.componentOptions.tag}. Content: ${JSON.stringify(err)}`
+				)
 			}
 		},
 		reloadDb: async function(file) {
 			if (file) {
 				this.configFileService.configSet('dataFile', file)
 				await this.loadDb()
-				this.$router.push({
-					path: '/'
-				})
 			}
 		},
 		checkForUpdates: async function() {
@@ -132,8 +141,10 @@ export default {
 			})
 		})
 		setInterval(this.checkForUpdates, UPDATE_INTERVAL)
-		ipcRenderer.on('reload:database', (event, file) => {
-			this.reloadDb(file)
+
+		ipcRenderer.on('reload:database', (event, options) => {
+			this.reloadDb(options.filePath)
+			this.configFileService.configSet('readonly', options.readOnly)
 		})
 		this.currentZoomLevel = this.configFileService.configGet('zoomLevel')
 		if (!this.currentZoomLevel) {

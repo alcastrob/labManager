@@ -1,6 +1,6 @@
 {
   "name": "labmanager",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "author": "Angel Castro <al.castro@gmail.com>",
   "description": "An application for managing a dental prosthetic laboratory",
   "license": "MIT",
@@ -75,6 +75,7 @@
     "electron-log": "^2.2.17",
     "electron-updater": "^4.0.6",
     "file-saverjs": "^1.3.6",
+    "googleapis": "^48.0.0",
     "jquery": "^3.3.1",
     "lodash": "^4.17.14",
     "loglevel": "^1.6.1",

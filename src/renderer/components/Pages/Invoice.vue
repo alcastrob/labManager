@@ -68,7 +68,7 @@ export default {
 	mounted() {
 		this.$refs.invoiceShow.show(this.$route.params.id)
 		this.configFileService = new ConfigFileService()
-		this.dbReadOnly = this.configFileService.configGetReadOnly()
+		this.dbReadOnly = this.configFileService.configGet('readonly')
 	}
 }
 </script>

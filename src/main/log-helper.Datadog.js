@@ -18,7 +18,8 @@ export function remoteLogDatadog(logger, options) {
 			var payload = {
 				clientTimestamp: new Date().toISOString(),
 				host: options.host,
-				version: options.version
+				version: options.version,
+				system: options.system
 			}
 			switch (methodName) {
 				case 'trace':

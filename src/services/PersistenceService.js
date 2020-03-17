@@ -14,7 +14,7 @@ export default class PersistenceService {
 
   async loadDbFile(file) {
     var dbFile = file
-    this.readonly = this.configFileService.configGetReadOnly()
+    this.readonly = this.configFileService.configGet('readonly')
     try {
       if (!file) {
         dbFile = this.configFileService.configGet('dataFile')
