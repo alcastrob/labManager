@@ -15,6 +15,7 @@ import {
 import {
 	datadogLogs
 } from '@datadog/browser-logs'
+import secrets from '../../secrets'
 
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
@@ -28,14 +29,16 @@ try {
 	}
 
 	datadogLogs.init({
-		clientToken: 'pubb8287858b4d94cab0397667111d5f116',
+		clientToken: secrets.datadogClientToken,
 		datacenter: 'eu',
 		forwardErrorsToLogs: true,
 		sampleRate: 100
 	})
 
+	log.info(secrets.datadogClientToken)
+
 	// remoteLogLogstash(log, {
-	// 	url: 'http://telemetry.labmanager.es:5000',
+	// 	url: secrets.logstashUrl,
 	// 	prefix: (severity, message) => {
 	// 		return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}(${
 	// 			require('../../package.json').version

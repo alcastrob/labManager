@@ -18,3 +18,4 @@ dotnet/dataMigration/.vs/dataMigration/v15/
 labManager.sqlite
 electron-builder.yml
 containers/elasticsearch/data/
+secrets.js
