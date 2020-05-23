@@ -1,4 +1,4 @@
 export default Object.freeze({
-  datadogClientToken: '',
+  datadogApiToken: '',
   logstashUrl: ''
 })

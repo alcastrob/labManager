@@ -9,57 +9,27 @@ import log from 'loglevel'
 import {
 	remoteLogDatadog
 } from '../main/log-helper.Datadog'
-import {
-	remoteLogLogstash
-} from '../main/log-helper.Logstash'
-import {
-	datadogLogs
-} from '@datadog/browser-logs'
-import secrets from '../../secrets'
 
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
 
 try {
-	if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
-	Vue.http = Vue.prototype.$http = axios
-	Vue.config.productionTip = true
-	Vue.config.errorHandler = function (err, vm, info) {
-		log.error('[Global Error Handler]: Error in ' + info + ': ' + err)
-	}
-
-	datadogLogs.init({
-		clientToken: secrets.datadogClientToken,
-		datacenter: 'eu',
-		forwardErrorsToLogs: true,
-		sampleRate: 100
-	})
-
-	log.info(secrets.datadogClientToken)
-
-	// remoteLogLogstash(log, {
-	// 	url: secrets.logstashUrl,
-	// 	prefix: (severity, message) => {
-	// 		return `[${new Date().toISOString()}]${severity}@${require('os').hostname()}(${
-	// 			require('../../package.json').version
-	// 		}): ${message}`
-	// 	},
-	// 	callOriginal: true
-	// })
-
-	remoteLogDatadog(log, {
-		callOriginal: true,
-		host: require('os').hostname(),
-		version: require('../../package.json').version,
-		system: 'labManager'
-	})
+	remoteLogDatadog(log)
 	log.setLevel('INFO')
+
 	window.onerror = (error) => {
 		log.error(`Application error: ${JSON.stringify(error)}. Url: ${window.url}. Call stack: ${error.stack}`)
 	}
 
 	Vue.config.errorHandler = error => {
 		log.error(`Application error: ${error.message}. Call stack: ${error.stack}`)
+	}
+
+	if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
+	Vue.http = Vue.prototype.$http = axios
+	Vue.config.productionTip = true
+	Vue.config.errorHandler = function (err, vm, info) {
+		log.error('[Global Error Handler]: Error in ' + info + ': ' + err)
 	}
 
 	new Vue({

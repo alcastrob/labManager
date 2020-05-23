@@ -1,5 +1,18 @@
 <template>
-  <mainPage></mainPage>
+  <div id="page-top">
+    <topbar ref="topBar"></topbar>
+      <div id="wrapper">
+        <div id="content-wrapper">
+          <div class="container-fluid">
+            <keep-alive
+              exclude="workNew,workDetail,dentistDetail,worksListUncached,invoice,monthCheck,about,products,catalog,dashboard"
+            >
+              <router-view></router-view>
+            </keep-alive>
+          </div>
+        </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -10,7 +23,15 @@ import 'dropzone/dist/min/dropzone.min.js'
 import Vue from 'vue'
 import VueSwal from 'vue-swal'
 import VueToasted from 'vue-toasted'
-import mainPage from './components/Pages/MainPage.vue'
+import topbar from './components/PageElements/TopBar'
+import { checkForUpdates } from '../main/updates'
+import PersistenceService from '../services/PersistenceService'
+import ConfigFileService from '../services/ConfigFileService'
+import { webFrame } from 'electron'
+import log from 'loglevel'
+var { ipcRenderer } = require('electron')
+
+const UPDATE_INTERVAL = 3 * 60 * 60 * 1000
 
 Vue.use(VueSwal)
 Vue.use(VueToasted, { iconPack: 'fontawesome', singleton: true })
@@ -18,8 +39,135 @@ Vue.use(VueToasted, { iconPack: 'fontawesome', singleton: true })
 export default {
   name: 'labManager',
   components: {
-    mainPage
-  }
+    topbar
+  },
+  data() {
+		return {
+			currentZoomLevel: undefined
+		}
+	},
+	methods: {
+		loadDb: async function() {
+			try {
+				var dataFile = this.configFileService.configGet('dataFile')
+				if (!dataFile || dataFile === '.') {
+					// No selected file for running the application
+					swal({
+						title: 'Datos no cargados',
+						text:
+							'La aplicación debe cargar un fichero de datos para poder trabajar correctamente. Por favor, seleccione el fichero apropiado en el menú Archivo > Abrir archivo.',
+						icon: 'error',
+						buttons: {
+							ok: 'OK'
+						}
+					})
+					log.warn('No data file selected')
+					return
+				}
+				await this.loadSpecificDBFile(dataFile)
+			} catch (err) {
+				log.error(`Error in loadDb method of ${this.$vnode.componentOptions.tag}. Content: ${JSON.stringify(err)}`)
+			}
+		},
+		loadSpecificDBFile: async function(dataFile) {
+			try {
+				var db = await this.persistenceService.loadDbFile(dataFile)
+				if (!db) {
+					// Something went wrong with that file
+					swal({
+						title: 'Fichero no reconocido',
+						text:
+							'El fichero que se ha seleccionado no tiene un formato válido para la aplicación. Por favor, seleccione otro.',
+						icon: 'error',
+						buttons: {
+							ok: 'OK'
+						}
+					})
+					log.warn('No valid format for the database file.')
+					// this.configFileService.configSet('dataFile', '')
+				}
+				this.$router.push({
+					path: '/'
+				})
+			} catch (err) {
+				log.error(
+					`Error in loadSpecificDBFile method of ${this.$vnode.componentOptions.tag}. Content: ${JSON.stringify(err)}`
+				)
+			}
+		},
+		reloadDb: async function(file) {
+			if (file) {
+				this.configFileService.configSet('dataFile', file)
+				await this.loadDb()
+			}
+		},
+		checkForUpdates: async function() {
+			var updates = await checkForUpdates()
+			log.info('Checked for updates')
+			if (updates.newerVersion) {
+				log.info('New version of the application available for download')
+				swal({
+					title: 'Actualización disponible',
+					text: 'Existe una nueva versión de esta aplicación lista para su descarga e instalación.',
+					icon: 'success',
+					buttons: {
+						cancel: 'Cancelar',
+						ok: 'Continuar'
+					}
+				}).then(value => {
+					if (value === 'ok') {
+						this.$router.push({ path: '/about' })
+					}
+				})
+			}
+		},
+		setZoomLevel(delta, value) {
+			if (value) {
+				this.currentZoomLevel = value
+			} else {
+				if (this.currentZoomLevel > 0.2 && this.currentZoomLevel < 2 && delta) {
+					this.currentZoomLevel += delta
+				}
+			}
+
+			webFrame.setZoomFactor(this.currentZoomLevel)
+			this.configFileService.configSet('zoomLevel', this.currentZoomLevel)
+		}
+	},
+	created() {
+		this.persistenceService = new PersistenceService()
+		this.configFileService = new ConfigFileService()
+		this.configFileService.dumpToLogger()
+		this.loadDb()
+	},
+	mounted() {
+		ipcRenderer.on('navigation:navigateTo', (sender, eventData) => {
+			this.$router.push({
+				path: eventData.page
+			})
+		})
+		setInterval(this.checkForUpdates, UPDATE_INTERVAL)
+
+		ipcRenderer.on('reload:database', (event, options) => {
+			this.reloadDb(options.filePath)
+			this.configFileService.configSet('readonly', options.readOnly)
+		})
+		this.currentZoomLevel = this.configFileService.configGet('zoomLevel')
+		if (!this.currentZoomLevel) {
+			this.currentZoomLevel = 1
+		}
+		this.setZoomLevel(null, this.currentZoomLevel)
+
+		ipcRenderer.on('zoomlevel:up', () => {
+			this.setZoomLevel(0.1)
+		})
+		ipcRenderer.on('zoomlevel:down', () => {
+			this.setZoomLevel(-0.1)
+		})
+		ipcRenderer.on('zoomlevel:reset', () => {
+			this.setZoomLevel(null, 1)
+		})
+	}
 }
 </script>
 
@@ -41,6 +189,9 @@ export default {
     background-color: #E4DFDA;
     color: #150626;
     font-family: 'Nunito', sans-serif;
+  }
+  #content-wrapper {
+    padding-top: 60px !important;
   }
   .btn-warning {
     background-color: #D4B483;

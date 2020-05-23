@@ -1,5 +1,5 @@
 <template>
-<div class="container">
+  <div class="container">
     <h1>Acerca de labManager</h1>
     <div class="row">
       <div class="col-md-1">
@@ -29,7 +29,7 @@
         </div>
         <p class="text-justify">Esta aplicación permite realizar la gestión de trabajos de un laboratorio protésico dental. Ha sido desarrollada por Ángel Castro y se distribuye bajo los términos de la siguiente licencia MIT:</p>
         <pre class="p-2" style="border: 1px solid #454849; background-color:#DDD8D2;white-space:pre-wrap; word-wrap:break-word;">
-Copyright 2019 Ángel Castro
+Copyright {{new Date().getFullYear()}} Ángel Castro
 
 Se concede permiso por la presente, libre de cargos, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados (el "Software"), a utilizar el Software sin restricción, incluyendo sin limitación los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar, y/o vender copias del Software, y a permitir a las personas a las que se les proporcione el Software a hacer lo mismo, sujeto a las siguientes condiciones:
 
@@ -51,7 +51,7 @@ EL SOFTWARE SE PROPORCIONA "COMO ESTÁ", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA 
         </li>
     </ul>
     </p>
-</div>
+  </div>
 </template>
 
 <script>
