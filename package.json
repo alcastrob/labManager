@@ -110,6 +110,7 @@
     "@babel/register": "^7.10.3",
     "accounting": "^0.4.1",
     "ajv": "^6.12.2",
+    "babel-eslint": "^10.1.0",
     "cfonts": "^2.8.5",
     "chai": "^4.1.2",
     "chalk": "^2.4.2",
