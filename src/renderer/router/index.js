@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import about from '../components/Pages/About.vue'
-// import mainPage from '../components/Pages/MainPage.vue'
 import worksNew from '../components/Pages/WorkNew.vue'
 import worksList from '../components/Pages/WorksList.vue'
 import workDetail from '../components/Pages/WorkDetail.vue'
