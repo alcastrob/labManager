@@ -1,7 +1,7 @@
 import PersistenceService from '../../../src/services/PersistenceService'
 
-var assert = require('assert')
-var should = require('should')
+// var assert = require('assert')
+// var should = require('should')
 
 describe('PersistenceService', function () {
 	describe('constructor', function () {

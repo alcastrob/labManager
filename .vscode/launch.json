@@ -3,7 +3,7 @@
 	"configurations": [{
 			"type": "node",
 			"request": "launch",
-			"name": "Mocha Tests",
+			"name": "Debug all Mocha Tests",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
 			"args": [
 				"-u",
@@ -13,9 +13,36 @@
 				"--colors",
 				"${workspaceRoot}/test/unit2/**/*.js",
 				"--require",
-				"@babel/register"
+				"@babel/register",
+				"--full-trace"
 			],
-			"internalConsoleOptions": "openOnSessionStart",
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"env": {
+				"NODE_ENV": "test"
+			},
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug current test file",
+			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+			"args": [
+				"-u",
+				"bdd",
+				"--timeout",
+				"999999",
+				"--colors",
+				"--require",
+				"@babel/register",
+				"--full-trace",
+				"${file}"
+			],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
 			"skipFiles": [
 				"<node_internals>/**"
 			],
