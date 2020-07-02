@@ -9,6 +9,7 @@ import log from 'loglevel'
 import {
 	remoteLogDatadog
 } from '../main/log-helper.Datadog'
+const awilix = require('awilix')
 
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
@@ -31,6 +32,9 @@ try {
 	Vue.config.errorHandler = function (err, vm, info) {
 		log.error('[Global Error Handler]: Error in ' + info + ': ' + err)
 	}
+	Vue.container = awilix.createContainer({
+		injectionMode: awilix.InjectionMode.PROXY
+	})
 
 	new Vue({
 		router,

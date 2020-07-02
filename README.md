@@ -63,12 +63,12 @@ npm run lint
 
 ## Built With
 
-* [node 12.18.1](nodejs.org)
-* [electron-vue](https://github.com/SimulatedGREG/electron-vue)@[8fae476](https://github.com/SimulatedGREG/electron-vue/tree/8fae4763e9d225d3691b627e83b9e09b56f6c935)
+- [node 12.18.1](nodejs.org)
+- [electron-vue](https://github.com/SimulatedGREG/electron-vue)@[8fae476](https://github.com/SimulatedGREG/electron-vue/tree/8fae4763e9d225d3691b627e83b9e09b56f6c935)
 
 ## Authors
 
-* **Angel Castro** - *Main contributor* - [AngelCastro](https://github.com/alcastrob/)
+- **Angel Castro** - *Main contributor* - [AngelCastro](https://github.com/alcastrob/)
 
 ## License
 

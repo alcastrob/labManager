@@ -11,7 +11,7 @@
 				"--timeout",
 				"999999",
 				"--colors",
-				"${workspaceRoot}/test/unit2/**/*.js",
+				"${workspaceRoot}/test/unit/**/*.js",
 				"--require",
 				"@babel/register",
 				"--full-trace"

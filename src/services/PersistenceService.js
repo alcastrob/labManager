@@ -7,9 +7,10 @@ import _ from 'lodash'
 import Database from 'better-sqlite3'
 
 export default class PersistenceService {
-  constructor() {
+  constructor(configFileService) {
     log.debug('PersistenceService initialized')
-    this.configFileService = new ConfigFileService()
+    // this.configFileService = new ConfigFileService()
+    this.configFileService = configFileService
   }
 
   async loadDbFile(file) {
