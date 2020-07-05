@@ -201,6 +201,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import InvoiceService from '../../../services/InvoiceService.js'
 import collapsibleExcelButton from '../PageElements/CollapsibleButtons/collapsibleExcelButton'
+import log from 'loglevel'
 
 export default {
 	name: 'monthCheck',
@@ -372,6 +373,7 @@ export default {
 					}),
 					this.invoiceDate
 				)
+				log.info(`Invoice ${idInvoice} for dentist ${dentist.IdDentista} generated`)
 
 				if (haveToPrint) {
 					this.$refs.invoice.print(idInvoice)
