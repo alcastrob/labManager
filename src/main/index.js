@@ -40,7 +40,10 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 1280,
 		height: 1024,
-		icon: path.join(__static, 'tooth.ico')
+		icon: path.join(__static, 'tooth.ico'),
+		webPreferences: {
+			nodeIntegration: true
+			}
 	})
 
 	mainWindow.loadURL(winURL)
