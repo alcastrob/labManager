@@ -19,3 +19,4 @@ labManager.sqlite
 electron-builder.yml
 containers/elasticsearch/data/
 secrets.js
+bin/
