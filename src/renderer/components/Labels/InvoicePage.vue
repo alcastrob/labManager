@@ -1,225 +1,220 @@
 <template>
-  <div class="container printed pagebreak" :class="{'pageBorder': !forPrinter}">
-    <div class="row">
-      <div class="col-sm-6">
-        <img @load="logoLoaded" :src="logo" class="mt-3" />
-        <br />
-        CIF: {{vatNumber}}
-      </div>
-      <!-- col-sm-6 -->
-      <div class="col-sm-6">
-        <h1 class="text-uppercase text-right mt-3">Factura</h1>
-      </div>
-      <!-- col-sm-6 -->
-    </div>
-    <!-- row -->
-    <div class="row mt-2">
-      <div class="col-sm-6">
-        <h5>Número: {{invoice.NumFactura}} | Fecha: {{format(invoice.Fecha)}}</h5>
-      </div>
-      <!-- col-sm-6 -->
-      <div class="col-sm-6">
-        <div class="clientBox">
-          <h3 class="text-uppercase">Cliente</h3>
-          {{invoice.NombreDentista}}
-          <br />
-          {{invoice.NombreClinica}}
-          <br />
-          {{invoice.DatosFiscales}}
-          <br />
-          {{invoice.Direccion}}
-          <br />
-          {{invoice.CP}} {{invoice.Poblacion}}
-        </div>
-      </div>
-      <!-- col-sm-6 -->
-    </div>
-    <!-- row -->
-    <div class="row mt-5">
-      <div class="col-sm-12">
-        <!-- forPrinter -->
-        <div style="height: 1075px;" v-if="forPrinter">
-          <div
-            v-if="!isFirstPage"
-            class="text-right font-italic"
-          >...continúa desde la página anterior.</div>
-          <table class="table table-invoice" width="100%" cellspacing="0">
-            <thead>
-              <tr>
-                <th class="text-left" style="width: 50%;">Concepto</th>
-                <th class="text-right" style="width: 10%;">Cantidad</th>
-                <th class="text-right" style="width: 10%;">P. Unidad</th>
-                <th class="text-right" style="width: 10%;">% Dto.</th>
-                <th class="text-right" style="width: 10%;">Dto.</th>
-                <th class="text-right" style="width: 10%;">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="work in works">
-                <tr v-bind:key="work.IdTrabajo" class="pagebreak">
-                  <td class="text-left">
-                    <span
-                      class="font-weight-bold"
-                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaTerminacion)}}</span>
-                    <br />
-                    <span>{{work.Paciente}}</span>
-                  </td>
-                  <td class="text-right">1</td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
-                  <td class="text-right">{{work.PorcentajeDescuento.toFixed(2).replace('.', ',')}} %</td>
-                  <td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioConDescuento)}}</td>
-                </tr>
-                <tr
-                  class="leapTr dontBreakHere"
-                  v-for="indication in indications[work.IdTrabajo]"
-                  v-bind:key="indication.IdTrabajoDetalle"
-                >
-                  <td class="text-left">
-                    <span class="text-monospace">{{indication.Descripcion}}</span>
-                  </td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
-          <div
-            class="text-right font-weight-bold"
-            v-if="isLastPage"
-          >Total: {{moneyFormatter.format(invoice.Total)}}</div>
-          <div class="mt-4" v-if="appliedDiscount > 0 && isLastPage">
-            <h4>Detalle de los descuentos aplicados</h4>
-            <div
-              class="mb-4 font-weight-bold text-right"
-            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}}</div>
-          </div>
-          <div class="text-right font-italic" v-if="!isLastPage">...suma y sigue.</div>
-        </div>
-        <!-- end forPrinter -->
-        <!-- forScreen -->
-        <div v-else>
-          <table class="table table-invoice" width="100%" cellspacing="0">
-            <thead>
-              <tr>
-                <template v-if="editing">
-                  <th class="text-left" style="width: 2%;"></th>
-                  <th class="text-left" style="width: 48%;">Concepto</th>
-                </template>
-                <template v-else>
-                  <th class="text-left" style="width: 50%;">Concepto</th>
-                </template>
-                <th class="text-right" style="width: 10%;">Cantidad</th>
-                <th class="text-right" style="width: 10%;">P. Unidad</th>
-                <th class="text-right" style="width: 10%;">% Dto.</th>
-                <th class="text-right" style="width: 10%;">Dto.</th>
-                <th class="text-right" style="width: 10%;">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="work in works">
-                <tr v-bind:key="work.IdTrabajo" class="pagebreak">
-                  <td class="text-left" v-if="editing">
-                    <i
-                      class="fas fa-times-circle"
-                      @click="deleteWork(work.IdTrabajo)"
-                      v-if="works.length > 1"
-                    ></i>
-                  </td>
-                  <td class="text-left">
-                    <span
-                      class="font-weight-bold"
-                    >Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaTerminacion)}}</span>
-                    <br />
-                    <span>{{work.Paciente}}</span>
-                  </td>
-                  <td class="text-right">1</td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
-                  <td class="text-right">
-                    <template v-if="editing">
-                      <percentageInput
-                        class="form-control text-right inputInForm"
-                        v-model="work.PorcentajeDescuento"
-                        @input="updatePercentageDiscount(work)"
-                      ></percentageInput>
-                    </template>
-                    <template v-else>{{work.PorcentajeDescuento}} %</template>
-                  </td>
-                  <td class="text-right">
-                    <template v-if="editing">
-                      <euroInput
-                        class="form-control text-right inputInForm"
-                        v-model="work.TotalDescuento"
-                        @input="updateTotalDiscount(work)"
-                      ></euroInput>
-                    </template>
-                    <template v-else>{{moneyFormatter.format(work.TotalDescuento)}}</template>
-                  </td>
-                  <td class="text-right">{{moneyFormatter.format(work.PrecioConDescuento)}}</td>
-                </tr>
-                <tr
-                  class="leapTr dontBreakHere"
-                  v-for="indication in indications[work.IdTrabajo]"
-                  v-bind:key="indication.IdTrabajoDetalle"
-                >
-                  <td class="text-left" v-if="editing"></td>
-                  <td class="text-left">
-                    <span class="text-monospace">{{indication.Descripcion}}</span>
-                  </td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                  <td class="text-right"></td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
-          <div
-            class="text-right font-weight-bold pb-5"
-          >Total: {{moneyFormatter.format(invoice.Total)}}</div>
-          <div v-if="!editing">
-            <h4>Detalle de los descuentos aplicados</h4>
-            <div
-              class="mb-4 font-weight-bold text-right"
-            >Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}}</div>
-          </div>
-        </div>
-        <!-- end forScreen -->
-        <button
-          class="btn btn-secondary btn-block mb-4"
-          type="button"
-          @click="save()"
-          v-if="editing"
-          ref="btnSave"
-        >
-          <i class="fas fa-save"></i>
-          Guardar
-        </button>
-      </div>
-      <!-- col-sm-12 -->
-    </div>
-    <!-- row -->
+	<div class="container printed pagebreak" :class="{'pageBorder': !forPrinter}">
+		<div class="row">
+			<div class="col-sm-6">
+				<img @load="logoLoaded" :src="logo" class="mt-3" />
+				<br />
+				CIF: {{vatNumber}}
+			</div>
+			<!-- col-sm-6 -->
+			<div class="col-sm-6">
+				<h1 class="text-uppercase text-right mt-3">Factura</h1>
+			</div>
+			<!-- col-sm-6 -->
+		</div>
+		<!-- row -->
+		<div class="row mt-2">
+			<div class="col-sm-6">
+				<h5>Número: {{invoice.NumFactura}} | Fecha: {{format(invoice.Fecha)}}</h5>
+			</div>
+			<!-- col-sm-6 -->
+			<div class="col-sm-6">
+				<div class="clientBox">
+					<h3 class="text-uppercase">Cliente</h3>
+					{{invoice.NombreDentista}}
+					<br />
+					{{invoice.NombreClinica}}
+					<br />
+					{{invoice.DatosFiscales}}
+					<br />
+					{{invoice.Direccion}}
+					<br />
+					{{invoice.CP}} {{invoice.Poblacion}}
+				</div>
+			</div>
+			<!-- col-sm-6 -->
+		</div>
+		<!-- row -->
+		<div class="row mt-5">
+			<div class="col-sm-12">
+				<!-- forPrinter -->
+				<div style="height: 1075px;" v-if="forPrinter">
+					<div v-if="!isFirstPage" class="text-right font-italic">...continúa desde la página anterior.</div>
+					<table class="table table-invoice" width="100%" cellspacing="0">
+						<thead>
+							<tr>
+								<th class="text-left" style="width: 50%;">Concepto</th>
+								<th class="text-right" style="width: 10%;">Cantidad</th>
+								<th class="text-right" style="width: 10%;">P. Unidad</th>
+								<th class="text-right" style="width: 10%;">% Dto.</th>
+								<th class="text-right" style="width: 10%;">Dto.</th>
+								<th class="text-right" style="width: 10%;">Subtotal</th>
+							</tr>
+						</thead>
+						<tbody>
+							<template v-for="work in works">
+								<tr v-bind:key="work.IdTrabajo" class="pagebreak">
+									<td class="text-left">
+										<span
+											class="font-weight-bold"
+										>Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaTerminacion)}}</span>
+										<br />
+										<span>{{work.Paciente}}</span>
+									</td>
+									<td class="text-right">1</td>
+									<td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
+									<td class="text-right">{{work.PorcentajeDescuento.toFixed(2).replace('.', ',')}} %</td>
+									<td class="text-right">{{moneyFormatter.format(work.TotalDescuento)}}</td>
+									<td class="text-right">{{moneyFormatter.format(work.PrecioConDescuento)}}</td>
+								</tr>
+								<tr
+									class="leapTr dontBreakHere"
+									v-for="indication in indications[work.IdTrabajo]"
+									v-bind:key="indication.IdTrabajoDetalle"
+								>
+									<td class="text-left">
+										<span class="text-monospace">{{indication.Descripcion}}</span>
+									</td>
+									<td class="text-right"></td>
+									<td class="text-right"></td>
+									<td class="text-right"></td>
+									<td class="text-right"></td>
+									<td class="text-right"></td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+					<div
+						class="text-right font-weight-bold"
+						v-if="isLastPage"
+					>Total: {{moneyFormatter.format(invoice.Total)}}</div>
+					<div class="mt-4" v-if="appliedDiscount > 0 && isLastPage">
+						<h4>Detalle de los descuentos aplicados</h4>
+						<div
+							class="mb-4 font-weight-bold text-right"
+						>Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}}</div>
+					</div>
+					<div class="text-right font-italic" v-if="!isLastPage">...suma y sigue.</div>
+				</div>
+				<!-- end forPrinter -->
+				<!-- forScreen -->
+				<div v-else>
+					<table class="table table-invoice" width="100%" cellspacing="0">
+						<thead>
+							<tr>
+								<template v-if="editing">
+									<th class="text-left" style="width: 2%;"></th>
+									<th class="text-left" style="width: 48%;">Concepto</th>
+								</template>
+								<template v-else>
+									<th class="text-left" style="width: 50%;">Concepto</th>
+								</template>
+								<th class="text-right" style="width: 10%;">Cantidad</th>
+								<th class="text-right" style="width: 10%;">P. Unidad</th>
+								<th class="text-right" style="width: 10%;">% Dto.</th>
+								<th class="text-right" style="width: 10%;">Dto.</th>
+								<th class="text-right" style="width: 10%;">Subtotal</th>
+							</tr>
+						</thead>
+						<tbody>
+							<template v-for="work in works">
+								<tr v-bind:key="work.IdTrabajo" class="pagebreak">
+									<td class="text-left" v-if="editing">
+										<i
+											class="fas fa-times-circle"
+											@click="deleteWork(work.IdTrabajo)"
+											v-if="works.length > 1"
+										></i>
+									</td>
+									<td class="text-left">
+										<span
+											class="font-weight-bold"
+										>Nº Trabajo: {{work.IdTrabajo}}. Fecha: {{format(work.FechaTerminacion)}}</span>
+										<br />
+										<span>{{work.Paciente}}</span>
+									</td>
+									<td class="text-right">1</td>
+									<td class="text-right">{{moneyFormatter.format(work.PrecioSinDescuento)}}</td>
+									<td class="text-right">
+										<template v-if="editing">
+											<percentageInput
+												class="form-control text-right inputInForm"
+												v-model="work.PorcentajeDescuento"
+												@input="updatePercentageDiscount(work)"
+											></percentageInput>
+										</template>
+										<template v-else>{{work.PorcentajeDescuento}} %</template>
+									</td>
+									<td class="text-right">
+										<template v-if="editing">
+											<euroInput
+												class="form-control text-right inputInForm"
+												v-model="work.TotalDescuento"
+												@input="updateTotalDiscount(work)"
+											></euroInput>
+										</template>
+										<template v-else>{{moneyFormatter.format(work.TotalDescuento)}}</template>
+									</td>
+									<td class="text-right">{{moneyFormatter.format(work.PrecioConDescuento)}}</td>
+								</tr>
+								<tr
+									class="leapTr dontBreakHere"
+									v-for="indication in indications[work.IdTrabajo]"
+									v-bind:key="indication.IdTrabajoDetalle"
+								>
+									<td class="text-left" v-if="editing"></td>
+									<td class="text-left">
+										<span class="text-monospace">{{indication.Descripcion}}</span>
+									</td>
+									<td class="text-right"></td>
+									<td class="text-right"></td>
+									<td class="text-right"></td>
+									<td class="text-right"></td>
+									<td class="text-right"></td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+					<div class="text-right font-weight-bold pb-5">Total: {{moneyFormatter.format(invoice.Total)}}</div>
+					<div v-if="!editing">
+						<h4>Detalle de los descuentos aplicados</h4>
+						<div
+							class="mb-4 font-weight-bold text-right"
+						>Descuento aplicado: {{moneyFormatter.format(appliedDiscount)}}</div>
+					</div>
+				</div>
+				<!-- end forScreen -->
+				<button
+					class="btn btn-secondary btn-block mb-4"
+					type="button"
+					@click="save()"
+					v-if="editing"
+					ref="btnSave"
+				>
+					<i class="fas fa-save"></i>
+					Guardar
+				</button>
+			</div>
+			<!-- col-sm-12 -->
+		</div>
+		<!-- row -->
 
-    <div class="text-right" v-if="forPrinter">Página {{pageNumber}}</div>
-    <div class="fixed-bottom printed-1" v-if="forPrinter">
-      <div class="text-justify printed">{{footer}}</div>
-    </div>
-    <b-modal ref="editInvoiceModal" title="Se va a cambiar la factura" hide-footer v-if="editing">
-      <div class="modal-body">
-        <label
-          for="labelText"
-        >Al pulsar el botón guardar, los cambios realizados en esta factura serán permanente y no se podrán deshacer. ¿Desea continuar?</label>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="$refs.editInvoiceModal.hide()">Cancelar</button>
-        <button class="btn btn-secondary" @click="save(true)">Continuar</button>
-      </div>
-    </b-modal>
-  </div>
+		<div class="text-right" v-if="forPrinter">Página {{pageNumber}}</div>
+		<div class="fixed-bottom printed-1" v-if="forPrinter">
+			<div class="text-justify printed">{{footer}}</div>
+		</div>
+		<b-modal ref="editInvoiceModal" title="Se va a cambiar la factura" hide-footer v-if="editing">
+			<div class="modal-body">
+				<label
+					for="labelText"
+				>Al pulsar el botón guardar, los cambios realizados en esta factura serán permanente y no se podrán deshacer. ¿Desea continuar?</label>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary" @click="$refs.editInvoiceModal.hide()">Cancelar</button>
+				<button class="btn btn-secondary" @click="save(true)">Continuar</button>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>
@@ -362,26 +357,25 @@ export default {
 				this.$refs.editInvoiceModal.show()
 				return
 			}
+			log.info(`Invoice edited: ${this.invoice.IdFactura}`)
 
 			// First we remove the deleted works
 			const worksDeleted = Object.values(this.worksDeleted)
 			for (const n of worksDeleted) {
 				var workId = n[0].IdTrabajo
-				log.info(
-					`Invoice edited. WorkId ${workId} removed from invoice ${this.invoice.IdFactura} (${this.invoice.NumFactura})`
-				)
+				log.info(`WorkId ${workId} removed from invoice ${this.invoice.IdFactura} (${this.invoice.NumFactura})`)
 				await this.invoiceService.removeWorkFromInvoice(this.invoice.IdFactura, workId)
 			}
 
 			// Now we update the discounts of the remaining works
 			for (const currentWork of this.works) {
 				log.info(
-					`Invoice edited. WorkId ${currentWork.IdTrabajo} updated from invoice ${this.invoice.IdFactura} (${this.invoice.NumFactura})`
-        )
+					`WorkId ${currentWork.IdTrabajo} updated from invoice ${this.invoice.IdFactura} (${this.invoice.NumFactura})`
+				)
 				await this.workService.updateWorkDiscount(
 					currentWork.IdTrabajo,
-          currentWork.PorcentajeDescuento,
-          currentWork.TotalDescuento,
+					currentWork.PorcentajeDescuento,
+					currentWork.TotalDescuento,
 					currentWork.PrecioConDescuento
 				)
 			}
@@ -402,13 +396,13 @@ export default {
 		this.workService = new WorkService()
 		this.invoiceService = new InvoiceService()
 		log.debug('Created')
-  },
-  mounted() {
-    this.$root.$on('topbar:save', () => {
+	},
+	mounted() {
+		this.$root.$on('topbar:save', () => {
 			log.debug('Requested to save from the topbar')
 			this.save(true)
 		})
-  },
+	},
 	computed: {
 		isDirty() {
 			return this.worksDeleted.length !== 0 || this.worksUpdated

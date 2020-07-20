@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-expressions
 'use strict'
 
+import log from 'loglevel'
 import PersistenceService from './PersistenceService'
 
 export default class InvoiceService extends PersistenceService {
@@ -53,6 +54,7 @@ export default class InvoiceService extends PersistenceService {
       var query2 = 'INSERT INTO FacturasTrabajos (IdFactura, IdTrabajo) VALUES (?, ?)'
       await this.runAsync(query2, [idInvoice, value.idTrabajo])
     }
+    log.info(`Invoice created: ${idInvoice}`)
     return idInvoice
   }
 
