@@ -3,7 +3,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-4">
-					<h1>Trabajo nº {{work.IdTrabajo}}</h1>
+					<h1>Trabajo nº {{ work.IdTrabajo }}</h1>
 				</div>
 				<div class="col-md-8 mt-2">
 					<div class="float-right">
@@ -15,17 +15,36 @@
 								v-if="!adjunctsVisible && !readOnly"
 							></collapsible-action-button>
 							<collapsible-action-button
+								iconCss="fas fa-passport"
+								text="Historial de seguimiento"
+								:callback="showPostcommercialLog"
+								:title="
+									!$v.work.FechaTerminacion.$model
+										? 'La historia de seguimiento requiere que se establezca una fecha de terminación del trabajo'
+										: ''
+								"
+								:disabled="!$v.work.FechaTerminacion.$model || $v.work.FechaTerminacion.$anyError"
+							></collapsible-action-button>
+							<collapsible-action-button
 								iconCss="fas fa-certificate"
 								text="Declaración de Conformidad"
 								:callback="showConformity"
-								:title="!$v.work.FechaTerminacion.$model?'La declaración de conformidad requiere que se establezca una fecha de terminación del trabajo':''"
+								:title="
+									!$v.work.FechaTerminacion.$model
+										? 'La declaración de conformidad requiere que se establezca una fecha de terminación del trabajo'
+										: ''
+								"
 								:disabled="!$v.work.FechaTerminacion.$model || $v.work.FechaTerminacion.$anyError"
 							></collapsible-action-button>
 							<collapsible-action-button
 								iconCss="fas fa-dolly"
 								text="Nota de entrega"
 								:callback="getDeliveryNote"
-								title="!$v.work.FechaTerminacion.$model?'La nota de entrega requiere que se establezca una fecha de terminación del trabajo':''"
+								:title="
+									!$v.work.FechaTerminacion.$model
+										? 'La nota de entrega requiere que se establezca una fecha de terminación del trabajo'
+										: ''
+								"
 								:disabled="!$v.work.FechaTerminacion.$model || $v.work.FechaTerminacion.$anyError"
 							></collapsible-action-button>
 							<button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
@@ -36,10 +55,16 @@
 								<a
 									href="#"
 									class="dropdown-item"
-									:class="{'labeStrikethrough': $v.work.FechaTerminacion.$model === '' || $v.work.FechaTerminacion.$model === null || $v.work.FechaTerminacion.$anyError}"
+									:class="{
+										labeStrikethrough:
+											$v.work.FechaTerminacion.$model === '' ||
+											$v.work.FechaTerminacion.$model === null ||
+											$v.work.FechaTerminacion.$anyError
+									}"
 									v-on:click="showWarrantyLabelModal"
 									title="La nota de entrega requiere que se establezca una fecha de terminación del trabajo"
-								>Garantía</a>
+									>Garantía</a
+								>
 								<a href="#" class="dropdown-item" v-on:click="showLabelModal('Resina')">Resina</a>
 								<a href="#" class="dropdown-item" v-on:click="showLabelModal('Compostura')">Compostura</a>
 								<a
@@ -47,18 +72,15 @@
 									class="dropdown-item"
 									v-on:click="showLabelModal('Aditamentos')"
 									v-if="workAdjuncts !== undefined"
-								>Aditamentos</a>
+									>Aditamentos</a
+								>
 								<a href="#" class="dropdown-item" v-on:click="showLabelModal('Esqueléticos')">Esqueléticos</a>
 								<a href="#" class="dropdown-item" v-on:click="showLabelModal('Ortodoncia')">Ortodoncia</a>
 								<a href="#" class="dropdown-item" v-on:click="showLabelModal('Zirconio')">Zirconio</a>
 								<a href="#" class="dropdown-item" v-on:click="showLabelModal('Implantes')">Implantes</a>
 								<a href="#" class="dropdown-item" v-on:click="showLabelModal('E-Max')">E-Max</a>
 								<a href="#" class="dropdown-item" v-on:click="showLabelModal('Composite')">Composite</a>
-								<a
-									href="#"
-									class="dropdown-item"
-									v-on:click="showLabelModal('Metal-Cerámica')"
-								>Metal-Cerámica</a>
+								<a href="#" class="dropdown-item" v-on:click="showLabelModal('Metal-Cerámica')">Metal-Cerámica</a>
 							</div>
 							<!-- dropdown-menu -->
 						</div>
@@ -70,7 +92,8 @@
 				<div class="col-md-12">
 					<span>
 						Este trabajo está incluido en la factura
-						<router-link :to="'/finances/invoices/' + invoice.IdFactura">{{invoice.NumFactura}}</router-link>.
+						<router-link :to="'/finances/invoices/' + invoice.IdFactura">{{ invoice.NumFactura }}</router-link
+						>.
 					</span>
 				</div>
 			</div>
@@ -81,7 +104,7 @@
 						<br />
 						<span>
 							Si, excepcionalmente, desea editarlo pulse
-							<a href="#" @click="readOnly=false">aquí</a>.
+							<a href="#" @click="readOnly = false">aquí</a>.
 						</span>
 					</em>
 				</div>
@@ -99,10 +122,9 @@
 								:disabled="readOnly"
 								@change="updateDentist()"
 							></dentist-search>
-							<small
-								class="text-danger"
-								v-if="$v.work.IdDentista.$error && saveButtonPressed"
-							>Es necesario especificar una clínica o dr/a.</small>
+							<small class="text-danger" v-if="$v.work.IdDentista.$error && saveButtonPressed"
+								>Es necesario especificar una clínica o dr/a.</small
+							>
 						</div>
 						<!-- col-md-6 -->
 						<div class="col-md-6 mt-3">
@@ -124,19 +146,16 @@
 								ref="tipoTrabajo"
 								v-model="$v.work.IdTipoTrabajo.$model"
 								:disabled="readOnly"
-								:class="{'is-invalid': $v.work.IdTipoTrabajo.$error}"
+								:class="{ 'is-invalid': $v.work.IdTipoTrabajo.$error }"
 							>
 								<option disabled value>Seleccione una opción</option>
-								<option
-									v-for="type in workTypes"
-									v-bind:key="type.IdTipoTrabajo"
-									v-bind:value="type.IdTipoTrabajo"
-								>{{type.Descripcion}}</option>
+								<option v-for="type in workTypes" v-bind:key="type.IdTipoTrabajo" v-bind:value="type.IdTipoTrabajo">
+									{{ type.Descripcion }}
+								</option>
 							</select>
-							<small
-								class="text-danger"
-								v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed"
-							>Es necesario especificar un tipo de trabajo.</small>
+							<small class="text-danger" v-if="$v.work.IdTipoTrabajo.$error && saveButtonPressed"
+								>Es necesario especificar un tipo de trabajo.</small
+							>
 						</div>
 						<!-- col-md-6 -->
 						<div class="col-md-3">
@@ -149,13 +168,12 @@
 								@input="metalPriceChanged"
 								placeholder="€"
 								v-model="$v.work.PrecioMetal.$model"
-								:class="{'is-invalid': $v.work.PrecioMetal.$error}"
+								:class="{ 'is-invalid': $v.work.PrecioMetal.$error }"
 								:disabled="readOnly"
 							/>
-							<small
-								class="text-danger"
-								v-if="$v.work.PrecioMetal.$error"
-							>Aunque opcional, se requiere que el precio del metal sea válido</small>
+							<small class="text-danger" v-if="$v.work.PrecioMetal.$error"
+								>Aunque opcional, se requiere que el precio del metal sea válido</small
+							>
 						</div>
 						<!-- col-md-2 -->
 						<div class="col-md-4">
@@ -331,13 +349,7 @@
 			<!-- row -->
 			<div class="row">
 				<div class="col-md-12 mt-3">
-					<button
-						class="btn btn-secondary btn-block"
-						type="button"
-						@click="save()"
-						v-if="!readOnly"
-						ref="btnSave"
-					>
+					<button class="btn btn-secondary btn-block" type="button" @click="save()" v-if="!readOnly" ref="btnSave">
 						<i class="fas fa-save"></i>
 						Guardar
 					</button>
@@ -348,30 +360,27 @@
 		<!-- container -->
 		<b-modal ref="printLabelModal" title="Imprimir etiqueta" hide-footer>
 			<div class="modal-body">
-				<label
-					for="labelText"
-				>Se va a imprimir una etiqueta de tipo {{printedLabel}}. Por favor, indique el texto que aparecerá en ella a continuación y pulse Imprimir.</label>
+				<label for="labelText"
+					>Se va a imprimir una etiqueta de tipo {{ printedLabel }}. Por favor, indique el texto que aparecerá en ella a
+					continuación y pulse Imprimir.</label
+				>
 				<textarea class="form-control" id="labelText" rows="4" cols="60" v-model="workIndicationsText"></textarea>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-secondary" @click="hideModal">
-					<i class="fas fa-times-circle mr-2 position-relative" style="top: 1px;"></i>Cancelar
+					<i class="fas fa-times-circle mr-2 position-relative" style="top: 1px"></i>Cancelar
 				</button>
 				<button class="btn btn-secondary" @click="printLabelAndHide">
-					<i class="fas fa-print mr-2 position-relative" style="top: 1px;"></i>Imprimir
+					<i class="fas fa-print mr-2 position-relative" style="top: 1px"></i>Imprimir
 				</button>
 			</div>
 		</b-modal>
-		<b-modal
-			ref="includedInInvoiceModal"
-			title="Trabajo incluido en una factura emitida"
-			hide-footer
-			v-if="invoice"
-		>
+		<b-modal ref="includedInInvoiceModal" title="Trabajo incluido en una factura emitida" hide-footer v-if="invoice">
 			<div class="modal-body">
-				<label
-					for="labelText"
-				>Este trabajo forma parte de la factura {{invoice.NumFactura}}. Los cambios que se realicen en él alterarán el contenido de dicha factura. ¿Desea continuar?</label>
+				<label for="labelText"
+					>Este trabajo forma parte de la factura {{ invoice.NumFactura }}. Los cambios que se realicen en él alterarán
+					el contenido de dicha factura. ¿Desea continuar?</label
+				>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-secondary" @click="$refs.includedInInvoiceModal.hide()">Cancelar</button>
@@ -429,7 +438,7 @@ export default {
 		}
 	},
 	methods: {
-		cleanComponent: function() {
+		cleanComponent: function () {
 			this.work.IdDentista = 0
 			this.NombreDentista = ''
 			this.work.IdTipoTrabajo = ''
@@ -452,7 +461,7 @@ export default {
 			this.$v.$reset()
 			this.$forceUpdate()
 		},
-		save: async function(url, changeInvoiceConfirmed = false) {
+		save: async function (url, changeInvoiceConfirmed = false) {
 			this.saveButtonPressed = true
 			this.$v.$touch()
 
@@ -500,7 +509,7 @@ export default {
 				this.$refs.workIndications.save(this.work.IdTrabajo)
 			}
 			var sum = parseFloat(
-				_.sumBy(this.workIndications, function(n) {
+				_.sumBy(this.workIndications, function (n) {
 					var temp = parseFloat(n.Precio)
 					if (isNaN(temp)) {
 						throw 'NaN'
@@ -571,11 +580,11 @@ export default {
 				this.$refs.printLabelModal.show()
 			}
 		},
-		printLabelAndHide: function() {
+		printLabelAndHide: function () {
 			this.printLabel()
 			this.hideModal()
 		},
-		getDeliveryNote: async function() {
+		getDeliveryNote: async function () {
 			log.info('Clicked on the Delivery Note button')
 			if (this.save()) {
 				var row = await this.workService.getConfigValues(['logo'])
@@ -600,6 +609,12 @@ export default {
 			log.info('Clicked on the Conformity Declaration button')
 			if (this.save()) {
 				this.$refs.conformity.show()
+			}
+		},
+		showPostcommercialLog() {
+			log.info('Clicked on the Postcommercial Log button')
+			if (this.save()) {
+				//this.$refs.
 			}
 		},
 		triggerIsDirty(event) {
@@ -691,7 +706,7 @@ export default {
 			this.$refs.dirtys.innerHTML += `FechaTerminacion: ${this.$v.work.FechaTerminacion.$anyError} | ${this.$v.work.FechaTerminacion.$anyDirty} <br> `
 			this.$refs.dirtys.innerHTML += `Pruebas: ${this.$refs.workTests.isError()} | ${this.$refs.workTests.isDirty()} <br> `
 		},
-		getData: async function() {
+		getData: async function () {
 			this.work = await this.workService.getWork(this.work.IdTrabajo)
 			log.debug(`work: ${JSON.stringify(this.work)}`)
 			this.readOnly = this.work.FechaTerminacion !== null || this.workService.readonly
