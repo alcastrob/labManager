@@ -2,7 +2,7 @@
     <div class="container printed">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="text-uppercase">Historia de seguimiento postcomercialización</h1>
+                <h1 class="text-uppercase">Historia de seguimiento post-comercialización</h1>
             </div>
             <div class="col-sm-6">
                 <img @load="logoLoaded" :src="logo" />
@@ -18,6 +18,9 @@
                 {{ conformityDeclaration.Paciente }}
                 <br />
                 Identificación del producto:
+                {{ Detalles }}
+                <br />
+                Trabajo nº {{IdTrabajo}}
             </div>
         </div>
         <!-- row -->

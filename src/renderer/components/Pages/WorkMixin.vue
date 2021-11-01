@@ -4,6 +4,7 @@
 import Vue from 'Vue'
 import workIndicationsTable from '../PageElements/tables/workIndicationsTable'
 import workTestsTable from '../PageElements/tables/workTestsTable'
+import postSalesTable from '../PageElements/tables/postSalesTable'
 import collapsibleActionButton from '../PageElements/CollapsibleButtons/collapsibleActionButton'
 import dentistSearch from '../PageElements/typeAheads/DentistSearch'
 import workAdjuncts from '../PageElements/WorkAdjuncts'
@@ -24,6 +25,7 @@ export default {
 	components: {
 		workIndicationsTable,
 		workTestsTable,
+		postSalesTable,
 		collapsibleActionButton,
 		workAdjuncts,
 		dentistSearch

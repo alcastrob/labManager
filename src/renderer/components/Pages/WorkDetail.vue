@@ -17,13 +17,13 @@
 							<collapsible-action-button
 								iconCss="fas fa-passport"
 								text="Historial de seguimiento"
-								:callback="showPostcommercialLog"
+								:callback="showPostSalesLog"
 								:title="
-									!$v.work.FechaTerminacion.$model
-										? 'La historia de seguimiento requiere que se establezca una fecha de terminación del trabajo'
+									postSales.length !== 0
+										? 'La historia de seguimiento requiere que se haya guardado alguna entrada en el historial de seguimiento'
 										: ''
 								"
-								:disabled="!$v.work.FechaTerminacion.$model || $v.work.FechaTerminacion.$anyError"
+								:disabled="postSales.length === 0"
 							></collapsible-action-button>
 							<collapsible-action-button
 								iconCss="fas fa-certificate"
@@ -342,18 +342,37 @@
 
 			<div class="row">
 				<div class="col-md-12 mt-4">
+					<h4>Historial de seguimiento</h4>
+					<postSalesTable
+						v-model="postSales"
+						:workId="work.IdTrabajo"
+						ref="postSales"
+						:disabled="readOnly"
+					></postSalesTable>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12 mt-4">
 					<workAdjuncts v-model="$v.workAdjuncts.$model" v-if="adjunctsVisible" :disabled="readOnly"></workAdjuncts>
 				</div>
 				<!-- col-md-8 -->
 			</div>
+
 			<!-- row -->
 			<div class="row">
 				<div class="col-md-12 mt-3">
-					<button class="btn btn-secondary btn-block" type="button" @click="save()" v-if="!readOnly" ref="btnSave">
+					<button
+						class="btn btn-secondary btn-block"
+						type="button"
+						@click="save($parent.$refs.topBar.from.fullPath)"
+						v-if="!readOnly"
+						ref="btnSave"
+					>
 						<i class="fas fa-save"></i>
 						Guardar
 					</button>
-					<span ref="dirtys"></span>
+					<span ref="dirties"></span>
 				</div>
 			</div>
 		</div>
@@ -400,12 +419,14 @@ import InvoiceService from '../../../services/InvoiceService'
 import WorkService from '../../../services/WorkService'
 import WorkIndicationService from '../../../services/WorkIndicationService'
 import WorkTestService from '../../../services/WorkTestService'
+import PostSalesService from '../../../services/PostSalesService'
 import WorkAdjuntService from '../../../services/WorkAdjuntService'
 import ConfigFileService from '../../../services/ConfigFileService'
 import workMixin from './WorkMixin'
 import euroInput from '../PageElements/tables/euroInput'
 import percentageInput from '../PageElements/tables/percentageInput'
 import delivery from '../Labels/Delivery'
+import postSales from '../Labels/PostSales'
 import imagesFileUpload from '../PageElements/fileUploads/imagesFileUplodad'
 import conformityModal from '../PageElements/ConformityModal'
 import warrantyLabel from '../Labels/LabelGarantia'
@@ -428,6 +449,7 @@ export default {
 		return {
 			printedLabel: '',
 			workTests: [],
+			postSales: [],
 			readOnly: false,
 			invoice: undefined,
 			isAdmin: false,
@@ -457,6 +479,8 @@ export default {
 			this.workAdjuncts = {}
 			this.adjunctsVisible = false
 			this.workAdjunctsJustAdded = false
+			this.postSales = {}
+			this.$refs.postSales.cleanComponent()
 			this.url = ''
 			this.$v.$reset()
 			this.$forceUpdate()
@@ -472,9 +496,21 @@ export default {
 			if (this.$refs.workTests) {
 				this.$refs.workTests.addLastRow()
 			}
-			if (this.$v.$anyError || this.$refs.workIndications.isError() || this.$refs.workTests.isError()) {
+			if (this.$refs.postSales) {
+				this.$refs.postSales.addLastRow()
+			}
+			if (
+				this.$v.$anyError ||
+				this.$refs.workIndications.isError() ||
+				this.$refs.workTests.isError() ||
+				this.$refs.postSales.isError()
+			) {
 				if (this.$refs.workTests.isError()) {
 					this.$refs.workTests.focus()
+					this.$scrollTo(this.$refs.btnSave, 1000)
+				}
+				if (this.$refs.postSales.isError()) {
+					this.$refs.postSales.focus()
 					this.$scrollTo(this.$refs.btnSave, 1000)
 				}
 				if (this.$refs.workIndications.isError()) {
@@ -540,6 +576,9 @@ export default {
 			}
 			if (this.$refs.workTests.isDirty) {
 				this.$refs.workTests.save(this.work.IdTrabajo)
+			}
+			if (this.$refs.postSales.isDirty) {
+				this.$refs.postSales.save(this.work.IdTrabajo)
 			}
 			if (this.workAdjuncts && this.$v.workAdjuncts.$anyDirty) {
 				this.workAdjuncts.IdTrabajo = this.work.IdTrabajo
@@ -611,10 +650,24 @@ export default {
 				this.$refs.conformity.show()
 			}
 		},
-		showPostcommercialLog() {
+		showPostSalesLog: async function () {
 			log.info('Clicked on the Postcommercial Log button')
 			if (this.save()) {
-				//this.$refs.
+				var logo = await this.workService.getConfigValues(['logo'])
+				var maker = await this.workService.getConfigValues(['makerNumber'])
+				debugger
+				var ComponentClass = Vue.extend(postSales)
+				var instance = new ComponentClass({
+					propsData: {
+						IdTrabajo: this.work.IdTrabajo,
+						PostSales: this.postSales,
+						logo: 'data:image/png;base64,' + logo[0].valor,
+						Maker: maker[0].valor
+					}
+				})
+				instance.$mount()
+				instance.print(this.$refs.labelContainer)
+				log.info(`Printed the postsales label for work ${this.work.IdTrabajo}`)
 			}
 		},
 		triggerIsDirty(event) {
@@ -694,17 +747,17 @@ export default {
 			this.$refs.paciente.focus()
 		},
 		doValidatorExtraChecks() {
-			this.$refs.dirtys.innerHTML = ''
-			this.$refs.dirtys.innerHTML += `IdDentista: ${this.$v.work.IdDentista.$anyError} | ${this.$v.work.IdDentista.$anyDirty} <br> `
-			this.$refs.dirtys.innerHTML += `Paciente: ${this.$v.work.Paciente.$anyError} | ${this.$v.work.Paciente.$anyDirty} <br> `
-			this.$refs.dirtys.innerHTML += `TipoTrabajo: ${this.$v.work.IdTipoTrabajo.$anyError} | ${this.$v.work.IdTipoTrabajo.$anyDirty} <br> `
-			this.$refs.dirtys.innerHTML += `PrecioMetal: ${this.$v.work.PrecioMetal.$anyError} | ${this.$v.work.PrecioMetal.$anyDirty} <br> `
-			this.$refs.dirtys.innerHTML += `Color: ${this.$v.work.Color.$anyError} | ${this.$v.work.Color.$anyDirty} <br> `
-			this.$refs.dirtys.innerHTML += `Indicaciones: ${this.$refs.workIndications.isError()} | ${this.$refs.workIndications.isDirty()} <br> `
-			this.$refs.dirtys.innerHTML += `FechaEntrada: ${this.$v.work.FechaEntrada.$anyError} | ${this.$v.work.FechaEntrada.$anyDirty} <br> `
-			this.$refs.dirtys.innerHTML += `FechaPrevista: ${this.$v.work.FechaPrevista.$anyError} | ${this.$v.work.FechaPrevista.$anyDirty} <br> `
-			this.$refs.dirtys.innerHTML += `FechaTerminacion: ${this.$v.work.FechaTerminacion.$anyError} | ${this.$v.work.FechaTerminacion.$anyDirty} <br> `
-			this.$refs.dirtys.innerHTML += `Pruebas: ${this.$refs.workTests.isError()} | ${this.$refs.workTests.isDirty()} <br> `
+			this.$refs.dirties.innerHTML = ''
+			this.$refs.dirties.innerHTML += `IdDentista: ${this.$v.work.IdDentista.$anyError} | ${this.$v.work.IdDentista.$anyDirty} <br> `
+			this.$refs.dirties.innerHTML += `Paciente: ${this.$v.work.Paciente.$anyError} | ${this.$v.work.Paciente.$anyDirty} <br> `
+			this.$refs.dirties.innerHTML += `TipoTrabajo: ${this.$v.work.IdTipoTrabajo.$anyError} | ${this.$v.work.IdTipoTrabajo.$anyDirty} <br> `
+			this.$refs.dirties.innerHTML += `PrecioMetal: ${this.$v.work.PrecioMetal.$anyError} | ${this.$v.work.PrecioMetal.$anyDirty} <br> `
+			this.$refs.dirties.innerHTML += `Color: ${this.$v.work.Color.$anyError} | ${this.$v.work.Color.$anyDirty} <br> `
+			this.$refs.dirties.innerHTML += `Indicaciones: ${this.$refs.workIndications.isError()} | ${this.$refs.workIndications.isDirty()} <br> `
+			this.$refs.dirties.innerHTML += `FechaEntrada: ${this.$v.work.FechaEntrada.$anyError} | ${this.$v.work.FechaEntrada.$anyDirty} <br> `
+			this.$refs.dirties.innerHTML += `FechaPrevista: ${this.$v.work.FechaPrevista.$anyError} | ${this.$v.work.FechaPrevista.$anyDirty} <br> `
+			this.$refs.dirties.innerHTML += `FechaTerminacion: ${this.$v.work.FechaTerminacion.$anyError} | ${this.$v.work.FechaTerminacion.$anyDirty} <br> `
+			this.$refs.dirties.innerHTML += `Pruebas: ${this.$refs.workTests.isError()} | ${this.$refs.workTests.isDirty()} <br> `
 		},
 		getData: async function () {
 			this.work = await this.workService.getWork(this.work.IdTrabajo)
@@ -716,6 +769,7 @@ export default {
 				this.showAdjunts(false)
 			}
 			this.workTests = await this.workTestService.getWorkTestsList(this.work.IdTrabajo)
+			this.postSales = await this.postSalesService.getPostSaleList(this.work.IdTrabajo)
 			if (this.isAdmin) {
 				this.invoice = await this.invoiceService.getInvoicePerWork(this.work.IdTrabajo)
 				this.$refs.grandTotal.value = this.moneyFormatter.format(
@@ -763,6 +817,7 @@ export default {
 		this.invoiceService = new InvoiceService()
 		this.workIndicationService = new WorkIndicationService()
 		this.workTestService = new WorkTestService()
+		this.postSalesService = new PostSalesService()
 		this.workAdjuntService = new WorkAdjuntService()
 		this.configFileService = new ConfigFileService()
 		this.work.IdTrabajo = parseInt(this.$route.params.id)

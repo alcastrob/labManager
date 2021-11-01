@@ -439,7 +439,6 @@ export default {
 		// No operation was made with the db in the invoiceService, so we have to take the
 		// readonly parameter directly from the configFileService
 		this.dbReadOnly = this.invoiceService.configFileService.configGet('readonly')
-		debugger
 		if (this.dbReadOnly) {
 			this.setReadOnly()
 		}

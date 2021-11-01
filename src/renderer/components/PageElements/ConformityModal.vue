@@ -133,7 +133,9 @@ export default {
 			this.date = ''
 			this.batches = []
 			this.batchQueryResult = ''
-			this.$refs.productSearch.clear()
+			if (this.$refs.productSearch) {
+				this.$refs.productSearch.clear()
+			}
 			this.warrantyPeriod = 12
 			this.specificProduct = ''
 			this.declarationId = -1
