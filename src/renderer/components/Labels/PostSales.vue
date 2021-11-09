@@ -20,6 +20,9 @@
 				Nº Trabajo:
 				{{IdTrabajo}}
 				<br />
+				Paciente:
+				{{Paciente}}
+				<br />
 				Identificación del producto: {{ProductType}}
 			</div>
 		</div>
@@ -84,6 +87,10 @@ export default {
 	props: {
 		IdTrabajo: {
 			type: Number,
+			required: true
+		},
+		Paciente: {
+			type: String,
 			required: true
 		},
 		PostSales: {

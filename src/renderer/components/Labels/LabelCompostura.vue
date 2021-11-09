@@ -1,5 +1,6 @@
 <template>
   <div class="box invisible">
+    {{labelCss}}
     <p class="labelTitle" :class="labelCss">
       {{labelName}}
       <span class="float-right no-background">

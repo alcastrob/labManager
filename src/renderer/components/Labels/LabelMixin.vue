@@ -7,8 +7,7 @@ var fs = require('fs')
 export default {
 	data() {
 		return {
-			cssText: '',
-			name: ''
+			cssText: ''
 		}
 	},
 	props: {
@@ -23,18 +22,18 @@ export default {
 		workAdjuncts: {
 			type: Object,
 			required: false
+		},
+		name: {
+			type: String,
+			required: false
 		}
 	},
 	methods: {
-		print(label) {
-			this.name = label
+		print() {
 			this.$forceUpdate()
 			const d = new Printd()
 			d.print(this.$el, this.cssText)
 			log.info(`Label printed ${this.name} for workId: ${this.workData.IdTrabajo}.`)
-		},
-		setName(name) {
-			this.name = name
 		}
 	},
 	computed: {

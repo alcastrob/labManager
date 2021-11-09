@@ -116,13 +116,13 @@ export default {
 				propsData: {
 					workData: this.work,
 					workIndicationsText: this.workIndicationsText,
-					workAdjuncts: this.workAdjuncts
+					workAdjuncts: this.workAdjuncts,
+					name: currentLabel
 				}
 			})
 			instance.$mount()
 			this.$refs.labelContainer.appendChild(instance.$el)
-			instance.setName(currentLabel)
-			instance.print(currentLabel)
+			instance.print()
 			this.$refs.labelContainer.removeChild(instance.$el)
 		},
 		mapType(type) {

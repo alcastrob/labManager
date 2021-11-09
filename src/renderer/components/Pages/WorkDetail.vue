@@ -662,6 +662,7 @@ export default {
 					propsData: {
 						IdTrabajo: this.work.IdTrabajo,
 						PostSales: this.postSales,
+						Paciente: this.work.Paciente,
 						ColNumber: colNumbers,
 						ProductType: workType,
 						logo: 'data:image/png;base64,' + logo[0].valor,
