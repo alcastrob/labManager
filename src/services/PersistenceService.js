@@ -27,7 +27,8 @@ export default class PersistenceService {
       }
 
       this.db = new Database(dbFile, {
-        timeout: 8000
+        timeout: 8000,
+        // verbose: console.log
       })
 
       var x = await this.getConfigValue('companyName')

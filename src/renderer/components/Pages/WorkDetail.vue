@@ -17,9 +17,9 @@
 							<collapsible-action-button
 								iconCss="fas fa-passport"
 								text="Historial de seguimiento"
-								:callback="showPostSalesLog"
+								:callback="showPostSales"
 								:title="
-									postSales.length !== 0
+									postSales.length === 0
 										? 'La historia de seguimiento requiere que se haya guardado alguna entrada en el historial de seguimiento'
 										: ''
 								"
@@ -650,17 +650,20 @@ export default {
 				this.$refs.conformity.show()
 			}
 		},
-		showPostSalesLog: async function () {
-			log.info('Clicked on the Postcommercial Log button')
+		showPostSales: async function () {
+			log.info('Clicked on the Postsales button')
 			if (this.save()) {
 				var logo = await this.workService.getConfigValues(['logo'])
 				var maker = await this.workService.getConfigValues(['makerNumber'])
-				debugger
+				var workType = (await this.workService.getWorkType(this.work.IdTipoTrabajo))[0].Descripcion
+				var colNumbers = (await this.workService.getConfigValues(['personInCharge']))[0].valor
 				var ComponentClass = Vue.extend(postSales)
 				var instance = new ComponentClass({
 					propsData: {
 						IdTrabajo: this.work.IdTrabajo,
 						PostSales: this.postSales,
+						ColNumber: colNumbers,
+						ProductType: workType,
 						logo: 'data:image/png;base64,' + logo[0].valor,
 						Maker: maker[0].valor
 					}

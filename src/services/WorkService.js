@@ -86,6 +86,11 @@ export default class WorkService extends PersistenceService {
     return this.allAsync(query, [])
   }
 
+  async getWorkType(idWorkType) {
+    var query = 'SELECT Descripcion FROM TipoTrabajos WHERE IdTipoTrabajo = ?'
+    return this.allAsync(query, [idWorkType])
+  }
+
   cleanWorkFromView(work) {
     let returnedValue = this.iterationCopy(work)
     returnedValue.PrecioSinDescuento = returnedValue.SumaPrecioSinDescuento

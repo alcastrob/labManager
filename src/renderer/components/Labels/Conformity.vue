@@ -57,7 +57,7 @@
     </div>
     <!-- row -->
     <div class="row">
-      <div class="col-sm-6">Fdo: {{personInCharge}}</div>
+      <div class="col-sm-6">Fdo: {{personInCharge}}<br><br></div>
       <div class="col-sm-6">
         Titular responsable de la empresa: {{companyName}}
         <br>

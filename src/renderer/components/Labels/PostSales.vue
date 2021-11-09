@@ -15,12 +15,12 @@
 			<div class="col-sm-12">
 				Licencia de Fabricante de productos sanitarios nº: {{Maker}}
 				<br />
-				Número de colegiado: {{}}
+				Colegiados: {{ColNumber}}
 				<br />
 				Nº Trabajo:
 				{{IdTrabajo}}
 				<br />
-				Identificación del producto: {{}}
+				Identificación del producto: {{ProductType}}
 			</div>
 		</div>
 		<!-- row -->
@@ -29,14 +29,14 @@
 			<div class="col-sm-12">
 				<table class="table table-bordered" width="95%" cellspacing="0">
 					<tr>
-						<th width="25%">Fecha</th>
-						<th width="50%">Actuación</th>
-						<th width="25%">Firma</th>
+						<th width="10%">Fecha</th>
+						<th width="45%">Actuación</th>
+						<th width="45%">Firma</th>
 					</tr>
 					<tr v-for="logEntry in PostSales" v-bind:key="logEntry.IdPostVenta">
 						<td>{{ format(logEntry.Fecha) }}</td>
 						<td>{{ logEntry.Actuacion }}</td>
-						<td></td>
+						<td>{{ logEntry.Nombre }}<br><br><br><br></td>
 					</tr>
 				</table>
 			</div>
@@ -90,7 +90,15 @@ export default {
 			type: Object,
 			required: true
 		},
+		ProductType: {
+			type: String,
+			required: true
+		},
 		Maker: {
+			type: String,
+			required: true
+		},
+		ColNumber: {
 			type: String,
 			required: true
 		},

@@ -203,7 +203,7 @@ if (configFileService.configGet('isAdmin')) {
 				label: 'Catálogo',
 				click() {
 					mainWindow.webContents.send('navigation:navigateTo', {
-						page: '/maintenace/catalog'
+						page: '/maintenance/catalog'
 					})
 				}
 			},
@@ -211,7 +211,15 @@ if (configFileService.configGet('isAdmin')) {
 				label: 'Productos y Lotes',
 				click() {
 					mainWindow.webContents.send('navigation:navigateTo', {
-						page: '/maintenace/products'
+						page: '/maintenance/products'
+					})
+				}
+			},
+			{
+				label: 'Técnicos',
+				click() {
+					mainWindow.webContents.send('navigation:navigateTo', {
+						page: '/maintenance/technicians'
 					})
 				}
 			},
@@ -222,7 +230,7 @@ if (configFileService.configGet('isAdmin')) {
 				label: 'Configuración',
 				click() {
 					mainWindow.webContents.send('navigation:navigateTo', {
-						page: '/maintenace/configuration'
+						page: '/maintenance/configuration'
 					})
 				}
 			}

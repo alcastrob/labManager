@@ -4,8 +4,8 @@
 			<tr>
 				<th style="width: 4%"></th>
 				<th class="text-left" style="width: 18%">Fecha</th>
+				<th class="text-left" style="width: 33%">Especialista</th>
 				<th class="text-left" style="width: 45%">Actuación</th>
-				<th class="text-left" style="width: 33%">Firma</th>
 			</tr>
 			<tr v-for="postSales in data" v-bind:key="postSales.IdPostVenta">
 				<td class="pt-3-half" @focus="hidePanel">
@@ -28,53 +28,69 @@
 					/>
 				</td>
 				<td class="noMargins">
+					<select
+						class="inputInTd"
+						v-model="postSales.IdTecnico"
+						@change="trackChanges($event, postSales.IdPostVenta, 'IdTecnico')"
+						@focus="hidePanel"
+						@blur="changeSign($event)"
+						:disabled="$attrs.disabled === true"
+					>
+						<option value></option>
+						<option
+							v-for="technician in technicians"
+							v-bind:key="technician.IdTecnico"
+							v-bind:value="technician.IdTecnico"
+						>
+							{{ technician.Nombre }}
+						</option>
+					</select>
+				</td>
+				<td class="noMargins">
 					<input
 						type="text"
 						class="inputInTd"
 						v-model="postSales.Actuacion"
 						@blur="changeDescription($event)"
-						@change="trackChanges($event, postSales.IdPostVenta, 'Actuacion')"
-						:disabled="$attrs.disabled === true"
-					/>
-				</td>
-				<td class="noMargins">
-					<input
-						type="text"
-						class="inputInTd"
-						v-model="postSales.Firma"
-						@blur="changeSign($event)"
-						@change="trackChanges($event, postSales.IdPostVenta, 'Firma')"
+						@change="trackChanges($event, postSales.IdPostVenta, 'Nombre')"
+						v-on:focus="showPanel($event)"
 						:disabled="$attrs.disabled === true"
 					/>
 				</td>
 			</tr>
 			<!-- The empty row for new values -->
-      <tr v-if="$attrs.disabled !== true">
+			<tr v-if="$attrs.disabled !== true">
 				<td class="pt-3-half"></td>
 				<td class="noMargins">
-          <input
-            type="date"
-            v-model="$v.newRow.fecha.$model"
-            class="inputInTd"
-            ref="newFecha"
-            id="newFecha"
-            :class="{'bg-danger text-white animated flash': isInvalidNewDate}"
-          >
-        </td>
-				<td class="noMargins">
 					<input
-            type="text"
-            v-model="$v.newRow.actuacion.$model"
-            class="inputInTd"
-          >
+						type="date"
+						v-model="$v.newRow.fecha.$model"
+						class="inputInTd"
+						ref="newFecha"
+						id="newFecha"
+						:class="{ 'bg-danger text-white animated flash': isInvalidNewDate }"
+					/>
+				</td>
+				<td class="noMargins">
+					<select class="inputInTd" ref="newEspecialista" v-model="$v.newRow.idTecnico.$model">
+						<option selected="selected"></option>
+						<option
+							v-for="technician in technicians"
+							v-bind:key="technician.IdTecnico"
+							v-bind:value="technician.IdTecnico"
+						>
+							{{ technician.Nombre }}
+						</option>
+					</select>
 				</td>
 				<td class="noMargins">
 					<input
-            type="text"
-            v-model="$v.newRow.firma.$model"
-            class="inputInTd"
+						type="text"
+						class="inputInTd"
+						v-model="$v.newRow.actuacion.$model"
+						:class="{'bg-danger text-white animated flash': $v.newRow.actuacion.$error && !allRowEmpty}"
             @blur="addLastRow()"
-          >
+					/>
 				</td>
 			</tr>
 		</table>
@@ -84,6 +100,7 @@
 <script>
 import tablesWithEmptyRowMixin from './tablesWithEmptyRowsMixin'
 import PostSalesService from '../../../../services/PostSalesService'
+import TechnicianService from '../../../../services/TechnicianService'
 import { mixin as clickaway } from 'vue-clickaway'
 import { required } from 'vuelidate/lib/validators'
 import _ from 'lodash'
@@ -98,10 +115,11 @@ export default {
 		return {
 			deliveryShifts: [],
 			panels: {},
+			technicians: [],
 			newRow: {
 				fecha: '',
 				actuacion: '',
-				firma: ''
+				idTecnico: ''
 			},
 			isInvalidNewDate: false
 		}
@@ -110,7 +128,7 @@ export default {
 		newRow: {
 			fecha: { required },
 			actuacion: { required },
-			firma: {}
+			idTecnico: {}
 		}
 	},
 	methods: {
@@ -126,13 +144,13 @@ export default {
 						IdTrabajo: this.workId,
 						Fecha: this.$v.newRow.fecha.$model,
 						Actuacion: this.$v.newRow.actuacion.$model,
-						Firma: this.$v.newRow.firma.$model
+						IdTecnico: this.$v.newRow.idTecnico.$model
 					}
 					this.data.push(newRow)
 					this.insertedRows.push(newRow)
 					this.$v.newRow.fecha.$model = ''
 					this.$v.newRow.actuacion.$model = ''
-					this.$v.newRow.firma.$model = ''
+					this.$v.newRow.idTecnico.$model = ''
 					this.$v.newRow.$reset()
 					this.$emit('input', this.tests)
 					this.$refs.newFecha.focus()
@@ -199,7 +217,7 @@ export default {
 			this.deletedRows = []
 			this.updatedRows = []
 		},
-		showPanel: function (event) {
+		showPanel: async function (event) {
 			_.forEach(Object.keys(this.panels), (panelId) => {
 				this.panels[panelId] = false
 			})
@@ -207,7 +225,7 @@ export default {
 			this.$forceUpdate()
 		},
 		hidePanel: function (id) {
-			if (id === undefined || id.type === undefined) {
+			if (id.type === undefined) {
 				this.panels[id] = false
 			} else {
 				_.forEach(Object.keys(this.panels), (panelId) => {
@@ -219,20 +237,6 @@ export default {
 		canShow: function (id) {
 			return this.panels[id]
 		},
-		selectTestDescription: function (event) {
-			var id = event.currentTarget.parentElement.previousElementSibling.id
-			if (id === 'newDescripcion') {
-				this.$v.newRow.descripcion.$model = event.currentTarget.innerText
-				this.$refs.newFecha.focus()
-			} else {
-				id = parseInt(id)
-				var element = _.find(this.data, ['IdPostVenta', id])
-				element.Descripcion = event.currentTarget.innerText
-				this.trackChanges({ currentTarget: { value: element.Descripcion } }, id, 'Descripcion')
-				event.currentTarget.parentElement.parentElement.nextElementSibling.children[0].focus()
-			}
-			this.hidePanel()
-		},
 		changeDescription: function (event) {
 			var element = event.currentTarget
 			this.toggleValidation(element, element.value.length > 0)
@@ -241,7 +245,7 @@ export default {
 			var element = event.currentTarget
 			this.toggleValidation(element, element.validity.valid)
 		},
-		changeSign: function(event) {
+		changeSign: function (event) {
 			var element = event.currentTarget
 			this.toggleValidation(element, element.value.length > 0)
 		},
@@ -277,7 +281,7 @@ export default {
 			this.updatedRows = []
 			this.newRow.actuacion = ''
 			this.newRow.fecha = ''
-			this.newRow.firma = ''
+			this.newRow.idTecnico = ''
 			this.isInvalidNewDate = false
 			this.$v.newRow.$reset()
 		},
@@ -290,17 +294,13 @@ export default {
 			return (
 				this.$v.newRow.fecha.$model.length === 0 &&
 				this.$v.newRow.actuacion.$model.length === 0 &&
-				this.$v.newRow.firma.$model === ''
+				this.$v.newRow.idTecnico.$model === null
 			)
 		}
 	},
-	created() {
+	async created() {
 		this.postSalesService = new PostSalesService()
-	},
-	mounted() {
-		this.postSalesService.getDeliveryShifts().then((shifts) => {
-			this.deliveryShifts = shifts
-		})
+		this.technicians = await new TechnicianService().getTechniciansList()
 	}
 }
 </script>

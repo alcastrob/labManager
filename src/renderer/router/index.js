@@ -13,6 +13,7 @@ import dashboard from '../components/Pages/Dashboard.vue'
 import dentistNew from '../components/Pages/DentistNew.vue'
 import catalog from '../components/Pages/Catalog.vue'
 import products from '../components/Pages/Products.vue'
+import technicians from '../components/Pages/Technicians.vue'
 import invoice from '../components/Pages/Invoice.vue'
 import configuration from '../components/Pages/Configuration.vue'
 
@@ -67,15 +68,19 @@ export default new Router({
       component: invoice
     },
     {
-      path: '/maintenace/catalog',
+      path: '/maintenance/catalog',
       component: catalog
     },
     {
-      path: '/maintenace/products',
+      path: '/maintenance/products',
       component: products
     },
     {
-      path: '/maintenace/configuration',
+      path: '/maintenance/technicians',
+      component: technicians
+    },
+    {
+      path: '/maintenance/configuration',
       component: configuration
     }
   ],
