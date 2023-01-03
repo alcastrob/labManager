@@ -148,9 +148,7 @@ export default {
 		})
 		setInterval(this.checkForUpdates, UPDATE_INTERVAL)
 
-    ipcRenderer.on('reload:database', (event, options) => {
-      console.log('recibido reload:database')
-      debugger
+		ipcRenderer.on('reload:database', (event, options) => {
 			this.reloadDb(options.filePath)
 			this.configFileService.configSet('readonly', options.readOnly)
 		})
